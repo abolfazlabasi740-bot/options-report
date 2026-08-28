@@ -3,37 +3,29 @@ name: Run Options Report Pipeline
 on:
   workflow_dispatch:
   schedule:
-    # اجرا در روزهای معاملاتی شنبه تا چهارشنبه ساعت 13:00 به وقت ایران (09:30 UTC)
-    - cron: '30 9 * * 0,1,2,3,6'
+    - cron: '30 9 * * 0,1,2,3,4'
 
 jobs:
-  run-pipeline:
+  run-analysis:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Check out repo
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pandas openpyxl tabulate requests
+          pip install pandas openpyxl requests
 
-      - name: Run Pipeline
+      - name: Run Script
         env:
           BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
           BALE_CHAT_ID: ${{ secrets.BALE_CHAT_ID }}
         run: |
-          # پیدا کردن آخرین فایل اکسل موجود در پروژه و اجرای گزارش
-          LATEST_FILE=$(ls -t *.xlsx 2>/dev/null | head -n 1)
-          if [ -n "$LATEST_FILE" ]; then
-            echo "Processing file: $LATEST_FILE"
-            python generate_report.py "$LATEST_FILE"
-          else
-            echo "Error: No Excel (.xlsx) file found in repository."
-            exit 1
-          fi
+          FILE=$(ls -t *.xlsx | head -n 1)
+          echo "Processing file: $FILE"
+          python generate_report.py "$FILE"
