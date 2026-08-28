@@ -1,141 +1,123 @@
-
-from __future__ import annotations
-
 import os
 import sys
-import pandas as pd
+import datetime
 import requests
+import pandas as pd
 
-TOP_N = 10
-MIN_LEVERAGE = 3.0
+DOWNLOAD_URL = "https://s3.optionschool24.com/export/excel?type=1"
 
+def download_live_excel():
+    print("در حال دانلود فایل اکسل زنده از Optionschool24...")
+    headers = {"User-Agent": "Mozilla/5.0"}
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = f"optionschool24_live_{ts}.xlsx"
+    resp = requests.get(DOWNLOAD_URL, headers=headers, timeout=45)
+    if resp.status_code != 200 or len(resp.content) < 5000:
+        raise ValueError(f"دانلود فایل ناموفق بود! کد وضعیت: {resp.status_code}")
+    with open(file_path, "wb") as f:
+        f.write(resp.content)
+    print(f"فایل زنده با موفقیت ذخیره شد: {file_path}")
+    return file_path
 
-def find_column(df: pd.DataFrame, names: list[str]) -> str | None:
-    columns = {str(col).strip(): col for col in df.columns}
-    for name in names:
-        if name in columns:
-            return columns[name]
-    for name in names:
-        for norm, orig in columns.items():
-            if name in norm:
-                return orig
-    return None
-
-
-def numeric(series: pd.Series | None) -> pd.Series:
-    if series is None:
-        return pd.Series(dtype="float64")
-    return pd.to_numeric(
-        series.astype(str)
-        .str.replace(",", "", regex=False)
-        .str.replace("٬", "", regex=False)
-        .str.replace("٫", ".", regex=False)
-        .str.strip(),
-        errors="coerce",
-    ).fillna(0)
-
-
-def format_num(val: float, dec: int = 0) -> str:
-    if dec == 0:
-        return f"{int(round(val)):,}".replace(",", "٬")
-    return f"{val:.{dec}f}".replace(".", "٫")
-
-
-def format_pct(val: float) -> str:
-    sign = "+" if val >= 0 else ""
-    return f"{sign}{val:.3f}".replace(".", "٫") + "٪"
-
-
-def build_report(file_path: str) -> str:
+def audit_and_clean_data(file_path):
     df = pd.read_excel(file_path)
+    audit_info = {
+        "file_name": os.path.basename(file_path),
+        "total_rows": len(df),
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    # فیلتر قراردادهای معتبر
+    if "اهرم" in df.columns:
+        df["اهرم"] = pd.to_numeric(df["اهرم"], errors="coerce").fillna(0)
+        df = df[df["اهرم"] >= 3.0]
+    
+    audit_info["valid_rows"] = len(df)
+    return df, audit_info
 
-    c_symbol = find_column(df, ["نماد"])
-    c_strike = find_column(df, ["قیمت اعمال"])
-    c_last = find_column(df, ["آخرین قیمت", "قیمت پایانی", "آخرین"])
-    c_base = find_column(df, ["قیمت سهم پایه", "قیمت پایه", "قیمت دارایی پایه", "پایه"])
-    c_lev = find_column(df, ["اهرم"])
-    c_exp = find_column(df, ["تاریخ سررسید", "سررسید"])
-    c_days = find_column(df, ["روزهای باقی‌مانده", "روزهای معاملاتی", "روزهای تقویمی", "مانده تا سررسید"])
-    c_score = find_column(df, ["امتیاز نهایی", "Final Score", "امتیاز V3", "امتیاز"])
-    c_dist = find_column(df, ["فاصله سر به سری", "فاصله سر به سر", "Distance to Breakeven"])
+def calculate_v3_scores(df):
+    results = []
+    for idx, row in df.iterrows():
+        symbol = str(row.get("نماد", "")).strip()
+        strike = float(row.get("قیمت اعمال", 0) or 0)
+        last_price = float(row.get("آخرین", 0) or 0)
+        base_price = float(row.get("قیمت دارایی پایه", 0) or 0)
+        leverage = float(row.get("اهرم", 0) or 0)
+        expiry = str(row.get("سررسید", "")).strip()
+        rem_days = float(row.get("روز تا سررسید", 0) or 0)
+        
+        breakeven = strike + last_price
+        dist_be = ((breakeven - base_price) / base_price * 100) if base_price > 0 else 0
+        
+        # وزن دهی و امتیازدهی استاندارد V3
+        risk_penalty = max(0.0, (2.0 * leverage) - 1.0)
+        base_score = 100.0 - (dist_be * 1.5) - (rem_days * 0.1) - risk_penalty
+        final_score = max(0.0, min(100.0, base_score))
+        
+        results.append({
+            "symbol": symbol,
+            "strike": int(strike),
+            "last_price": int(last_price),
+            "breakeven": int(breakeven),
+            "base_price": int(base_price),
+            "leverage": round(leverage, 2),
+            "dist_be": round(dist_be, 2),
+            "expiry": expiry,
+            "rem_days": int(rem_days),
+            "score": round(final_score, 2)
+        })
+    
+    ranked = sorted(results, key=lambda x: x["score"], reverse=True)
+    return ranked[:10]
 
-    req = {"نماد": c_symbol, "اعمال": c_strike, "آخرین": c_last, "پایه": c_base, "اهرم": c_lev, "سررسید": c_exp, "روزها": c_days}
-    missing = [k for k, v in req.items() if v is None]
-    if missing:
-        raise ValueError(f"ستون‌های ضروری یافت نشدند: {', '.join(missing)}")
+def build_report_text(top_list, audit):
+    text = "📊 گزارش رتبه‌بندی اختیار معامله (پروتکل V3)
+"
+    text += f"منبع: Optionschool24 | اهرم ≥ ۳
+"
+    text += f"حسابرسی داده: {audit['valid_rows']} قرارداد معتبر (از {audit['total_rows']})
+"
+    text += f"زمان پردازش: {audit['timestamp']}
 
-    # فقط قراردادهای خرید
-    df = df[df[c_symbol].astype(str).str.strip().str.startswith("ض")].copy()
+"
+    text += "رتبه | نماد | سر‌به‌سر | پایه | اهرم | فاصله | سررسید(روز) | امتیاز
+"
+    text += "--------------------------------------------------
+"
+    
+    for i, item in enumerate(top_list, 1):
+        sign = '+' if item['dist_be'] >= 0 else ''
+        text += f"{i}. {item['symbol']} | {item['breakeven']:,} | {item['base_price']:,} | {item['leverage']}x | {sign}{item['dist_be']}% | {item['rem_days']}ر | {item['score']}
+"
+    
+    return text
 
-    df["_strike"] = numeric(df[c_strike])
-    df["_last"] = numeric(df[c_last])
-    df["_base"] = numeric(df[c_base])
-    df["_lev"] = numeric(df[c_lev])
-    df["_days"] = numeric(df[c_days])
-    df["_be"] = df["_strike"] + df["_last"]
-
-    if c_dist is not None:
-        df["_dist"] = numeric(df[c_dist])
-    else:
-        df["_dist"] = ((df["_be"] - df["_base"]) / df["_base"].replace(0, pd.NA) * 100).fillna(0)
-
-    # اگر ستون امتیاز نبود، رتبه‌بندی استاندارد
-    if c_score is not None:
-        df["_score"] = numeric(df[c_score])
-    else:
-        df["_score"] = (100 - df["_dist"].abs() - (df["_lev"] * 0.5)).clip(lower=0)
-
-    # فیلتر اهرم حداقل ۳
-    df = df[df["_lev"] >= MIN_LEVERAGE].copy()
-
-    df = df.sort_values(by=["_score", "_lev"], ascending=[False, True], kind="stable").head(TOP_N)
-
-    lines = [
-        "📊 رتبه‌بندی برترین قراردادهای اختیار معامله",
-        "پروتکل V3 (منبع: Optionschool24)",
-        "فیلتر: اهرم حداقل ۳",
-        "━━━━━━━━━━━━━━━━━━",
-    ]
-
-    for rank, (_, row) in enumerate(df.iterrows(), start=1):
-        sym = str(row[c_symbol]).strip()
-        exp = str(row[c_exp]).strip()
-        days = int(round(row["_days"]))
-        score_val = row["_score"]
-
-        line = (
-            f"🔹 {rank}. {sym}\n"
-            f"قیمت اعمال: {format_num(row['_strike'])} | آخرین: {format_num(row['_last'])}\n"
-            f"سر‌به‌سر: {format_num(row['_be'])} | پایه: {format_num(row['_base'])}\n"
-            f"اهرم: {format_num(row['_lev'], 2)} | فاصله سر‌به‌سر: {format_pct(row['_dist'])}\n"
-            f"سررسید: {exp} ({days} روز)\n"
-            f"امتیاز: {format_num(score_val, 2)}"
-        )
-        lines.append(line)
-
-    return "\n\n".join(lines)
-
-
-def send_to_bale(text: str) -> None:
-    token = os.environ.get("BALE_BOT_TOKEN")
-    chat_id = os.environ.get("BALE_CHAT_ID")
+def send_to_bale(text):
+    token = os.getenv("BALE_BOT_TOKEN")
+    chat_id = os.getenv("BALE_CHAT_ID")
     if not token or not chat_id:
-        raise ValueError("متغیرهای BALE_BOT_TOKEN یا BALE_CHAT_ID یافت نشدند.")
-
+        print("توکن یا چت‌آیدی بله تنظیم نشده است.")
+        return
     url = f"https://tapi.bale.ai/bot{token}/sendMessage"
-    res = requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=30)
-    res.raise_for_status()
+    resp = requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=30)
+    print(f"ارسال به بله: وضعیت {resp.status_code}")
 
+def main():
+    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+        file_path = sys.argv[1]
+    else:
+        file_path = download_live_excel()
+        
+    df, audit = audit_and_clean_data(file_path)
+    top_list = calculate_v3_scores(df)
+    report_text = build_report_text(top_list, audit)
+    print("
+--- پیش‌نمایش گزارش ---
+")
+    print(report_text)
+    
+    if os.getenv("SEND_TO_BALE", "true").lower() == "true":
+        send_to_bale(report_text)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Error: Excel file path required.")
-        sys.exit(1)
-
-    file_p = sys.argv[1]
-    report_text = build_report(file_p)
-    print(report_text)
-
-    if os.getenv("SEND_TO_BALE", "false").lower() == "true":
-        send_to_bale(report_text)
-        print("✅ پیام با موفقیت به بله ارسال شد.")
+    main()

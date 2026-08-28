@@ -1,10 +1,19 @@
-name: Optionschool V3 Pipeline
+name: Optionschool V3 Scheduled Pipeline
 
 on:
+  schedule:
+    # ساعت های گرینویچ معادل 09:15 تا 12:15 ایران (شنبه تا چهارشنبه)
+    - cron: '45 5 * * 0,1,2,3,6'
+    - cron: '15 6 * * 0,1,2,3,6'
+    - cron: '45 6 * * 0,1,2,3,6'
+    - cron: '15 7 * * 0,1,2,3,6'
+    - cron: '45 7 * * 0,1,2,3,6'
+    - cron: '15 8 * * 0,1,2,3,6'
+    - cron: '45 8 * * 0,1,2,3,6'
   workflow_dispatch:
 
 jobs:
-  build-and-send:
+  download-audit-and-send:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,22 +30,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl requests
 
-      - name: Find Latest Excel
-        id: select_file
-        shell: bash
-        run: |
-          latest_file="$(find . -maxdepth 2 -type f -name 'optionschool24_all_*.xlsx' | sort -V | tail -n 1)"
-          if [ -z "$latest_file" ]; then
-            echo 'Error: No Excel file found!'
-            exit 1
-          fi
-          echo "file=$latest_file" >> "$GITHUB_OUTPUT"
-          echo "Selected File: $latest_file"
-
-      - name: Run Report & Send to Bale
+      - name: Download Live Excel & Audit & Send to Bale
         env:
           BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
           BALE_CHAT_ID: ${{ secrets.BALE_CHAT_ID }}
           SEND_TO_BALE: 'true'
         run: |
-          python generate_report.py "${{ steps.select_file.outputs.file }}"
+          python generate_report.py
