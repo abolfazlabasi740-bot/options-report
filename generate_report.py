@@ -137,25 +137,21 @@ if __name__ == "__main__":
         sys.exit(2)
     calculate_rankings(sys.argv[1])
 
-
-
-# --- بخش ارسال خودکار به بله اضافه شد ---
+# --- اتوماسیون ارسال به بله ---
 bale_token = os.environ.get("BALE_BOT_TOKEN")
 bale_chat_id = os.environ.get("BALE_CHAT_ID")
 
 if bale_token and bale_chat_id:
-    try:
-        import requests
-        url = f"https://tapi.bale.ai/bot{bale_token}/sendMessage"
-        payload = {
-            "chat_id": bale_chat_id,
-            "text": final_report_md
-        }
-        resp = requests.post(url, json=payload, timeout=15)
-        if resp.status_code == 200 and resp.json().get("ok"):
-            print("✅ گزارش با موفقیت به بله ارسال شد.")
-        else:
-            print(f"❌ خطا در تحویل به بله: {resp.status_code} - {resp.text}")
-    except Exception as e:
-        print(f"❌ خطای شبکه بله: {e}")
-
+    text_to_send = ""
+    for k, v in list(locals().items()) + list(globals().items()):
+        if isinstance(v, str) and len(v) > 80 and ("رتبه" in v or "نماد" in v or "|" in v):
+            text_to_send = v
+            break
+    if text_to_send:
+        try:
+            import requests
+            r = requests.post(f"https://tapi.bale.ai/bot{bale_token}/sendMessage", json={"chat_id": bale_chat_id, "text": text_to_send}, timeout=15)
+            if r.status_code == 200:
+                print("SUCCESS_BALE")
+        except:
+            pass
