@@ -13,33 +13,40 @@ def get_col(patterns):
     for p in patterns:
         for c in df.columns:
             clean_c = str(c).strip()
-            if p == clean_c or (len(p) > 3 and p in clean_c):
+            if p == clean_c:
+                return c
+    for p in patterns:
+        for c in df.columns:
+            clean_c = str(c).strip()
+            if p in clean_c:
                 return c
     return None
 
-c_symbol = get_col(['نماد', 'نماد قرارداد', 'نماد اختیار'])
-c_strike = get_col(['قیمت اعمال', 'اعمال'])
-c_due = get_col(['سررسید', 'تاریخ سررسید', 'مانده تا سررسید', 'روز تا سررسید'])
-c_lev = get_col(['اهرم موثر', 'اهرم', 'اهرم ساده'])
-c_val = get_col(['ارزش معاملات (میلیارد)', 'ارزش معاملات', 'ارزش معامله', 'ارزش'])
-c_itm = get_col(['وضعیت', 'وضعیت سود', 'وضعیت در سود بودن'])
-c_delta = get_col(['دلتا', 'Delta'])
-c_prem = get_col(['قیمت پایانی اختیار', 'قیمت پایانی', 'پایانی اختیار', 'آخرین معامله اختیار', 'آخرین معامله'])
+c_symbol = get_col(['نماد'])
+c_strike = get_col(['قیمت اعمال'])
+c_due = get_col(['تاریخ سررسید', 'سررسید'])
+c_prem = get_col(['قیمت پایانی', 'آخرین قیمت'])
+c_lev = get_col(['اهرم'])
+c_val = get_col(['ارزش معاملات'])
+c_itm = get_col(['وضعیت'])
+c_delta = get_col(['دلتا'])
 
-# تبدیل مقادیر عددی برای ارزش معاملات
+# فیلتر قراردادهای خرید (شروع با ض)
+if c_symbol:
+    df = df[df[c_symbol].astype(str).str.strip().str.startswith('ض')].copy()
+
+# تمیزسازی و عددی کردن اهرم
+if c_lev:
+    df['clean_lev'] = pd.to_numeric(df[c_lev].astype(str).str.replace(',', '').str.strip(), errors='coerce').fillna(0)
+    # فیلتر: اهرم کوچکتر از ۳ نباشد (Leverage >= 3)
+    df = df[df['clean_lev'] >= 3.0].copy()
+
+# تمیزسازی ارزش معاملات
 if c_val:
-    df['clean_val'] = pd.to_numeric(df[c_val].astype(str).str.replace(',', '').str.replace(' ', ''), errors='coerce').fillna(0)
-    # اگر نمادهای خرید با 'ض' شروع می‌شوند فیلتر کنیم
-    if c_symbol:
-        df_call = df[df[c_symbol].astype(str).str.strip().str.startswith('ض')].copy()
-        if df_call.empty:
-            df_call = df.copy()
-    else:
-        df_call = df.copy()
-    
-    df_top = df_call.sort_values(by='clean_val', ascending=False).head(10).copy()
-else:
-    df_top = df.head(10).copy()
+    df['clean_val'] = pd.to_numeric(df[c_val].astype(str).str.replace(',', '').str.strip(), errors='coerce').fillna(0)
+    df = df.sort_values(by='clean_val', ascending=False)
+
+df_top = df.head(10).copy()
 
 rows = []
 rank = 1
@@ -48,47 +55,44 @@ for idx, row in df_top.iterrows():
     symbol = str(row[c_symbol]).strip() if c_symbol and pd.notna(row[c_symbol]) else '---'
     
     # قیمت اعمال
-    strike_raw = row[c_strike] if c_strike and pd.notna(row[c_strike]) else '-'
     try:
-        strike = f"{int(float(str(strike_raw).replace(',', ''))):,}"
+        strike_val = int(float(str(row[c_strike]).replace(',', '').strip()))
+        strike = f"{strike_val:,}"
     except:
-        strike = str(strike_raw)
+        strike = str(row[c_strike]) if c_strike else '-'
 
     due = str(row[c_due]).strip() if c_due and pd.notna(row[c_due]) else '-'
     
-    # اهرم
-    lev_raw = row[c_lev] if c_lev and pd.notna(row[c_lev]) else '-'
+    # قیمت پایانی
     try:
-        lev = f"{float(str(lev_raw).replace(',', '')):.1f}"
+        prem_val = int(float(str(row[c_prem]).replace(',', '').strip()))
+        prem = f"{prem_val:,}"
     except:
-        lev = str(lev_raw)
+        prem = str(row[c_prem]) if c_prem else '-'
+
+    # اهرم
+    lev_val = row.get('clean_lev', 0.0)
+    lev = f"{lev_val:.1f}"
 
     # ارزش معاملات
-    val_raw = row.get('clean_val', 0)
-    if val_raw >= 1e9:
-        val_str = f"{val_raw/1e9:.2f}B"
-    elif val_raw >= 1e6:
-        val_str = f"{val_raw/1e6:.1f}M"
-    elif val_raw > 0:
-        val_str = f"{val_raw:,.0f}"
+    val_val = row.get('clean_val', 0.0)
+    if val_val >= 1e9:
+        val_str = f"{val_val/1e9:.2f}B"
+    elif val_val >= 1e6:
+        val_str = f"{val_val/1e6:.1f}M"
+    elif val_val > 0:
+        val_str = f"{val_val:,.0f}"
     else:
         val_str = "0"
 
     itm = str(row[c_itm]).strip() if c_itm and pd.notna(row[c_itm]) else '-'
     
     # دلتا
-    delta_raw = row[c_delta] if c_delta and pd.notna(row[c_delta]) else '-'
     try:
-        delta = f"{float(str(delta_raw).replace(',', '')):.2f}"
+        delta_val = float(str(row[c_delta]).replace(',', '').strip())
+        delta = f"{delta_val:.2f}"
     except:
-        delta = str(delta_raw)
-
-    # قیمت پایانی (پریمیوم)
-    prem_raw = row[c_prem] if c_prem and pd.notna(row[c_prem]) else '-'
-    try:
-        prem = f"{int(float(str(prem_raw).replace(',', ''))):,}"
-    except:
-        prem = str(prem_raw)
+        delta = str(row[c_delta]) if c_delta else '-'
 
     score = f"{100 - (rank-1)*5}"
 
@@ -101,7 +105,7 @@ for idx, row in df_top.iterrows():
     rows.append(r_text)
     rank += 1
 
-header = "📊 گزارش رتبه‌بندی اختیار معامله (Optionschool)\n«« موتور رتبه‌بندی قراردادهای برتر خرید »»\n" + ("="*35)
+header = "📊 گزارش رتبه‌بندی اختیار معامله (Optionschool)\n«« موتور رتبه‌بندی قراردادهای برتر خرید (اهرم ۳+) »»\n" + ("="*35)
 final_msg = header + "\n\n" + "\n\n".join(rows)
 
 print('--- پیش‌نمایش گزارش ---')
