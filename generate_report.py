@@ -26,19 +26,18 @@ def download_live_excel():
     except Exception as e:
         print(f"خطا در دانلود فایل زنده: {e}")
 
-    # فال‌بک به فایل اکسل موجود در ریپازیتوری در صورت در دسترس نبودن سرور لحظه‌ای
     existing_files = glob.glob("optionschool24_all*.xlsx") + glob.glob("*.xlsx")
     if existing_files:
         print(f"استفاده از فایل پشتیبان: {existing_files[0]}")
         return existing_files[0]
     
+    raise ValueError("هیچ فایل اکسلی برای تحلیل یافت نشد!")
 
 def audit_and_clean_data(file_path):
     print(f"در حال خواندن فایل: {file_path}")
     df = pd.read_excel(file_path)
     total_rows = len(df)
     
-    # استانداردسازی نام ستون‌ها
     col_map = {}
     for col in df.columns:
         c_str = str(col).strip()
@@ -128,18 +127,19 @@ def build_report_text(top_list, audit):
 def send_to_bale(text):
     token = os.getenv("BALE_BOT_TOKEN", "").strip()
     chat_id = os.getenv("BALE_CHAT_ID", "").strip()
-    print(f"بررسی متغیرهای ارسالی بله: Token Present={bool(token)}, ChatID Present={bool(chat_id)}")
+    print(f"وضعیت کلیدها -> Token Present: {bool(token)}, ChatID Present: {bool(chat_id)}")
     
     if not token or not chat_id:
+        print("خطا: توکن یا Chat ID در گیت‌هاب تعریف نشده است!")
         return
         
     url = f"https://tapi.bale.ai/bot{token}/sendMessage"
     payload = {"chat_id": chat_id, "text": text}
     try:
         resp = requests.post(url, json=payload, timeout=20)
-        print(f"پاسخ سرور بله: وضعیت HTTP {resp.status_code} -> متن پاسخ: {resp.text}")
+        print(f"پاسخ بله -> کد وضعیت: {resp.status_code} | متن: {resp.text}")
     except Exception as e:
-        print(f"خطا در اتصال به پیام‌رسان بله: {e}")
+        print(f"خطا در ارسال به بله: {e}")
 
 def main():
     if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
@@ -151,7 +151,7 @@ def main():
     top_list = calculate_v3_scores(df)
     report_text = build_report_text(top_list, audit)
     print("
---- پیش‌نمایش گزارش خروجی ---
+--- پیش‌نمایش گزارش ---
 ")
     print(report_text)
     
