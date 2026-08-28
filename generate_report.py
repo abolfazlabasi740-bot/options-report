@@ -1,122 +1,141 @@
-import sys, os, pandas as pd, requests
 
-if len(sys.argv) < 2:
-    print('No file provided')
-    sys.exit(1)
+from __future__ import annotations
 
-file_path = sys.argv[1]
-print(f'Reading: {file_path}')
+import os
+import sys
+import pandas as pd
+import requests
 
-df = pd.read_excel(file_path)
+TOP_N = 10
+MIN_LEVERAGE = 3.0
 
-def get_col(patterns):
-    for p in patterns:
-        for c in df.columns:
-            clean_c = str(c).strip()
-            if p == clean_c:
-                return c
-    for p in patterns:
-        for c in df.columns:
-            clean_c = str(c).strip()
-            if p in clean_c:
-                return c
+
+def find_column(df: pd.DataFrame, names: list[str]) -> str | None:
+    columns = {str(col).strip(): col for col in df.columns}
+    for name in names:
+        if name in columns:
+            return columns[name]
+    for name in names:
+        for norm, orig in columns.items():
+            if name in norm:
+                return orig
     return None
 
-c_symbol = get_col(['نماد'])
-c_strike = get_col(['قیمت اعمال'])
-c_due = get_col(['تاریخ سررسید', 'سررسید'])
-c_prem = get_col(['قیمت پایانی', 'آخرین قیمت'])
-c_lev = get_col(['اهرم'])
-c_val = get_col(['ارزش معاملات'])
-c_itm = get_col(['وضعیت'])
-c_delta = get_col(['دلتا'])
 
-# فیلتر قراردادهای خرید (شروع با ض)
-if c_symbol:
-    df = df[df[c_symbol].astype(str).str.strip().str.startswith('ض')].copy()
+def numeric(series: pd.Series | None) -> pd.Series:
+    if series is None:
+        return pd.Series(dtype="float64")
+    return pd.to_numeric(
+        series.astype(str)
+        .str.replace(",", "", regex=False)
+        .str.replace("٬", "", regex=False)
+        .str.replace("٫", ".", regex=False)
+        .str.strip(),
+        errors="coerce",
+    ).fillna(0)
 
-# تمیزسازی و عددی کردن اهرم
-if c_lev:
-    df['clean_lev'] = pd.to_numeric(df[c_lev].astype(str).str.replace(',', '').str.strip(), errors='coerce').fillna(0)
-    # فیلتر: اهرم کوچکتر از ۳ نباشد (Leverage >= 3)
-    df = df[df['clean_lev'] >= 3.0].copy()
 
-# تمیزسازی ارزش معاملات
-if c_val:
-    df['clean_val'] = pd.to_numeric(df[c_val].astype(str).str.replace(',', '').str.strip(), errors='coerce').fillna(0)
-    df = df.sort_values(by='clean_val', ascending=False)
+def format_num(val: float, dec: int = 0) -> str:
+    if dec == 0:
+        return f"{int(round(val)):,}".replace(",", "٬")
+    return f"{val:.{dec}f}".replace(".", "٫")
 
-df_top = df.head(10).copy()
 
-rows = []
-rank = 1
+def format_pct(val: float) -> str:
+    sign = "+" if val >= 0 else ""
+    return f"{sign}{val:.3f}".replace(".", "٫") + "٪"
 
-for idx, row in df_top.iterrows():
-    symbol = str(row[c_symbol]).strip() if c_symbol and pd.notna(row[c_symbol]) else '---'
-    
-    # قیمت اعمال
-    try:
-        strike_val = int(float(str(row[c_strike]).replace(',', '').strip()))
-        strike = f"{strike_val:,}"
-    except:
-        strike = str(row[c_strike]) if c_strike else '-'
 
-    due = str(row[c_due]).strip() if c_due and pd.notna(row[c_due]) else '-'
-    
-    # قیمت پایانی
-    try:
-        prem_val = int(float(str(row[c_prem]).replace(',', '').strip()))
-        prem = f"{prem_val:,}"
-    except:
-        prem = str(row[c_prem]) if c_prem else '-'
+def build_report(file_path: str) -> str:
+    df = pd.read_excel(file_path)
 
-    # اهرم
-    lev_val = row.get('clean_lev', 0.0)
-    lev = f"{lev_val:.1f}"
+    c_symbol = find_column(df, ["نماد"])
+    c_strike = find_column(df, ["قیمت اعمال"])
+    c_last = find_column(df, ["آخرین قیمت", "قیمت پایانی", "آخرین"])
+    c_base = find_column(df, ["قیمت سهم پایه", "قیمت پایه", "قیمت دارایی پایه", "پایه"])
+    c_lev = find_column(df, ["اهرم"])
+    c_exp = find_column(df, ["تاریخ سررسید", "سررسید"])
+    c_days = find_column(df, ["روزهای باقی‌مانده", "روزهای معاملاتی", "روزهای تقویمی", "مانده تا سررسید"])
+    c_score = find_column(df, ["امتیاز نهایی", "Final Score", "امتیاز V3", "امتیاز"])
+    c_dist = find_column(df, ["فاصله سر به سری", "فاصله سر به سر", "Distance to Breakeven"])
 
-    # ارزش معاملات
-    val_val = row.get('clean_val', 0.0)
-    if val_val >= 1e9:
-        val_str = f"{val_val/1e9:.2f}B"
-    elif val_val >= 1e6:
-        val_str = f"{val_val/1e6:.1f}M"
-    elif val_val > 0:
-        val_str = f"{val_val:,.0f}"
+    req = {"نماد": c_symbol, "اعمال": c_strike, "آخرین": c_last, "پایه": c_base, "اهرم": c_lev, "سررسید": c_exp, "روزها": c_days}
+    missing = [k for k, v in req.items() if v is None]
+    if missing:
+        raise ValueError(f"ستون‌های ضروری یافت نشدند: {', '.join(missing)}")
+
+    # فقط قراردادهای خرید
+    df = df[df[c_symbol].astype(str).str.strip().str.startswith("ض")].copy()
+
+    df["_strike"] = numeric(df[c_strike])
+    df["_last"] = numeric(df[c_last])
+    df["_base"] = numeric(df[c_base])
+    df["_lev"] = numeric(df[c_lev])
+    df["_days"] = numeric(df[c_days])
+    df["_be"] = df["_strike"] + df["_last"]
+
+    if c_dist is not None:
+        df["_dist"] = numeric(df[c_dist])
     else:
-        val_str = "0"
+        df["_dist"] = ((df["_be"] - df["_base"]) / df["_base"].replace(0, pd.NA) * 100).fillna(0)
 
-    itm = str(row[c_itm]).strip() if c_itm and pd.notna(row[c_itm]) else '-'
-    
-    # دلتا
-    try:
-        delta_val = float(str(row[c_delta]).replace(',', '').strip())
-        delta = f"{delta_val:.2f}"
-    except:
-        delta = str(row[c_delta]) if c_delta else '-'
+    # اگر ستون امتیاز نبود، رتبه‌بندی استاندارد
+    if c_score is not None:
+        df["_score"] = numeric(df[c_score])
+    else:
+        df["_score"] = (100 - df["_dist"].abs() - (df["_lev"] * 0.5)).clip(lower=0)
 
-    score = f"{100 - (rank-1)*5}"
+    # فیلتر اهرم حداقل ۳
+    df = df[df["_lev"] >= MIN_LEVERAGE].copy()
 
-    r_text = (
-        f"{rank}. 🔹 نماد: {symbol}\n"
-        f"   قیمت اعمال: {strike} | سررسید: {due}\n"
-        f"   پایانی: {prem} | اهرم: {lev} | ارزش: {val_str}\n"
-        f"   وضعیت: {itm} | دلتا: {delta} | امتیاز: {score}"
-    )
-    rows.append(r_text)
-    rank += 1
+    df = df.sort_values(by=["_score", "_lev"], ascending=[False, True], kind="stable").head(TOP_N)
 
-header = "📊 گزارش رتبه‌بندی اختیار معامله (Optionschool)\n«« موتور رتبه‌بندی قراردادهای برتر خرید (اهرم ۳+) »»\n" + ("="*35)
-final_msg = header + "\n\n" + "\n\n".join(rows)
+    lines = [
+        "📊 رتبه‌بندی برترین قراردادهای اختیار معامله",
+        "پروتکل V3 (منبع: Optionschool24)",
+        "فیلتر: اهرم حداقل ۳",
+        "━━━━━━━━━━━━━━━━━━",
+    ]
 
-print('--- پیش‌نمایش گزارش ---')
-print(final_msg)
+    for rank, (_, row) in enumerate(df.iterrows(), start=1):
+        sym = str(row[c_symbol]).strip()
+        exp = str(row[c_exp]).strip()
+        days = int(round(row["_days"]))
+        score_val = row["_score"]
 
-bot_token = os.environ.get('BALE_BOT_TOKEN')
-chat_id = os.environ.get('BALE_CHAT_ID')
+        line = (
+            f"🔹 {rank}. {sym}\n"
+            f"قیمت اعمال: {format_num(row['_strike'])} | آخرین: {format_num(row['_last'])}\n"
+            f"سر‌به‌سر: {format_num(row['_be'])} | پایه: {format_num(row['_base'])}\n"
+            f"اهرم: {format_num(row['_lev'], 2)} | فاصله سر‌به‌سر: {format_pct(row['_dist'])}\n"
+            f"سررسید: {exp} ({days} روز)\n"
+            f"امتیاز: {format_num(score_val, 2)}"
+        )
+        lines.append(line)
 
-if bot_token and chat_id:
-    url = f'https://tapi.bale.ai/bot{bot_token}/sendMessage'
-    res = requests.post(url, json={'chat_id': chat_id, 'text': final_msg}, timeout=30)
-    print(f'Bale API: {res.status_code} - {res.text}')
-else:
-    print('Warning: Missing Bale credentials')
+    return "\n\n".join(lines)
+
+
+def send_to_bale(text: str) -> None:
+    token = os.environ.get("BALE_BOT_TOKEN")
+    chat_id = os.environ.get("BALE_CHAT_ID")
+    if not token or not chat_id:
+        raise ValueError("متغیرهای BALE_BOT_TOKEN یا BALE_CHAT_ID یافت نشدند.")
+
+    url = f"https://tapi.bale.ai/bot{token}/sendMessage"
+    res = requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=30)
+    res.raise_for_status()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Error: Excel file path required.")
+        sys.exit(1)
+
+    file_p = sys.argv[1]
+    report_text = build_report(file_p)
+    print(report_text)
+
+    if os.getenv("SEND_TO_BALE", "false").lower() == "true":
+        send_to_bale(report_text)
+        print("✅ پیام با موفقیت به بله ارسال شد.")
