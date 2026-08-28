@@ -136,3 +136,26 @@ if __name__ == "__main__":
         print("استفاده: python3 generate_report.py FILE.xlsx", file=sys.stderr)
         sys.exit(2)
     calculate_rankings(sys.argv[1])
+
+
+
+# --- بخش ارسال خودکار به بله اضافه شد ---
+bale_token = os.environ.get("BALE_BOT_TOKEN")
+bale_chat_id = os.environ.get("BALE_CHAT_ID")
+
+if bale_token and bale_chat_id:
+    try:
+        import requests
+        url = f"https://tapi.bale.ai/bot{bale_token}/sendMessage"
+        payload = {
+            "chat_id": bale_chat_id,
+            "text": final_report_md
+        }
+        resp = requests.post(url, json=payload, timeout=15)
+        if resp.status_code == 200 and resp.json().get("ok"):
+            print("✅ گزارش با موفقیت به بله ارسال شد.")
+        else:
+            print(f"❌ خطا در تحویل به بله: {resp.status_code} - {resp.text}")
+    except Exception as e:
+        print(f"❌ خطای شبکه بله: {e}")
+
