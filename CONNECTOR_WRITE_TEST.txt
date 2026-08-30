@@ -1,2 +1,0 @@
-GitHub Connector write-permission test.
-Temporary verification file only.
