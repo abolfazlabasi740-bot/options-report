@@ -1,172 +1,141 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-generate_report.py — تولید گزارش استاندارد V3/V4 (بخش ۱۴ Master Project Book)
-و ارسال به پیام‌رسان بله (Bale Bot API)
+Canonical report runner for PROTOCOL_OPTIONS_RANKING_V3.
+The scoring logic lives only in rank_options_live.py.
+This file is orchestration/report-delivery only.
 """
-import os, sys, json, hashlib, datetime, requests
+
+import hashlib
+import os
+import sys
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
 import pandas as pd
 
-# ---------------- تنظیمات ----------------
-XLSX_PATH   = os.environ.get("XLSX_PATH", "data/optionschool24.xlsx")
-BALE_TOKEN  = os.environ["BALE_TOKEN"]          # از GitHub Secrets
-BALE_CHAT   = os.environ.get("BALE_CHAT", "")
-BALE_API    = f"https://tapi.bale.ai/bot{BALE_TOKEN}/sendMessage"
-TOP_N       = int(os.environ.get("TOP_N", "10"))
+import rank_options_live as v3
 
-# ---------------- ابزار ستون‌پویا (رفع مشکل "سر به سر" / "نقطه سر به سر") ----------------
-def pick_col(df, *keys):
-    for c in df.columns:
-        cl = str(c).strip().lower().replace(" ", "").replace("_", "")
-        if all(k.replace(" ", "") in cl for k in keys):
-            return c
-    return None
+BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_REPORT = BASE_DIR / "output_options_report.md"
+OUTPUT_TOP = BASE_DIR / "output_options_top15.csv"
 
-COLS = {
-    "symbol":   ["نماد"],
-    "strike":   ["قیمت اعمال", "استرایک"],
-    "last":     ["آخرین قیمت", "آخرین معامله"],
-    "breakeven":["سربه‌سر", "سر به سر", "نقطه سربه‌سر", "سر به سر"],
-    "underlying":["قیمت پایه", "قیمت سهم پایه", "پایه"],
-    "leverage": ["اهرم"],
-    "dist_be":  ["فاصله سربه‌سر", "فاصله"],
-    "expiry":   ["سررسید", "تاریخ سررسید"],
-    "days":     ["روزهای باقی‌مانده", "روز باقی‌مانده"],
-    "score":    ["امتیاز نهایی", "امتیاز"],
-    "volume":   ["حجم"],
-    "value":    ["ارزش معاملات", "ارزش"],
-    "oi":       ["موقعیت‌های باز", "open interest", "oi"],
-    "spread":   ["اسپرد"],
-}
 
-def col(df, key):
-    return pick_col(df, *COLS[key])
+def send_bale(text: str) -> None:
+    token = os.environ.get("BALE_BOT_TOKEN", "").strip()
+    chat_id = os.environ.get("BALE_CHAT_ID", "").strip()
 
-def penalty_leverage(lev):
-    return max(0.0, 2.0 * float(lev) - 1.0)   # V3: جریمه اهرم
+    if not token or not chat_id:
+        raise RuntimeError("BALE_BOT_TOKEN و BALE_CHAT_ID برای ارسال گزارش موجود نیستند.")
 
-def fmt(x, nd=2):
-    try:
-        return f"{float(x):,.{nd}f}"
-    except Exception:
-        return "-"
+    chunks = [text[i:i + 3500] for i in range(0, len(text), 3500)]
+    url = f"https://tapi.bale.ai/bot{token}/sendMessage"
 
-# ---------------- بارگذاری و اعتبارسنجی ----------------
-def load_data():
-    df = pd.read_excel(XLSX_PATH)
-    raw_rows = len(df)
-    with open(XLSX_PATH, "rb") as f:
-        sha = hashlib.sha256(f.read()).hexdigest()
+    for index, chunk in enumerate(chunks, start=1):
+        payload = urlencode({"chat_id": chat_id, "text": chunk}).encode("utf-8")
+        request = Request(
+            url,
+            data=payload,
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": "OptionsReport-V3/1.0",
+            },
+            method="POST",
+        )
 
-    req = ["symbol", "strike", "last", "breakeven", "score"]
-    missing = [k for k in req if col(df, k) is None]
-    if missing:
-        print("COLUMNS:", list(df.columns))
-        raise RuntimeError(f"ستون‌های ضروری یافت نشد: {missing}")
-
-    valid = df.dropna(subset=[col(df, k) for k in req]).copy()
-    # فیلتر V4: حذف اهرم کمتر از ۳
-    lev_c = col(valid, "leverage")
-    removed_lev = 0
-    if lev_c:
         try:
-            valid[lev_c] = pd.to_numeric(valid[lev_c], errors="coerce")
-            before = len(valid)
-            valid = valid[valid[lev_c] >= 3.0]
-            removed_lev = before - len(valid)
-        except Exception:
-            pass
+            with urlopen(request, timeout=45) as response:
+                response_text = response.read().decode("utf-8", errors="replace")
+                status = response.status
+        except HTTPError as exc:
+            details = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"خطای API بله در بخش {index}: HTTP {exc.code}: {details}") from exc
+        except URLError as exc:
+            raise RuntimeError(f"خطای اتصال به API بله در بخش {index}: {exc.reason}") from exc
 
-    valid = valid.sort_values(col(valid, "score"), ascending=False)
-    meta = {
-        "sha256": sha,
-        "raw_rows": raw_rows,
-        "valid_rows": len(valid),
-        "removed_rows": raw_rows - len(valid),
-        "removed_leverage_lt3": removed_lev,
-        "run_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "file": os.path.basename(XLSX_PATH),
-    }
-    return valid, meta
+        if status != 200 or '"ok":true' not in response_text.replace(" ", ""):
+            raise RuntimeError(f"ارسال بخش {index} توسط بله تأیید نشد: {response_text}")
 
-# ---------------- ساخت متن گزارش (۱۳ بند استاندارد بخش ۱۴) ----------------
-def build_report(valid, meta):
-    L = []
-    L.append(f"📊 گزارش اختیار معامله — نسخه V3/V4")
-    L.append(f"⏱ زمان اجرا: {meta['run_time']} | فایل: {meta['file']}")
-    L.append("")  # (2) Metadata
+        print(f"ارسال بخش {index}/{len(chunks)} به بله موفق بود.")
 
-    L.append(f"🔐 SHA-256: `{meta['sha256'][:16]}…`")
-    L.append("")  # (3) اعتبارسنجی
 
-    L.append(f"📈 آمار فایل: کل {meta['raw_rows']} | معتبر {meta['valid_rows']} | حذف‌شده {meta['removed_rows']} (اهرم<۳: {meta['removed_leverage_lt3']})")
-    L.append("")  # (4) آمار فایل
+def find_input(explicit: str | None) -> Path:
+    if explicit:
+        candidate = Path(explicit)
+        if not candidate.is_absolute():
+            candidate = BASE_DIR / candidate
+        if not candidate.is_file():
+            raise RuntimeError(f"فایل ورودی یافت نشد: {candidate}")
+        return candidate
 
-    # (5) جدول اصلی ۱۱ ستونه
-    hdr = ["رتبه","نماد","اعمال","آخرین","سربه‌سر","پایه","اهرم","فاصلهBE%","سررسید","روز","امتیاز"]
-    L.append("┌ جدول اصلی (۱۱ ستونه):")
-    L.append(" | ".join(hdr))
-    for i, (_, r) in enumerate(valid.head(TOP_N).iterrows(), 1):
-        g = lambda k: fmt(r[col(valid, k)]) if col(valid, k) else "-"
-        L.append(f"{i} | {r[col(valid,'symbol')]} | {g('strike')} | {g('last')} | "
-                 f"{g('breakeven')} | {g('underlying')} | {g('leverage')} | {g('dist_be')} | "
-                 f"{r[col(valid,'expiry')] if col(valid,'expiry') else '-'} | {g('days')} | {g('score')}")
-    L.append("")
+    files = sorted(
+        BASE_DIR.glob("optionschool24_all_*.xlsx"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not files:
+        raise RuntimeError("هیچ فایل optionschool24_all_*.xlsx در Repository/Workspace یافت نشد.")
+    return files[0]
 
-    # (6) تحلیل ریسک: اجزای امتیاز و جریمه‌ها
-    L.append("⚠️ تحلیل ریسک رتبه‌های برتر:")
-    for i, (_, r) in enumerate(valid.head(3).iterrows(), 1):
-        lev = r[col(valid, "leverage")] if col(valid, "leverage") else 0
-        pen = penalty_leverage(lev)
-        L.append(f"• رتبه {i}: اهرم={fmt(lev)} → جریمه اهرم={fmt(pen)}")
-    L.append("")
 
-    # (7) کیفیت داده
-    L.append(f"✅ کیفیت داده: {meta['valid_rows']} قرارداد پس از گیت‌های DATA_QUALITY و LIQUIDITY وارد رتبه‌بندی شدند.")
-    L.append("")
+def build_v3_report(input_path: Path):
+    df = pd.read_excel(input_path)
+    total_initial = len(df)
 
-    # (8) خلاصه اجرایی
-    top = valid.head(1)
-    if not top.empty:
-        t = top.iloc[0]
-        L.append(f"🏆 نماد برتر: {t[col(valid,'symbol')]} | امتیاز {fmt(t[col(valid,'score')])} | اهرم {fmt(t[col(valid,'leverage')] if col(valid,'leverage') else 0)}")
-    L.append("")
+    missing = [c for c in v3.REQUIRED_COLUMNS if c not in df.columns]
+    if missing:
+        raise RuntimeError("ستون‌های ضروری V3 موجود نیستند: " + "، ".join(missing))
 
-    # (9) ارزیابی (Hypothetical)
-    L.append("📌 ارزیابی دوره قبل (فرضی): بازده Last-to-Last صرفاً تحلیل پسینی است؛ سیگنال امروز معیار سود آینده نیست.")
-    L.append("")
+    df = v3.numeric_columns(df)
+    df["نماد"] = df["نماد"].astype(str).str.strip()
 
-    # (10) اخبار — بدون نشت اطلاعات
-    L.append("📰 تحلیل سهم پایه: فقط بر اساس داده‌های Optionschool24؛ اخبار مؤخر با برچسب پسارویداد اعمال می‌شوند.")
-    L.append("")
+    valid = df[
+        df["نماد"].notna()
+        & (df["نماد"] != "")
+        & (df["نماد"] != "nan")
+        & (df["حجم معاملات"].fillna(0) > 0)
+        & (df["ارزش معاملات"].fillna(0) > 0)
+        & (df["قیمت پایانی"].fillna(0) > 0)
+        & (df["روزهای تقویمی"].fillna(0) > 0)
+    ].copy()
 
-    # (11) بحث آموزشی اجباری
-    L.append("🎓 بحث آموزشی:")
-    L.append("ادعا/درس | شواهد | اطمینان | شاهد ردکننده | اقدام")
-    L.append("اهرم بالا → ریسک کل بالا | جریمه max(0,2L−1) | بالا | کاهش حجم در ریزش | سقف اهرم ۵")
-    L.append("بازده Last-to-Last فرضی است | تفاوت Bid/Ask | متوسط | عدم اجرای واقعی | مبنای تصمیم قرار نگیرد")
-    L.append("حجم/اسپرد پایین | فیلتر نقدشوندگی | بالا | صف خرید نقدشونده حذف‌شده | پرهیز از قرارداد کم‌حجم")
-    L.append("")
+    if valid.empty:
+        raise RuntimeError("هیچ قرارداد معتبری پس از گیت‌های V3 باقی نماند.")
 
-    # (12) شفافیت — Known Gaps
-    L.append("🕳 Known Gaps: عدم درج IV رسمی، فرضی‌بودن معاملات Last-to-Last، عدم امکان پیش‌بینی قطعی، ضرورت مدیریت ریسک.")
-    L.append("")
+    valid = v3.add_analytics(valid)
+    scored = v3.score_v3(valid)
+    top = scored.sort_values(
+        ["FinalScore", "DataConfidence", "حجم معاملات"],
+        ascending=[False, False, False],
+    ).head(v3.TOP_N).copy()
+    top.insert(0, "رتبه", range(1, len(top) + 1))
 
-    # (13) لینک‌ها
-    repo = os.environ.get("REPO_URL", "")
-    if repo:
-        L.append(f"📄 گزارش کامل: {repo}/actions | PDF در Artifacts")
-    return "\n".join(L)
+    report = v3.make_report(top, input_path.name, total_initial, len(valid))
+    OUTPUT_REPORT.write_text(report, encoding="utf-8")
+    top.to_csv(OUTPUT_TOP, index=False, encoding="utf-8-sig")
 
-# ---------------- ارسال به بله ----------------
-def send_bale(text):
-    r = requests.post(BALE_API, json={"chat_id": BALE_CHAT, "text": text[:4096]})
-    r.raise_for_status()
+    return report
+
+
+def main() -> None:
+    input_arg = sys.argv[1] if len(sys.argv) > 1 else None
+    input_path = find_input(input_arg)
+    print(f"منبع داده V3: {input_path.name}")
+
+    report = build_v3_report(input_path)
+    print(report)
+
+    if os.environ.get("SEND_TO_BALE", "false").strip().lower() == "true":
+        send_bale(report)
+        print("گزارش V3 با موفقیت برای بله ارسال شد.")
+    else:
+        print("SEND_TO_BALE فعال نیست؛ گزارش فقط تولید شد.")
+
+    digest = hashlib.sha256(report.encode("utf-8")).hexdigest()
+    print(f"Report SHA-256: {digest}")
+
 
 if __name__ == "__main__":
-    valid, meta = load_data()
-    report = build_report(valid, meta)
-    print(report)  # لاگ کامل در GitHub Actions
-    if BALE_CHAT:
-        send_bale(report)
-    else:
-        print("[!] BALE_CHAT تنظیم نشده — فقط چاپ در لاگ")
+    main()
