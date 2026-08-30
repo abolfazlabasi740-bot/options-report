@@ -1,8 +1,10 @@
 name: Optionschool V3 Scheduled Pipeline
 
 on:
+  push:
+    branches: [main]
   schedule:
-    # ساعت های گرینویچ معادل 09:15 تا 12:15 ایران (شنبه تا چهارشنبه)
+    # ساعت های گرینویچ معادل بازه معاملاتی ایران (شنبه تا چهارشنبه)
     - cron: '45 5 * * 0,1,2,3,6'
     - cron: '15 6 * * 0,1,2,3,6'
     - cron: '45 6 * * 0,1,2,3,6'
@@ -30,7 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas openpyxl requests
 
-      - name: Download Live Excel & Audit & Send to Bale
+      - name: Generate Canonical V3 Report and Send to Bale
         env:
           BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
           BALE_CHAT_ID: ${{ secrets.BALE_CHAT_ID }}
