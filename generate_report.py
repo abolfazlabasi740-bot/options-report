@@ -122,8 +122,17 @@ def build_v3_report(input_path: Path, metadata: dict):
     valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
     scored = v3.score_v3(valid)
     top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(v3.TOP_N).copy()
-    report = v3.make_report(top, input_path.name, total_initial, len(valid))
     generated = now_tehran()
+    report = v3.make_report(top, input_path.name, total_initial, len(valid))
+
+    # make_report historically used naive UTC datetime. Replace only its
+    # execution timestamp/run-id with the authoritative Tehran timestamp.
+    lines = report.splitlines()
+    if len(lines) >= 3 and lines[0].startswith("# گزارش رتبه‌بندی اختیار معامله V3"):
+        lines[1] = f"تاریخ اجرا: {generated:%Y-%m-%d %H:%M:%S}"
+        lines[2] = f"شناسه اجرا: {generated:%Y%m%d_%H%M%S}"
+        report = "\n".join(lines) + "\n"
+
     audit_header = (
         "## شناسنامه داده و زمان‌بندی گزارش\n"
         f"- منبع داده: {metadata['source']}\n"
