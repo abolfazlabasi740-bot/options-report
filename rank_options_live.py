@@ -246,6 +246,34 @@ def fmt(value, digits=2):
     return f"{float(value):,.{digits}f}"
 
 
+def fmt_persian_int(value):
+    """Format an integer-valued market number with Persian thousands separators."""
+    if pd.isna(value):
+        return "—"
+    try:
+        text = f"{int(round(float(value))):,}"
+    except (TypeError, ValueError, OverflowError):
+        return "—"
+    return text.replace(",", "٬").translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
+
+
+def fmt_persian_decimal(value, digits=2, signed=False, trim=False):
+    """Format a decimal using Persian digits and decimal separator for Bale readability."""
+    if pd.isna(value):
+        return "—"
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return "—"
+    sign = "+" if signed and number > 0 else "" if number >= 0 else "-"
+    number = abs(number)
+    text = f"{number:,.{digits}f}"
+    if trim:
+        text = text.rstrip("0").rstrip(".")
+    text = text.replace(",", "٬").replace(".", "٫")
+    return sign + text.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
+
+
 def make_report(top, input_file, total_initial, valid_count):
     now = datetime.now()
     run_id = now.strftime("%Y%m%d_%H%M%S")
@@ -265,19 +293,29 @@ def make_report(top, input_file, total_initial, valid_count):
         "",
         f"## قراردادهای برتر ({len(top)} مورد)",
         "",
-        "| رتبه | نماد | اعمال | آخرین | سر به سری | پایه | اهرم | فاصله سر به سری | سررسید | باقی مانده روز | امتیاز |",
-        "|---:|---|---:|---:|---:|---:|---:|---:|---|---:|---:|",
     ]
+
+    # Bale-facing top-15 cards: replace the dense Markdown table only.
     for rank, (_, row) in enumerate(top.iterrows(), 1):
         expiry = row.get("سررسید", "—")
-        remaining = row.get("RemainingDays", np.nan)
-        lines.append(
-            f"| {rank} | {row['نماد']} | {fmt(row['قیمت اعمال'], 0)} | {fmt(row['آخرین قیمت'], 0)} | "
-            f"{fmt(row['سر به سر'], 0)} | {fmt(row['قیمت سهم پایه'], 0)} | {fmt(row['اهرم'])} | "
-            f"{fmt(row['BreakevenDistancePct'])}% | {expiry} | {fmt(remaining, 0)} | {fmt(row['FinalScore'])} |"
-        )
+        if pd.isna(expiry) or str(expiry).strip() in {"", "nan", "None"}:
+            expiry = "—"
+        remaining = fmt_persian_int(row.get("RemainingDays", np.nan))
+        score = fmt_persian_decimal(row.get("FinalScore", np.nan), 2)
+        leverage = fmt_persian_decimal(row.get("اهرم", np.nan), 2, trim=True)
+        breakeven_distance = fmt_persian_decimal(row.get("BreakevenDistancePct", np.nan), 3, signed=True)
+        lines.extend([
+            f"🔹 {rank}. {row['نماد']}",
+            f"قیمت اعمال: {fmt_persian_int(row.get('قیمت اعمال', np.nan))} | آخرین: {fmt_persian_int(row.get('آخرین قیمت', np.nan))}",
+            f"سر‌به‌سر: {fmt_persian_int(row.get('سر به سر', np.nan))} | پایه: {fmt_persian_int(row.get('قیمت سهم پایه', np.nan))}",
+            f"اهرم: {leverage} | فاصله سر‌به‌سر: {breakeven_distance}%",
+            f"سررسید: {expiry} ({remaining} روز)",
+            f"امتیاز: {score}",
+            "━━━━━━━━━━━━━━━━━━",
+            "",
+        ])
+
     lines += [
-        "",
         "## کنترل‌های V3",
         "* داده مفقود با صفر، میانگین یا حدس جایگزین نشده است.",
         "* وزن عامل مفقود فقط داخل همان بلوک بازتوزیع شده است.",
