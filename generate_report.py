@@ -13,10 +13,12 @@ from urllib.request import Request, urlopen
 
 import pandas as pd
 import rank_options_live as v3
+from base_stock_engine import enrich_options_with_base
 
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_REPORT = BASE_DIR / "output_options_report.md"
 OUTPUT_TOP = BASE_DIR / "output_options_top15.csv"
+OUTPUT_BASE = BASE_DIR / "output_base_stock.csv"
 OPTIONSCHOOL_URL = "https://s3.optionschool24.com/export/excel?type=1"
 
 
@@ -97,6 +99,52 @@ def find_input(explicit: str | None):
     return download_latest_optionschool()
 
 
+def _base_section(base_top: pd.DataFrame, audit: dict) -> str:
+    lines = [
+        "## تحلیل سهم‌های پایه از TSETMC",
+        f"- وضعیت موتور سهم پایه: {audit.get('status', 'UNKNOWN')}",
+        f"- ستون مبنای اتصال: {audit.get('base_column') or 'داده موجود نیست'}",
+        f"- تعداد نمادهای پایه بررسی‌شده: {audit.get('symbols', 0)}",
+        f"- تعداد نمادهای پایه با پاسخ معتبر TSETMC: {audit.get('resolved', 0)}",
+        f"- تعداد نمادهای پایه بدون پاسخ معتبر: {audit.get('failed', 0)}",
+        "- امتیاز جدیدی به Score V3 اضافه نشده است؛ داده‌های سهم پایه فعلاً به‌عنوان لایه مستقل تأیید بازار گزارش می‌شوند.",
+        "",
+    ]
+    if base_top.empty:
+        lines.append("داده سهم پایه برای قراردادهای گزارش‌شده موجود نیست.")
+        return "\n".join(lines) + "\n\n"
+
+    columns = [
+        ("BaseSymbol", "پایه"),
+        ("BasePriceChangePct", "تغییر قیمت٪"),
+        ("BaseRealBuyerPower", "قدرت خریدار حقیقی"),
+        ("BaseRealNetMoneyProxy", "خالص حجم حقیقی"),
+        ("BaseValue", "ارزش معاملات"),
+        ("BaseVolume", "حجم معاملات"),
+        ("BaseDataStatus", "وضعیت داده"),
+    ]
+    lines.append("| " + " | ".join(label for _, label in columns) + " |")
+    lines.append("|" + "|".join("---" for _ in columns) + "|")
+    for _, row in base_top.iterrows():
+        values = []
+        for col, _ in columns:
+            value = row.get(col, np.nan)
+            if pd.isna(value):
+                values.append("داده موجود نیست")
+            elif isinstance(value, (float, int)):
+                values.append(f"{value:,.4f}" if "Power" in col or "Pct" in col else f"{value:,.0f}")
+            else:
+                values.append(str(value))
+        lines.append("| " + " | ".join(values) + " |")
+    lines.append("")
+    lines.append("### کنترل تفسیر")
+    lines.append("- قدرت خریدار حقیقی فقط در صورت وجود هم‌زمان حجم و تعداد خرید/فروش حقیقی محاسبه شده است.")
+    lines.append("- خالص حجم حقیقی «پروکسی جریان پول» است و به‌عنوان پول ریالی قطعی تفسیر نمی‌شود.")
+    lines.append("- هیچ آستانه یا امتیاز ساختگی برای تأیید/رد سهم پایه اعمال نشده است.")
+    lines.append("")
+    return "\n".join(lines) + "\n"
+
+
 def build_v3_report(input_path: Path, metadata: dict):
     df = pd.read_excel(input_path)
     total_initial = len(df)
@@ -118,6 +166,22 @@ def build_v3_report(input_path: Path, metadata: dict):
     ].copy()
     if valid.empty:
         raise RuntimeError("هیچ قرارداد معتبری پس از گیت‌های V3 باقی نماند.")
+
+    # TSETMC base-stock intelligence is an independent evidence layer.
+    valid, base_audit = enrich_options_with_base(valid)
+    base_columns = [
+        "BaseSymbol", "BaseInsCode", "BaseLast", "BaseClose", "BasePrevClose", "BasePriceChangePct",
+        "BaseVolume", "BaseValue", "BaseTradeCount", "BaseRealBuyVolume", "BaseRealSellVolume",
+        "BaseLegalBuyVolume", "BaseLegalSellVolume", "BaseRealBuyCount", "BaseRealSellCount",
+        "BaseLegalBuyCount", "BaseLegalSellCount", "BaseRealNetMoneyProxy", "BaseLegalNetMoneyProxy",
+        "BaseRealBuyerAvgVolume", "BaseRealSellerAvgVolume", "BaseRealBuyerPower", "BaseBestBidPrice",
+        "BaseBestBidVolume", "BaseBestAskPrice", "BaseBestAskVolume", "BaseDataStatus"
+    ]
+    available_base_columns = [c for c in base_columns if c in valid.columns]
+    valid[available_base_columns].drop_duplicates(subset=["BaseSymbol"] if "BaseSymbol" in valid.columns else None).to_csv(
+        OUTPUT_BASE, index=False, encoding="utf-8-sig"
+    )
+
     valid = v3.add_analytics(valid)
     valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
     scored = v3.score_v3(valid)
@@ -125,8 +189,6 @@ def build_v3_report(input_path: Path, metadata: dict):
     generated = now_tehran()
     report = v3.make_report(top, input_path.name, total_initial, len(valid))
 
-    # make_report historically used naive UTC datetime. Replace only its
-    # execution timestamp/run-id with the authoritative Tehran timestamp.
     lines = report.splitlines()
     if len(lines) >= 3 and lines[0].startswith("# گزارش رتبه‌بندی اختیار معامله V3"):
         lines[1] = f"تاریخ اجرا: {generated:%Y-%m-%d %H:%M:%S}"
@@ -143,7 +205,7 @@ def build_v3_report(input_path: Path, metadata: dict):
         f"- زمان تولید گزارش: {generated.strftime('%Y-%m-%d %H:%M:%S %Z')}\n"
         "- مبنای تصمیم‌گیری: اطلاعات همین فایل دریافت‌شده در زمان فوق.\n\n"
     )
-    report = audit_header + report
+    report = audit_header + report + _base_section(top, base_audit)
     OUTPUT_REPORT.write_text(report, encoding="utf-8")
     top.to_csv(OUTPUT_TOP, index=False, encoding="utf-8-sig")
     return report
