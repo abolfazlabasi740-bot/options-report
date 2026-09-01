@@ -11,6 +11,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+import numpy as np
 import pandas as pd
 import rank_options_live as v3
 from base_stock_engine import enrich_options_with_base
@@ -52,7 +53,6 @@ def send_bale(text: str) -> None:
 
 
 def download_latest_optionschool() -> tuple[Path, dict]:
-    """Download official OptionSchool XLSX and return auditable download metadata."""
     target = BASE_DIR / "optionschool24_latest.xlsx"
     started = now_tehran()
     request = Request(OPTIONSCHOOL_URL, headers={"User-Agent": "OptionsReport-V3/1.0"})
@@ -167,7 +167,6 @@ def build_v3_report(input_path: Path, metadata: dict):
     if valid.empty:
         raise RuntimeError("هیچ قرارداد معتبری پس از گیت‌های V3 باقی نماند.")
 
-    # TSETMC base-stock intelligence is an independent evidence layer.
     valid, base_audit = enrich_options_with_base(valid)
     base_columns = [
         "BaseSymbol", "BaseInsCode", "BaseLast", "BaseClose", "BasePrevClose", "BasePriceChangePct",
@@ -178,9 +177,10 @@ def build_v3_report(input_path: Path, metadata: dict):
         "BaseBestBidVolume", "BaseBestAskPrice", "BaseBestAskVolume", "BaseDataStatus"
     ]
     available_base_columns = [c for c in base_columns if c in valid.columns]
-    valid[available_base_columns].drop_duplicates(subset=["BaseSymbol"] if "BaseSymbol" in valid.columns else None).to_csv(
-        OUTPUT_BASE, index=False, encoding="utf-8-sig"
-    )
+    if "BaseSymbol" in valid.columns:
+        valid[available_base_columns].drop_duplicates(subset=["BaseSymbol"]).to_csv(OUTPUT_BASE, index=False, encoding="utf-8-sig")
+    else:
+        valid[available_base_columns].to_csv(OUTPUT_BASE, index=False, encoding="utf-8-sig")
 
     valid = v3.add_analytics(valid)
     valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
