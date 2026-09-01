@@ -1,18 +1,15 @@
 name: Optionschool V3 Scheduled Pipeline
 
 on:
-  push:
-    branches: [main]
   schedule:
-    # ساعت های گرینویچ معادل بازه معاملاتی ایران (شنبه تا چهارشنبه)
-    - cron: '45 5 * * 0,1,2,3,6'
-    - cron: '15 6 * * 0,1,2,3,6'
-    - cron: '45 6 * * 0,1,2,3,6'
-    - cron: '15 7 * * 0,1,2,3,6'
-    - cron: '45 7 * * 0,1,2,3,6'
-    - cron: '15 8 * * 0,1,2,3,6'
-    - cron: '45 8 * * 0,1,2,3,6'
+    # اجرای Canonical فقط یک‌بار در روز معاملاتی، رأس ۹:۱۵ به وقت تهران
+    - cron: '15 9 * * 0,1,2,3,6'
+      timezone: "Asia/Tehran"
   workflow_dispatch:
+
+concurrency:
+  group: optionschool-v3-report
+  cancel-in-progress: false
 
 jobs:
   download-audit-and-send:
