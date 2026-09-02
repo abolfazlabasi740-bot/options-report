@@ -74,12 +74,25 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "weasyprint>=62,<69" requests
 
+      - name: Download latest Optionschool workbook
+        shell: bash
+        run: |
+          mkdir -p "${PROJECT_ROOT}/data/raw"
+          workbook="${PROJECT_ROOT}/data/raw/optionschool24_all_$(date +%s).xlsx"
+          curl --fail --location --retry 4 --retry-all-errors --connect-timeout 30 \
+            --max-time 120 \
+            "https://s3.optionschool24.com/export/excel?type=1" \
+            --output "$workbook"
+          test -s "$workbook"
+          echo "INPUT_WORKBOOK=$workbook" >> "$GITHUB_ENV"
+
       - name: Run governed V4 candidate pipeline
         id: pipeline
         shell: pwsh
         run: |
           & "$env:PROJECT_ROOT/scripts/run_github_report.ps1" `
             -ProjectRoot $env:PROJECT_ROOT `
+            -InputWorkbook $env:INPUT_WORKBOOK `
             -MinLeverage ([double]$env:MIN_LEVERAGE)
 
       - name: Render RTL B Nazanin PDF
