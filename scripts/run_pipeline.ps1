@@ -4,7 +4,9 @@
     [string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot),
     [switch]$Quiet,
     [double]$MinLeverage = 0.0,
-    [switch]$V4Candidate
+    [switch]$V4Candidate,
+    [string]$SymbolPrefix,
+    [int]$TopCount = 0
 )
 
 $ErrorActionPreference='Stop'
@@ -100,8 +102,13 @@ try{
         $reportUniverse=@($ranked|Where-Object{$null -ne $_.Leverage -and [double]$_.Leverage -ge $MinLeverage})
         if($reportUniverse.Count -eq 0){throw "No contracts met the V4 candidate leverage gate >= $MinLeverage."}
     }
+    if(-not [string]::IsNullOrWhiteSpace($SymbolPrefix)){
+        $reportUniverse=@($reportUniverse|Where-Object{([string]$_.Symbol).StartsWith($SymbolPrefix)})
+        if($reportUniverse.Count -eq 0){throw "No contracts matched the requested underlying prefix: $SymbolPrefix."}
+    }
+    $effectiveTopCount=if($TopCount -gt 0){$TopCount}else{[int]$config.report.top_count}
     $strategy=Invoke-StrategyEngine -RankedContracts $reportUniverse -Protocol $config.protocol
-    $decision=Invoke-DecisionEngine -RankedContracts $strategy.Contracts -TopCount $config.report.top_count -Config $config
+    $decision=Invoke-DecisionEngine -RankedContracts $strategy.Contracts -TopCount $effectiveTopCount -Config $config
     Write-ProcessingLog $logPath $runId 'SCORING' 'OK' "V3 scoring completed; risk mode=$($config.risk.execution_mode); alignment=$($config.risk.alignment_status)."
 
     $featureCatalog=Get-FeatureCatalog -RegistryPath $paths.FeatureRegistry
@@ -122,7 +129,7 @@ try{
         -Config $config `
         -CurrentWorkbookPath $workbookPath `
         -TransitionCount 7 `
-        -TopCount 25 `
+        -TopCount $(if($TopCount -gt 0){$TopCount}else{25}) `
         -MinimumLeverage $(if($V4Candidate -or $MinLeverage -gt 0.0){$MinLeverage}else{0.0})
     $masterPath=$configValidation.MasterProjectBook
 
@@ -207,6 +214,8 @@ try{
         Protocol=$config.protocol
         ReportVariant=if($V4Candidate -or $MinLeverage -gt 0.0){'V4_CANDIDATE_LEVERAGE_GATE'}else{'V3_BASELINE'}
         MinLeverage=if($V4Candidate -or $MinLeverage -gt 0.0){$MinLeverage}else{$null}
+        SymbolPrefix=if([string]::IsNullOrWhiteSpace($SymbolPrefix)){$null}else{$SymbolPrefix}
+        TopCount=$effectiveTopCount
         CandidateProtocol=$config.candidate_protocol
         Version=$config.version
         ReleaseStatus=$config.release_status

@@ -1,0 +1,41 @@
+name: Bale command listener
+
+on:
+  schedule:
+    - cron: "15 9 * * 6,0,1,2,3"
+      timezone: "Asia/Tehran"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  listen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 195
+    env:
+      PROJECT_ROOT: smart_money_project
+      BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
+      BALE_API_BASE: https://tapi.bale.ai
+      LISTENER_SECONDS: 11700
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate project
+        shell: bash
+        run: |
+          if [ -f "smart_money_project/scripts/bale_command_listener.py" ]; then
+            echo "PROJECT_ROOT=smart_money_project" >> "$GITHUB_ENV"
+          else
+            echo "PROJECT_ROOT=." >> "$GITHUB_ENV"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PDF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2 libffi-dev libgdk-pixbuf-2.0-0 libharfbuzz0b libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0 fontconfig fonts-dejavu shared-mime-info
+          python -m pip install "weasyprint>=62,<69" requests
+      - name: Listen and respond
+        shell: bash
+        run: python "${PROJECT_ROOT}/scripts/bale_command_listener.py"
