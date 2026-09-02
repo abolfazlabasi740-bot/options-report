@@ -12,8 +12,11 @@ from pathlib import Path
 import requests
 
 COMMANDS = {
+    "اخابر": "ضخابر",
+    "خابر": "ضخابر",
     "ذوب": "ضذوب",
     "ذوب آهن": "ضذوب",
+    "بساما": "ضبساما",
     "بانک ملت": "ضملت",
     "ملت": "ضملت",
     "بانک صادرات": "ضصاد",
@@ -22,6 +25,22 @@ COMMANDS = {
     "تجارت": "ضتجارت",
     "بانک سامان": "ضبساما",
     "سامان": "ضبساما",
+    "خودرو": "ضخود",
+    "شستا": "ضستا",
+    "فزر": "ضفزر",
+    "وبصادر": "ضصاد",
+    "اطلس": "ضاطلس",
+    "تاصیکو": "ضتاصیکو",
+    "خبهمن": "ضهمن",
+    "فملی": "ضملی",
+    "وبملت": "ضملت",
+    "اهرم": "ضاهرم",
+    "توان": "ضتوان",
+    "خساپا": "ضسپا",
+    "شپنا": "ضشنا",
+    "فرابورس": "ضفرابورس",
+    "موج": "ضموج",
+    "تجارت": "ضتجارت",
 }
 
 
@@ -31,7 +50,7 @@ def main() -> int:
     api = os.environ.get("BALE_API_BASE", "https://tapi.bale.ai").rstrip("/")
     endpoint = f"{api}/bot{token}"
     offset = 0
-    deadline = time.time() + int(os.environ.get("LISTENER_SECONDS", "11700"))
+    deadline = time.time() + int(os.environ.get("LISTENER_SECONDS", "240"))
     while time.time() < deadline:
         try:
             response = requests.get(
@@ -52,6 +71,15 @@ def main() -> int:
             prefix = COMMANDS.get(text)
             if not prefix or not chat_id:
                 continue
+            workbooks = list((root / "data" / "raw").glob("optionschool24_all_*.xlsx"))
+            if not workbooks:
+                requests.post(
+                    f"{endpoint}/sendMessage",
+                    data={"chat_id": chat_id, "text": "فایل Optionschool در آرشیو موجود نیست؛ در اولین نوبت بازار دریافت می‌شود."},
+                    timeout=30,
+                )
+                continue
+            latest_workbook = max(workbooks, key=lambda p: p.stat().st_mtime)
             with tempfile.TemporaryDirectory() as temp:
                 result = subprocess.run(
                     [
@@ -61,7 +89,8 @@ def main() -> int:
                         str(root / "scripts" / "run_pipeline.ps1"),
                         "-ProjectRoot",
                         str(root),
-                        "-Download",
+                        "-InputWorkbook",
+                        str(latest_workbook),
                         "-V4Candidate",
                         "-MinLeverage",
                         "3",
@@ -82,10 +111,8 @@ def main() -> int:
                         timeout=30,
                     )
                     continue
-                report = next(
-                    root.joinpath("reports").glob("*_options_report_v4.md"),
-                    None,
-                )
+                reports = list(root.joinpath("reports").glob("*_options_report_v4.md"))
+                report = max(reports, key=lambda p: p.stat().st_mtime) if reports else None
                 if report is None:
                     continue
                 pdf = Path(temp) / f"{prefix}_top5.pdf"

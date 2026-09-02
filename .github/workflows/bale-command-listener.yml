@@ -2,7 +2,7 @@ name: Bale command listener
 
 on:
   schedule:
-    - cron: "15 9 * * 6,0,1,2,3"
+    - cron: "*/5 * * * *"
       timezone: "Asia/Tehran"
   workflow_dispatch:
 
@@ -12,12 +12,12 @@ permissions:
 jobs:
   listen:
     runs-on: ubuntu-latest
-    timeout-minutes: 195
+    timeout-minutes: 5
     env:
       PROJECT_ROOT: smart_money_project
       BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
       BALE_API_BASE: https://tapi.bale.ai
-      LISTENER_SECONDS: 11700
+      LISTENER_SECONDS: 240
     steps:
       - uses: actions/checkout@v4
       - name: Locate project
