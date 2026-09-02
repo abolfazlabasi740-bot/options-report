@@ -8,10 +8,12 @@ on:
         required: false
         default: "3"
         type: string
-  # Default schedule: 12:45 Asia/Tehran on Iran market days (Saturday–Wednesday).
-  # Change only the cron minute/hour if your existing delivery time is different.
+  # Download every 30 minutes from 09:15 through 12:15 Tehran time,
+  # Saturday-Wednesday. Bale delivery is targeted five minutes later.
   schedule:
-    - cron: "45 12 * * 6,0,1,2,3"
+    - cron: "15,45 9-11 * * 6,0,1,2,3"
+      timezone: "Asia/Tehran"
+    - cron: "15 12 * * 6,0,1,2,3"
       timezone: "Asia/Tehran"
 
 permissions:
@@ -85,6 +87,7 @@ jobs:
             --output "$workbook"
           test -s "$workbook"
           echo "INPUT_WORKBOOK=$workbook" >> "$GITHUB_ENV"
+          echo "DOWNLOAD_COMPLETED_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Run governed V4 candidate pipeline
         id: pipeline
@@ -126,6 +129,10 @@ jobs:
           PDF_PATH: ${{ steps.pipeline.outputs.pdf_path }}
           RUN_ID: ${{ steps.pipeline.outputs.run_id }}
         run: |
+          # Send five minutes after the download has completed.
+          elapsed=$(( $(date +%s) - DOWNLOAD_COMPLETED_EPOCH ))
+          wait_seconds=$(( 300 - elapsed ))
+          if (( wait_seconds > 0 )); then sleep "$wait_seconds"; fi
           python "${PROJECT_ROOT}/scripts/send_to_bale.py" \
             --file "$PDF_PATH" \
             --caption "گزارش V4 کاندید Optionschool | Run ID: ${RUN_ID}"
