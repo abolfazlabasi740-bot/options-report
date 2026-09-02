@@ -1,0 +1,141 @@
+name: Optionschool V4 report to Bale
+
+on:
+  workflow_dispatch:
+    inputs:
+      min_leverage:
+        description: "حداقل اهرم فیلتر V4"
+        required: false
+        default: "3"
+        type: string
+  # Default schedule: 12:45 Asia/Tehran on Iran market days (Saturday–Wednesday).
+  # Change only the cron minute/hour if your existing delivery time is different.
+  schedule:
+    - cron: "45 12 * * 6,0,1,2,3"
+      timezone: "Asia/Tehran"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: optionschool-report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PROJECT_ROOT: smart_money_project
+      MIN_LEVERAGE: ${{ inputs.min_leverage || '3' }}
+      BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
+      BALE_CHAT_ID: ${{ secrets.BALE_CHAT_ID }}
+
+    steps:
+      - name: Checkout report engine
+        uses: actions/checkout@v4
+
+      - name: Locate report project
+        shell: bash
+        run: |
+          if [ -f "smart_money_project/scripts/run_github_report.ps1" ]; then
+            echo "PROJECT_ROOT=smart_money_project" >> "$GITHUB_ENV"
+          elif [ -f "scripts/run_github_report.ps1" ]; then
+            echo "PROJECT_ROOT=." >> "$GITHUB_ENV"
+          else
+            echo "::error::Could not find scripts/run_github_report.ps1."
+            exit 1
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system libraries for RTL PDF
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcairo2 \
+            libffi-dev \
+            libgdk-pixbuf-2.0-0 \
+            libharfbuzz0b \
+            libpango-1.0-0 \
+            libpangoft2-1.0-0 \
+            libpangocairo-1.0-0 \
+            fontconfig \
+            fonts-dejavu \
+            shared-mime-info
+
+      - name: Install Python report dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "weasyprint>=62,<69" requests
+
+      - name: Run governed V4 candidate pipeline
+        id: pipeline
+        shell: pwsh
+        run: |
+          & "$env:PROJECT_ROOT/scripts/run_github_report.ps1" `
+            -ProjectRoot $env:PROJECT_ROOT `
+            -MinLeverage ([double]$env:MIN_LEVERAGE)
+
+      - name: Render RTL B Nazanin PDF
+        shell: bash
+        env:
+          REPORT_PATH: ${{ steps.pipeline.outputs.report_path }}
+          PDF_PATH: ${{ steps.pipeline.outputs.pdf_path }}
+        run: |
+          python "${PROJECT_ROOT}/scripts/render_report_pdf.py" \
+            --markdown "$REPORT_PATH" \
+            --output "$PDF_PATH" \
+            --font-path "${PROJECT_ROOT}/assets/fonts/BNazanin.ttf"
+          test -s "$PDF_PATH"
+
+      - name: Validate Bale secrets
+        shell: bash
+        run: |
+          if [ -z "$BALE_BOT_TOKEN" ]; then
+            echo "::error::Repository secret BALE_BOT_TOKEN is missing."
+            exit 1
+          fi
+          if [ -z "$BALE_CHAT_ID" ]; then
+            echo "::error::Repository secret BALE_CHAT_ID is missing."
+            exit 1
+          fi
+
+      - name: Send PDF to Bale
+        shell: bash
+        env:
+          REPORT_PATH: ${{ steps.pipeline.outputs.report_path }}
+          PDF_PATH: ${{ steps.pipeline.outputs.pdf_path }}
+          RUN_ID: ${{ steps.pipeline.outputs.run_id }}
+        run: |
+          python "${PROJECT_ROOT}/scripts/send_to_bale.py" \
+            --file "$PDF_PATH" \
+            --caption "گزارش V4 کاندید Optionschool | Run ID: ${RUN_ID}"
+
+      - name: Persist point-in-time workbooks for seven-day learning
+        if: ${{ always() }}
+        continue-on-error: true
+        shell: bash
+        run: bash "${PROJECT_ROOT}/scripts/persist_github_history.sh"
+
+      - name: Upload report and audit artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: optionschool-report-${{ steps.pipeline.outputs.run_id || github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            ${{ steps.pipeline.outputs.report_path }}
+            ${{ steps.pipeline.outputs.pdf_path }}
+            ${{ steps.pipeline.outputs.workbook_path }}
+            ${{ steps.pipeline.outputs.audit_path }}
+            ${{ steps.pipeline.outputs.learning_path }}
+            ${{ steps.pipeline.outputs.ranking_snapshot_path }}
+            ${{ steps.pipeline.outputs.feature_snapshot_path }}
+            ${{ steps.pipeline.outputs.hash_manifest_path }}

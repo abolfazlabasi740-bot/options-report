@@ -1,0 +1,35 @@
+{
+  "artifact_id": "VERSION_3_2_0",
+  "artifact_type": "VERSION_RECORD",
+  "version": "3.2.0",
+  "previous_version": "3.1.0",
+  "status": "PUBLISHED_WITH_KNOWN_GAPS",
+  "effective_at": "2026-08-17T17:00:00+03:30",
+  "protocol": "PROTOCOL_OPTIONS_RANKING_V3",
+  "candidate_protocol": "PROTOCOL_OPTIONS_RANKING_V4",
+  "master_project_book_sha256": "3cba9235181063f040f6df83f18e2b739395528f417d1179ec02eb2ce10f9268",
+  "reason": "Align instructions, configuration, execution engines, audit artifacts and reports with the current Master Project Book.",
+  "changes": [
+    "V3 explicitly retained as executable baseline and V4 marked Candidate.",
+    "Market Structure changed to Last vs Close 40%, Intraday Range 30%, Status 30%.",
+    "Unapproved Status mapping remains Missing with within-block weight redistribution.",
+    "Risk moved to an independent engine with a guarded STEP_COUNT target and a transparent transitional mode.",
+    "Feature, ranking, run and hash manifests added.",
+    "Decision gates, Learning immutability and Knowledge lifecycle made explicit.",
+    "V4-labeled report builder replaced by Master Baseline V3 reporting."
+  ],
+  "known_gaps": [
+    "RISK_V3_UNFAVORABLE_PERCENTILE_THRESHOLDS_NOT_PRESENT_IN_MASTER",
+    "STATUS_NUMERIC_MAPPING_NOT_APPROVED",
+    "V4_EXECUTABLE_SPECIFICATION_NOT_AVAILABLE"
+  ],
+  "validation": [
+    "MASTER_GOVERNANCE_PASS",
+    "POWERSHELL_PARSE_PASS",
+    "PYTHON_COMPILE_PASS",
+    "SMOKE_TEST_PASS",
+    "DETERMINISTIC_REPLAY_PASS",
+    "ARTIFACT_HASH_VERIFICATION_PASS"
+  ],
+  "recovery": "Historical artifacts and versions remain unchanged. Runs produced under 3.1.0 remain identifiable by their stored version and hashes."
+}

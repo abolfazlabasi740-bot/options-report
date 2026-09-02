@@ -1,0 +1,604 @@
+{
+  "protocol": "FUNDAMENTAL_HEALTH_V1",
+  "status": "SHADOW_CANDIDATE",
+  "production_join": false,
+  "score_scale": {
+    "min": 0.0,
+    "max": 100.0
+  },
+  "formula": {
+    "peer_score": "100 * clip(0.5 + direction * (winsorized_peer_percentile - 0.5), 0, 1)",
+    "real_growth_exact": "((1 + nominal_growth) / (1 + aligned_inflation)) - 1",
+    "earnings_yield": "ttm_eps / price",
+    "pe": "price / ttm_eps when ttm_eps > 0",
+    "dividend_yield": "dps / price",
+    "chart_coordinate": "150 - 115 * clip((value - min) / max(max - min, epsilon), 0, 1)"
+  },
+  "blocks": {
+    "earnings_quality": {
+      "weight": 25.0,
+      "label": "کیفیت سود و سودآوری"
+    },
+    "cash_conversion": {
+      "weight": 20.0,
+      "label": "تبدیل سود به نقد"
+    },
+    "balance_sheet": {
+      "weight": 20.0,
+      "label": "تاب‌آوری ترازنامه"
+    },
+    "growth_efficiency": {
+      "weight": 15.0,
+      "label": "رشد و کارایی"
+    },
+    "relative_valuation": {
+      "weight": 15.0,
+      "label": "ارزش‌گذاری نسبی"
+    },
+    "governance_event": {
+      "weight": 5.0,
+      "label": "حاکمیت و ریسک رویداد"
+    }
+  },
+  "gates": {
+    "require_decision_time": true,
+    "require_source": true,
+    "require_release_timestamp": true,
+    "require_unit": true,
+    "max_statement_age_days": 120,
+    "max_event_age_days": 30,
+    "min_block_coverage": 0.50,
+    "critical_missing_max_fraction": 0.30,
+    "confidence_floor": 0.60,
+    "unverified_score_cap": 60.0
+  },
+  "missing_policy": {
+    "metric": "EXCLUDE_AND_RENORMALIZE_WITHIN_BLOCK",
+    "critical": "HARD_GATE",
+    "unknown_never_zero": true,
+    "presentation_zero_allowed": true,
+    "presentation_zero_is_not_score": true
+  },
+  "profiles": {
+    "non_financial": {
+      "label": "تولیدی/کالایی و سایر غیرمالی",
+      "metrics": [
+        {
+          "id": "recurring_eps_yoy",
+          "block": "earnings_quality",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "ebit_margin",
+          "block": "earnings_quality",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "one_off_ratio",
+          "block": "earnings_quality",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "cfo_ni",
+          "block": "cash_conversion",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -5.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "fcf_ni",
+          "block": "cash_conversion",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 25.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -5.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "accrual_ratio",
+          "block": "cash_conversion",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 20.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "receivables_sales_delta",
+          "block": "cash_conversion",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 20.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "net_debt_ebitda",
+          "block": "balance_sheet",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 40.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -5.0,
+          "cap": 30.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "interest_coverage",
+          "block": "balance_sheet",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "current_ratio",
+          "block": "balance_sheet",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 20.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "revenue_yoy",
+          "block": "growth_efficiency",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "real_growth",
+          "block": "growth_efficiency",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "roic",
+          "block": "growth_efficiency",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 40.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "pe",
+          "block": "relative_valuation",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 45.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 200.0,
+          "max_age_days": 30,
+          "source_hint": "TSETMC+CODAL"
+        },
+        {
+          "id": "ev_ebitda",
+          "block": "relative_valuation",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 200.0,
+          "max_age_days": 30,
+          "source_hint": "TSETMC+CODAL"
+        },
+        {
+          "id": "pb",
+          "block": "relative_valuation",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 25.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 30,
+          "source_hint": "TSETMC+CODAL"
+        },
+        {
+          "id": "auditor_quality",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 60.0,
+          "critical": true,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "disclosure_timeliness",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 40.0,
+          "critical": false,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 30,
+          "source_hint": "CODAL"
+        }
+      ]
+    },
+    "bank": {
+      "label": "بانک",
+      "metrics": [
+        {
+          "id": "roe",
+          "block": "earnings_quality",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "nim",
+          "block": "earnings_quality",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -1.0,
+          "cap": 1.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "recurring_eps_yoy",
+          "block": "earnings_quality",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "provision_coverage",
+          "block": "cash_conversion",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "fee_income_growth",
+          "block": "cash_conversion",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "npl_ratio",
+          "block": "balance_sheet",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 40.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 1.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "capital_adequacy",
+          "block": "balance_sheet",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 35.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 1.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "liquidity_ratio",
+          "block": "balance_sheet",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 25.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 10.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "loan_growth",
+          "block": "growth_efficiency",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "cost_income_ratio",
+          "block": "growth_efficiency",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "pb",
+          "block": "relative_valuation",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 70.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 30,
+          "source_hint": "TSETMC+CODAL"
+        },
+        {
+          "id": "pe",
+          "block": "relative_valuation",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 30.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 200.0,
+          "max_age_days": 30,
+          "source_hint": "TSETMC+CODAL"
+        },
+        {
+          "id": "auditor_quality",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 60.0,
+          "critical": true,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "disclosure_timeliness",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 40.0,
+          "critical": false,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 30,
+          "source_hint": "CODAL"
+        }
+      ]
+    },
+    "holding": {
+      "label": "هلدینگ/سرمایه‌گذاری",
+      "metrics": [
+        {
+          "id": "nav_discount",
+          "block": "relative_valuation",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 60.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": -1.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL+TSETMC"
+        },
+        {
+          "id": "portfolio_concentration",
+          "block": "balance_sheet",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 1.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "cash_dividend_yield",
+          "block": "cash_conversion",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 50.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -1.0,
+          "cap": 2.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "auditor_quality",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 100.0,
+          "critical": true,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        }
+      ]
+    },
+    "insurance": {
+      "label": "بیمه",
+      "metrics": [
+        {
+          "id": "combined_ratio",
+          "block": "earnings_quality",
+          "direction": -1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 60.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "reserve_adequacy",
+          "block": "balance_sheet",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 60.0,
+          "critical": true,
+          "unit": "ratio",
+          "floor": 0.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "premium_growth",
+          "block": "growth_efficiency",
+          "direction": 1,
+          "mode": "PEER_PERCENTILE",
+          "weight": 40.0,
+          "critical": false,
+          "unit": "ratio",
+          "floor": -2.0,
+          "cap": 5.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        },
+        {
+          "id": "auditor_quality",
+          "block": "governance_event",
+          "direction": 1,
+          "mode": "DIRECT",
+          "weight": 100.0,
+          "critical": true,
+          "unit": "score_0_100",
+          "floor": 0.0,
+          "cap": 100.0,
+          "max_age_days": 120,
+          "source_hint": "CODAL"
+        }
+      ]
+    }
+  }
+}

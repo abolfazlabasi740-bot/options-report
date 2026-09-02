@@ -1,0 +1,182 @@
+{
+  "project_name": "Options Analytics System",
+  "version": "3.2.0",
+  "release_status": "BASELINE_WITH_KNOWN_GAPS",
+  "protocol": "PROTOCOL_OPTIONS_RANKING_V3",
+  "candidate_protocol": "PROTOCOL_OPTIONS_RANKING_V4",
+  "version_record": "library/versions/3.2.0.json",
+  "master_project_book": {
+    "relative_path": "reference/Master Project Book.docx",
+    "sha256": "3cba9235181063f040f6df83f18e2b739395528f417d1179ec02eb2ce10f9268",
+    "baseline": "V3",
+    "candidate": "V4",
+    "v4_production_approved": false
+  },
+  "versions": {
+    "schema": "OPTIONSCHOOL24_SCHEMA_38_V1",
+    "mapping": "OPTIONSCHOOL24_MAPPING_V1",
+    "features": "FEATURE_REGISTRY_V3_2_0",
+    "scoring": "SCORING_V3_2_0",
+    "risk": "RISK_V3_TRANSITION_1",
+    "decision": "DECISION_V3_2_0",
+    "reporting": "REPORTING_V3_2_0",
+    "learning": "LEARNING_V3_2_0",
+    "knowledge": "KNOWLEDGE_V3_2_0",
+    "config": "CONFIG_V3_2_0"
+  },
+  "data_source": {
+    "name": "Optionschool24",
+    "endpoint": "https://s3.optionschool24.com/export/excel?type=1",
+    "file_pattern": "optionschool24_all_*.xlsx",
+    "minimum_bytes": 5000
+  },
+  "expected_headers": [
+    "نماد",
+    "قیمت اعمال",
+    "قیمت سهم پایه",
+    "اختلاف تا اعمال",
+    "تاریخ سررسید",
+    "روزهای تقویمی",
+    "روزهای معاملاتی",
+    "موقعیت های باز",
+    "حجم معاملات",
+    "ارزش معاملات",
+    "آخرین قیمت",
+    "درصد آخرین قیمت",
+    "قیمت پایانی",
+    "درصد قیمت پایانی",
+    "ارزش ذاتی",
+    "ارزش زمانی",
+    "سر به سر",
+    "اختلاف تا سر به سر",
+    "بلک شولز",
+    "اختلاف تا بلک شولز",
+    "وضعیت",
+    "اهرم",
+    "نوسان ضمنی",
+    "نوسان تاریخی",
+    "اندازه قرارداد",
+    "حجم بهترین تقاضا",
+    "قیمت بهترین تقاضا",
+    "حجم بهترین عرضه",
+    "قیمت بهترین عرضه",
+    "کمترین قیمت",
+    "بیشترین قیمت",
+    "شکاف قیمتی",
+    "وجه تضمین",
+    "دلتا",
+    "تتا",
+    "گاما",
+    "وگا",
+    "رو"
+  ],
+  "block_weights": {
+    "liquidity": 20.0,
+    "valuation": 25.0,
+    "payoff": 18.0,
+    "time": 15.0,
+    "greeks": 12.0,
+    "market": 10.0
+  },
+  "factor_weights": {
+    "liquidity": {
+      "trade_value": 7.0,
+      "volume": 5.0,
+      "open_interest": 3.0,
+      "spread": 3.0,
+      "depth": 2.0
+    },
+    "valuation": {
+      "black_scholes_difference": 8.0,
+      "iv": 7.0,
+      "iv_hv": 5.0,
+      "time_value": 5.0
+    },
+    "payoff": {
+      "breakeven_distance": 10.0,
+      "leverage": 5.0,
+      "moneyness": 3.0
+    },
+    "time": {
+      "trading_days": 6.0,
+      "calendar_days": 2.0,
+      "theta": 7.0
+    },
+    "greeks": {
+      "delta": 4.0,
+      "gamma": 3.0,
+      "vega": 3.0,
+      "rho": 2.0
+    },
+    "market": {
+      "last_vs_close": 4.0,
+      "intraday_range": 3.0,
+      "status": 3.0
+    }
+  },
+  "liquidity_controls": {
+    "low_volume_penalty": {
+      "max_points": 8.0,
+      "curve": "SQRT_COMPLEMENT",
+      "missing_policy": "NO_PENALTY"
+    }
+  },
+  "market_structure": {
+    "last_vs_close_formula": "Abs(LastPercent-ClosePercent)",
+    "intraday_range_formula": "Abs(High-Low)/Last",
+    "normalization": "ROBUST_PERCENTILE_INVERSE",
+    "status_scores": {},
+    "status_rule_status": "UNKNOWN_NOT_APPROVED",
+    "missing_policy": "REDISTRIBUTE_WITHIN_BLOCK"
+  },
+  "risk": {
+    "execution_mode": "PAIRWISE_PERCENTILE_TRANSITIONAL",
+    "master_target_mode": "STEP_COUNT_V3",
+    "alignment_status": "KNOWN_GAP_THRESHOLDS_NOT_AVAILABLE",
+    "uses_features": [
+      "Leverage",
+      "TradingDays",
+      "ThetaRatio",
+      "IVHV",
+      "BEDistance"
+    ],
+    "approved_unfavorable_thresholds": null,
+    "step_penalties": {
+      "less_than_3": 0.0,
+      "3": 5.0,
+      "4": 10.0,
+      "5": 20.0
+    },
+    "maximum_penalty": 20.0
+  },
+  "decision": {
+    "gate_sequence": [
+      "DATA_QUALITY",
+      "LIQUIDITY",
+      "CONTRACT_QUALITY",
+      "UNDERLYING_QUALITY",
+      "RISK",
+      "VALUATION",
+      "SCENARIO"
+    ],
+    "generates_trade_signal": false,
+    "numeric_thresholds_approved": false
+  },
+  "report": {
+    "top_count": 15,
+    "table_columns": 11,
+    "formats": [
+      "MARKDOWN",
+      "DOCX_ON_DEMAND"
+    ]
+  },
+  "learning": {
+    "automatic_rule_changes": false,
+    "minimum_validation_samples": 30
+  },
+  "known_gaps": [
+    "RISK_V3_UNFAVORABLE_PERCENTILE_THRESHOLDS_NOT_PRESENT_IN_MASTER",
+    "STATUS_NUMERIC_MAPPING_NOT_APPROVED",
+    "V4_CANDIDATE_NOT_PRODUCTION_APPROVED"
+  ]
+}

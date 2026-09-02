@@ -1,0 +1,102 @@
+{
+  "registry_version": "FEATURE_REGISTRY_V3_2_0",
+  "missing_policy": "No synthetic value; redistribute available factor weights inside the same block.",
+  "features": [
+    {
+      "name": "Breakeven",
+      "source": "Derived",
+      "formula": "Call: Strike + Last; Put: Strike - Last",
+      "unit": "price",
+      "data_status": "IMPLEMENTED",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "BEDistance",
+      "source": "Derived",
+      "formula": "Call: (Breakeven-Underlying)/Underlying; Put: (Underlying-Breakeven)/Underlying",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "Leverage",
+      "source": "Derived",
+      "formula": "Underlying/Last",
+      "unit": "multiple",
+      "data_status": "IMPLEMENTED",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "RemainingDays",
+      "source": "Derived",
+      "formula": "CalendarDays-1",
+      "unit": "days",
+      "data_status": "IMPLEMENTED_FOR_REPORTING",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "IVHV",
+      "source": "Derived",
+      "formula": "IV/HV",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED_WHEN_AVAILABLE",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "ThetaRatio",
+      "source": "Derived",
+      "formula": "Abs(Theta)/Last",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED_WHEN_AVAILABLE",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "SpreadRatio",
+      "source": "Derived",
+      "formula": "Abs(Spread)/Last",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED_WHEN_AVAILABLE",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "Depth",
+      "source": "Derived",
+      "formula": "Min(BestBidVolume,BestAskVolume)",
+      "unit": "contracts",
+      "data_status": "IMPLEMENTED_WHEN_AVAILABLE",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "TimeCost",
+      "source": "Derived",
+      "formula": "TimeValue/Last",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED_WHEN_AVAILABLE",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "LastVsClosePct",
+      "source": "Derived from raw percentage columns",
+      "formula": "Abs(LastPercent-ClosePercent)",
+      "unit": "percentage-point",
+      "data_status": "IMPLEMENTED_V3",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "IntradayRangePct",
+      "source": "Derived",
+      "formula": "Abs(High-Low)/Last",
+      "unit": "ratio",
+      "data_status": "IMPLEMENTED_V3",
+      "confidence": "SOURCE_DEPENDENT"
+    },
+    {
+      "name": "StatusScore",
+      "source": "Configured categorical mapping",
+      "formula": "Approved config mapping only",
+      "unit": "normalized score",
+      "data_status": "UNKNOWN_NOT_APPROVED",
+      "confidence": "NOT_AVAILABLE"
+    }
+  ]
+}
