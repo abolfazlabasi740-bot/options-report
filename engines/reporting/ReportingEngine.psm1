@@ -193,13 +193,13 @@ function New-OptionsMarkdownReport {
         $lines.Add('| سهم پایه | قیمت | بازده ۵روزه | RSI14 | نسبت خرید حقیقی/فروش حقیقی | نسبت خرید حقوقی/فروش حقوقی | روند احتمالی | پیام‌ها |')
         $lines.Add('|:---|---:|---:|---:|---:|---:|:---:|---:|')
         foreach($u in @($UnderlyingAnalysis.Underlyings)){
-            $price=if($null -ne $u.Price){$u.Price.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
-            $ret=if($null -ne $u.Return5D){$u.Return5D.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)+'٪'}else{'N/A'}
-            $rsi=if($null -ne $u.RSI14){$u.RSI14.ToString('0.0',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
-            $ir=if($null -ne $u.IndividualBuySellVolumeRatio){$u.IndividualBuySellVolumeRatio.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
-            $lr=if($null -ne $u.LegalBuySellVolumeRatio){$u.LegalBuySellVolumeRatio.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
-            $msg=if($null -ne $u.MessageCount){[string]$u.MessageCount}else{'N/A'}
-            $bias=if($null -ne $u.TrendBias){$u.TrendBias}else{'NOT_ASSESSED'}
+            $price=if($u.PSObject.Properties['Price'] -and $null -ne $u.Price){$u.Price.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
+            $ret=if($u.PSObject.Properties['Return5D'] -and $null -ne $u.Return5D){$u.Return5D.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)+'٪'}else{'N/A'}
+            $rsi=if($u.PSObject.Properties['RSI14'] -and $null -ne $u.RSI14){$u.RSI14.ToString('0.0',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
+            $ir=if($u.PSObject.Properties['IndividualBuySellVolumeRatio'] -and $null -ne $u.IndividualBuySellVolumeRatio){$u.IndividualBuySellVolumeRatio.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
+            $lr=if($u.PSObject.Properties['LegalBuySellVolumeRatio'] -and $null -ne $u.LegalBuySellVolumeRatio){$u.LegalBuySellVolumeRatio.ToString('0.00',[Globalization.CultureInfo]::InvariantCulture)}else{'N/A'}
+            $msg=if($u.PSObject.Properties['MessageCount'] -and $null -ne $u.MessageCount){[string]$u.MessageCount}else{'N/A'}
+            $bias=if($u.PSObject.Properties['TrendBias'] -and $null -ne $u.TrendBias){$u.TrendBias}else{'NOT_ASSESSED'}
             $lines.Add("| $($u.Symbol) | $price | $ret | $rsi | $ir | $lr | $bias | $msg |")
         }
         $lines.Add('')
@@ -208,7 +208,8 @@ function New-OptionsMarkdownReport {
         $lines.Add('| سهم پایه | تاریخ پیام | عنوان پیام |')
         $lines.Add('|:---|:---:|:---|')
         foreach($u in @($UnderlyingAnalysis.Underlyings)){
-            foreach($m in @($u.Messages | Select-Object -First 3)){
+            $messages = if($u.PSObject.Properties['Messages']) {@($u.Messages)} else {@()}
+            foreach($m in @($messages | Select-Object -First 3)){
                 $date=if($null -ne $m.dEven){[string]$m.dEven}else{'N/A'}
                 $title=if($null -ne $m.tseTitle){([string]$m.tseTitle).Replace('|','/')}else{'N/A'}
                 $lines.Add("| $($u.Symbol) | $date | $title |")
