@@ -29,12 +29,32 @@ function Receive-OptionschoolWorkbook {
     )
     New-Item -ItemType Directory -Force -Path $DestinationDirectory | Out-Null
     $temporary = Join-Path $DestinationDirectory ('.download_' + [guid]::NewGuid().ToString('N') + '.tmp')
+    $httpClient = $null
+    $response = $null
+    $responseStream = $null
+    $fileStream = $null
     try {
-        $response = Invoke-WebRequest -Uri $Endpoint -UseBasicParsing -OutFile $temporary -PassThru -TimeoutSec 90
+        # HttpClient is more reliable than Invoke-WebRequest for PowerShell 7
+        # on GitHub's Ubuntu runner and still lets us validate the server
+        # supplied filename before moving the workbook into the archive.
+        $httpClient = [System.Net.Http.HttpClient]::new()
+        $httpClient.Timeout = [TimeSpan]::FromSeconds(90)
+        $httpClient.DefaultRequestHeaders.UserAgent.ParseAdd('OptionschoolV4-GitHub/1.0')
+        $response = $httpClient.GetAsync($Endpoint, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
+        $response.EnsureSuccessStatusCode()
+        $responseStream = $response.Content.ReadAsStreamAsync().GetAwaiter().GetResult()
+        $fileStream = [IO.File]::Open($temporary, [IO.FileMode]::Create, [IO.FileAccess]::Write, [IO.FileShare]::None)
+        $responseStream.CopyTo($fileStream)
+        $fileStream.Flush()
+        $fileStream.Dispose()
+        $fileStream = $null
+        if (-not (Test-Path -LiteralPath $temporary -PathType Leaf)) {
+            throw 'Optionschool download completed without creating the temporary file.'
+        }
         if (-not (Test-XlsxFile -Path $temporary -MinimumBytes $MinimumBytes)) {
             throw 'Optionschool response is not a complete XLSX file.'
         }
-        $disposition = [string]$response.Headers['Content-Disposition']
+        $disposition = [string]$response.Content.Headers.ContentDisposition
         $name = $null
         if ($disposition -match "filename\*=UTF-8''([^;]+)") { $name = [uri]::UnescapeDataString($Matches[1].Trim('"')) }
         elseif ($disposition -match 'filename="?([^";]+)"?') { $name = $Matches[1] }
@@ -53,6 +73,11 @@ function Receive-OptionschoolWorkbook {
     } catch {
         if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force }
         throw
+    } finally {
+        if ($fileStream) { $fileStream.Dispose() }
+        if ($responseStream) { $responseStream.Dispose() }
+        if ($response) { $response.Dispose() }
+        if ($httpClient) { $httpClient.Dispose() }
     }
 }
 
