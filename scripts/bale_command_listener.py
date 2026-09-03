@@ -44,6 +44,30 @@ COMMANDS = {
     "تجارت": "ضتجارت",
 }
 
+SYMBOL_ALIASES = {
+    "\u0648\u0628\u0645\u0644\u062a": "\u0636\u0645\u0644\u062a",
+    "\u0648\u0628\u0635\u0627\u062f\u0631": "\u0636\u0635\u0627\u062f",
+    "\u0648\u062a\u062c\u0627\u0631\u062a": "\u0636\u062a\u062c\u0627\u0631\u062a",
+    "\u062e\u0648\u062f\u0631\u0648": "\u0636\u062e\u0648\u062f",
+    "\u062e\u0633\u0627\u067e\u0627": "\u0636\u0633\u067e\u0627",
+    "\u0634\u0633\u062a\u0627": "\u0636\u0633\u062a\u0627",
+    "\u0634\u067e\u0646\u0627": "\u0636\u0634\u0646\u0627",
+    "\u0641\u0645\u0644\u06cc": "\u0636\u0645\u0644\u06cc",
+    "\u0641\u0648\u0644\u0627\u062f": "\u0636\u0641\u0644\u0627",
+    "\u0630\u0648\u0628": "\u0636\u0630\u0648\u0628",
+}
+
+def resolve_request(text: str) -> tuple[str | None, int]:
+    """Return (option prefix, result count); empty prefix means whole market."""
+    if text in COMMANDS:
+        return COMMANDS[text], 5
+    for name, prefix in SYMBOL_ALIASES.items():
+        if name in text:
+            return prefix, 5
+    if "\u06af\u0632\u0627\u0631\u0634" in text:
+        return "", 15
+    return None, 0
+
 
 def download_latest_workbook(root: Path) -> Path:
     """Download fresh Optionschool data for every interactive request."""
@@ -91,8 +115,8 @@ def main() -> int:
             message = update.get("message") or update.get("edited_message") or {}
             text = " ".join(str(message.get("text", "")).strip().lower().split())
             chat_id = str((message.get("chat") or {}).get("id", ""))
-            prefix = COMMANDS.get(text)
-            if not prefix or not chat_id:
+            prefix, top_count = resolve_request(text)
+            if prefix is None or not chat_id:
                 continue
             try:
                 latest_workbook = download_latest_workbook(root)
@@ -120,7 +144,7 @@ def main() -> int:
                         "-SymbolPrefix",
                         prefix,
                         "-TopCount",
-                        "5",
+                        str(top_count),
                         "-Quiet",
                     ],
                     text=True,
