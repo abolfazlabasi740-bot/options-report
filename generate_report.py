@@ -167,6 +167,27 @@ def build_v3_report(input_path: Path, metadata: dict):
     if valid.empty:
         raise RuntimeError("هیچ قرارداد معتبری پس از گیت‌های V3 باقی نماند.")
 
+    requested_prefix = os.environ.get("REPORT_SYMBOL_PREFIX", "").strip()
+    requested_count_raw = os.environ.get("REPORT_TOP_COUNT", "").strip()
+    if requested_count_raw:
+        try:
+            requested_count = int(requested_count_raw)
+        except ValueError as exc:
+            raise RuntimeError(f"REPORT_TOP_COUNT نامعتبر است: {requested_count_raw}") from exc
+        if requested_count < 1:
+            raise RuntimeError("REPORT_TOP_COUNT باید حداقل 1 باشد.")
+    else:
+        requested_count = v3.TOP_N
+
+    if requested_prefix:
+        before_scope = len(valid)
+        valid = valid[valid["نماد"].str.startswith(requested_prefix, na=False)].copy()
+        print(f"فیلتر نماد: {requested_prefix} | قبل: {before_scope} | بعد: {len(valid)}")
+        if valid.empty:
+            raise RuntimeError(f"برای نماد با پیشوند «{requested_prefix}» قرارداد معتبر پیدا نشد.")
+    else:
+        print("فیلتر نماد: کل بازار")
+
     valid, base_audit = enrich_options_with_base(valid)
     base_columns = [
         "BaseSymbol", "BaseInsCode", "BaseLast", "BaseClose", "BasePrevClose", "BasePriceChangePct",
@@ -185,7 +206,7 @@ def build_v3_report(input_path: Path, metadata: dict):
     valid = v3.add_analytics(valid)
     valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
     scored = v3.score_v3(valid)
-    top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(v3.TOP_N).copy()
+    top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(requested_count).copy()
     generated = now_tehran()
     report = v3.make_report(top, input_path.name, total_initial, len(valid))
 
@@ -195,6 +216,7 @@ def build_v3_report(input_path: Path, metadata: dict):
         lines[2] = f"شناسه اجرا: {generated:%Y%m%d_%H%M%S}"
         report = "\n".join(lines) + "\n"
 
+    scope_label = f"نماد با پیشوند {requested_prefix}" if requested_prefix else "کل بازار"
     audit_header = (
         "## شناسنامه داده و زمان‌بندی گزارش\n"
         f"- منبع داده: {metadata['source']}\n"
@@ -202,6 +224,8 @@ def build_v3_report(input_path: Path, metadata: dict):
         f"- زمان پایان دانلود: {metadata['download_completed_display']}\n"
         f"- حجم فایل: {metadata['bytes']} bytes\n"
         f"- SHA-256 فایل: `{metadata['sha256']}`\n"
+        f"- دامنه گزارش: {scope_label}\n"
+        f"- تعداد خروجی رتبه‌بندی: {len(top)}\n"
         f"- زمان تولید گزارش: {generated.strftime('%Y-%m-%d %H:%M:%S %Z')}\n"
         "- مبنای تصمیم‌گیری: اطلاعات همین فایل دریافت‌شده در زمان فوق.\n\n"
     )
