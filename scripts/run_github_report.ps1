@@ -1,7 +1,9 @@
 ﻿param(
     [string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot),
     [double]$MinLeverage = 3.0,
-    [string]$InputWorkbook
+    [string]$InputWorkbook,
+    [string]$UnderlyingSymbol,
+    [int]$TopCount = 15
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,7 +15,11 @@ $pipelineArguments = @{
     ProjectRoot = $ProjectRoot
     V4Candidate = $true
     MinLeverage = $MinLeverage
+    TopCount = $TopCount
     Quiet = $true
+}
+if (-not [string]::IsNullOrWhiteSpace($UnderlyingSymbol)) {
+    $pipelineArguments.SymbolPrefix = $UnderlyingSymbol
 }
 if (-not [string]::IsNullOrWhiteSpace($InputWorkbook)) {
     $pipelineArguments.InputWorkbook = $InputWorkbook

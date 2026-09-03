@@ -8,6 +8,11 @@ on:
         required: false
         default: "3"
         type: string
+      underlying_symbol:
+        description: "Optional underlying symbol prefix; blank means whole market"
+        required: false
+        default: ""
+        type: string
   # Download every 30 minutes from 09:15 through 12:15 Tehran time,
   # Saturday-Wednesday. Bale delivery is targeted five minutes later.
   schedule:
@@ -32,6 +37,8 @@ jobs:
       MIN_LEVERAGE: ${{ inputs.min_leverage || '3' }}
       BALE_BOT_TOKEN: ${{ secrets.BALE_BOT_TOKEN }}
       BALE_CHAT_ID: ${{ secrets.BALE_CHAT_ID }}
+      UNDERLYING_SYMBOL: ${{ inputs.underlying_symbol || '' }}
+      TOP_COUNT: ${{ inputs.underlying_symbol && '5' || '15' }}
 
     steps:
       - name: Checkout report engine
@@ -96,7 +103,9 @@ jobs:
           & "$env:PROJECT_ROOT/scripts/run_github_report.ps1" `
             -ProjectRoot $env:PROJECT_ROOT `
             -InputWorkbook $env:INPUT_WORKBOOK `
-            -MinLeverage ([double]$env:MIN_LEVERAGE)
+            -MinLeverage ([double]$env:MIN_LEVERAGE) `
+            -UnderlyingSymbol $env:UNDERLYING_SYMBOL `
+            -TopCount ([int]$env:TOP_COUNT)
 
       - name: Render RTL B Nazanin PDF
         shell: bash
@@ -133,9 +142,13 @@ jobs:
           elapsed=$(( $(date +%s) - DOWNLOAD_COMPLETED_EPOCH ))
           wait_seconds=$(( 300 - elapsed ))
           if (( wait_seconds > 0 )); then sleep "$wait_seconds"; fi
+          caption="گزارش V4 کل بازار | ۱۵ آپشن برتر | Run ID: ${RUN_ID}"
+          if [ -n "$UNDERLYING_SYMBOL" ]; then
+            caption="گزارش V4 سهم ${UNDERLYING_SYMBOL} | ۵ آپشن برتر | Run ID: ${RUN_ID}"
+          fi
           python "${PROJECT_ROOT}/scripts/send_to_bale.py" \
             --file "$PDF_PATH" \
-            --caption "گزارش V4 کاندید Optionschool | Run ID: ${RUN_ID}"
+            --caption "$caption"
 
       - name: Persist point-in-time workbooks for seven-day learning
         if: ${{ always() }}
