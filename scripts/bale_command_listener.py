@@ -7,6 +7,7 @@ import os
 import subprocess
 import tempfile
 import time
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -44,6 +45,28 @@ COMMANDS = {
 }
 
 
+def download_latest_workbook(root: Path) -> Path:
+    """Download fresh Optionschool data for every interactive request."""
+    endpoint = "https://s3.optionschool24.com/export/excel?type=1"
+    config_path = root / "configs" / "project.json"
+    if config_path.exists():
+        try:
+            import json
+            config = json.loads(config_path.read_text(encoding="utf-8-sig"))
+            endpoint = config.get("data_source", {}).get("endpoint", endpoint)
+        except Exception:
+            pass
+    raw_dir = root / "data" / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    target = raw_dir / f"optionschool24_all_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    response = requests.get(endpoint, timeout=120)
+    response.raise_for_status()
+    if len(response.content) < 5000 or response.content[:2] != b"PK":
+        raise RuntimeError("Downloaded response is not a valid XLSX workbook.")
+    target.write_bytes(response.content)
+    return target
+
+
 def main() -> int:
     token = os.environ["BALE_BOT_TOKEN"]
     root = Path(os.environ.get("PROJECT_ROOT", ".")).resolve()
@@ -71,15 +94,15 @@ def main() -> int:
             prefix = COMMANDS.get(text)
             if not prefix or not chat_id:
                 continue
-            workbooks = list((root / "data" / "raw").glob("optionschool24_all_*.xlsx"))
-            if not workbooks:
+            try:
+                latest_workbook = download_latest_workbook(root)
+            except Exception as error:
                 requests.post(
                     f"{endpoint}/sendMessage",
-                    data={"chat_id": chat_id, "text": "فایل Optionschool در آرشیو موجود نیست؛ در اولین نوبت بازار دریافت می‌شود."},
+                    data={"chat_id": chat_id, "text": f"دریافت اکسل جدید Optionschool ناموفق بود: {error}"},
                     timeout=30,
                 )
                 continue
-            latest_workbook = max(workbooks, key=lambda p: p.stat().st_mtime)
             with tempfile.TemporaryDirectory() as temp:
                 result = subprocess.run(
                     [
