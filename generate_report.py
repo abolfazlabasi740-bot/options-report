@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Canonical runner/report delivery for PROTOCOL_OPTIONS_RANKING_V3."""
-
+"""Canonical V4 runner: OptionSchool -> scope -> mapping -> guard -> scoring -> report."""
 import hashlib
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-
 import numpy as np
 import pandas as pd
-import rank_options_live as v3
+import rank_options_live as scoring_engine
 from base_stock_engine import enrich_options_with_base
+from v4_runtime_guard import enforce_v4_invariants, MIN_LEVERAGE, V4_PROTOCOL
 
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_REPORT = BASE_DIR / "output_options_report.md"
@@ -22,235 +20,87 @@ OUTPUT_TOP = BASE_DIR / "output_options_top15.csv"
 OUTPUT_BASE = BASE_DIR / "output_base_stock.csv"
 OPTIONSCHOOL_URL = "https://s3.optionschool24.com/export/excel?type=1"
 
-
-def now_tehran() -> datetime:
+def now_tehran():
     from zoneinfo import ZoneInfo
     return datetime.now(ZoneInfo("Asia/Tehran"))
 
-
-def send_bale(text: str) -> None:
-    token = os.environ.get("BALE_BOT_TOKEN", "").strip()
-    chat_id = os.environ.get("BALE_CHAT_ID", "").strip()
-    if not token or not chat_id:
-        raise RuntimeError("BALE_BOT_TOKEN و BALE_CHAT_ID برای ارسال گزارش موجود نیستند.")
-    chunks = [text[i:i + 3500] for i in range(0, len(text), 3500)]
-    url = f"https://tapi.bale.ai/bot{token}/sendMessage"
-    for index, chunk in enumerate(chunks, start=1):
-        payload = urlencode({"chat_id": chat_id, "text": chunk}).encode("utf-8")
-        request = Request(url, data=payload, headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": "OptionsReport-V3/1.0"}, method="POST")
-        try:
-            with urlopen(request, timeout=45) as response:
-                response_text = response.read().decode("utf-8", errors="replace")
-                status = response.status
-        except HTTPError as exc:
-            details = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"خطای API بله در بخش {index}: HTTP {exc.code}: {details}") from exc
-        except URLError as exc:
-            raise RuntimeError(f"خطای اتصال به API بله در بخش {index}: {exc.reason}") from exc
-        if status != 200 or '"ok":true' not in response_text.replace(" ", ""):
-            raise RuntimeError(f"ارسال بخش {index} توسط بله تأیید نشد: {response_text}")
-        print(f"ارسال بخش {index}/{len(chunks)} به بله موفق بود.")
-
-
-def download_latest_optionschool() -> tuple[Path, dict]:
+def download_latest_optionschool():
     target = BASE_DIR / "optionschool24_latest.xlsx"
     started = now_tehran()
-    request = Request(OPTIONSCHOOL_URL, headers={"User-Agent": "OptionsReport-V3/1.0"})
+    req = Request(OPTIONSCHOOL_URL, headers={"User-Agent": "OptionsReport-V4/1.0"})
     try:
-        with urlopen(request, timeout=60) as response:
+        with urlopen(req, timeout=60) as response:
             data = response.read()
     except (HTTPError, URLError) as exc:
-        raise RuntimeError(f"دریافت فایل Optionschool24 ناموفق بود: {exc}") from exc
+        raise RuntimeError(f"دریافت Optionschool24 ناموفق بود: {exc}") from exc
     finished = now_tehran()
-    if len(data) < 1024:
-        raise RuntimeError("فایل دریافت‌شده Optionschool24 غیرقابل قبول یا ناقص است.")
-    if not data.startswith(b"PK"):
-        raise RuntimeError("پاسخ endpoint فایل XLSX معتبر نیست.")
+    if len(data) < 1024 or not data.startswith(b"PK"):
+        raise RuntimeError("فایل XLSX دریافتی Optionschool24 معتبر نیست.")
     target.write_bytes(data)
-    metadata = {
-        "source": "OptionSchool24",
-        "url": OPTIONSCHOOL_URL,
-        "filename": target.name,
-        "download_started": started.isoformat(timespec="seconds"),
-        "download_completed": finished.isoformat(timespec="seconds"),
-        "download_completed_display": finished.strftime("%Y-%m-%d %H:%M:%S %Z"),
-        "bytes": len(data),
-        "sha256": hashlib.sha256(data).hexdigest(),
-    }
-    return target, metadata
+    return target, {"source":"OptionSchool24","filename":target.name,"download_completed_display":finished.strftime("%Y-%m-%d %H:%M:%S %Z"),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
 
-
-def find_input(explicit: str | None):
+def find_input(explicit=None):
     if explicit:
-        candidate = Path(explicit)
-        if not candidate.is_absolute():
-            candidate = BASE_DIR / candidate
-        if not candidate.is_file():
-            raise RuntimeError(f"فایل ورودی یافت نشد: {candidate}")
-        return candidate, {
-            "source": "Explicit input",
-            "filename": candidate.name,
-            "download_started": None,
-            "download_completed": None,
-            "download_completed_display": "زمان دانلود ثبت نشده؛ فایل ورودی دستی است.",
-            "bytes": candidate.stat().st_size,
-            "sha256": hashlib.sha256(candidate.read_bytes()).hexdigest(),
-        }
+        p = Path(explicit)
+        if not p.is_absolute(): p = BASE_DIR / p
+        if not p.is_file(): raise RuntimeError(f"فایل ورودی یافت نشد: {p}")
+        return p, {"source":"Explicit input","filename":p.name,"download_completed_display":"ثبت نشده","bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
     return download_latest_optionschool()
 
+def run_v4_pipeline(input_path, output_md="output_options_report.md", symbol_prefix=""):
+    df_raw = pd.read_excel(input_path)
+    total_initial = len(df_raw)
+    if "نماد" not in df_raw.columns: raise RuntimeError("ستون «نماد» در فایل OptionSchool موجود نیست.")
+    df_raw["نماد"] = df_raw["نماد"].astype(str).str.strip()
 
-def _base_section(base_top: pd.DataFrame, audit: dict) -> str:
-    lines = [
-        "## تحلیل سهم‌های پایه از TSETMC",
-        f"- وضعیت موتور سهم پایه: {audit.get('status', 'UNKNOWN')}",
-        f"- ستون مبنای اتصال: {audit.get('base_column') or 'داده موجود نیست'}",
-        f"- تعداد نمادهای پایه بررسی‌شده: {audit.get('symbols', 0)}",
-        f"- تعداد نمادهای پایه با پاسخ معتبر TSETMC: {audit.get('resolved', 0)}",
-        f"- تعداد نمادهای پایه بدون پاسخ معتبر: {audit.get('failed', 0)}",
-        "- امتیاز جدیدی به Score V3 اضافه نشده است؛ داده‌های سهم پایه فعلاً به‌عنوان لایه مستقل تأیید بازار گزارش می‌شوند.",
-        "",
-    ]
-    if base_top.empty:
-        lines.append("داده سهم پایه برای قراردادهای گزارش‌شده موجود نیست.")
-        return "\n".join(lines) + "\n\n"
-
-    columns = [
-        ("BaseSymbol", "پایه"),
-        ("BasePriceChangePct", "تغییر قیمت٪"),
-        ("BaseRealBuyerPower", "قدرت خریدار حقیقی"),
-        ("BaseRealNetMoneyProxy", "خالص حجم حقیقی"),
-        ("BaseValue", "ارزش معاملات"),
-        ("BaseVolume", "حجم معاملات"),
-        ("BaseDataStatus", "وضعیت داده"),
-    ]
-    lines.append("| " + " | ".join(label for _, label in columns) + " |")
-    lines.append("|" + "|".join("---" for _ in columns) + "|")
-    for _, row in base_top.iterrows():
-        values = []
-        for col, _ in columns:
-            value = row.get(col, np.nan)
-            if pd.isna(value):
-                values.append("داده موجود نیست")
-            elif isinstance(value, (float, int)):
-                values.append(f"{value:,.4f}" if "Power" in col or "Pct" in col else f"{value:,.0f}")
-            else:
-                values.append(str(value))
-        lines.append("| " + " | ".join(values) + " |")
-    lines.append("")
-    lines.append("### کنترل تفسیر")
-    lines.append("- قدرت خریدار حقیقی فقط در صورت وجود هم‌زمان حجم و تعداد خرید/فروش حقیقی محاسبه شده است.")
-    lines.append("- خالص حجم حقیقی «پروکسی جریان پول» است و به‌عنوان پول ریالی قطعی تفسیر نمی‌شود.")
-    lines.append("- هیچ آستانه یا امتیاز ساختگی برای تأیید/رد سهم پایه اعمال نشده است.")
-    lines.append("")
-    return "\n".join(lines) + "\n"
-
-
-def build_v3_report(input_path: Path, metadata: dict):
-    df = pd.read_excel(input_path)
-    total_initial = len(df)
-    missing = [c for c in v3.REQUIRED_COLUMNS if c not in df.columns]
-    if missing:
-        raise RuntimeError("ستون‌های ضروری V3 موجود نیستند: " + "، ".join(missing))
-    df = v3.numeric_columns(df)
-    df["نماد"] = df["نماد"].astype(str).str.strip()
-    valid = df[
-        df["نماد"].notna()
-        & (df["نماد"] != "")
-        & (df["نماد"] != "nan")
-        & (df["حجم معاملات"].fillna(0) > 0)
-        & (df["ارزش معاملات"].fillna(0) > 0)
-        & (df["آخرین قیمت"].fillna(0) > 0)
-        & (df["قیمت اعمال"].fillna(0) > 0)
-        & (df["قیمت سهم پایه"].fillna(0) > 0)
-        & (df["روزهای تقویمی"].fillna(0) > 0)
-    ].copy()
-    if valid.empty:
-        raise RuntimeError("هیچ قرارداد معتبری پس از گیت‌های V3 باقی نماند.")
-
-    requested_prefix = os.environ.get("REPORT_SYMBOL_PREFIX", "").strip()
-    requested_count_raw = os.environ.get("REPORT_TOP_COUNT", "").strip()
-    if requested_count_raw:
-        try:
-            requested_count = int(requested_count_raw)
-        except ValueError as exc:
-            raise RuntimeError(f"REPORT_TOP_COUNT نامعتبر است: {requested_count_raw}") from exc
-        if requested_count < 1:
-            raise RuntimeError("REPORT_TOP_COUNT باید حداقل 1 باشد.")
+    if symbol_prefix:
+        before = len(df_raw)
+        df_raw = df_raw[df_raw["نماد"].str.startswith(symbol_prefix.strip(), na=False)].copy()
+        print(f"Scope={symbol_prefix} | before={before} | after={len(df_raw)}")
+        if df_raw.empty: raise RuntimeError(f"برای «{symbol_prefix}» قراردادی در فایل OptionSchool یافت نشد.")
     else:
-        requested_count = v3.TOP_N
+        print("Scope=کل بازار")
 
-    if requested_prefix:
-        before_scope = len(valid)
-        valid = valid[valid["نماد"].str.startswith(requested_prefix, na=False)].copy()
-        print(f"فیلتر نماد: {requested_prefix} | قبل: {before_scope} | بعد: {len(valid)}")
-        if valid.empty:
-            raise RuntimeError(f"برای نماد با پیشوند «{requested_prefix}» قرارداد معتبر پیدا نشد.")
-    else:
-        print("فیلتر نماد: کل بازار")
+    df_filtered, guard = enforce_v4_invariants(df_raw, leverage_key="اهرم", drop_invalid=True)
+    print(f"V4 Guard: input={guard['input_rows']} | passed={guard['output_rows']} | dropped={guard['dropped_rows']}")
+    if df_filtered.empty: raise RuntimeError(f"هیچ قراردادی با اهرم >= {MIN_LEVERAGE} باقی نماند.")
 
-    valid, base_audit = enrich_options_with_base(valid)
-    base_columns = [
-        "BaseSymbol", "BaseInsCode", "BaseLast", "BaseClose", "BasePrevClose", "BasePriceChangePct",
-        "BaseVolume", "BaseValue", "BaseTradeCount", "BaseRealBuyVolume", "BaseRealSellVolume",
-        "BaseLegalBuyVolume", "BaseLegalSellVolume", "BaseRealBuyCount", "BaseRealSellCount",
-        "BaseLegalBuyCount", "BaseLegalSellCount", "BaseRealNetMoneyProxy", "BaseLegalNetMoneyProxy",
-        "BaseRealBuyerAvgVolume", "BaseRealSellerAvgVolume", "BaseRealBuyerPower", "BaseBestBidPrice",
-        "BaseBestBidVolume", "BaseBestAskPrice", "BaseBestAskVolume", "BaseDataStatus"
-    ]
-    available_base_columns = [c for c in base_columns if c in valid.columns]
-    if "BaseSymbol" in valid.columns:
-        valid[available_base_columns].drop_duplicates(subset=["BaseSymbol"]).to_csv(OUTPUT_BASE, index=False, encoding="utf-8-sig")
-    else:
-        valid[available_base_columns].to_csv(OUTPUT_BASE, index=False, encoding="utf-8-sig")
+    df_enriched, base_audit = enrich_options_with_base(df_filtered)
+    base_cols = [c for c in ["BaseSymbol","BaseInsCode","BaseLast","BaseClose","BasePrevClose","BasePriceChangePct","BaseVolume","BaseValue","BaseTradeCount","BaseRealBuyVolume","BaseRealSellVolume","BaseLegalBuyVolume","BaseLegalSellVolume","BaseRealBuyCount","BaseRealSellCount","BaseLegalBuyCount","BaseLegalSellCount","BaseRealNetMoneyProxy","BaseLegalNetMoneyProxy","BaseRealBuyerAvgVolume","BaseRealSellerAvgVolume","BaseRealBuyerPower","Base_BestBidPrice","Base_BestBidVolume","Base_BestAskPrice","Base_BestAskVolume","BaseDataStatus"] if c in df_enriched.columns]
+    if base_cols:
+        df_enriched[base_cols].drop_duplicates(subset=["BaseSymbol"] if "BaseSymbol" in df_enriched.columns else None).to_csv(OUTPUT_BASE,index=False,encoding="utf-8-sig")
 
-    valid = v3.add_analytics(valid)
-    valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
-    scored = v3.score_v3(valid)
-    top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(requested_count).copy()
+    scored = scoring_engine.score_dataframe(df_enriched) if hasattr(scoring_engine,"score_dataframe") else df_enriched
+    if "FinalScore" not in scored.columns: raise RuntimeError("FinalScore توسط موتور V4 تولید نشد.")
+    try: top_count = int(os.getenv("REPORT_TOP_COUNT","15"))
+    except ValueError: raise RuntimeError("REPORT_TOP_COUNT نامعتبر است.")
+    if top_count < 1: raise RuntimeError("REPORT_TOP_COUNT باید حداقل 1 باشد.")
+    top = scored.sort_values(["FinalScore","حجم معاملات"],ascending=[False,False]).head(top_count).copy()
+    top.insert(0,"رتبه",range(1,len(top)+1))
+
     generated = now_tehran()
-    report = v3.make_report(top, input_path.name, total_initial, len(valid))
+    scope = symbol_prefix or "کل بازار"
+    lines = [
+        "# گزارش تحلیل و رتبه‌بندی قراردادهای اختیار معامله — V4",
+        f"**پروتکل:** `{V4_PROTOCOL}` | **حداقل اهرم:** `{MIN_LEVERAGE}` | **دامنه:** `{scope}`",
+        "",
+        "| رتبه | نماد | قیمت اعمال | آخرین قیمت | سر به سر | قیمت پایه | اهرم | فاصله تا سر به سر | سررسید | روزهای تقویمی | امتیاز |",
+        "|---:|---|---:|---:|---:|---:|---:|---:|---|---:|---:|"
+    ]
+    for _, r in top.iterrows():
+        lines.append(f"| {r.get('رتبه','')} | {r.get('نماد','')} | {r.get('قیمت اعمال','')} | {r.get('آخرین قیمت','')} | {r.get('سر به سر','')} | {r.get('قیمت سهم پایه','')} | {r.get('اهرم','')} | {r.get('اختلاف تا سر به سر','')} | {r.get('تاریخ سررسید','')} | {r.get('روزهای تقویمی','')} | {r.get('FinalScore','')} |")
 
-    lines = report.splitlines()
-    if len(lines) >= 3 and lines[0].startswith("# گزارش رتبه‌بندی اختیار معامله V3"):
-        lines[1] = f"تاریخ اجرا: {generated:%Y-%m-%d %H:%M:%S}"
-        lines[2] = f"شناسه اجرا: {generated:%Y%m%d_%H%M%S}"
-        report = "\n".join(lines) + "\n"
-
-    scope_label = f"نماد با پیشوند {requested_prefix}" if requested_prefix else "کل بازار"
-    audit_header = (
-        "## شناسنامه داده و زمان‌بندی گزارش\n"
-        f"- منبع داده: {metadata['source']}\n"
-        f"- فایل مبنا: {metadata['filename']}\n"
-        f"- زمان پایان دانلود: {metadata['download_completed_display']}\n"
-        f"- حجم فایل: {metadata['bytes']} bytes\n"
-        f"- SHA-256 فایل: `{metadata['sha256']}`\n"
-        f"- دامنه گزارش: {scope_label}\n"
-        f"- تعداد خروجی رتبه‌بندی: {len(top)}\n"
-        f"- زمان تولید گزارش: {generated.strftime('%Y-%m-%d %H:%M:%S %Z')}\n"
-        "- مبنای تصمیم‌گیری: اطلاعات همین فایل دریافت‌شده در زمان فوق.\n\n"
-    )
-    report = audit_header + report + _base_section(top, base_audit)
-    OUTPUT_REPORT.write_text(report, encoding="utf-8")
-    top.to_csv(OUTPUT_TOP, index=False, encoding="utf-8-sig")
+    audit = "\n## شناسنامه گزارش\n" + f"- منبع: {metadata['source']}\n- فایل مبنا: {metadata['filename']}\n- زمان پایان دریافت: {metadata['download_completed_display']}\n- حجم فایل: {metadata['bytes']} bytes\n- SHA-256: `{metadata['sha256']}`\n- ردیف اولیه: {total_initial}\n- ردیف پس از Scope: {guard['input_rows']}\n- ردیف پس از Guard: {guard['output_rows']}\n- قراردادهای گزارش‌شده: {len(top)}\n- زمان تولید: {generated.strftime('%Y-%m-%d %H:%M:%S %Z')}\n"
+    base = "\n## سهم پایه\n" + f"- وضعیت: {base_audit.get('status','UNKNOWN')}\n- نمادهای پایه: {base_audit.get('symbols',0)}\n- پاسخ معتبر TSETMC: {base_audit.get('resolved',0)}\n- بدون پاسخ معتبر: {base_audit.get('failed',0)}\n"
+    report = "\n".join(lines) + audit + base
+    Path(output_md).write_text(report,encoding="utf-8")
+    top.to_csv(OUTPUT_TOP,index=False,encoding="utf-8-sig")
+    print(f"[OK] V4 report: {output_md} | rows={len(top)}")
     return report
 
-
-def main() -> None:
-    input_arg = sys.argv[1] if len(sys.argv) > 1 else None
-    input_path, metadata = find_input(input_arg)
-    print(f"منبع داده V3: {input_path.name}")
-    print(f"زمان پایان دانلود: {metadata['download_completed_display']}")
-    print(f"SHA-256 فایل: {metadata['sha256']}")
-    report = build_v3_report(input_path, metadata)
-    print(report)
-    if os.environ.get("SEND_TO_BALE", "false").strip().lower() == "true":
-        send_bale(report)
-        print("گزارش V3 با موفقیت برای بله ارسال شد.")
-    else:
-        print("SEND_TO_BALE فعال نیست؛ گزارش فقط تولید شد.")
-    digest = hashlib.sha256(report.encode("utf-8")).hexdigest()
-    print(f"Report SHA-256: {digest}")
-
-
 if __name__ == "__main__":
-    main()
+    explicit = sys.argv[1] if len(sys.argv)>1 else None
+    prefix = os.getenv("REPORT_SYMBOL_PREFIX","").strip()
+    input_path, metadata = find_input(explicit)
+    print(f"Canonical input: {input_path.name}")
+    print(run_v4_pipeline(input_path,symbol_prefix=prefix))
