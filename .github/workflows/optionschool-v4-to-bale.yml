@@ -94,7 +94,6 @@ jobs:
             --output "$workbook"
           test -s "$workbook"
           echo "INPUT_WORKBOOK=$workbook" >> "$GITHUB_ENV"
-          echo "DOWNLOAD_COMPLETED_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Run governed V4 candidate pipeline
         id: pipeline
@@ -138,10 +137,6 @@ jobs:
           PDF_PATH: ${{ steps.pipeline.outputs.pdf_path }}
           RUN_ID: ${{ steps.pipeline.outputs.run_id }}
         run: |
-          # Send five minutes after the download has completed.
-          elapsed=$(( $(date +%s) - DOWNLOAD_COMPLETED_EPOCH ))
-          wait_seconds=$(( 300 - elapsed ))
-          if (( wait_seconds > 0 )); then sleep "$wait_seconds"; fi
           caption="گزارش V4 کل بازار | ۱۵ آپشن برتر | Run ID: ${RUN_ID}"
           if [ -n "$UNDERLYING_SYMBOL" ]; then
             caption="گزارش V4 سهم ${UNDERLYING_SYMBOL} | ۵ آپشن برتر | Run ID: ${RUN_ID}"
