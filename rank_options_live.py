@@ -191,7 +191,8 @@ def score_v3(df):
 
     # Payoff. Moneyness is unavailable until contract type is explicit; redistribute its weight.
     df["Score_BreakevenDistance"] = robust_percentile(df["BreakevenDistancePct"].abs(), False)
-    df["Score_Leverage"] = robust_percentile(df["اهرم"], True)
+    leverage = pd.to_numeric(df["اهرم"], errors="coerce").clip(lower=0, upper=12)
+    df["Score_Leverage"] = robust_percentile(np.log1p(leverage), True)
 
     # Time: lower remaining time is not intrinsically better; the Master requires directional validation.
     # Until an approved directional mapping is available, keep the factor missing rather than inventing one.
@@ -327,6 +328,37 @@ def make_report(top, input_file, total_initial, valid_count):
     return "\n".join(lines) + "\n"
 
 
+def score_v4_overlay(df):
+    """Candidate V4 overlay: execution quality, decay control and capped leverage.
+
+    The baseline already includes Black–Scholes and breakeven factors.  This
+    overlay makes those advantages conditional on an executable quote and
+    prevents extreme leverage from dominating the ranking.
+    """
+    base = pd.to_numeric(df["BaseScore"], errors="coerce")
+    spread = pd.to_numeric(df.get("Spread_Percentage"), errors="coerce")
+    execution_penalty = np.where(spread.notna(), np.clip((spread - 12.0) / 28.0, 0, 0.35), 0.10)
+    if "Score_Leverage" in df:
+        # diminishing returns and cap: score remains useful, never dominant
+        df["Score_Leverage"] = pd.to_numeric(df["Score_Leverage"], errors="coerce").clip(upper=0.92)
+    days = pd.to_numeric(df.get("RemainingDays"), errors="coerce")
+    decay_penalty = np.select([days <= 2, days <= 5, days <= 10], [0.30, 0.18, 0.08], default=0.0)
+    confidence = (pd.to_numeric(df.get("DataConfidence"), errors="coerce").fillna(0) / 100.0).clip(0.55, 1.0)
+    df["ExecutionPenalty"] = np.asarray(execution_penalty).clip(0, 0.45)
+    df["DecayPenalty"] = decay_penalty
+    df["FinalScore"] = (base * (1.0 - df["ExecutionPenalty"]) * (1.0 - df["DecayPenalty"]) * confidence).round(2)
+    return df
+
+
+def score_dataframe(df):
+    """Public V4 scoring entry point used by the report and Bale runners."""
+    work = numeric_columns(df.copy())
+    work = add_analytics(work)
+    if "RemainingDays" not in work.columns:
+        work["RemainingDays"] = (work["ط±ظˆط²ظ‡ط§غŒ طھظ‚ظˆغŒظ…غŒ"] - 1).clip(lower=0)
+    return score_v4_overlay(score_v3(work))
+
+
 def main():
     files = sorted(Path(".").glob("optionschool24_all_*.xlsx"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not files:
@@ -352,7 +384,7 @@ def main():
 
     valid = add_analytics(valid)
     valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
-    scored = score_v3(valid)
+    scored = score_v4_overlay(score_v3(valid))
     top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(TOP_N).copy()
     report = make_report(top, input_path.name, total_initial, len(valid))
     Path("output_options_report.md").write_text(report, encoding="utf-8")

@@ -1,0 +1,19 @@
+{
+  "artifact_id": "VERSION_4_1_0",
+  "artifact_type": "VERSION_RECORD",
+  "version": "4.1.0",
+  "previous_version": "3.2.0",
+  "status": "CANDIDATE_WITH_EXECUTION_GATES",
+  "effective_at": "2026-09-06T15:45:00+03:30",
+  "protocol": "PROTOCOL_OPTIONS_RANKING_V4_1",
+  "minimum_leverage_report": 3.5,
+  "changes": [
+    "Activated the V4 scoring entry point for report generation.",
+    "Retained Black-Scholes and breakeven factors in scoring.",
+    "Applied diminishing-return leverage normalization and execution/decay overlays.",
+    "Excluded contracts with leverage below 3.5 before scoring and reporting.",
+    "Added runtime guard and audit counts for excluded contracts."
+  ],
+  "validation_status": "PYTHON_SYNTAX_CHECK_PENDING_ON_TERMUX",
+  "production_approval": false
+}

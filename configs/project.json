@@ -1,16 +1,27 @@
 {
   "project_name": "Options Analytics System",
-  "version": "3.2.0",
-  "release_status": "BASELINE_WITH_KNOWN_GAPS",
-  "protocol": "PROTOCOL_OPTIONS_RANKING_V3",
-  "candidate_protocol": "PROTOCOL_OPTIONS_RANKING_V4",
-  "version_record": "library/versions/3.2.0.json",
+  "version": "4.1.0",
+  "release_status": "CANDIDATE_WITH_EXECUTION_GATES",
+  "protocol": "PROTOCOL_OPTIONS_RANKING_V4_1",
+  "candidate_protocol": "PROTOCOL_OPTIONS_RANKING_V4_1",
+  "candidate_scoring_overlay": {
+    "status": "SHADOW_CANDIDATE",
+    "black_scholes": "retain_score_with_quote_quality_gate",
+    "breakeven": "lower_absolute_distance_is_better",
+    "leverage": "diminishing_returns_and_0_92_score_cap",
+    "execution_penalty": "spread_above_12_percent_capped_at_35_percent",
+    "near_expiry_penalty": {"days_1_2": 0.30, "days_3_5": 0.18, "days_6_10": 0.08},
+    "missing_data_confidence_floor": 0.55,
+    "industry_context": "planned_after_30_validated_outcomes_per_segment"
+  },
+  "version_record": "library/versions/4.1.0.json",
   "master_project_book": {
     "relative_path": "reference/Master Project Book.docx",
     "sha256": "3cba9235181063f040f6df83f18e2b739395528f417d1179ec02eb2ce10f9268",
     "baseline": "V3",
     "candidate": "V4",
-    "v4_production_approved": false
+    "v4_production_approved": false,
+    "minimum_leverage_report": 3.5
   },
   "versions": {
     "schema": "OPTIONSCHOOL24_SCHEMA_38_V1",
