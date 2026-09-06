@@ -69,6 +69,39 @@ def send(chat_id: str, text: str) -> None:
         log(f"ارسال بخش {index}/{chunks} موفق بود.")
 
 
+def cards_from_report(report: str, count: int) -> str:
+    rows = []
+    active = False
+    for line in report.splitlines():
+        if line.startswith("|") and ("FinalScore" in line or "امتیاز" in line or "ط±طھط¨ظ‡" in line):
+            active = True
+            continue
+        if active and line.startswith("|---"):
+            continue
+        if active and line.startswith("|"):
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if len(cells) >= 11 and cells[0].isdigit():
+                rows.append(cells[:11])
+                if len(rows) >= count:
+                    break
+        elif active and rows:
+            break
+    if not rows:
+        return report
+    cards = [f"گزارش کارت‌محور | {len(rows)} آپشن برتر", "━━━━━━━━━━━━━━"]
+    for rank, symbol, strike, last, breakeven, base, leverage, distance, expiry, days, score in rows:
+        cards.extend([
+            f"کارت {rank} | {symbol}",
+            f"اعمال: {strike} | آخرین: {last}",
+            f"سر‌به‌سر: {breakeven} | پایه: {base}",
+            f"اهرم: {leverage} | فاصله: {distance}",
+            f"سررسید: {expiry} | روز باقی‌مانده: {days}",
+            f"امتیاز: {score or 'ثبت‌نشده'}",
+            "──────────────",
+        ])
+    return "\n".join(cards)
+
+
 def main() -> None:
     offset = 0
     log("Listener شروع شد.")
@@ -122,7 +155,7 @@ def main() -> None:
                     report = (ROOT / "output_options_report.md").read_text(encoding="utf-8")
                     log(f"مرحله ۳/۴: گزارش تولید شد | طول متن={len(report)} کاراکتر")
                     prefix_text = "گزارش کل بازار | ۱۵ آپشن برتر\n\n" if count == 15 else f"گزارش سهم {text} | ۵ آپشن برتر\n\n"
-                    send(chat_id, prefix_text + report)
+                    send(chat_id, cards_from_report(report, count))
                     log("چرخه درخواست با موفقیت کامل شد.")
                 except Exception as error:
                     log(f"خطا در چرخه درخواست: {type(error).__name__}: {error}")
