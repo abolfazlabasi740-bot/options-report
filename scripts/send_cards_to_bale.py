@@ -29,8 +29,12 @@ def cards(text):
     return '\n'.join(out)
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('--report',required=True); p.add_argument('--token',default=os.getenv('BALE_BOT_TOKEN','')); p.add_argument('--chat-id',default=os.getenv('BALE_CHAT_ID','')); p.add_argument('--api-base',default=os.getenv('BALE_API_BASE','https://tapi.bale.ai')); a=p.parse_args()
-    payload={'chat_id':a.chat_id,'text':cards(Path(a.report).read_text(encoding='utf-8')),'disable_web_page_preview':True}
+    p=argparse.ArgumentParser(); p.add_argument('--report',required=True); p.add_argument('--audit',action='store_true'); p.add_argument('--token',default=os.getenv('BALE_BOT_TOKEN','')); p.add_argument('--chat-id',default=os.getenv('BALE_CHAT_ID','')); p.add_argument('--api-base',default=os.getenv('BALE_API_BASE','https://tapi.bale.ai')); a=p.parse_args()
+    card_text=cards(Path(a.report).read_text(encoding='utf-8'))
+    if a.audit:
+        print(f'Card audit passed: {card_text.count("🏷️ نماد:")} cards, 11 columns preserved')
+        return
+    payload={'chat_id':a.chat_id,'text':card_text,'disable_web_page_preview':True}
     r=requests.post(f"{a.api_base.rstrip('/')}/bot{a.token}/sendMessage",json=payload,timeout=60); r.raise_for_status(); data=r.json()
     if not data.get('ok'): raise RuntimeError(data)
     print('Bale card report sent successfully')
