@@ -144,6 +144,14 @@ jobs:
             --file "$PDF_PATH" \
             --caption "$caption"
 
+      - name: Send V4.1 card report to Bale
+        shell: bash
+        env:
+          REPORT_PATH: ${{ steps.pipeline.outputs.report_path }}
+        run: |
+          python "${PROJECT_ROOT}/scripts/send_cards_to_bale.py" \
+            --report "$REPORT_PATH"
+
       - name: Persist point-in-time workbooks for seven-day learning
         if: ${{ always() }}
         continue-on-error: true
