@@ -10,8 +10,8 @@ function Assert-ProjectConfig {
         [Parameter(Mandatory=$true)][object]$Config,
         [Parameter(Mandatory=$true)][string]$ProjectRoot
     )
-    if ($Config.protocol -ne 'PROTOCOL_OPTIONS_RANKING_V3') {
-        throw "Production protocol must remain PROTOCOL_OPTIONS_RANKING_V3; received $($Config.protocol)."
+    if ($Config.protocol -notin @('PROTOCOL_OPTIONS_RANKING_V3','PROTOCOL_OPTIONS_RANKING_V4_1')) {
+        throw "Unsupported ranking protocol; received $($Config.protocol)."
     }
     if ([bool]$Config.master_project_book.v4_production_approved) {
         throw 'V4 cannot be marked Production without an approved executable specification.'
