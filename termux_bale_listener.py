@@ -9,6 +9,7 @@ import traceback
 from pathlib import Path
 
 import requests
+from send_report import format_v41_cards
 
 ROOT = Path(__file__).resolve().parent
 API = os.getenv("BALE_API_BASE", "https://tapi.bale.ai").rstrip("/")
@@ -70,6 +71,8 @@ def send(chat_id: str, text: str) -> None:
 
 
 def cards_from_report(report: str, count: int) -> str:
+    return format_v41_cards(report)
+    # Legacy parser retained below for backward compatibility.
     rows = []
     active = False
     for line in report.splitlines():

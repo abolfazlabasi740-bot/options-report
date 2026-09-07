@@ -122,6 +122,44 @@ def format_top15(report_text: str) -> str:
     return "\n".join(output).rstrip() + "\n"
 
 
+def format_v41_cards(report_text: str) -> str:
+    """Format the canonical eleven report columns in the requested card layout."""
+    rows = []
+    for line in report_text.splitlines():
+        if not line.startswith("|") or line.startswith("|---"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == 11 and cells[0].isdigit():
+            rows.append(cells)
+    if not rows:
+        return format_top15(report_text)
+    out = ["📊 گزارش امتیازدهی V4.1 | کارت‌های برتر", "━━━━━━━━━━━━━━━━━━━━"]
+    for rank, symbol, strike, last, breakeven, base, leverage, distance, expiry, remaining, score in rows:
+        try:
+            cost = _fmt_number(str(float(_clean_number(strike)) + float(_clean_number(last))))
+        except ValueError:
+            cost = "—"
+        out += [
+            f"🏷️ نماد: {symbol} (رتبه {rank})", "📦 تسویه فیزیکی",
+            f"📅 تاریخ اعمال/سررسید: {expiry}", f"⏳ {remaining} روز مانده",
+            "-------------", f"💰 پرمیوم (آخرین): {_fmt_number(last)}",
+            f"💲 قیمت اعمال: {_fmt_number(strike)}", f"💲 قیمت سهم پایه: {_fmt_number(base)}",
+            f"💲 قیمت تمام‌شده: {cost}", f"🔃 فاصله تا سر‌به‌سر: {_fmt_percent(distance)}",
+            "-------------", f"📊 سر‌به‌سر: {_fmt_number(breakeven)}",
+            f"⚖️ اهرم: {_fmt_number(leverage, 2)}", f"🏆 امتیاز V4.1: {_fmt_number(score, 2)}",
+            "🧾 ۱۱ ستون: رتبه، نماد، اعمال، آخرین، سر‌به‌سر، پایه، اهرم، فاصله، سررسید، روز، امتیاز",
+            "━━━━━━━━━━━━━━━━━━━━", "",
+        ]
+    from datetime import datetime
+    try:
+        from zoneinfo import ZoneInfo
+        sent = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%Y/%m/%d, %H:%M:%S")
+    except Exception:
+        sent = datetime.now().strftime("%Y/%m/%d, %H:%M:%S")
+    out.append(f"⏱ زمان ارسال: {sent}")
+    return "\n".join(out) + "\n"
+
+
 def send_chunk(token: str, chat_id: str, text: str) -> None:
     url = BALE_API_URL.format(token=token)
     payload = {
@@ -147,7 +185,7 @@ def main() -> int:
 
     report_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_REPORT_PATH
     raw_report = read_report_text(report_path)
-    report_text = format_top15(raw_report)
+    report_text = format_v41_cards(raw_report)
     current_hash = sha256_text(report_text)
     last_hash = read_last_hash()
 
