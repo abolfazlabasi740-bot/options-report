@@ -10,8 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 LAST_HASH_PATH = BASE_DIR / ".last_report_hash"
 DEFAULT_REPORT_PATH = BASE_DIR / "output_options_report.md"
-CHUNK_SIZE = 4000
-
+CHUNK_SIZE = 3500
 BALE_API_URL = "https://tapi.bale.ai/bot{token}/sendMessage"
 
 
@@ -58,72 +57,36 @@ def _clean_number(value: str) -> str:
 def _fmt_number(value: str, decimals: int = 0) -> str:
     raw = _clean_number(value)
     if raw in {"", "—", "-"}:
-        return "—"
+        return "داده موجود نیست"
     try:
         number = float(raw)
     except ValueError:
         return value.strip()
     if decimals == 0:
-        return f"{number:,.0f}".replace(",", "٬")
-    return f"{number:,.{decimals}f}".replace(",", "٬").replace(".", "٫")
+        text = f"{number:,.0f}".replace(",", "٬")
+    else:
+        text = f"{number:,.{decimals}f}".replace(",", "٬").replace(".", "٫")
+    return text.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
 
 
 def _fmt_percent(value: str) -> str:
     raw = _clean_number(value).replace("%", "")
     if raw in {"", "—", "-"}:
-        return "—"
+        return "داده موجود نیست"
     try:
         number = float(raw)
     except ValueError:
         return value.strip()
-    return f"{number:+.3f}".replace(".", "٫") + "%"
+    sign = "+" if number > 0 else "−" if number < 0 else ""
+    text = f"{abs(number):.3f}".replace(".", "٫")
+    return sign + text.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")) + "%"
 
 
-def format_top15(report_text: str) -> str:
-    """Only the Top-15 option ranking is sent to Bale; summary and controls are suppressed."""
-    lines = report_text.splitlines()
-    rows = []
-    in_table = False
-
-    for line in lines:
-        if line.startswith("| رتبه | نماد"):
-            in_table = True
-            continue
-        if in_table and line.startswith("|---"):
-            continue
-        if in_table and line.startswith("|"):
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            if len(cells) == 11:
-                rows.append(cells)
-                if len(rows) == 15:
-                    break
-        elif in_table and rows:
-            break
-
-    if not rows:
-        # Compatibility with a report already generated in card format.
-        start = next((i for i, line in enumerate(lines) if line.startswith("🔹 1.")), None)
-        if start is None:
-            raise RuntimeError("Top-15 ranking rows were not found in the generated report.")
-        return "\n".join(lines[start:]).strip() + "\n"
-
-    output = []
-    for rank, symbol, strike, last, breakeven, base, leverage, distance, expiry, remaining, score in rows:
-        output.extend([
-            f"🔹 {rank}. {symbol}",
-            f"قیمت اعمال: {_fmt_number(strike)} | آخرین: {_fmt_number(last)}",
-            f"سر‌به‌سر: {_fmt_number(breakeven)} | پایه: {_fmt_number(base)}",
-            f"اهرم: {_fmt_number(leverage, 2)} | فاصله سر‌به‌سر: {_fmt_percent(distance)}",
-            f"سررسید: {expiry} ({_fmt_number(remaining)} روز)" if remaining not in {"", "—", "-"} else f"سررسید: {expiry}",
-            f"امتیاز: {_fmt_number(score, 2)}",
-            "━━━━━━━━━━━━━━━━━━",
-            "",
-        ])
-    return "\n".join(output).rstrip() + "\n"
+def _persian_digits(text: str) -> str:
+    return str(text).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
 
 
-def format_v41_cards(report_text: str) -> str:
-    """Format the canonical eleven report columns in the requested card layout."""
+def _parse_rows(report_text: str):
     rows = []
     for line in report_text.splitlines():
         if not line.startswith("|") or line.startswith("|---"):
@@ -131,32 +94,42 @@ def format_v41_cards(report_text: str) -> str:
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         if len(cells) == 11 and cells[0].isdigit():
             rows.append(cells)
+    return rows
+
+
+def format_v41_cards(report_text: str) -> str:
+    """Render the canonical 11 report fields as compact Bale cards.
+
+    No contract type, settlement method, cost, or other field is inferred.
+    Missing source values remain explicitly missing.
+    """
+    rows = _parse_rows(report_text)
     if not rows:
-        return format_top15(report_text)
-    out = ["📊 گزارش امتیازدهی V4.1 | کارت‌های برتر", "━━━━━━━━━━━━━━━━━━━━"]
+        # A report already rendered as cards is passed through unchanged.
+        if "🔹 1." in report_text or "🔹 ۱." in report_text:
+            return report_text.strip() + "\n"
+        raise RuntimeError("V4.1 ranking rows were not found in the generated report.")
+
+    out = [
+        "📊 گزارش رتبه‌بندی اختیار معامله — V4.1",
+        f"تعداد قراردادها: {_persian_digits(len(rows))}",
+        "",
+    ]
     for rank, symbol, strike, last, breakeven, base, leverage, distance, expiry, remaining, score in rows:
-        try:
-            cost = _fmt_number(str(float(_clean_number(strike)) + float(_clean_number(last))))
-        except ValueError:
-            cost = "—"
-        out += [
-            f"🏷️ نماد: {symbol} (رتبه {rank})", "📦 تسویه فیزیکی",
-            f"📅 تاریخ اعمال/سررسید: {expiry}", f"⏳ {remaining} روز مانده",
-            "-------------", f"💰 پرمیوم (آخرین): {_fmt_number(last)}",
-            f"💲 قیمت اعمال: {_fmt_number(strike)}", f"💲 قیمت سهم پایه: {_fmt_number(base)}",
-            f"💲 قیمت تمام‌شده: {cost}", f"🔃 فاصله تا سر‌به‌سر: {_fmt_percent(distance)}",
-            "-------------", f"📊 سر‌به‌سر: {_fmt_number(breakeven)}",
-            f"⚖️ اهرم: {_fmt_number(leverage, 2)}", f"🏆 امتیاز V4.1: {_fmt_number(score, 2)}",
-            "🧾 ۱۱ ستون: رتبه، نماد، اعمال، آخرین، سر‌به‌سر، پایه، اهرم، فاصله، سررسید، روز، امتیاز",
-            "━━━━━━━━━━━━━━━━━━━━", "",
-        ]
-    from datetime import datetime
-    try:
-        from zoneinfo import ZoneInfo
-        sent = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%Y/%m/%d, %H:%M:%S")
-    except Exception:
-        sent = datetime.now().strftime("%Y/%m/%d, %H:%M:%S")
-    out.append(f"⏱ زمان ارسال: {sent}")
+        expiry_text = expiry if expiry not in {"", "—", "-"} else "داده موجود نیست"
+        remaining_text = _fmt_number(remaining)
+        out.extend([
+            "━━━━━━━━━━━━━━━━",
+            f"🔹 {_persian_digits(rank)}. {symbol}",
+            "",
+            f"قیمت اعمال: {_fmt_number(strike)} | آخرین: {_fmt_number(last)}",
+            f"سر‌به‌سر: {_fmt_number(breakeven)} | پایه: {_fmt_number(base)}",
+            f"اهرم: {_fmt_number(leverage, 2)} | فاصله سر‌به‌سر: {_fmt_percent(distance)}",
+            f"سررسید: {expiry_text} ({remaining_text} روز)",
+            f"امتیاز: {_fmt_number(score, 2)}",
+            "",
+        ])
+    out.append("━━━━━━━━━━━━━━━━")
     return "\n".join(out) + "\n"
 
 
@@ -165,40 +138,37 @@ def send_chunk(token: str, chat_id: str, text: str) -> None:
     payload = {
         "chat_id": chat_id,
         "text": text,
-        "parse_mode": "HTML",
         "disable_web_page_preview": True,
     }
     response = requests.post(url, json=payload, timeout=30)
     if not response.ok:
         raise RuntimeError(f"Send failed: {response.status_code} {response.text}")
+    data = response.json()
+    if data.get("ok") is not True:
+        raise RuntimeError(f"Bale API rejected message: {data}")
 
 
 def main() -> int:
     load_env_file(ENV_PATH)
-
     token = os.getenv("BALE_BOT_TOKEN", "").strip()
     chat_id = os.getenv("BALE_CHAT_ID", "").strip()
-
     if not token or not chat_id:
         print("Missing BALE_BOT_TOKEN or BALE_CHAT_ID in .env", file=sys.stderr)
         return 2
 
     report_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_REPORT_PATH
-    raw_report = read_report_text(report_path)
-    report_text = format_v41_cards(raw_report)
+    report_text = format_v41_cards(read_report_text(report_path))
     current_hash = sha256_text(report_text)
     last_hash = read_last_hash()
-
     if current_hash == last_hash:
-        print("Top-15 report unchanged; skipping send.")
+        print("V4.1 report unchanged; skipping send.")
         return 0
 
     chunks = list(split_chunks(report_text))
     for chunk in chunks:
         send_chunk(token, chat_id, chunk)
-
     write_last_hash(current_hash)
-    print("Only Top-15 report sent successfully.")
+    print(f"V4.1 Bale report sent successfully | chunks={len(chunks)}")
     return 0
 
 
