@@ -1,0 +1,5 @@
+# One Persian/Latin symbol per line
+وبملت
+ذوب
+خودرو
+شپنا

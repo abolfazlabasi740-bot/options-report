@@ -1,0 +1,11 @@
+{
+  "api_base": "https://cdn.tsetmc.com/api",
+  "timeout_seconds": 20,
+  "retries": 3,
+  "history_days": 120,
+  "snapshot_db": "data/underlying.sqlite",
+  "research_score": {
+    "enabled": true,
+    "weights": {"trend": 25, "flow": 30, "momentum": 20, "rsi": 15, "liquidity": 10}
+  }
+}
