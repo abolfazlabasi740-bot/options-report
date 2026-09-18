@@ -1,0 +1,7 @@
+data/
+output/
+backup_before_github_engine/
+report_engine.py.before_*
+__pycache__/
+*.pyc
+.env
