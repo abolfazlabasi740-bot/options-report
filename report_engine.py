@@ -44,7 +44,7 @@ def find_column(df, names):
     return None
 
 
-def build_report(path):
+def build_report(path, top_count=None, symbol_prefix=None):
     df = pd.read_excel(path)
 
     # V4.1 scoring engine: GitHub six-block production candidate
@@ -152,12 +152,28 @@ def build_report(path):
             "هیچ قرارداد فعال و واجد شرایط V4.1 با اهرم حداقل ۳٫۵ پیدا نشد"
         )
 
+    # فیلتر نماد باید قبل از رتبه‌بندی و انتخاب Top-N انجام شود.
+    # بنابراین درخواست نماد، از بین کل قراردادهای همان نماد رتبه‌بندی می‌شود.
+    if symbol_prefix:
+        prefix = str(symbol_prefix).strip()
+        work = work[
+            work["نماد"].str.startswith(prefix, na=False)
+        ].copy()
+
+        if work.empty:
+            raise RuntimeError(
+                f"هیچ قرارداد فعال و واجد شرایطی برای نماد «{prefix}» پیدا نشد"
+            )
+
     # رتبه‌بندی نهایی فقط بر اساس FinalScore موتور V4.1
     work = work.sort_values(
         ["FinalScore", "ارزش", "حجم"],
         ascending=[False, False, False],
         na_position="last"
-    ).head(TOP_COUNT)
+    )
+
+    limit = TOP_COUNT if top_count is None else int(top_count)
+    work = work.head(limit)
 
     return work
 
