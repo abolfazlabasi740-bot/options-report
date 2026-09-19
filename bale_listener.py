@@ -4,8 +4,9 @@ from pathlib import Path
 import os
 import time
 import requests
+from bale_transport import send_message as transport_send
 
-from report_engine import download_optionschool, build_report, format_report
+from report_engine import download_optionschool, build_report, save_report
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -13,9 +14,6 @@ REPORT_FILE = OUTPUT / "latest_report.txt"
 
 TOKEN = os.getenv("BALE_BOT_TOKEN", "").strip()
 CHAT_ID = os.getenv("BALE_CHAT_ID", "").strip()
-
-if not TOKEN:
-    raise RuntimeError("BALE_BOT_TOKEN تنظیم نشده است")
 
 API = f"https://tapi.bale.ai/bot{TOKEN}"
 
@@ -34,30 +32,8 @@ def normalize_command(text):
 
 
 def send_message(chat_id, text):
-    url = f"{API}/sendMessage"
-
-    chunks = [
-        text[i:i + 3500]
-        for i in range(0, len(text), 3500)
-    ]
-
-    for i, chunk in enumerate(chunks, 1):
-        r = requests.post(
-            url,
-            data={
-                "chat_id": chat_id,
-                "text": chunk,
-            },
-            timeout=30,
-        )
-        r.raise_for_status()
-
-        result = r.json()
-
-        if not result.get("ok"):
-            raise RuntimeError(f"Bale error: {result}")
-
-        print(f"SENT {i}/{len(chunks)}")
+    count = transport_send(TOKEN, chat_id, text)
+    print(f"SENT {count}/{count}")
 
 
 def generate_report(command):
@@ -75,10 +51,7 @@ def generate_report(command):
             symbol_prefix=command,
         )
 
-    report = format_report(work, source)
-
-    OUTPUT.mkdir(exist_ok=True)
-    REPORT_FILE.write_text(report, encoding="utf-8")
+    report = save_report(work, source)
 
     return report
 
@@ -108,7 +81,8 @@ def get_updates(offset=None):
 
 
 def main():
-    global CHAT_ID
+    if not TOKEN or not CHAT_ID:
+        raise RuntimeError("BALE_BOT_TOKEN و BALE_CHAT_ID باید از قبل تنظیم شوند")
 
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
@@ -145,10 +119,6 @@ def main():
                 if CHAT_ID and str(chat_id) != str(CHAT_ID):
                     continue
 
-                if not CHAT_ID:
-                    CHAT_ID = str(chat_id)
-                    print("CHAT_ID =", CHAT_ID)
-
                 print(
                     f"COMMAND = {text} | CHAT_ID = {chat_id}"
                 )
@@ -167,19 +137,19 @@ def main():
 
                 except Exception as e:
                     print(
-                        f"REPORT_ERROR command={text}: {e}"
+                        f"REPORT_ERROR type={type(e).__name__}"
                     )
 
                     try:
                         send_message(
                             chat_id,
                             "⚠️ خطا در تولید گزارش V4.1\n\n"
-                            + str(e),
+                            + "داده یا ارتباط قابل تأیید نیست؛ تولید یا ارسال گزارش کامل نشد.",
                         )
                     except Exception as send_error:
                         print(
                             "ERROR_MESSAGE_SEND_FAILED:",
-                            send_error,
+                            type(send_error).__name__,
                         )
 
         except KeyboardInterrupt:
@@ -187,7 +157,7 @@ def main():
             break
 
         except Exception as e:
-            print("LISTENER_ERROR:", e)
+            print("LISTENER_ERROR:", type(e).__name__)
             time.sleep(5)
 
 

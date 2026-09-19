@@ -1,5 +1,42 @@
 # OptimusAI V4.1 LIVE
 
+## Corrective revision — V4.1.1 (2026-09-19)
+
+Base: `ac6621600fffeac53c4426607818d62e8269b348` on GitHub main.
+This revision is prepared for GitHub distribution. Updating and restarting the Termux instance is a separate deployment step.
+The historical status below describes the old baseline, not the current test results.
+
+- Validate schema, finite positive critical data, active days, minimum leverage and unique symbols before cross-sectional scoring.
+- Apply the existing 0.92 leverage score cap before block/BaseScore calculation.
+- Calculate intraday range from high/low prices, never bid/ask quotes; missing factors remain missing and redistribute within their block.
+- Reject final scores with an entirely unavailable block rather than silently treating that block as zero.
+- Use one breakeven-distance calculation for scoring and display.
+- Preserve the existing six block weights and time-factor directions; investment-policy redesign is outside this patch.
+- Preserve the documented `calendar_days - 1` convention and disclose it. Its source convention still needs separate confirmation.
+- Report data-completeness index, missing-factor flags and penalties. The index is not a probability of profit or full coverage of every factor.
+- Source workbook has no market timestamp: freshness remains UNVERIFIED and is explicitly disclosed. Download time is not market time.
+- Both senders require explicit `BALE_CHAT_ID`. No automatic first/last-message recipient selection. Request errors do not expose token-bearing URLs.
+- Cards are split at card/newline boundaries where possible.
+- CLI and Bale use the same engine and write `output/latest_report.txt` plus `output/latest_audit.json` with source SHA-256 and selected score components.
+
+Validation: `python -m unittest discover -s tests -v` (15 regression tests).
+Real workbook fetched on 2026-09-19: 460 rows, 174 eligible, 286 excluded, no entirely missing block among eligible rows.
+No messages were sent to Bale. No production Termux instance was changed.
+
+Usage:
+
+```bash
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python report_engine.py
+python report_engine.py --input data/example.xlsx --symbol ضهرم --top 5
+```
+
+Set `BALE_BOT_TOKEN` and `BALE_CHAT_ID` in the process environment before running `python bale_listener.py`.
+`config/runtime.env.example` is an example, not an automatically loaded configuration.
+
+---
+
 ## Current Baseline
 
 - Local path: `~/OptimusAI_V41_LIVE`

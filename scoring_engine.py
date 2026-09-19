@@ -19,11 +19,14 @@ from pathlib import Path
 from datetime import datetime
 import re
 import sys
+import os
 import numpy as np
 import pandas as pd
 
 TOP_N = 15
 PROTOCOL = "PROTOCOL_OPTIONS_RANKING_V3"
+ENGINE_VERSION = "V4.1.1"
+MIN_LEVERAGE = float(os.getenv("MIN_LEVERAGE", "3.5"))
 
 WEIGHTS = {
     "liquidity": {"trade_value": 7, "volume": 5, "open_interest": 3, "spread": 3, "depth": 2},
@@ -46,19 +49,41 @@ NUMERIC_COLUMNS = [
     "اختلاف تا بلک شولز", "اهرم", "نوسان ضمنی", "نوسان تاریخی", "اندازه قرارداد",
     "حجم بهترین تقاضا", "قیمت بهترین تقاضا", "حجم بهترین عرضه", "قیمت بهترین عرضه",
     "شکاف قیمتی", "دلتا", "تتا", "گاما", "وگا", "رو",
+    "بیشترین قیمت", "کمترین قیمت",
 ]
+
+
+def normalize_text(value):
+    return str(value).strip().replace("ي", "ی").replace("ك", "ک").replace("‌", "")
+
+
+def normalize_columns(df):
+    def key(value):
+        return re.sub(r"[\s_]", "", normalize_text(value)).lower()
+    aliases = {"Symbol": "نماد", "Last": "آخرین قیمت", "آخرین": "آخرین قیمت",
+               "Underlying": "قیمت سهم پایه", "Leverage": "اهرم",
+               "Volume": "حجم معاملات", "حجم کل": "حجم معاملات",
+               "TradeValue": "ارزش معاملات", "ارزش کل": "ارزش معاملات",
+               "سررسید": "تاریخ سررسید"}
+    mapping = {key(c): c for c in NUMERIC_COLUMNS + ["نماد", "تاریخ سررسید"]}
+    mapping.update({key(k): v for k, v in aliases.items()})
+    result = df.rename(columns={c: mapping.get(key(c), normalize_text(c)) for c in df.columns})
+    if result.columns.duplicated().any():
+        raise ValueError("ستون تکراری یا مبهم در فایل ورودی")
+    return result
 
 
 def parse_number(value):
     if pd.isna(value):
         return np.nan
     if isinstance(value, (int, float, np.integer, np.floating)):
-        return float(value)
-    text = str(value).strip().replace(",", "").replace("٬", "")
+        return float(value) if np.isfinite(value) else np.nan
+    text = str(value).strip().replace(",", "").replace("٬", "").replace("٫", ".").replace("−", "-")
+    text = text.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
     if not text or text in {"-", "—", "nan", "None"}:
         return np.nan
     text = re.sub(r"\s*\([^)]*\)", "", text).strip()
-    match = re.search(r"[-+]?\d*\.?\d+\s*[KMBkmb]?", text)
+    match = re.fullmatch(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)\s*[KMBkmb]?", text)
     if not match:
         return np.nan
     token = match.group(0).replace(" ", "")
@@ -67,7 +92,8 @@ def parse_number(value):
     if suffix in {"K", "M", "B"}:
         token = token[:-1]
     try:
-        return float(token) * multiplier
+        number = float(token) * multiplier
+        return number if np.isfinite(number) else np.nan
     except ValueError:
         return np.nan
 
@@ -83,7 +109,7 @@ def numeric_columns(df):
 
 def robust_percentile(series, higher_is_better=True):
     """Robust cross-sectional percentile in [0,1], preserving missing values."""
-    s = pd.to_numeric(series, errors="coerce")
+    s = pd.to_numeric(series, errors="coerce").replace([np.inf, -np.inf], np.nan)
     out = pd.Series(np.nan, index=s.index, dtype=float)
     valid = s.dropna()
     if valid.empty:
@@ -132,8 +158,9 @@ def add_analytics(df):
         (df["آخرین قیمت"] - df["قیمت پایانی"]).abs() / df["قیمت پایانی"].abs() * 100, np.nan
     )
     df["IntradayRangePct"] = np.where(
-        df["آخرین قیمت"].notna() & (df["آخرین قیمت"] != 0),
-        (df["قیمت بهترین عرضه"] - df["قیمت بهترین تقاضا"]).abs() / df["آخرین قیمت"].abs() * 100,
+        (df["آخرین قیمت"] > 0) & (df["کمترین قیمت"] > 0)
+        & (df["بیشترین قیمت"] >= df["کمترین قیمت"]),
+        (df["بیشترین قیمت"] - df["کمترین قیمت"]) / df["آخرین قیمت"] * 100,
         np.nan
     )
     # Contract type is deliberately NOT inferred from symbol naming.
@@ -161,12 +188,14 @@ def add_analytics(df):
             missing += 1
         if pd.isna(row.get("دلتا")):
             f.append("MISSING_DELTA")
-        if pd.notna(row.get("دلتا")) and (row["دلتا"] > 0.95 or row["دلتا"] < 0.05):
+        if pd.notna(row.get("دلتا")) and (abs(row["دلتا"]) > 0.95 or abs(row["دلتا"]) < 0.05):
             f.append("ExtremeDelta")
         if pd.notna(row.get("روزهای تقویمی")) and row["روزهای تقویمی"] <= 5:
             f.append("NEAR_EXPIRY")
         f.append("STATUS_MAPPING_NOT_APPROVED")
         f.append("CONTRACT_TYPE_NOT_EXPLICIT")
+        if pd.isna(row.get("IntradayRangePct")):
+            f.append("MISSING_INTRADAY_RANGE")
         flags.append("|".join(f))
         confidence.append(max(0, 100 - missing * 10))
     df["AnalyticsFlags"] = flags
@@ -192,10 +221,9 @@ def score_v3(df):
     # Payoff. Moneyness is unavailable until contract type is explicit; redistribute its weight.
     df["Score_BreakevenDistance"] = robust_percentile(df["BreakevenDistancePct"].abs(), False)
     leverage = pd.to_numeric(df["اهرم"], errors="coerce").clip(lower=0, upper=12)
-    df["Score_Leverage"] = robust_percentile(np.log1p(leverage), True)
+    df["Score_Leverage"] = robust_percentile(np.log1p(leverage), True).clip(upper=0.92)
 
-    # Time: lower remaining time is not intrinsically better; the Master requires directional validation.
-    # Until an approved directional mapping is available, keep the factor missing rather than inventing one.
+    # Preserve the existing time direction; changing investment policy needs separate validation.
     df["Score_TradingDays"] = robust_percentile(df["روزهای معاملاتی"], False)
     df["Score_CalendarDays"] = robust_percentile(df["روزهای تقویمی"], False)
     df["Score_Theta"] = robust_percentile(df["تتا"].abs(), False)
@@ -230,7 +258,8 @@ def score_v3(df):
 
     block_cols = ["BlockScore_Liquidity", "BlockScore_Valuation", "BlockScore_Payoff",
                   "BlockScore_Time", "BlockScore_Greeks", "BlockScore_Market"]
-    df["BaseScore"] = df[block_cols].sum(axis=1, min_count=1).round(6)
+    # An entirely missing block must not silently become a zero score.
+    df["BaseScore"] = df[block_cols].sum(axis=1, min_count=len(block_cols)).round(6)
 
     # Exact approved risk thresholds are not available in the Master; do not invent them.
     df["RiskPenalty"] = 0.0
@@ -338,9 +367,6 @@ def score_v4_overlay(df):
     base = pd.to_numeric(df["BaseScore"], errors="coerce")
     spread = pd.to_numeric(df.get("Spread_Percentage"), errors="coerce")
     execution_penalty = np.where(spread.notna(), np.clip((spread - 12.0) / 28.0, 0, 0.35), 0.10)
-    if "Score_Leverage" in df:
-        # diminishing returns and cap: score remains useful, never dominant
-        df["Score_Leverage"] = pd.to_numeric(df["Score_Leverage"], errors="coerce").clip(upper=0.92)
     days = pd.to_numeric(df.get("RemainingDays"), errors="coerce")
     decay_penalty = np.select([days <= 2, days <= 5, days <= 10], [0.30, 0.18, 0.08], default=0.0)
     confidence = (pd.to_numeric(df.get("DataConfidence"), errors="coerce").fillna(0) / 100.0).clip(0.55, 1.0)
@@ -352,14 +378,42 @@ def score_v4_overlay(df):
 
 def score_dataframe(df):
     """Public V4 scoring entry point used by the report and Bale runners."""
-    work = numeric_columns(df.copy())
+    work = normalize_columns(df.copy()).reset_index(drop=True)
+    required = ["نماد", "حجم معاملات", "ارزش معاملات", "آخرین قیمت",
+                "قیمت اعمال", "قیمت سهم پایه", "روزهای تقویمی", "اهرم"]
+    missing = [c for c in required if c not in work.columns]
+    if missing:
+        raise ValueError("ستون‌های ضروری موجود نیستند: " + "، ".join(missing))
+    work = numeric_columns(work)
+    work["نماد"] = work["نماد"].astype("string").map(lambda x: normalize_text(x) if pd.notna(x) else pd.NA)
+    # Retain the documented source convention, never trust an incoming derived column.
+    work["RemainingDays"] = (work["روزهای تقویمی"] - 1).clip(lower=0)
+    valid = work["نماد"].notna() & ~work["نماد"].isin(["", "nan", "None", "<NA>"])
+    for col in required[1:]:
+        valid &= work[col].notna() & (work[col] > 0)
+    valid &= (work["RemainingDays"] > 0) & (work["اهرم"] >= MIN_LEVERAGE)
+    if not np.isfinite(MIN_LEVERAGE) or MIN_LEVERAGE <= 0:
+        raise ValueError("MIN_LEVERAGE باید مثبت و متناهی باشد")
+    initial_count = len(work)
+    work = work.loc[valid].copy()
+    if work["نماد"].duplicated().any():
+        raise ValueError("نماد تکراری در داده ورودی؛ رتبه‌بندی متوقف شد")
+    if work.empty:
+        raise ValueError("هیچ قرارداد معتبر و فعال با شرایط تعیین‌شده پیدا نشد")
     work = add_analytics(work)
-    if "RemainingDays" not in work.columns:
-        work["RemainingDays"] = (work["روزهای تقویمی"] - 1).clip(lower=0)
-    return score_v4_overlay(score_v3(work))
+    result = score_v4_overlay(score_v3(work))
+    result.attrs.update(input_count=initial_count, eligible_count=len(work),
+                        excluded_count=initial_count - len(work), engine_version=ENGINE_VERSION)
+    return result
 
 
 def main():
+    # One reporting path prevents CLI and Bale from producing different rankings.
+    from report_engine import main as report_main
+    return report_main()
+
+
+def legacy_main():
     files = sorted(Path(".").glob("optionschool24_all_*.xlsx"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not files:
         sys.exit("❌ فایل Optionschool24 با الگوی optionschool24_all_*.xlsx یافت نشد.")
