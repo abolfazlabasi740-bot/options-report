@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
 from opportunity_engine import run_shadow
+from schema_audit import audit_schema
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -65,6 +66,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     if isinstance(limit, bool) or not isinstance(limit, int) or limit <= 0:
         raise ValueError("تعداد قراردادها باید عدد صحیح مثبت باشد")
     df = pd.read_excel(path)
+    source_schema_audit = audit_schema(df)
 
     # V4.1 scoring engine: GitHub six-block production candidate
     from scoring_engine import score_dataframe
@@ -162,6 +164,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
             work[col] = pd.to_numeric(scored[col], errors="coerce")
     work["AnalyticsFlags"] = scored["AnalyticsFlags"]
     work.attrs.update(scored.attrs)
+    work.attrs["source_schema_audit"] = source_schema_audit
     work.attrs["unscorable_count"] = int(scored["FinalScore"].isna().sum())
 
     # فقط قراردادهای فعال و واجد شرایط V4.1
@@ -221,6 +224,7 @@ def format_report(work, source):
         "ℹ️ امتیاز، رتبه نسبی قراردادهاست؛ احتمال سود یا توصیه خرید/فروش نیست.",
         "ℹ️ روز باقی‌مانده طبق قرارداد فعلی منبع: روزهای تقویمی منهای یک.",
         f"ورودی: {work.attrs.get('input_count', 'نامشخص')} | حذف نامعتبر: {work.attrs.get('excluded_count', 'نامشخص')} | فاقد بلوک کامل: {work.attrs.get('unscorable_count', 'نامشخص')}",
+        f"🔬 وضعیت Schema منبع: {work.attrs.get('source_schema_audit', {}).get('identity_readiness', 'نامشخص')} | Contract Type: {work.attrs.get('source_schema_audit', {}).get('contract_type_readiness', 'نامشخص')}",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
 
