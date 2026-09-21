@@ -280,15 +280,18 @@ def score_v4_overlay(df):
 def shadow_score_dataframe(df):
     """Run the existing V4 scoring calculations without the production eligibility gate.
 
-    This is evidence-only. It reuses add_analytics -> score_v3 -> score_v4_overlay,
-    so Shadow calculations cannot drift into a second scoring policy.
+    All missing scoring inputs remain NaN; no zero/default market value is invented.
+    The same analytics/scoring functions are reused so Shadow cannot drift into a
+    second scoring policy.
     """
     work = normalize_columns(df.copy()).reset_index(drop=True)
-    required = ["نماد", "حجم معاملات", "ارزش معاملات", "آخرین قیمت",
-                "قیمت اعمال", "قیمت سهم پایه", "روزهای تقویمی", "اهرم"]
-    missing = [c for c in required if c not in work.columns]
-    if missing:
-        raise ValueError("ستون‌های ضروری موجود نیستند: " + "، ".join(missing))
+    if "نماد" not in work.columns:
+        work["نماد"] = pd.Series(pd.NA, index=work.index, dtype="string")
+    for column in NUMERIC_COLUMNS:
+        if column not in work.columns:
+            work[column] = np.nan
+    if "تاریخ سررسید" not in work.columns:
+        work["تاریخ سررسید"] = pd.NA
     work = numeric_columns(work)
     work["نماد"] = work["نماد"].astype("string").map(
         lambda x: normalize_text(x) if pd.notna(x) else pd.NA
