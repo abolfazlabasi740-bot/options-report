@@ -14,6 +14,7 @@ from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 from red_team_shadow import ENGINE_VERSION as RED_TEAM_ENGINE_VERSION, challenge_cases
 from case_memory_shadow import update_memory
+from relative_value_shadow import analyze_chain
 from chain_identity_shadow import ENGINE_VERSION as CHAIN_ENGINE_VERSION, build_chain_identity
 import bale_listener
 import send_to_bale
@@ -200,6 +201,19 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(chain_cases[0]["evidence"][2]["value"], 1)
         self.assertEqual(chain_cases[0]["evidence"][3]["value"], 30.0)
         pd.testing.assert_series_equal(before, scored["FinalScore"])
+
+    def test_relative_pair_is_evidence_only_and_does_not_claim_parity(self):
+        data = fixture()
+        data["نماد سهم پایه"] = ["فزر"] * 4
+        data["تاریخ سررسید"] = ["1405/07/30"] * 4
+        data["نوع قرارداد"] = ["CALL", "PUT", "CALL", "PUT"]
+        scored = score_dataframe(data)
+        chain = build_chain_identity(scored)
+        cases = analyze_chain(scored, chain, "relative-test")
+        self.assertEqual(len(cases), 2)
+        self.assertTrue(all(c["type"] == "RELATIVE_PAIR_STRUCTURE" for c in cases))
+        self.assertTrue(all(c["status"] in {"WATCH", "INSUFFICIENT_DATA"} for c in cases))
+        self.assertTrue(all("mispricing" not in c["reason"].lower() for c in cases))
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
