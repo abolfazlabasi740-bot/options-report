@@ -15,6 +15,7 @@ from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 from red_team_shadow import ENGINE_VERSION as RED_TEAM_ENGINE_VERSION, challenge_cases
 from case_memory_shadow import update_memory
 from relative_value_shadow import analyze_chain
+from case_explanation_shadow import explain_cases, ENGINE_VERSION as EXPLANATION_ENGINE_VERSION
 from chain_identity_shadow import ENGINE_VERSION as CHAIN_ENGINE_VERSION, build_chain_identity
 import bale_listener
 import send_to_bale
@@ -215,6 +216,52 @@ class RegressionTests(unittest.TestCase):
         self.assertTrue(all(c["type"] == "RELATIVE_PAIR_STRUCTURE" for c in cases))
         self.assertTrue(all(c["status"] in {"WATCH", "INSUFFICIENT_DATA"} for c in cases))
         self.assertTrue(all("mispricing" not in c["reason"].lower() for c in cases))
+
+
+    def test_case_explanation_is_evidence_only_and_traceable(self):
+        cases = [{
+            "case_id": "s:RELATIVE:ضتست0",
+            "snapshot_id": "s",
+            "symbol": "ضتست0",
+            "type": "RELATIVE_PAIR_STRUCTURE",
+            "status": "WATCH",
+            "evidence": [
+                {"name": "call_last_price", "value": 10, "source": "آخرین قیمت"},
+                {"name": "put_last_price", "value": 8, "source": "آخرین قیمت"},
+                {"name": "absolute_difference_last_price", "value": 2, "source": "آخرین قیمت"},
+                {"name": "call_implied_volatility", "value": None, "source": "نوسان ضمنی"},
+            ],
+        }]
+        result = explain_cases(cases, snapshot_id="s")
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["engine_version"], EXPLANATION_ENGINE_VERSION)
+        item_map = {x["name"]: x for x in result["cases"][0]["items"]}
+        self.assertEqual(item_map["call_last_price"]["classification"], "OBSERVED")
+        self.assertEqual(item_map["absolute_difference_last_price"]["classification"], "EXPLAINED")
+        self.assertEqual(item_map["call_implied_volatility"]["classification"], "DATA_GAP")
+        self.assertEqual(result["cases"][0]["explanation_status"], "DATA_GAPS_PRESENT")
+
+    def test_case_explanation_marks_red_team_challenge_without_mutation(self):
+        cases = [{
+            "case_id": "s:RELATIVE:ضتست0",
+            "snapshot_id": "s",
+            "symbol": "ضتست0",
+            "type": "RELATIVE_VALUE_ANOMALY",
+            "status": "CONFIRMED",
+            "evidence": [{"name": "score", "value": 1, "source": "score"}],
+        }]
+        red = {"cases": [{
+            "case_id": "s:RELATIVE:ضتست0",
+            "challenges": [{
+                "code": "LOW_CONFIDENCE",
+                "evidence": 70,
+                "source": "DataConfidence",
+                "reason": "Evidence quality is below the confirmation threshold.",
+            }],
+        }]}
+        result = explain_cases(cases, red, "s")
+        self.assertEqual(result["cases"][0]["explanation_status"], "RED_TEAM_CHALLENGED")
+        self.assertEqual(cases[0]["status"], "CONFIRMED")
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
