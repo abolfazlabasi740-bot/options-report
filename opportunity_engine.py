@@ -142,6 +142,33 @@ def _contract_cases(row, snapshot_id):
             status = "WATCH"
         else:
             status = "REJECTED"
+    # 2b) Optional explicit underlying context. This activates only when the source
+    # provides underlying last/close prices explicitly; no symbol-based inference.
+    underlying_last = _num(row, "underlying_last_price")
+    underlying_close = _num(row, "underlying_close_price")
+    if underlying_last is not None and underlying_close not in (None, 0) and distance is not None:
+        underlying_return = (underlying_last - underlying_close) / abs(underlying_close) * 100
+        alignment = (
+            "SAME_NEGATIVE_SIGN" if underlying_return < 0 and distance < 0
+            else "SAME_POSITIVE_SIGN" if underlying_return > 0 and distance > 0
+            else "OPPOSITE_SIGN" if underlying_return * distance < 0
+            else "NEUTRAL"
+        )
+        cases.append({
+            **common,
+            "case_id": _case_id(snapshot_id, symbol, "BASE_BREAKEVEN_CONTEXT"),
+            "type": "BASE_BREAKEVEN_CONTEXT",
+            "status": "WATCH",
+            "reason": "Explicit underlying return and breakeven distance are jointly observable; this is contextual evidence only.",
+            "evidence": [
+                _evidence("underlying_last_price", underlying_last, "underlying_last_price"),
+                _evidence("underlying_close_price", underlying_close, "underlying_close_price"),
+                _evidence("underlying_return_pct", underlying_return, "underlying_last_price/underlying_close_price"),
+                _evidence("breakeven_distance_pct", distance, "BreakevenDistancePct"),
+                _evidence("sign_relationship", alignment, "derived_from_explicit_fields"),
+            ],
+        })
+
     cases.append({
         **common,
         "case_id": _case_id(snapshot_id, symbol, "BREAKEVEN"),
