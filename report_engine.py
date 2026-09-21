@@ -118,6 +118,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
         previous_history = prior_history[-2]
 
     history_result = append_snapshot(history_file, current_history)
+    history_sequence = load_history(history_file)
     history_diff = diff_snapshots(
         previous_history,
         current_history,
@@ -131,6 +132,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
         memory_path=memory_file,
         historical_previous=previous_history,
         historical_current=current_history,
+        historical_sequence=history_sequence,
     )
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
