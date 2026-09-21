@@ -405,6 +405,8 @@ class RegressionTests(unittest.TestCase):
             self.assertEqual((root / "output/latest_report.txt").read_text(encoding="utf-8"), report)
             self.assertEqual(audit["source_sha256"], hashlib.sha256(source.read_bytes()).hexdigest())
             self.assertEqual(audit["selected_count"], 4)
+            self.assertEqual(audit["source_schema_audit"]["status"], "SUCCESS")
+            self.assertEqual(audit["source_schema_audit"]["identity_readiness"], "INSUFFICIENT_DATA")
             self.assertIsNone(audit["market_data_timestamp"])
             self.assertEqual([r["نماد"] for r in audit["selected"]], work["نماد"].tolist())
 
