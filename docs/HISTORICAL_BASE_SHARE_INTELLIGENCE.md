@@ -56,3 +56,12 @@ The repository now contains the historical and base-share engines and regression
 TSETMC/base-share fields remain non-live until a real runtime response is captured, normalized and hashed.
 
 The active Six-Block engine is unchanged.
+
+
+## Case Lifecycle & Replay
+
+`case_lifecycle_shadow.py` adds an append-only case event stream. Stable case identity is `type::symbol`, while each event retains the source snapshot and case ID.
+
+Lifecycle states are descriptive: `NEW`, `PERSISTENT`, `STRENGTHENING`, `WEAKENING`, `RESOLVED`, and `RECURRING`. A lifecycle transition is evidence history only; it does not alter the current score or ranking.
+
+`replay_engine.py` executes the Shadow pipeline twice against the same deterministic inputs and compares canonical fingerprints after removing only volatile generation time. A mismatch is an integrity failure rather than a scoring adjustment.
