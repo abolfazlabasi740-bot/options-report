@@ -186,9 +186,9 @@ class RegressionTests(unittest.TestCase):
         data["تاریخ سررسید"] = ["1405/07/30"] * 4
         data["نوع قرارداد"] = ["CALL", "PUT", "CALL", "PUT"]
         scored = score_dataframe(data)
-        before = scored["FinalScore"].copy()
         scored.loc[0, "FinalScore"] = 90.0
         scored.loc[1, "FinalScore"] = 60.0
+        before = scored["FinalScore"].copy()
 
         result = run_shadow(scored, "chain-shadow-test")
         chain_cases = [
@@ -198,7 +198,7 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(len(chain_cases), 1)
         self.assertEqual(chain_cases[0]["status"], "WATCH")
         self.assertEqual(chain_cases[0]["evidence"][2]["value"], 30.0)
-        pd.testing.assert_series_equal(before, before)  # immutable baseline sanity
+        pd.testing.assert_series_equal(before, scored["FinalScore"])
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
