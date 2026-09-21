@@ -11,6 +11,7 @@ import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
 from opportunity_engine import run_shadow
 from schema_audit import audit_schema
+from replay_engine import verify_shadow_replay
 from historical_snapshot import (
     append_snapshot,
     build_snapshot,
@@ -126,10 +127,20 @@ def build_report(path, top_count=None, symbol_prefix=None):
     )
 
     memory_file = ROOT / "output" / "case_memory_shadow.json"
+    lifecycle_file = ROOT / "output" / "case_lifecycle_shadow.jsonl"
     shadow = run_shadow(
         scored,
         snapshot_id,
         memory_path=memory_file,
+        historical_previous=previous_history,
+        historical_current=current_history,
+        historical_sequence=history_sequence,
+        lifecycle_path=lifecycle_file,
+    )
+
+    replay = verify_shadow_replay(
+        scored,
+        snapshot_id,
         historical_previous=previous_history,
         historical_current=current_history,
         historical_sequence=history_sequence,
@@ -262,6 +273,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     # Keep shadow evidence attached to the report object for audit persistence.
     work.attrs["opportunity_shadow"] = shadow
     work.attrs["opportunity_shadow_summary"] = shadow.get("summary", {})
+    work.attrs["replay_verification"] = replay
     work.attrs["historical_snapshot"] = {
         "status": history_result.get("status"),
         "snapshot_id": current_history.get("snapshot_id"),
@@ -378,6 +390,11 @@ def save_report(work, source):
         "diff_summary": work.attrs.get("historical_snapshot", {}).get("diff_summary", {}),
         "store_file": work.attrs.get("historical_snapshot", {}).get("store_file"),
     }
+    replay_file = output / "latest_replay_verification.json"
+    replay_file.write_text(
+        json.dumps(work.attrs.get("replay_verification", {}), ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
     history_diff_file = output / "latest_historical_diff.json"
     history_diff_temp = output / "latest_historical_diff.json.tmp"
     history_diff_temp.write_text(
@@ -393,6 +410,10 @@ def save_report(work, source):
         "historical_snapshot": {
             **historical_diff,
             "diff_file": history_diff_file.name,
+        },
+        "replay_verification": {
+            **work.attrs.get("replay_verification", {}),
+            "artifact_file": replay_file.name,
         },
         "opportunity_shadow": {
             "status": shadow.get("status"),
