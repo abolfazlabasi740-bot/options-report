@@ -145,3 +145,13 @@ As of 2026-09-21:
 - TSETMC integration is not yet production-active in the repository.
 - Six-Block scoring remains unchanged.
 - No TSETMC field should be treated as live-verified from this environment until a real runtime response is captured and hashed.
+
+## Feature / Filter Shadow Layer
+
+The repository now has an explicit technical feature builder and configurable filter evaluator. Both remain source-evidence layers. They require explicit input data and parameters and are not promoted into scoring or ranking.
+
+Technical feature windows are configuration inputs rather than hidden constants.
+
+## TSETMC Source Smoke
+
+A manual live smoke workflow records real TSETMC market-overview source evidence when executed from GitHub Actions. Its evidence is intentionally distinct from Termux runtime evidence.
