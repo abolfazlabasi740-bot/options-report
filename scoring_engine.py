@@ -290,9 +290,14 @@ def score_dataframe(df):
     # Retain the documented source convention, never trust an incoming derived column.
     work["RemainingDays"] = (work["روزهای تقویمی"] - 1).clip(lower=0)
     valid = work["نماد"].notna() & ~work["نماد"].isin(["", "nan", "None", "<NA>"])
+    gate_masks = {"symbol_present": valid.copy()}
     for col in required[1:]:
-        valid &= work[col].notna() & (work[col] > 0)
-    valid &= (work["RemainingDays"] > 0) & (work["اهرم"] >= MIN_LEVERAGE)
+        condition = work[col].notna() & (work[col] > 0)
+        gate_masks[f"required_{col}"] = condition.copy()
+        valid &= condition
+    gate_masks["remaining_days_positive"] = work["RemainingDays"] > 0
+    gate_masks["minimum_leverage"] = work["اهرم"] >= MIN_LEVERAGE
+    valid &= gate_masks["remaining_days_positive"] & gate_masks["minimum_leverage"]
     if not np.isfinite(MIN_LEVERAGE) or MIN_LEVERAGE <= 0:
         raise ValueError("MIN_LEVERAGE باید مثبت و متناهی باشد")
     initial_count = len(work)
@@ -303,8 +308,12 @@ def score_dataframe(df):
         raise ValueError("هیچ قرارداد معتبر و فعال با شرایط تعیین‌شده پیدا نشد")
     work = add_analytics(work)
     result = score_v4_overlay(score_v3(work))
+    gate_counts = {name: int(mask.sum()) for name, mask in gate_masks.items()}
     result.attrs.update(input_count=initial_count, eligible_count=len(work),
-                        excluded_count=initial_count - len(work), engine_version=ENGINE_VERSION)
+                        excluded_count=initial_count - len(work), engine_version=ENGINE_VERSION,
+                        eligibility_gate_counts=gate_counts,
+                        production_min_leverage=MIN_LEVERAGE,
+                        production_remaining_days_rule="RemainingDays > 0")
     return result
 
 
