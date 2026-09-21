@@ -115,20 +115,16 @@ def build_chain_identity(df):
     for r in valid_rows:
         groups.setdefault(r["chain_key"], []).append(r)
 
-    ambiguous = []
+    duplicate_map = {}
     for key, members in groups.items():
-        # More than one explicit contract type is expected in a real option chain.
-        # Ambiguity is only raised for duplicate same-type identity rows.
         identities = {}
         for m in members:
             identity = (m["strike"], m["contract_type"])
             identities.setdefault(identity, []).append(m)
-        duplicate_conflicts = [
+        duplicate_map[key] = [
             identity for identity, rows_for_identity in identities.items()
             if len(rows_for_identity) > 1
         ]
-        if duplicate_conflicts:
-            ambiguous.append(key)
 
     return {
         "status": "SUCCESS",
@@ -139,7 +135,7 @@ def build_chain_identity(df):
             "valid_identity_rows": len(valid_rows),
             "insufficient_identity_rows": len(rows) - len(valid_rows),
             "chain_count": len(groups),
-            "ambiguous_chain_count": len(set(ambiguous)),
+            "ambiguous_chain_count": sum(bool(v) for v in duplicate_map.values()),
             "total_strikes": len({(r["chain_key"], r["strike"]) for r in valid_rows}),
         },
         "rows": rows,
@@ -153,8 +149,9 @@ def build_chain_identity(df):
                 "contract_types": sorted({m["contract_type"] for m in members if m["contract_type"]}),
                 "has_explicit_call": any(m["contract_type"] == "CALL" for m in members),
                 "has_explicit_put": any(m["contract_type"] == "PUT" for m in members),
+                "duplicate_identities": duplicate_map.get(key, []),
+                "status": "WARNING_DUPLICATE_IDENTITY" if duplicate_map.get(key) else "VALID",
             }
             for key, members in groups.items()
-            if key not in set(ambiguous)
         },
     }
