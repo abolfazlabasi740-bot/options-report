@@ -537,3 +537,13 @@ This decision supersedes the earlier single-source architecture description for 
 - The failure in earlier runs was traced to an unrelated NameError in live_schema_audit.py and was fixed by removing undefined CLI-argument references from audit_live().
 - Current repository regression gate is green after that fix.
 - No Termux deployment/restart is claimed from GitHub CI evidence.
+
+
+## Attention Allocation Shadow — 2026-09-21
+
+- Engine: ATTENTION-SHADOW-1.0.
+- Attention allocation is review-routing only and does not rank contracts or create trade direction.
+- Red Team challenges route to RED_TEAM_REVIEW before other routes.
+- Missing evidence routes to DATA_COMPLETION.
+- Confirmed cases with historical patterns route to CROSS_SNAPSHOT_REVIEW.
+- Other confirmed/watch cases are routed for evidence review or follow-up only.
