@@ -145,6 +145,8 @@ def build_report(path, top_count=None, symbol_prefix=None):
         historical_current=current_history,
         historical_sequence=history_sequence,
     )
+    if not replay.get("deterministic"):
+        raise RuntimeError("Shadow replay mismatch; report generation stopped")
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
     base = find_column(scored, ["قیمت سهم پایه", "Underlying"])
