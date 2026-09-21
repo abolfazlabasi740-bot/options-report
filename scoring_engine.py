@@ -301,6 +301,7 @@ def score_dataframe(df):
     if not np.isfinite(MIN_LEVERAGE) or MIN_LEVERAGE <= 0:
         raise ValueError("MIN_LEVERAGE باید مثبت و متناهی باشد")
     initial_count = len(work)
+    pre_gate = work.copy()
     work = work.loc[valid].copy()
     if work["نماد"].duplicated().any():
         raise ValueError("نماد تکراری در داده ورودی؛ رتبه‌بندی متوقف شد")
@@ -311,6 +312,7 @@ def score_dataframe(df):
     gate_counts = {name: int(mask.sum()) for name, mask in gate_masks.items()}
     result.attrs.update(input_count=initial_count, eligible_count=len(work),
                         excluded_count=initial_count - len(work), engine_version=ENGINE_VERSION,
+                        pre_gate_rows=pre_gate,
                         eligibility_gate_counts=gate_counts,
                         production_min_leverage=MIN_LEVERAGE,
                         production_remaining_days_rule="RemainingDays > 0")
