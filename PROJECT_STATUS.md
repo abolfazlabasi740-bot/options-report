@@ -359,3 +359,14 @@ Next Phase: Runtime Verification & Architecture Expansion
 - Shadow output is persisted separately from the main report and summarized in `latest_audit.json`.
 - CI regression suite passed on commit `04a7de5`.
 - A complete Opportunity/Case system still requires chain confirmation, TSETMC/base-share confirmation, FindChart, Red Team, persistence/novelty, routing, attention allocation and lifecycle memory.
+
+
+## Chain Intelligence Shadow — 2026-09-21
+
+- Engine: `CHAIN-SHADOW-1.0`.
+- State: `SHADOW_ACTIVE_NON_BLOCKING`.
+- Chain identity requires explicit underlying + expiry + strike fields.
+- Contract type is consumed only when an explicit type field exists.
+- Option-symbol parsing is intentionally disabled.
+- Validated chains can emit `CHAIN_STRUCTURE_ANOMALY` when member score dispersion reaches 20 points.
+- No chain case changes FinalScore, ranking, or Bale output.
