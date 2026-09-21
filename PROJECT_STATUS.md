@@ -485,3 +485,14 @@ This decision supersedes the earlier single-source architecture description for 
 - Documentation added at `docs/TSETMC_ADAPTER.md`.
 - This is an implementation milestone, not live verification. Termux has not been claimed as updated or tested from this GitHub change.
 - Next controlled layer: TSETMC-to-OptionSchool24 mapping with explicit match states and no synthetic identity.
+
+
+## TSETMC Mapping Gate — Current Phase
+
+- Added `tsetmc_mapping.py` as the controlled source-mapping boundary.
+- Mapping states are explicit: EXACT_INSTRUMENT_ID, SYMBOL_ONLY_CANDIDATE, AMBIGUOUS and NO_MATCH.
+- Only an explicit instrument identifier match is eligible for promotion into the canonical merged snapshot.
+- Symbol-only matches remain candidates and are never silently promoted.
+- Added regression coverage for exact, symbol-only, ambiguous and no-match paths.
+- Six-Block scoring, FinalScore, Top-N ranking and Bale output remain unchanged.
+- Next layer is canonical multi-source snapshot construction from only promoted exact matches plus independently validated OptionSchool24 analytics.
