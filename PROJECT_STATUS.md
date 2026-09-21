@@ -668,3 +668,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Missing/low leverage rows remain inspectable in Shadow and are classified through Eligibility Shadow rather than silently disappearing.
 - Added regression coverage for gate-free Shadow scoring and expired-contract separation.
 - CI status for these latest commits has not been claimed here because no associated workflow run was returned by the GitHub workflow lookup; target Termux execution has also not been claimed.
+
+
+## Shadow Scoring Missing-Data Hardening — 2026-09-21
+
+- `shadow_score_dataframe()` now tolerates missing scoring columns by preserving them as NaN.
+- Missing leverage is therefore retained as missing evidence instead of causing the entire Shadow path to fail.
+- No missing market field is converted to zero or a synthetic neutral value.
+- The same production scoring primitives remain reused; only the production eligibility gate is bypassed in Shadow.
+- Regression coverage now explicitly verifies a source row with no leverage column can still pass through Shadow Scoring with leverage remaining missing.
