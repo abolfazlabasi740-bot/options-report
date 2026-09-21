@@ -278,6 +278,9 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(result["status"], "SUCCESS")
         self.assertIn("case_explanations", result)
         self.assertEqual(result["case_explanations"]["status"], "SUCCESS")
+        self.assertIn("schema_audit", result)
+        self.assertEqual(result["schema_audit"]["status"], "SUCCESS")
+        self.assertEqual(result["summary"]["schema_identity_readiness"], "INSUFFICIENT_DATA")
         self.assertTrue(scored["FinalScore"].equals(before))
 
     def test_invalid_rows_cannot_change_valid_scores(self):
