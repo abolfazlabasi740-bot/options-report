@@ -26,6 +26,7 @@ from case_memory_shadow import update_memory
 from chain_identity_shadow import build_chain_identity
 from relative_value_shadow import analyze_chain
 from case_explanation_shadow import explain_cases
+from schema_audit import audit_schema
 import math
 import numpy as np
 import pandas as pd
@@ -321,6 +322,7 @@ def run_shadow(scored, snapshot_id, memory_path=None):
             "summary": {},
         }
 
+    schema_audit_result = audit_schema(scored)
     chain_result = build_chain_identity(scored)
     cases = []
     for _, row in scored.iterrows():
@@ -357,11 +359,14 @@ def run_shadow(scored, snapshot_id, memory_path=None):
             "red_team_challenged_total": red_team.get("summary", {}).get("challenged_total", 0),
             "chain_count": chain_result.get("summary", {}).get("chain_count", 0),
             "chain_identity_status": chain_result.get("status"),
+            "schema_identity_readiness": schema_audit_result.get("identity_readiness"),
+            "schema_contract_type_readiness": schema_audit_result.get("contract_type_readiness"),
         },
         "cases": cases,
         "red_team": red_team,
         "case_explanations": explanations,
         "chain_identity": chain_result,
+        "schema_audit": schema_audit_result,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
