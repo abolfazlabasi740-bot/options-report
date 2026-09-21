@@ -26,15 +26,13 @@ def audit_live(url: str = DEFAULT_URL, temp_path: Path = Path("output/.live_opti
         result = {
             "status": "SUCCESS",
             "engine_version": audit["engine_version"],
-            "source_url": args.url,
+            "source_url": url,
             "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
             "source_sha256": hashlib.sha256(response.content).hexdigest(),
             "row_count": int(len(df)),
             "column_count": int(len(df.columns)),
             "audit": audit,
         }
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         return result
     finally:
         temp.unlink(missing_ok=True)
