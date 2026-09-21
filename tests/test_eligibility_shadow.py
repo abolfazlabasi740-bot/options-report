@@ -41,3 +41,12 @@ def test_dataframe_summary():
     assert result["summary"]["counts"]["ACTIVE_ELIGIBLE"] == 1
     assert result["summary"]["counts"]["EXPIRED"] == 1
     assert result["summary"]["counts"]["LEVERAGE_UNAVAILABLE"] == 1
+
+
+def test_opportunity_universe_retains_expired_and_missing_leverage():
+    from eligibility_shadow import opportunity_universe
+    df = pd.DataFrame([base(), base(RemainingDays=0), base(اهرم=None)])
+    result = opportunity_universe(df, min_leverage=3.5)
+    assert result["summary"]["rows_scanned"] == 3
+    assert result["summary"]["opportunity_candidates"] == 3
+    assert result["summary"]["production_eligible"] == 1
