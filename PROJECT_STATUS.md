@@ -597,3 +597,11 @@ This decision supersedes the earlier single-source architecture description for 
 - The gate checks critical source-file presence, Python compilation, repository SHA when available, presence-only environment flags and latest Audit Integrity evidence.
 - Secret values are never recorded; environment checks are boolean-only.
 - A PASS from this script is runtime evidence only when executed on the target Termux instance. No Termux execution is claimed from GitHub.
+
+
+## Legacy Runtime Boundary Audit — 2026-09-21
+
+- Confirmed legacy `score_v3()` remains inside the existing scoring chain as the baseline scoring primitive; no deletion or replacement was made.
+- V4.1 Shadow intelligence layers remain observational and do not alter FinalScore or ranking.
+- No unverified legacy file was promoted into the new multi-source canonical path.
+- Current release gate remains: repository tests + deterministic replay + audit integrity + target Termux runtime evidence.
