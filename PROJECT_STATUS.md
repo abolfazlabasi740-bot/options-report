@@ -433,3 +433,18 @@ Observed source schema on `sheet1`:
 - Result for this archived source: identity readiness = `INSUFFICIENT_DATA`; contract type readiness = `INSUFFICIENT_DATA`.
 - The source contains option symbols whose prefixes visually distinguish contracts, but that naming convention is not accepted as chain-direction evidence.
 - This evidence belongs to the archived workbook and does not establish the schema of a fresh live download on 2026-09-21.
+
+
+## Direct Workbook Schema Inspection — 2026-09-21
+
+The archived real workbook `optionschool24_all_1788105478761.xlsx` was inspected with the spreadsheet workbook reader.
+
+- Sheet: `sheet1`
+- Used range: `A1:AL410`
+- Header count: 38 columns
+- Explicit source fields confirmed: symbol, strike, base price, expiry, days, open interest, volume, trade value, prices, status, leverage, IV/HV, contract size, order-book fields, and Greeks.
+- Explicit Underlying / `نماد سهم پایه`: not present.
+- Explicit Contract Type / `نوع قرارداد`: not present.
+- Therefore Chain Identity readiness remains `INSUFFICIENT_DATA` for this source, and symbol-based CALL/PUT inference remains disabled.
+
+The archived source contains rows such as `ضهرم6047` and `ضهرم7060`. These are preserved only as observed source symbols; their prefixes are not converted into contract-type evidence.
