@@ -32,6 +32,7 @@ class OpportunityConfig:
     confirmation_confidence: float = _float("OPP_CONFIRMATION_CONFIDENCE", 90.0)
     near_expiry_days: int = _int("OPP_NEAR_EXPIRY_DAYS", 10)
     historical_pattern_window: int = _int("HISTORICAL_PATTERN_WINDOW", 3)
+    production_min_leverage_reference: float = _float("PRODUCTION_MIN_LEVERAGE_REFERENCE", 3.5)
 
     def validate(self) -> None:
         bounded = {
@@ -52,6 +53,8 @@ class OpportunityConfig:
             raise ValueError("near_expiry_days must be non-negative")
         if self.historical_pattern_window < 1:
             raise ValueError("historical_pattern_window must be positive")
+        if self.production_min_leverage_reference <= 0:
+            raise ValueError("production_min_leverage_reference must be positive")
 
 
 CONFIG = OpportunityConfig()
