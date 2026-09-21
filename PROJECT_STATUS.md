@@ -677,3 +677,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - No missing market field is converted to zero or a synthetic neutral value.
 - The same production scoring primitives remain reused; only the production eligibility gate is bypassed in Shadow.
 - Regression coverage now explicitly verifies a source row with no leverage column can still pass through Shadow Scoring with leverage remaining missing.
+
+
+## Explicit Underlying–Breakeven Context — 2026-09-21
+
+- Added optional `BASE_BREAKEVEN_CONTEXT` evidence in Opportunity Engine.
+- It activates only when explicit `underlying_last_price` and `underlying_close_price` fields are present.
+- It records the actual underlying return, signed breakeven distance and their sign relationship.
+- It does not infer CALL/PUT from symbols and does not classify the relationship as a buy/sell signal.
+- Current OptionSchool24 input does not automatically receive these fields; therefore no live opportunity is claimed from this detector until the underlying fields are actually sourced and evidenced.
+- Added regression coverage for explicit negative underlying return with negative breakeven distance.
