@@ -131,6 +131,22 @@ class RegressionTests(unittest.TestCase):
         self.assertTrue(all(case["status"] == "REJECTED" for case in expired))
         self.assertTrue(all(case["eligibility"]["status"] == "EXPIRED" for case in expired))
 
+
+    def test_base_breakeven_context_requires_explicit_underlying_fields(self):
+        scored = shadow_score_dataframe(fixture())
+        scored["underlying_last_price"] = 90.0
+        scored["underlying_close_price"] = 100.0
+        scored["BreakevenDistancePct"] = -10.0
+        result = run_shadow(scored, "base-breakeven-context")
+        cases = [x for x in result["cases"] if x["type"] == "BASE_BREAKEVEN_CONTEXT"]
+        self.assertEqual(len(cases), len(scored))
+        self.assertTrue(all(x["status"] == "WATCH" for x in cases))
+        self.assertTrue(all(
+            any(e["name"] == "sign_relationship" and e["value"] == "SAME_NEGATIVE_SIGN"
+                for e in x["evidence"])
+            for x in cases
+        ))
+
     def test_red_team_challenges_near_expiry_opportunity(self):
         scored = score_dataframe(fixture())
         scored.loc[:, "DataConfidence"] = 100.0
