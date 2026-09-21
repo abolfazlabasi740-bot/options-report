@@ -13,6 +13,7 @@ from report_engine import build_report, format_report, save_report, snapshot_id_
 from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 from red_team_shadow import ENGINE_VERSION as RED_TEAM_ENGINE_VERSION, challenge_cases
+from case_memory_shadow import update_memory
 import bale_listener
 import send_to_bale
 
@@ -123,6 +124,33 @@ class RegressionTests(unittest.TestCase):
             all(case["status"] in {"CONFIRMED", "WATCH", "REJECTED", "INSUFFICIENT_DATA"}
                 for case in result["cases"])
         )
+
+    def test_case_memory_tracks_new_and_persistent_states(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "case_memory.json"
+            case = {
+                "symbol": "ضتست0",
+                "type": "RELATIVE_VALUE_ANOMALY",
+                "status": "WATCH",
+                "snapshot_id": "s1",
+            }
+            first = update_memory(path, [case])
+            self.assertEqual(first["cases"]["RELATIVE_VALUE_ANOMALY::ضتست0"]["state"], "NEW")
+
+            case2 = dict(case)
+            case2["snapshot_id"] = "s2"
+            second = update_memory(path, [case2])
+            self.assertEqual(
+                second["cases"]["RELATIVE_VALUE_ANOMALY::ضتست0"]["state"],
+                "PERSISTENT",
+            )
+
+    def test_case_memory_never_changes_score_path(self):
+        scored = score_dataframe(fixture())
+        before = scored["FinalScore"].copy()
+        result = run_shadow(scored, "memory-score-test")
+        self.assertEqual(result["status"], "SUCCESS")
+        pd.testing.assert_series_equal(before, scored["FinalScore"])
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
