@@ -12,6 +12,7 @@ from scoring_engine import score_dataframe, parse_number, block_weighted_score
 from report_engine import build_report, format_report, save_report, snapshot_id_for
 from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
+from red_team_shadow import ENGINE_VERSION as RED_TEAM_ENGINE_VERSION, challenge_cases
 import bale_listener
 import send_to_bale
 
@@ -90,6 +91,38 @@ class RegressionTests(unittest.TestCase):
         relative = [c for c in result["cases"] if c["type"] == "RELATIVE_VALUE_ANOMALY"][0]
         self.assertNotIn("BUY", relative["reason"].upper())
         self.assertNotIn("SELL", relative["reason"].upper())
+
+    def test_red_team_challenges_near_expiry_opportunity(self):
+        scored = score_dataframe(fixture())
+        scored.loc[:, "DataConfidence"] = 100.0
+        scored.loc[:, "BlockScore_Liquidity"] = 18.0
+        scored.loc[:, "Score_BlackScholesDiff"] = 0.95
+        scored.loc[:, "RemainingDays"] = 5.0
+
+        result = run_shadow(scored, "snapshot-redteam")
+        self.assertEqual(result["red_team"]["status"], "SUCCESS")
+        self.assertEqual(
+            result["red_team"]["engine_version"],
+            RED_TEAM_ENGINE_VERSION,
+        )
+        challenged = [
+            item for item in result["red_team"]["cases"]
+            if item["original_status"] == "CONFIRMED"
+        ]
+        self.assertTrue(challenged)
+        self.assertTrue(
+            any(item["challenge_count"] > 0 for item in challenged)
+        )
+
+    def test_red_team_is_non_blocking(self):
+        scored = score_dataframe(fixture())
+        result = run_shadow(scored, "snapshot-nonblocking")
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertIn("red_team", result)
+        self.assertTrue(
+            all(case["status"] in {"CONFIRMED", "WATCH", "REJECTED", "INSUFFICIENT_DATA"}
+                for case in result["cases"])
+        )
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
