@@ -194,7 +194,7 @@ def _contract_cases(row, snapshot_id):
 
 
 def _chain_cases(scored, snapshot_id, chain_result):
-    """Create structural cases only from validated explicit chain identities."""
+    """Create structural cases from validated full option chains."""
     if chain_result.get("status") != "SUCCESS":
         return []
 
@@ -211,36 +211,89 @@ def _chain_cases(scored, snapshot_id, chain_result):
             continue
 
         scores = []
+        score_symbols = []
         for row in members:
             value = _num(row, "FinalScore")
             if value is not None:
                 scores.append(value)
+                score_symbols.append(str(row.get("نماد", "")).strip())
 
         if len(scores) < 2:
-            status = "INSUFFICIENT_DATA"
-            spread = None
-        else:
-            spread = max(scores) - min(scores)
-            # Discovery-only threshold: score dispersion >= 20 points deserves review.
-            status = "WATCH" if spread >= 20.0 else "REJECTED"
+            continue
+
+        spread = max(scores) - min(scores)
+        if spread < 20.0:
+            continue
+
+        evidence = [
+            _evidence("chain_key", key, "chain_identity_shadow"),
+            _evidence("member_count", len(members), "chain_identity_shadow"),
+            _evidence("strike_count", chain.get("strike_count"), "chain_identity_shadow"),
+            _evidence("score_dispersion", spread, "FinalScore"),
+            _evidence("members", chain.get("members", []), "chain_identity_shadow"),
+            _evidence("score_members", dict(zip(score_symbols, scores)), "FinalScore"),
+        ]
 
         cases.append({
             "snapshot_id": snapshot_id,
             "engine_version": ENGINE_VERSION,
             "case_id": _case_id(snapshot_id, key, "CHAIN_STRUCTURE"),
             "type": "CHAIN_STRUCTURE_ANOMALY",
-            "status": status,
+            "status": "WATCH",
             "symbol": key,
-            "final_score": max(scores) if scores else None,
+            "final_score": max(scores),
             "confidence": None,
-            "reason": "Validated contracts in one explicit chain show material cross-contract score dispersion; this is a review signal, not a trade direction.",
-            "evidence": [
-                _evidence("chain_key", key, "chain_identity_shadow"),
-                _evidence("member_count", len(members), "chain_identity_shadow"),
-                _evidence("score_dispersion", spread, "FinalScore"),
-                _evidence("members", chain.get("members", []), "chain_identity_shadow"),
-            ],
+            "reason": (
+                "Validated contracts in one explicit underlying/expiry chain show "
+                "material cross-contract score dispersion. This is a review signal, "
+                "not a trade direction."
+            ),
+            "evidence": evidence,
         })
+
+        # A complete parity case is created only when both sides are explicit
+        # and share the same strike. No type inference is permitted.
+        call_by_strike = {}
+        put_by_strike = {}
+        for member in chain.get("members", []):
+            row = by_symbol.get(member)
+            if row is None:
+                continue
+            identity_rows = [
+                x for x in chain_result.get("rows", [])
+                if x.get("symbol") == member and x.get("status") == "VALID"
+            ]
+            if not identity_rows:
+                continue
+            ident = identity_rows[0]
+            if ident.get("contract_type") == "CALL":
+                call_by_strike[ident.get("strike")] = member
+            elif ident.get("contract_type") == "PUT":
+                put_by_strike[ident.get("strike")] = member
+
+        common_strikes = sorted(set(call_by_strike) & set(put_by_strike))
+        if common_strikes:
+            cases.append({
+                "snapshot_id": snapshot_id,
+                "engine_version": ENGINE_VERSION,
+                "case_id": _case_id(snapshot_id, key, "CALL_PUT_STRUCTURE"),
+                "type": "CALL_PUT_STRUCTURE_AVAILABLE",
+                "status": "WATCH",
+                "symbol": key,
+                "final_score": None,
+                "confidence": None,
+                "reason": (
+                    "Both explicit CALL and PUT contracts exist at common strike(s). "
+                    "This unlocks parity/relative-structure analysis but is not itself "
+                    "evidence of mispricing."
+                ),
+                "evidence": [
+                    _evidence("common_strikes", common_strikes, "chain_identity_shadow"),
+                    _evidence("call_symbols", [call_by_strike[k] for k in common_strikes], "chain_identity_shadow"),
+                    _evidence("put_symbols", [put_by_strike[k] for k in common_strikes], "chain_identity_shadow"),
+                ],
+            })
+
     return cases
 
 def run_shadow(scored, snapshot_id, memory_path=None):
