@@ -262,7 +262,7 @@ class RegressionTests(unittest.TestCase):
         result = explain_cases(cases, red, "s")
         self.assertEqual(result["cases"][0]["explanation_status"], "RED_TEAM_CHALLENGED")
         self.assertEqual(cases[0]["status"], "CONFIRMED")
-
+\n    def test_opportunity_engine_persists_case_explanations_without_score_mutation(self):\n        import opportunity_engine\n        import pandas as pd\n        scored = pd.DataFrame([{\n            "نماد": "TEST", "FinalScore": 80.0, "DataConfidence": 100.0,\n            "AnalyticsFlags": "", "BlockScore_Liquidity": 20.0,\n            "Score_BlackScholesDiff": 0.9, "Score_BreakevenDistance": 0.9,\n            "BreakevenDistancePct": 1.0, "اختلاف تا بلک شولز": 2.0,\n            "ExecutionPenalty": 0.0, "RemainingDays": 20.0, "ارزش معاملات": 100.0,\n        }])\n        before = scored["FinalScore"].copy()\n        result = opportunity_engine.run_shadow(scored, "snapshot-test")\n        self.assertEqual(result["status"], "SUCCESS")\n        self.assertIn("case_explanations", result)\n        self.assertEqual(result["case_explanations"]["status"], "SUCCESS")\n        self.assertTrue(scored["FinalScore"].equals(before))\n
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
         expected = score_dataframe(valid)
