@@ -10,7 +10,7 @@ components are explicit and valid in the same snapshot.
 import re
 import pandas as pd
 
-ENGINE_VERSION = "CHAIN-SHADOW-1.0"
+ENGINE_VERSION = "CHAIN-SHADOW-1.1"
 
 ALIASES = {
     "underlying": [
@@ -95,7 +95,8 @@ def build_chain_identity(df):
         valid = not reasons
         chain_key = None
         if valid:
-            chain_key = f"{underlying}::{expiry}::{strike:g}"
+            # Chain identity is underlying + expiry. Strike is a member attribute.
+            chain_key = f"{underlying}::{expiry}"
 
         rows.append({
             "row_index": int(idx),
@@ -116,12 +117,17 @@ def build_chain_identity(df):
 
     ambiguous = []
     for key, members in groups.items():
-        types = {m["contract_type"] for m in members if m["contract_type"]}
-        if len(types) > 2:
-            ambiguous.append(key)
-        # Duplicate identity with conflicting explicit contract types is retained
-        # as a warning, never silently collapsed.
-        if len(types) == 2 and len(members) < 2:
+        # More than one explicit contract type is expected in a real option chain.
+        # Ambiguity is only raised for duplicate same-type identity rows.
+        identities = {}
+        for m in members:
+            identity = (m["strike"], m["contract_type"])
+            identities.setdefault(identity, []).append(m)
+        duplicate_conflicts = [
+            identity for identity, rows_for_identity in identities.items()
+            if len(rows_for_identity) > 1
+        ]
+        if duplicate_conflicts:
             ambiguous.append(key)
 
     return {
@@ -134,6 +140,7 @@ def build_chain_identity(df):
             "insufficient_identity_rows": len(rows) - len(valid_rows),
             "chain_count": len(groups),
             "ambiguous_chain_count": len(set(ambiguous)),
+            "total_strikes": len({(r["chain_key"], r["strike"]) for r in valid_rows}),
         },
         "rows": rows,
         "chains": {
@@ -141,7 +148,11 @@ def build_chain_identity(df):
                 "chain_key": key,
                 "members": [m["symbol"] for m in members],
                 "member_count": len(members),
+                "strikes": sorted({m["strike"] for m in members}),
+                "strike_count": len({m["strike"] for m in members}),
                 "contract_types": sorted({m["contract_type"] for m in members if m["contract_type"]}),
+                "has_explicit_call": any(m["contract_type"] == "CALL" for m in members),
+                "has_explicit_put": any(m["contract_type"] == "PUT" for m in members),
             }
             for key, members in groups.items()
             if key not in set(ambiguous)
