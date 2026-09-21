@@ -614,3 +614,21 @@ This decision supersedes the earlier single-source architecture description for 
 - `opportunity_engine.py` no longer owns hidden literal discovery thresholds.
 - `HISTORICAL_PATTERN_WINDOW` is now explicit configuration rather than an inline engine constant.
 - Configuration changes remain outside FinalScore/Ranking unless a separate documented scoring change is made.
+
+
+## Eligibility Separation — 2026-09-21
+
+- Added `eligibility_shadow.py` with engine `ELIGIBILITY-SHADOW-1.0`.
+- The layer classifies each scored row without changing FinalScore, ranking or the production report gate.
+- Explicit states include: `ACTIVE_ELIGIBLE`, `EXPIRED`, `INVALID_MARKET_DATA`, `UNSCORABLE`, `MISSING_REMAINING_DAYS`, `LEVERAGE_UNAVAILABLE` and `LEVERAGE_LOW`.
+- Expired contracts are now distinguishable from invalid data and remain available to Shadow/history evidence; they are not treated as active opportunities.
+- Missing or low leverage is classified explicitly rather than silently converted to zero or conflated with expiry.
+- Opportunity Shadow now attaches eligibility evidence to cases and reports eligibility counts, while continuing to scan the full scored universe.
+- The existing production leverage reference remains 3.5 and is now exposed as `PRODUCTION_MIN_LEVERAGE_REFERENCE`; this is a reference only and does not change the active Six-Block gate.
+- No production eligibility rule was removed or relaxed in this change.
+- Regression tests added for active, expired, missing-leverage, low-leverage, missing-days and invalid-market-data paths.
+- GitHub Actions evidence for the latest commit is not yet available; no CI pass is claimed from repository state alone.
+
+## Next Architecture Gate
+
+The next controlled change is to evaluate whether production Eligibility should remain a hard pre-score gate or become a separate production quality gate. That decision will be made only after replay/regression comparison on real and synthetic evidence; no FinalScore/ranking change is active yet.
