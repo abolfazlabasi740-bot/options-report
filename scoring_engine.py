@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Canonical PROTOCOL_OPTIONS_RANKING_V3 scoring engine.
+"""Canonical V4.1.1 scoring engine.
 
-Rules implemented from Master Project Book V3:
+Rules implemented by the active V4.1 scoring/reporting path:
 - Optionschool24 is the primary source.
 - Missing data is never converted to an artificial zero/neutral score.
 - Missing factor weight is redistributed only inside its own block.
@@ -15,16 +15,11 @@ Rules implemented from Master Project Book V3:
 - The user-facing ranking table has exactly the eleven canonical columns required by V3.
 """
 
-from pathlib import Path
-from datetime import datetime
 import re
-import sys
 import os
 import numpy as np
 import pandas as pd
 
-TOP_N = 15
-PROTOCOL = "PROTOCOL_OPTIONS_RANKING_V3"
 ENGINE_VERSION = "V4.1.1"
 MIN_LEVERAGE = float(os.getenv("MIN_LEVERAGE", "3.5"))
 
@@ -36,11 +31,6 @@ WEIGHTS = {
     "greeks": {"delta": 4, "gamma": 3, "vega": 3, "rho": 2},
     "market": {"last_vs_close": 4, "intraday_range": 3, "status": 3},
 }
-
-REQUIRED_COLUMNS = [
-    "نماد", "حجم معاملات", "ارزش معاملات", "موقعیت های باز", "قیمت پایانی",
-    "قیمت اعمال", "قیمت سهم پایه", "روزهای معاملاتی", "روزهای تقویمی",
-]
 
 NUMERIC_COLUMNS = [
     "قیمت اعمال", "قیمت سهم پایه", "روزهای تقویمی", "روزهای معاملاتی",
@@ -268,95 +258,6 @@ def score_v3(df):
     return df
 
 
-def fmt(value, digits=2):
-    if pd.isna(value):
-        return "—"
-    if isinstance(value, (int, np.integer)) or (isinstance(value, float) and value.is_integer()):
-        return f"{int(value):,}"
-    return f"{float(value):,.{digits}f}"
-
-
-def fmt_persian_int(value):
-    """Format an integer-valued market number with Persian thousands separators."""
-    if pd.isna(value):
-        return "—"
-    try:
-        text = f"{int(round(float(value))):,}"
-    except (TypeError, ValueError, OverflowError):
-        return "—"
-    return text.replace(",", "٬").translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
-
-
-def fmt_persian_decimal(value, digits=2, signed=False, trim=False):
-    """Format a decimal using Persian digits and decimal separator for Bale readability."""
-    if pd.isna(value):
-        return "—"
-    try:
-        number = float(value)
-    except (TypeError, ValueError, OverflowError):
-        return "—"
-    sign = "+" if signed and number > 0 else "" if number >= 0 else "-"
-    number = abs(number)
-    text = f"{number:,.{digits}f}"
-    if trim:
-        text = text.rstrip("0").rstrip(".")
-    text = text.replace(",", "٬").replace(".", "٫")
-    return sign + text.translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
-
-
-def make_report(top, input_file, total_initial, valid_count):
-    now = datetime.now()
-    run_id = now.strftime("%Y%m%d_%H%M%S")
-    lines = [
-        "# گزارش رتبه‌بندی اختیار معامله V3",
-        f"تاریخ اجرا: {now:%Y-%m-%d %H:%M:%S}",
-        f"شناسه اجرا: {run_id}",
-        f"نسخه: {PROTOCOL}",
-        "",
-        "---",
-        "",
-        "## خلاصه اجرا",
-        f"* فایل ورودی: {input_file}",
-        f"* تعداد کل قراردادهای اولیه: {total_initial:,}",
-        f"* تعداد قراردادهای معتبر پس از فیلتر: {valid_count:,}",
-        f"* تعداد قراردادهای گزارش‌شده: {len(top):,}",
-        "",
-        f"## قراردادهای برتر ({len(top)} مورد)",
-        "",
-    ]
-
-    # Bale-facing top-15 cards: replace the dense Markdown table only.
-    for rank, (_, row) in enumerate(top.iterrows(), 1):
-        expiry = row.get("سررسید", "—")
-        if pd.isna(expiry) or str(expiry).strip() in {"", "nan", "None"}:
-            expiry = "—"
-        remaining = fmt_persian_int(row.get("RemainingDays", np.nan))
-        score = fmt_persian_decimal(row.get("FinalScore", np.nan), 2)
-        leverage = fmt_persian_decimal(row.get("اهرم", np.nan), 2, trim=True)
-        breakeven_distance = fmt_persian_decimal(row.get("BreakevenDistancePct", np.nan), 3, signed=True)
-        lines.extend([
-            f"🔹 {rank}. {row['نماد']}",
-            f"قیمت اعمال: {fmt_persian_int(row.get('قیمت اعمال', np.nan))} | آخرین: {fmt_persian_int(row.get('آخرین قیمت', np.nan))}",
-            f"سر‌به‌سر: {fmt_persian_int(row.get('سر به سر', np.nan))} | پایه: {fmt_persian_int(row.get('قیمت سهم پایه', np.nan))}",
-            f"اهرم: {leverage} | فاصله سر‌به‌سر: {breakeven_distance}%",
-            f"سررسید: {expiry} ({remaining} روز)",
-            f"امتیاز: {score}",
-            "━━━━━━━━━━━━━━━━━━",
-            "",
-        ])
-
-    lines += [
-        "## کنترل‌های V3",
-        "* داده مفقود با صفر، میانگین یا حدس جایگزین نشده است.",
-        "* وزن عامل مفقود فقط داخل همان بلوک بازتوزیع شده است.",
-        "* نگاشت عددی Status هنوز تأیید نشده و در بلوک ساختار بازار بازتوزیع شده است.",
-        "* نوع قرارداد از روی نام نماد حدس زده نشده و عامل Moneyness در صورت فقدان داده بازتوزیع شده است.",
-        "* آستانه نهایی Risk در Master تأیید نشده است؛ بنابراین جریمه ساختگی اعمال نشده است.",
-        "* امتیاز صرفاً رتبه‌بندی کیفیت قرارداد است و توصیه قطعی خرید/فروش نیست.",
-    ]
-    return "\n".join(lines) + "\n"
-
-
 def score_v4_overlay(df):
     """Candidate V4 overlay: execution quality, decay control and capped leverage.
 
@@ -411,40 +312,6 @@ def main():
     # One reporting path prevents CLI and Bale from producing different rankings.
     from report_engine import main as report_main
     return report_main()
-
-
-def legacy_main():
-    files = sorted(Path(".").glob("optionschool24_all_*.xlsx"), key=lambda p: p.stat().st_mtime, reverse=True)
-    if not files:
-        sys.exit("❌ فایل Optionschool24 با الگوی optionschool24_all_*.xlsx یافت نشد.")
-    input_path = files[0]
-    print(f"منبع داده: {input_path.name}")
-    df = pd.read_excel(input_path)
-    total_initial = len(df)
-    missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
-    if missing:
-        sys.exit("❌ ستون‌های ضروری موجود نیستند: " + "، ".join(missing))
-    df = numeric_columns(df)
-    df["نماد"] = df["نماد"].astype(str).str.strip()
-
-    valid = df[
-        df["نماد"].notna() & (df["نماد"] != "") & (df["نماد"] != "nan") &
-        (df["حجم معاملات"].fillna(0) > 0) & (df["ارزش معاملات"].fillna(0) > 0) &
-        (df["آخرین قیمت"].fillna(0) > 0) & (df["قیمت اعمال"].fillna(0) > 0) &
-        (df["قیمت سهم پایه"].fillna(0) > 0) & (df["روزهای تقویمی"].fillna(0) > 0)
-    ].copy()
-    if valid.empty:
-        sys.exit("❌ هیچ قرارداد معتبری پس از فیلتر مالی باقی نماند.")
-
-    valid = add_analytics(valid)
-    valid["RemainingDays"] = (valid["روزهای تقویمی"] - 1).clip(lower=0)
-    scored = score_v4_overlay(score_v3(valid))
-    top = scored.sort_values(["FinalScore", "حجم معاملات"], ascending=[False, False]).head(TOP_N).copy()
-    report = make_report(top, input_path.name, total_initial, len(valid))
-    Path("output_options_report.md").write_text(report, encoding="utf-8")
-    top.to_csv("output_options_top15.csv", index=False, encoding="utf-8-sig")
-    print(report)
-
 
 if __name__ == "__main__":
     main()
