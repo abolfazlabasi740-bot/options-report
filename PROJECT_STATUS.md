@@ -41,9 +41,9 @@ Set `BALE_BOT_TOKEN` and `BALE_CHAT_ID` in the process environment before runnin
 
 - Local path: `~/OptimusAI_V41_LIVE`
 - GitHub repository: `abolfazlabasi740-bot/options-report`
-- Current operational commit: `4b908b2`
-- Commit message: `Add Bale listener and symbol-specific V4.1 reports`
-- GitHub main has been successfully pushed to this commit.
+- Current GitHub main is the cleanup line following `f36c1b9`.
+- Active runtime entry points: `report_engine.py` and `bale_listener.py`.
+- Termux deployment/restart is not verified by this GitHub audit and must not be inferred from repository state.
 
 ## هدف پروژه
 
@@ -336,3 +336,14 @@ Bale Card Report: VERIFIED
 GitHub: SYNCED
 Current Baseline: 4b908b2
 Next Phase: Project Audit & Cleanup
+
+
+## Audit & Cleanup — 2026-09-21
+
+- GitHub main was audited against the active V4.1.1 path.
+- Obsolete V3-only reporting code and `legacy_main` were removed from `scoring_engine.py`; the active scoring functions were not redesigned.
+- `send_to_bale.py` remains only as an explicit manual one-shot sender and is not imported by the runtime listener.
+- Regression coverage now includes six-block weight integrity and deterministic tie-breaking.
+- GitHub Actions regression workflow added at `.github/workflows/regression.yml`.
+- No claim is made here that the updated code has already been deployed/restarted on Termux.
+- The repository currently represents the V4.1 scoring/reporting slice; the broader target architecture (Opportunity Engine, Case lifecycle, Red Team runtime, Attention Allocation, FindChart integration, Replay/Golden Dataset, etc.) is not claimed as active merely by documentation.
