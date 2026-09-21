@@ -547,3 +547,16 @@ This decision supersedes the earlier single-source architecture description for 
 - Missing evidence routes to DATA_COMPLETION.
 - Confirmed cases with historical patterns route to CROSS_SNAPSHOT_REVIEW.
 - Other confirmed/watch cases are routed for evidence review or follow-up only.
+
+
+## Case Lifecycle & Replay — 2026-09-21
+
+- Engine: CASE-LIFECYCLE-SHADOW-1.0.
+- Case lifecycle is persisted as an append-only event stream in output/case_lifecycle_shadow.jsonl when the active report path executes.
+- Stable case identity is type::symbol; snapshot-specific case IDs remain retained for traceability.
+- States include NEW, PERSISTENT, STRENGTHENING, WEAKENING, RESOLVED and RECURRING.
+- Lifecycle events do not change FinalScore, ranking or Bale output.
+- Engine: REPLAY-SHADOW-1.0.
+- The report path now performs deterministic Shadow replay verification and writes output/latest_replay_verification.json.
+- Replay compares canonical fingerprints while excluding only volatile generated_at metadata.
+- Replay mismatch is treated as an integrity failure and never as a reason to adjust scores.
