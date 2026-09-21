@@ -419,3 +419,17 @@ Next Phase: Runtime Verification & Architecture Expansion
 - Economic parity readiness remains blocked until identity and economic inputs are separately validated.
 - Synthetic regression coverage was added for explicit fields, missing identity and alias normalization.
 - This is a repository-level schema readiness test. It is not evidence that the current live OptionSchool24 workbook contains the explicit identity fields.
+
+
+## Real Source Schema Evidence — 2026-09-21
+
+Archived workbook inspected from the project Library: `optionschool24_all_1788105478761.xlsx` (created 2026-08-30).
+
+Observed source schema on `sheet1`:
+- Explicit: `نماد`, `قیمت اعمال`, `تاریخ سررسید`, `وضعیت`, `اهرم`, `نوسان ضمنی`, Greeks and market/liquidity fields.
+- Not explicit: Underlying / `نماد سهم پایه`.
+- Not explicit: Contract Type / `نوع قرارداد`.
+- Consequence: Chain identity cannot be considered ready from this source without symbol inference, and symbol inference remains disabled.
+- Result for this archived source: identity readiness = `INSUFFICIENT_DATA`; contract type readiness = `INSUFFICIENT_DATA`.
+- The source contains option symbols whose prefixes visually distinguish contracts, but that naming convention is not accepted as chain-direction evidence.
+- This evidence belongs to the archived workbook and does not establish the schema of a fresh live download on 2026-09-21.
