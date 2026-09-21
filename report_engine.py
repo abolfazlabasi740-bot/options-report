@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text, normalize_columns, numeric_columns
 from opportunity_engine import run_shadow
-from eligibility_shadow import classify_dataframe
+from eligibility_shadow import classify_dataframe, opportunity_universe
 from schema_audit import audit_schema
 from replay_engine import verify_shadow_replay
 from audit_integrity import verify_audit
@@ -89,6 +89,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     source_view["RemainingDays"] = (source_view["روزهای تقویمی"] - 1).clip(lower=0)
     source_view["FinalScore"] = pd.NA
     source_eligibility = classify_dataframe(source_view, min_leverage=MIN_LEVERAGE)
+    opportunity_universe_view = opportunity_universe(source_view, min_leverage=MIN_LEVERAGE)
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
@@ -248,6 +249,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     work.attrs["production_min_leverage"] = scored.attrs.get("production_min_leverage", MIN_LEVERAGE)
     work.attrs["production_remaining_days_rule"] = scored.attrs.get("production_remaining_days_rule", "RemainingDays > 0")
     work.attrs["source_eligibility"] = source_eligibility
+    work.attrs["opportunity_universe"] = opportunity_universe_view
 
     # فقط قراردادهای فعال و واجد شرایط V4.1
     work = work[
