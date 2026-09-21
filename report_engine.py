@@ -11,6 +11,13 @@ import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
 from opportunity_engine import run_shadow
 from schema_audit import audit_schema
+from historical_snapshot import (
+    append_snapshot,
+    build_snapshot,
+    dataframe_records,
+    diff_snapshots,
+    load_history,
+)
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -76,8 +83,55 @@ def build_report(path, top_count=None, symbol_prefix=None):
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
     snapshot_id = snapshot_id_for(path, df)
+
+    # Historical evidence store: source-local symbol identity is used until
+    # an explicit TSETMC instrument identifier is available in the live path.
+    history_file = ROOT / "output" / "historical_snapshots.jsonl"
+    history_columns = [
+        "نماد",
+        "FinalScore",
+        "DataConfidence",
+        "RemainingDays",
+        "BlockScore_Liquidity",
+        "BlockScore_Valuation",
+        "BlockScore_Payoff",
+        "BlockScore_Time",
+        "BlockScore_Greeks",
+        "BlockScore_Market",
+        "ExecutionPenalty",
+        "DecayPenalty",
+        "Score_BlackScholesDiff",
+        "Score_BreakevenDistance",
+    ]
+    history_records = dataframe_records(scored, history_columns)
+    current_history = build_snapshot(
+        snapshot_id,
+        history_records,
+        source=Path(path).name,
+        retrieved_at=datetime.now(TEHRAN).isoformat(),
+        identity_mode="SOURCE_LOCAL_SYMBOL",
+        metadata={"source_timestamp_status": "UNVERIFIED"},
+    )
+    prior_history = load_history(history_file)
+    previous_history = prior_history[-1] if prior_history else None
+    if previous_history and previous_history.get("snapshot_id") == snapshot_id and len(prior_history) > 1:
+        previous_history = prior_history[-2]
+
+    history_result = append_snapshot(history_file, current_history)
+    history_diff = diff_snapshots(
+        previous_history,
+        current_history,
+        identity_key="نماد",
+    )
+
     memory_file = ROOT / "output" / "case_memory_shadow.json"
-    shadow = run_shadow(scored, snapshot_id, memory_path=memory_file)
+    shadow = run_shadow(
+        scored,
+        snapshot_id,
+        memory_path=memory_file,
+        historical_previous=previous_history,
+        historical_current=current_history,
+    )
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
     base = find_column(scored, ["قیمت سهم پایه", "Underlying"])
@@ -206,6 +260,14 @@ def build_report(path, top_count=None, symbol_prefix=None):
     # Keep shadow evidence attached to the report object for audit persistence.
     work.attrs["opportunity_shadow"] = shadow
     work.attrs["opportunity_shadow_summary"] = shadow.get("summary", {})
+    work.attrs["historical_snapshot"] = {
+        "status": history_result.get("status"),
+        "snapshot_id": current_history.get("snapshot_id"),
+        "records_hash": current_history.get("records_hash"),
+        "previous_snapshot_id": previous_history.get("snapshot_id") if previous_history else None,
+        "diff_summary": history_diff.get("summary", {}),
+        "store_file": history_file.name,
+    }
 
     return work
 
@@ -306,10 +368,30 @@ def save_report(work, source):
     )
     shadow_temp.replace(shadow_file)
 
+    historical_diff = {
+        "status": work.attrs.get("historical_snapshot", {}).get("status"),
+        "snapshot_id": work.attrs.get("historical_snapshot", {}).get("snapshot_id"),
+        "records_hash": work.attrs.get("historical_snapshot", {}).get("records_hash"),
+        "previous_snapshot_id": work.attrs.get("historical_snapshot", {}).get("previous_snapshot_id"),
+        "diff_summary": work.attrs.get("historical_snapshot", {}).get("diff_summary", {}),
+        "store_file": work.attrs.get("historical_snapshot", {}).get("store_file"),
+    }
+    history_diff_file = output / "latest_historical_diff.json"
+    history_diff_temp = output / "latest_historical_diff.json.tmp"
+    history_diff_temp.write_text(
+        json.dumps(historical_diff, ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
+    history_diff_temp.replace(history_diff_file)
+
     audit_attrs = dict(work.attrs)
     audit_attrs.pop("opportunity_shadow", None)
     audit = {
         **audit_attrs,
+        "historical_snapshot": {
+            **historical_diff,
+            "diff_file": history_diff_file.name,
+        },
         "opportunity_shadow": {
             "status": shadow.get("status"),
             "engine_version": shadow.get("engine_version"),
