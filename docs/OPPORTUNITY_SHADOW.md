@@ -101,3 +101,14 @@ A `CHAIN_STRUCTURE_ANOMALY` is emitted only when a validated full chain contains
 A separate `CALL_PUT_STRUCTURE_AVAILABLE` case is emitted only when explicit CALL and PUT fields exist at a common strike. The system does not infer contract type from the option symbol.
 
 Neither case is a pricing verdict. They are evidence for the later Relative Value / Parity analysis layer.
+
+
+## Relative Value Evidence — 1.1
+
+For explicit CALL/PUT pairs at a common strike, the shadow layer records paired
+observable fields and also compares each side with adjacent explicit strikes
+when available. Neighbor comparisons are evidence only; they do not create
+synthetic prices, IVs, rates, dividends, or parity values.
+
+A pair remains WATCH/INSUFFICIENT_DATA. No parity mispricing claim is produced
+until the required economic inputs and contract specifications are validated.
