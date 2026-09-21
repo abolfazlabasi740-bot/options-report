@@ -11,6 +11,7 @@ import requests
 from scoring_engine import score_dataframe, parse_number, block_weighted_score
 from report_engine import build_report, format_report, save_report
 from bale_transport import split_message, send_message
+from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 import bale_listener
 import send_to_bale
 
@@ -53,6 +54,35 @@ class RegressionTests(unittest.TestCase):
         with patch("report_engine.pd.read_excel", return_value=data):
             work = build_report("unused.xlsx", top_count=4)
         self.assertEqual(work["نماد"].tolist(), ["ضتست0", "ضتست1", "ضتست2", "ضتست3"])
+
+    def test_opportunity_shadow_is_non_destructive_and_auditable(self):
+        scored = score_dataframe(fixture())
+        before = scored["FinalScore"].copy()
+
+        scored.loc[:, "DataConfidence"] = 100.0
+        scored.loc[:, "BlockScore_Liquidity"] = 18.0
+        scored.loc[:, "Score_BlackScholesDiff"] = 0.95
+        scored.loc[:, "Score_BreakevenDistance"] = 0.90
+        scored.loc[:, "ExecutionPenalty"] = 0.05
+        scored.loc[:, "RemainingDays"] = 20.0
+
+        result = run_shadow(scored, "snapshot-test")
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["engine_version"], OPP_ENGINE_VERSION)
+        self.assertEqual(result["summary"]["contracts_scanned"], 4)
+        self.assertGreater(result["summary"]["confirmed_total"], 0)
+        self.assertTrue(all("evidence" in case for case in result["cases"]))
+        pd.testing.assert_series_equal(before, scored["FinalScore"])
+
+    def test_opportunity_shadow_never_infers_contract_direction(self):
+        scored = score_dataframe(fixture())
+        scored.loc[:, "DataConfidence"] = 100.0
+        scored.loc[:, "BlockScore_Liquidity"] = 18.0
+        scored.loc[:, "Score_BlackScholesDiff"] = 0.95
+        result = run_shadow(scored, "snapshot-direction")
+        relative = [c for c in result["cases"] if c["type"] == "RELATIVE_VALUE_ANOMALY"][0]
+        self.assertNotIn("BUY", relative["reason"].upper())
+        self.assertNotIn("SELL", relative["reason"].upper())
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
