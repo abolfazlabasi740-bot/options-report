@@ -370,3 +370,13 @@ Next Phase: Runtime Verification & Architecture Expansion
 - Option-symbol parsing is intentionally disabled.
 - Validated chains can emit `CHAIN_STRUCTURE_ANOMALY` when member score dispersion reaches 20 points.
 - No chain case changes FinalScore, ranking, or Bale output.
+
+
+## Cross-Chain Intelligence Shadow — 2026-09-21
+
+- Chain engine upgraded to `CHAIN-SHADOW-1.1`.
+- Full chain identity is Underlying + Expiry; Strike is a structural member.
+- `CHAIN_STRUCTURE_ANOMALY` uses cross-contract score dispersion only as a discovery trigger.
+- `CALL_PUT_STRUCTURE_AVAILABLE` requires explicit CALL and PUT fields at a common strike.
+- No option type is inferred from symbol naming.
+- Cross-chain cases remain non-blocking and do not modify FinalScore, Ranking or Bale output.
