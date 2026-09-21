@@ -31,6 +31,7 @@ from historical_snapshot import case_historical_context
 from historical_pattern_shadow import build_historical_patterns
 from attention_allocation_shadow import allocate_attention
 from case_lifecycle_shadow import append_events
+from opportunity_config import CONFIG
 import math
 import numpy as np
 import pandas as pd
@@ -39,13 +40,13 @@ ENGINE_VERSION = "OPP-SHADOW-1.0"
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 # Discovery thresholds are intentionally conservative and isolated from scoring.
-RELATIVE_VALUE_RANK = 0.85
-BREAKEVEN_RANK = 0.80
-LIQUIDITY_RANK = 0.75
-LIQUIDITY_BLOCK_WEIGHT = 20.0
-EXECUTION_PENALTY_MAX = 0.10
-CONFIRMATION_CONFIDENCE = 90.0
-NEAR_EXPIRY_DAYS = 10
+RELATIVE_VALUE_RANK = CONFIG.relative_value_rank
+BREAKEVEN_RANK = CONFIG.breakeven_rank
+LIQUIDITY_RANK = CONFIG.liquidity_rank
+LIQUIDITY_BLOCK_WEIGHT = CONFIG.liquidity_block_weight
+EXECUTION_PENALTY_MAX = CONFIG.execution_penalty_max
+CONFIRMATION_CONFIDENCE = CONFIG.confirmation_confidence
+NEAR_EXPIRY_DAYS = CONFIG.near_expiry_days
 
 
 def _num(row, key):
@@ -366,7 +367,7 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         historical_patterns = build_historical_patterns(
             historical_sequence,
             identity_key="نماد",
-            window=3,
+            window=CONFIG.historical_pattern_window,
         )
     else:
         historical_patterns = {
