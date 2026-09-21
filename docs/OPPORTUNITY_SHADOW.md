@@ -77,3 +77,12 @@ Each Opportunity Shadow case is independently challenged for data-quality warnin
 ## Case Memory Shadow
 
 `case_memory_shadow.py` tracks NEW, PERSISTENT, STRENGTHENING, WEAKENING, RESOLVED and RECURRING states for analytical cases. Historical state is audit context only and is never an input to FinalScore or current ranking.
+
+
+## Chain Identity Shadow
+
+`chain_identity_shadow.py` creates a chain only when the underlying identifier, expiry and strike are explicitly available in the same snapshot. It never parses an option symbol to guess the underlying or Call/Put type.
+
+Validated chains can generate a `CHAIN_STRUCTURE_ANOMALY` review case when member FinalScores have a dispersion of at least 20 points. This threshold is discovery-only and does not modify scoring or ranking.
+
+If explicit identity fields are absent, the row remains `INSUFFICIENT_DATA`; it is not forced into a guessed chain.
