@@ -60,7 +60,7 @@ It does not yet have:
 - chain-structure confirmation
 - TSETMC/base-share market-state confirmation
 - FindChart pattern confirmation
-- Red Team challenge
+- Red Team challenge (now implemented as non-blocking `REDTEAM-SHADOW-1.0`)
 - persistence / novelty / recurrence across snapshots
 - Case lifecycle memory
 - dynamic routing
@@ -68,3 +68,7 @@ It does not yet have:
 - confirmed directional payoff semantics
 
 These layers must be added in Shadow mode before affecting ranking or Bale output.
+
+## Red Team Shadow
+
+Each Opportunity Shadow case is independently challenged for data-quality warnings, confidence weakness, liquidity/execution weakness and near-expiry alternative explanations. A challenge never changes FinalScore or ranking. It is evidence for the future Case/CEO layer.
