@@ -263,7 +263,7 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(result["cases"][0]["explanation_status"], "RED_TEAM_CHALLENGED")
         self.assertEqual(cases[0]["status"], "CONFIRMED")
 
-    def test_opportunity_engine_persists_case_explanations_without_score_mutation
+    def test_opportunity_engine_persists_case_explanations_without_score_mutation(self):
         import opportunity_engine
         import pandas as pd
         scored = pd.DataFrame([{
