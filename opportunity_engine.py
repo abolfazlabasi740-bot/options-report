@@ -29,6 +29,7 @@ from case_explanation_shadow import explain_cases
 from schema_audit import audit_schema
 from historical_snapshot import case_historical_context
 from historical_pattern_shadow import build_historical_patterns
+from attention_allocation_shadow import allocate_attention
 import math
 import numpy as np
 import pandas as pd
@@ -370,6 +371,12 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "summary": {},
         }
 
+    attention = allocate_attention(
+        cases,
+        red_team=red_team,
+        historical_patterns=historical_patterns,
+    )
+
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
     risks = [c for c in cases if c["type"].endswith("_RISK") and c["status"] == "CONFIRMED"]
@@ -399,6 +406,7 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         "schema_audit": schema_audit_result,
         "historical_context": historical_context,
         "historical_patterns": historical_patterns,
+        "attention_allocation": attention,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
