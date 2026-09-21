@@ -20,7 +20,7 @@ class SchemaAuditTests(unittest.TestCase):
         self.assertEqual(result["contract_type_readiness"], "INSUFFICIENT_DATA")
 
     def test_alias_normalization_is_explicit_only(self):
-        data = pd.DataFrame({" قيمت سهم پايه ":["فزر"],"نوع آپشن":["PUT"],"Expiry":["1405/07/30"],"StrikePrice":[1100]})
+        data = pd.DataFrame({" نماد سهم پايه " :["فزر"],"نوع آپشن":["PUT"],"Expiry":["1405/07/30"],"StrikePrice":[1100]})
         result = audit_schema(data)
         self.assertEqual(result["identity_readiness"], "READY")
         self.assertEqual(result["contract_type_readiness"], "EXPLICIT")
