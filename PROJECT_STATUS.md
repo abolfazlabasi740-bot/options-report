@@ -589,3 +589,11 @@ This decision supersedes the earlier single-source architecture description for 
 - The smoke test records source endpoint, retrieval time and payload SHA-256 for the TSETMC market-overview boundary.
 - This workflow is separate from regression CI and does not modify scoring/ranking.
 - No live smoke execution is claimed from this environment; Termux runtime evidence remains a separate gate.
+
+
+## Termux Runtime Verification Gate — 2026-09-21
+
+- Added `runtime_verification.py` and `docs/TERMUX_RUNTIME_GATE.md`.
+- The gate checks critical source-file presence, Python compilation, repository SHA when available, presence-only environment flags and latest Audit Integrity evidence.
+- Secret values are never recorded; environment checks are boolean-only.
+- A PASS from this script is runtime evidence only when executed on the target Termux instance. No Termux execution is claimed from GitHub.
