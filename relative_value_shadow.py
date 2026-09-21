@@ -102,7 +102,7 @@ def analyze_chain(scored, chain_result, snapshot_id):
                 status = "WATCH"
                 reason = (
                     "Explicit CALL/PUT pair has observable relative differences. "
-                    "Economic parity mispricing is not asserted because rate/dividend inputs "
+                    "No economic parity conclusion is asserted because rate/dividend inputs "
                     "and full contract specifications have not been validated."
                 )
             cases.append({
