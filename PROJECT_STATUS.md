@@ -390,3 +390,13 @@ Next Phase: Runtime Verification & Architecture Expansion
 - No synthetic IV, rate, dividend, price, or parity value is generated.
 - No parity mispricing is declared without validated economic inputs.
 - Layer remains non-blocking and does not alter FinalScore, Ranking or Bale output.
+
+
+## Case Explanation Shadow — 2026-09-21
+
+- Engine: `CASE-EXPLANATION-SHADOW-1.0`.
+- Evidence is classified into OBSERVED, EXPLAINED, UNEXPLAINED, DATA_GAP and RED_TEAM_CHALLENGE.
+- EXPLAINED is limited to mechanical derivation; no economic causality or trade direction is inferred.
+- Layer is non-blocking and does not modify FinalScore, Ranking or Bale output.
+- Regression coverage added for traceability, data gaps and Red Team challenge propagation.
+- GitHub CI for the latest fix is the authoritative validation gate; Termux deployment remains unverified.
