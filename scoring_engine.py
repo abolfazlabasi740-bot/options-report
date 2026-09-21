@@ -277,6 +277,34 @@ def score_v4_overlay(df):
     return df
 
 
+def shadow_score_dataframe(df):
+    """Run the existing V4 scoring calculations without the production eligibility gate.
+
+    This is evidence-only. It reuses add_analytics -> score_v3 -> score_v4_overlay,
+    so Shadow calculations cannot drift into a second scoring policy.
+    """
+    work = normalize_columns(df.copy()).reset_index(drop=True)
+    required = ["نماد", "حجم معاملات", "ارزش معاملات", "آخرین قیمت",
+                "قیمت اعمال", "قیمت سهم پایه", "روزهای تقویمی", "اهرم"]
+    missing = [c for c in required if c not in work.columns]
+    if missing:
+        raise ValueError("ستون‌های ضروری موجود نیستند: " + "، ".join(missing))
+    work = numeric_columns(work)
+    work["نماد"] = work["نماد"].astype("string").map(
+        lambda x: normalize_text(x) if pd.notna(x) else pd.NA
+    )
+    work["RemainingDays"] = (work["روزهای تقویمی"] - 1).clip(lower=0)
+    work = add_analytics(work)
+    result = score_v4_overlay(score_v3(work))
+    result.attrs.update(
+        shadow=True,
+        engine_version=ENGINE_VERSION,
+        production_gate_applied=False,
+        production_min_leverage=MIN_LEVERAGE,
+        production_remaining_days_rule="RemainingDays > 0",
+    )
+    return result
+
 def score_dataframe(df):
     """Public V4 scoring entry point used by the report and Bale runners."""
     work = normalize_columns(df.copy()).reset_index(drop=True)
