@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import requests
 from scoring_engine import score_dataframe, parse_number, block_weighted_score
-from report_engine import build_report, format_report, save_report
+from report_engine import build_report, format_report, save_report, snapshot_id_for
 from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 import bale_listener
@@ -54,6 +54,13 @@ class RegressionTests(unittest.TestCase):
         with patch("report_engine.pd.read_excel", return_value=data):
             work = build_report("unused.xlsx", top_count=4)
         self.assertEqual(work["نماد"].tolist(), ["ضتست0", "ضتست1", "ضتست2", "ضتست3"])
+
+    def test_snapshot_id_fallback_is_deterministic(self):
+        data = fixture()
+        first = snapshot_id_for("missing-fixture.xlsx", data)
+        second = snapshot_id_for("missing-fixture.xlsx", data.copy())
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 64)
 
     def test_opportunity_shadow_is_non_destructive_and_auditable(self):
         scored = score_dataframe(fixture())
