@@ -141,7 +141,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     memory_file = ROOT / "output" / "case_memory_shadow.json"
     lifecycle_file = ROOT / "output" / "case_lifecycle_shadow.jsonl"
     shadow = run_shadow(
-        scored,
+        shadow_scored,
         snapshot_id,
         memory_path=memory_file,
         historical_previous=previous_history,
