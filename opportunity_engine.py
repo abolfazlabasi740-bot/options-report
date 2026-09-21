@@ -24,6 +24,7 @@ import json
 from red_team_shadow import challenge_cases
 from case_memory_shadow import update_memory
 from chain_identity_shadow import build_chain_identity
+from relative_value_shadow import analyze_chain
 import math
 import numpy as np
 import pandas as pd
@@ -324,6 +325,7 @@ def run_shadow(scored, snapshot_id, memory_path=None):
     for _, row in scored.iterrows():
         cases.extend(_contract_cases(row, str(snapshot_id)))
     cases.extend(_chain_cases(scored, str(snapshot_id), chain_result))
+    cases.extend(analyze_chain(scored, chain_result, str(snapshot_id)))
 
     counts = {}
     for case in cases:
