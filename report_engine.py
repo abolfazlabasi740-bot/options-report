@@ -12,6 +12,7 @@ from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
 from opportunity_engine import run_shadow
 from schema_audit import audit_schema
 from replay_engine import verify_shadow_replay
+from audit_integrity import verify_audit
 from historical_snapshot import (
     append_snapshot,
     build_snapshot,
@@ -432,6 +433,9 @@ def save_report(work, source):
         "selected_count": len(work),
         "selected": json.loads(work.to_json(orient="records", force_ascii=False)),
     }
+    audit["audit_integrity"] = verify_audit(audit)
+    if audit["audit_integrity"]["status"] != "PASS":
+        raise RuntimeError("Audit integrity verification failed")
     audit_temp = output / "latest_audit.json.tmp"
     audit_temp.write_text(json.dumps(audit, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
     audit_temp.replace(output / "latest_audit.json")
