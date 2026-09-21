@@ -62,6 +62,14 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(len(production), len(fixture()))
         self.assertTrue(shadow["FinalScore"].notna().all())
 
+
+    def test_shadow_score_preserves_missing_leverage_as_missing(self):
+        data = fixture().drop(columns=["اهرم"])
+        shadow = shadow_score_dataframe(data)
+        self.assertEqual(len(shadow), len(data))
+        self.assertTrue(shadow["اهرم"].isna().all())
+        self.assertEqual(shadow.attrs["production_gate_applied"], False)
+
     def test_report_tie_break_is_deterministic(self):
         base = fixture().iloc[[0]].copy()
         data = pd.concat(
