@@ -122,3 +122,8 @@ until the required economic inputs and contract specifications are validated.
 - Missing evidence remains DATA_GAP and is never converted to zero or a negative score.
 - Red Team challenges are carried through as RED_TEAM_CHALLENGE without changing the original case status.
 - The layer is non-blocking, deterministic and score/ranking neutral.
+
+
+### Integration
+
+The Opportunity Shadow pipeline now runs Case Explanation immediately after Red Team. The result is exposed as `case_explanations` in the audit object. This is contextual evidence only: it cannot mutate Case status, FinalScore, ranking or delivery output.
