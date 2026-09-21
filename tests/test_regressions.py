@@ -208,6 +208,7 @@ class RegressionTests(unittest.TestCase):
         data["تاریخ سررسید"] = ["1405/07/30"] * 4
         data["نوع قرارداد"] = ["CALL", "PUT", "CALL", "PUT"]
         scored = score_dataframe(data)
+        scored.loc[:, "قیمت اعمال"] = [1000.0, 1000.0, 1100.0, 1100.0]
         chain = build_chain_identity(scored)
         cases = analyze_chain(scored, chain, "relative-test")
         self.assertEqual(len(cases), 2)
