@@ -632,3 +632,14 @@ This decision supersedes the earlier single-source architecture description for 
 ## Next Architecture Gate
 
 The next controlled change is to evaluate whether production Eligibility should remain a hard pre-score gate or become a separate production quality gate. That decision will be made only after replay/regression comparison on real and synthetic evidence; no FinalScore/ranking change is active yet.
+
+
+## Production Eligibility Gate Trace — 2026-09-21
+
+- The active production path was audited and confirmed to apply eligibility twice: first inside `score_dataframe()`, then again in `report_engine.build_report()`.
+- Existing hard conditions remain unchanged: positive required market fields, `RemainingDays > 0`, and `اهرم >= MIN_LEVERAGE` with the current reference 3.5.
+- `scoring_engine.py` now exposes an evidence-only `eligibility_gate_counts` trace and the active production rules in result attributes. No gate was relaxed.
+- `report_engine.py` now classifies the raw normalized source universe before production scoring, so expired and leverage-data states can be audited even when production scoring excludes them.
+- Source eligibility evidence is carried into the audit artifact through report attributes.
+- This is a measurement layer, not a scoring change. FinalScore, Ranking, Top-N and Bale output remain unchanged.
+- The next decision gate is now data-driven: compare the raw-source eligibility population against the scored population on a real workbook before considering any production Gate redesign.
