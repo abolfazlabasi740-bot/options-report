@@ -72,3 +72,8 @@ These layers must be added in Shadow mode before affecting ranking or Bale outpu
 ## Red Team Shadow
 
 Each Opportunity Shadow case is independently challenged for data-quality warnings, confidence weakness, liquidity/execution weakness and near-expiry alternative explanations. A challenge never changes FinalScore or ranking. It is evidence for the future Case/CEO layer.
+
+
+## Case Memory Shadow
+
+`case_memory_shadow.py` tracks NEW, PERSISTENT, STRENGTHENING, WEAKENING, RESOLVED and RECURRING states for analytical cases. Historical state is audit context only and is never an input to FinalScore or current ranking.
