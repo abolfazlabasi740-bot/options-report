@@ -173,6 +173,7 @@ class TSETMCAdapter:
             "underlying_id": first(
                 identity_data.get("underlying_id"),
                 identity_data.get("underlyingId"),
+                identity_data.get("insCode"),
                 info_data.get("underlying_id"),
                 info_data.get("underlyingId"),
             ),
