@@ -496,3 +496,16 @@ This decision supersedes the earlier single-source architecture description for 
 - Added regression coverage for exact, symbol-only, ambiguous and no-match paths.
 - Six-Block scoring, FinalScore, Top-N ranking and Bale output remain unchanged.
 - Next layer is canonical multi-source snapshot construction from only promoted exact matches plus independently validated OptionSchool24 analytics.
+
+
+## Canonical Multi-Source Snapshot — 2026-09-21
+
+- Added `canonical_snapshot.py` as the controlled merge boundary between TSETMC and OptionSchool24.
+- Only EXACT_INSTRUMENT_ID mappings are promoted.
+- SYMBOL_ONLY_CANDIDATE, AMBIGUOUS and NO_MATCH remain outside the promoted canonical dataset.
+- TSETMC is preferred for explicitly sourced market-reference fields; OptionSchool24 supplies option analytics and fields not verified from TSETMC.
+- Missing fields remain missing; no contract identity is synthesized from symbol naming.
+- A deterministic SHA-256 snapshot identifier is generated for the promoted canonical records.
+- Added regression tests for exact-only promotion, missing-identity protection and deterministic snapshot identity.
+- Six-Block scoring, FinalScore, ranking and Bale output remain untouched.
+- Live activation is still blocked pending real Termux TSETMC response evidence and a real merged snapshot.
