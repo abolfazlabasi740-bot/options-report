@@ -14,7 +14,7 @@ CANONICAL_COLUMNS = (
     "trade_value","trade_count","best_bid","best_ask","order_book_depth",
     "open_interest","iv","hv","delta","gamma","theta","vega","rho",
     "breakeven","black_scholes","client_type_flow","source_refs","snapshot_id",
-    "mapping_status",
+    "mapping_status","underlying_source_status",
 )
 
 def _clean(value: Any) -> Any:
@@ -99,6 +99,7 @@ def build_canonical_snapshot(option_df: pd.DataFrame,
             "source_refs": {"tsetmc": _record_value(t, ("source_refs",)) or t,
                             "optionschool_row_index": m.option_row_index},
             "mapping_status": m.status,
+            "underlying_source_status": ("EXPLICIT_ID_AVAILABLE" if _record_value(t, ("underlying_id","underlyingId")) else "INSUFFICIENT_DATA"),
         }
         rows.append(row)
 
