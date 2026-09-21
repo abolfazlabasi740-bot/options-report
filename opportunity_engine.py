@@ -28,6 +28,7 @@ from relative_value_shadow import analyze_chain
 from case_explanation_shadow import explain_cases
 from schema_audit import audit_schema
 from historical_snapshot import case_historical_context
+from historical_pattern_shadow import build_historical_patterns
 import math
 import numpy as np
 import pandas as pd
@@ -305,7 +306,7 @@ def _chain_cases(scored, snapshot_id, chain_result):
 
     return cases
 
-def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, historical_current=None):
+def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, historical_current=None, historical_sequence=None):
     if not isinstance(scored, pd.DataFrame):
         raise TypeError("scored must be a pandas DataFrame")
     if not snapshot_id or not str(snapshot_id).strip():
@@ -355,6 +356,20 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "cases": [],
         }
 
+    if historical_sequence is not None:
+        historical_patterns = build_historical_patterns(
+            historical_sequence,
+            identity_key="نماد",
+            window=3,
+        )
+    else:
+        historical_patterns = {
+            "status": "NOT_ATTACHED",
+            "engine_version": "HIST-PATTERN-SHADOW-1.0",
+            "patterns": [],
+            "summary": {},
+        }
+
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
     risks = [c for c in cases if c["type"].endswith("_RISK") and c["status"] == "CONFIRMED"]
@@ -383,6 +398,7 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         "chain_identity": chain_result,
         "schema_audit": schema_audit_result,
         "historical_context": historical_context,
+        "historical_patterns": historical_patterns,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
