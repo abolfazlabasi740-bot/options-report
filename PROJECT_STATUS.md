@@ -560,3 +560,13 @@ This decision supersedes the earlier single-source architecture description for 
 - The report path now performs deterministic Shadow replay verification and writes output/latest_replay_verification.json.
 - Replay compares canonical fingerprints while excluding only volatile generated_at metadata.
 - Replay mismatch is treated as an integrity failure and never as a reason to adjust scores.
+
+
+## Audit Integrity Gate — 2026-09-21
+
+- Engine: AUDIT-INTEGRITY-1.0.
+- Required audit evidence now includes source hash, historical snapshot identity/hash, Opportunity snapshot identity and replay verification.
+- Historical and Opportunity snapshot IDs must agree.
+- Replay must be REPLAY_MATCH and deterministic.
+- The active report path fails closed before publishing latest_audit.json when the integrity gate fails.
+- This gate validates evidence integrity only; it never adjusts scoring or ranking.
