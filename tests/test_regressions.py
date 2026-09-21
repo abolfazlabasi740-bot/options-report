@@ -45,10 +45,11 @@ class RegressionTests(unittest.TestCase):
         )
 
     def test_report_tie_break_is_deterministic(self):
-        data = fixture().copy()
-        data["ارزش معاملات"] = 10000
-        data["حجم معاملات"] = 100
-        data["نماد"] = ["ضتست3", "ضتست1", "ضتست2", "ضتست0"]
+        base = fixture().iloc[[0]].copy()
+        data = pd.concat(
+            [base.assign(نماد=symbol) for symbol in ["ضتست3", "ضتست1", "ضتست2", "ضتست0"]],
+            ignore_index=True,
+        )
         with patch("report_engine.pd.read_excel", return_value=data):
             work = build_report("unused.xlsx", top_count=4)
         self.assertEqual(work["نماد"].tolist(), ["ضتست0", "ضتست1", "ضتست2", "ضتست3"])
