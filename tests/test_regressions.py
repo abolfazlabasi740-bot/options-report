@@ -8,7 +8,7 @@ from unittest.mock import patch, Mock
 import numpy as np
 import pandas as pd
 import requests
-from scoring_engine import score_dataframe, parse_number, block_weighted_score
+from scoring_engine import score_dataframe, shadow_score_dataframe, parse_number, block_weighted_score
 from report_engine import build_report, format_report, save_report, snapshot_id_for
 from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
@@ -49,6 +49,18 @@ class RegressionTests(unittest.TestCase):
             sum(sum(block.values()) for block in WEIGHTS.values()),
             100,
         )
+
+
+    def test_shadow_score_reuses_scoring_logic_without_production_gate(self):
+        data = fixture()
+        data.loc[0, "روزهای تقویمی"] = 0
+        data.loc[1, "اهرم"] = 2
+        shadow = shadow_score_dataframe(data)
+        production = score_dataframe(fixture())
+        self.assertEqual(len(shadow), len(data))
+        self.assertEqual(shadow.attrs["production_gate_applied"], False)
+        self.assertEqual(len(production), len(fixture()))
+        self.assertTrue(shadow["FinalScore"].notna().all())
 
     def test_report_tie_break_is_deterministic(self):
         base = fixture().iloc[[0]].copy()
