@@ -251,6 +251,11 @@ def _chain_cases(scored, snapshot_id, chain_result):
             "evidence": evidence,
         })
 
+        # A parity case requires unique explicit identities. Duplicate identities
+        # are retained for audit but cannot support a clean pairwise comparison.
+        if chain.get("duplicate_identities"):
+            continue
+
         # A complete parity case is created only when both sides are explicit
         # and share the same strike. No type inference is permitted.
         call_by_strike = {}
