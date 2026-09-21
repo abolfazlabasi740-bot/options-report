@@ -25,6 +25,7 @@ from red_team_shadow import challenge_cases
 from case_memory_shadow import update_memory
 from chain_identity_shadow import build_chain_identity
 from relative_value_shadow import analyze_chain
+from case_explanation_shadow import explain_cases
 import math
 import numpy as np
 import pandas as pd
@@ -333,6 +334,7 @@ def run_shadow(scored, snapshot_id, memory_path=None):
         counts[key] = counts.get(key, 0) + 1
 
     red_team = challenge_cases(scored, cases, str(snapshot_id))
+    explanations = explain_cases(cases, red_team, str(snapshot_id))
     memory = None
     if memory_path:
         memory = update_memory(memory_path, cases)
@@ -358,6 +360,7 @@ def run_shadow(scored, snapshot_id, memory_path=None):
         },
         "cases": cases,
         "red_team": red_team,
+        "case_explanations": explanations,
         "chain_identity": chain_result,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
