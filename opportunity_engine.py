@@ -346,6 +346,11 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "status": "CHAIN_LEVEL",
             "reason": "CASE_IS_NOT_TIED_TO_A_SINGLE_CONTRACT",
         }
+        # Expired contracts remain visible for history/audit, but cannot become
+        # active opportunity cases. Risk cases remain explicitly observable.
+        if item and item.get("status") == "EXPIRED" and not case["type"].endswith("_RISK"):
+            case["status"] = "REJECTED"
+            case["reason"] = "Expired contract retained for evidence/history; not an active opportunity."
 
     counts = {}
     for case in cases:
