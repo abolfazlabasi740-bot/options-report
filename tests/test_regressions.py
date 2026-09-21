@@ -37,6 +37,22 @@ def fixture():
 
 
 class RegressionTests(unittest.TestCase):
+    def test_six_block_weights_sum_to_100(self):
+        from scoring_engine import WEIGHTS
+        self.assertEqual(
+            sum(sum(block.values()) for block in WEIGHTS.values()),
+            100,
+        )
+
+    def test_report_tie_break_is_deterministic(self):
+        data = fixture().copy()
+        data["ارزش معاملات"] = 10000
+        data["حجم معاملات"] = 100
+        data["نماد"] = ["ضتست3", "ضتست1", "ضتست2", "ضتست0"]
+        with patch("report_engine.pd.read_excel", return_value=data):
+            work = build_report("unused.xlsx", top_count=4)
+        self.assertEqual(work["نماد"].tolist(), ["ضتست0", "ضتست1", "ضتست2", "ضتست3"])
+
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
         expected = score_dataframe(valid)
