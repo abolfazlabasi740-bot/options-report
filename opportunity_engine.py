@@ -331,7 +331,7 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
     schema_audit_result = audit_schema(scored)
     # Eligibility is evidence-only: it explains production-gate side effects
     # without removing rows from Shadow opportunity discovery.
-    eligibility = classify_dataframe(scored, min_leverage=3.5)
+    eligibility = classify_dataframe(scored, min_leverage=CONFIG.production_min_leverage_reference)
     eligibility_by_symbol = {item.get("symbol"): item for item in eligibility.get("rows", [])}
     chain_result = build_chain_identity(scored)
     cases = []
