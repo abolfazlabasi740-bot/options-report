@@ -127,3 +127,10 @@ until the required economic inputs and contract specifications are validated.
 ### Integration
 
 The Opportunity Shadow pipeline now runs Case Explanation immediately after Red Team. The result is exposed as `case_explanations` in the audit object. This is contextual evidence only: it cannot mutate Case status, FinalScore, ranking or delivery output.
+
+
+## Source Schema Audit in Shadow Artifact
+
+The Opportunity Shadow result now persists the `schema_audit` block and exposes schema readiness in its summary.
+This is audit-only. It does not alter FinalScore, ranking, case status, or Bale output.
+When explicit Underlying or Contract Type is absent, the result remains `INSUFFICIENT_DATA` and no symbol-based inference is activated.
