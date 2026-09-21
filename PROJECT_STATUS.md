@@ -509,3 +509,31 @@ This decision supersedes the earlier single-source architecture description for 
 - Added regression tests for exact-only promotion, missing-identity protection and deterministic snapshot identity.
 - Six-Block scoring, FinalScore, ranking and Bale output remain untouched.
 - Live activation is still blocked pending real Termux TSETMC response evidence and a real merged snapshot.
+
+
+## Historical Snapshot & Pattern Intelligence — 2026-09-21
+
+- Engine: HIST-SNAPSHOT-1.0.
+- Historical snapshots are stored append-only in output/historical_snapshots.jsonl when the report path runs.
+- Snapshot records are deterministic and retain source snapshot ID, records hash, source metadata and normalized fields.
+- Field-level history diff is persisted to output/latest_historical_diff.json and summarized in latest_audit.json.
+- Opportunity Shadow now receives historical context without changing FinalScore, ranking or Case status.
+- Engine: HIST-PATTERN-SHADOW-1.0.
+- Descriptive historical patterns include consistent field direction sequences, price/volume concordance or divergence, and FinalScore/price alignment or divergence.
+- Pattern detection uses an explicit window parameter and does not introduce hidden economic thresholds or trade direction.
+- Current report history uses SOURCE_LOCAL_SYMBOL identity because explicit TSETMC instrument IDs are not yet available in the active report path. This is not treated as canonical cross-source identity.
+
+## Base-Share Intelligence Shadow — 2026-09-21
+
+- Engine: BASE-SHARE-SHADOW-1.0.
+- Base-share intelligence requires explicit instrument_id.
+- Option-to-base linking requires explicit underlying_id.
+- No option symbol parsing is used to identify the underlying.
+- Live TSETMC/base-share activation remains unverified pending real runtime evidence with endpoint, payload hash and normalized record.
+
+## CI Gate — 2026-09-21
+
+- GitHub Actions regression run 99 completed successfully on commit c1057833ac79d3802b2deaa1dc71301dafc59cf8.
+- The failure in earlier runs was traced to an unrelated NameError in live_schema_audit.py and was fixed by removing undefined CLI-argument references from audit_live().
+- Current repository regression gate is green after that fix.
+- No Termux deployment/restart is claimed from GitHub CI evidence.
