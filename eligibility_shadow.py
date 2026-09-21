@@ -118,3 +118,38 @@ def classify_dataframe(scored, min_leverage=None):
             "counts": counts,
         },
     }
+
+
+def opportunity_universe(scored_or_source, min_leverage=None):
+    """Build a non-scoring opportunity universe from the available raw fields.
+
+    Rows are retained for review even when production scoring would reject them.
+    No FinalScore or opportunity status is invented here.
+    """
+    if not isinstance(scored_or_source, pd.DataFrame):
+        raise TypeError("scored_or_source must be a pandas DataFrame")
+    rows = []
+    for _, row in scored_or_source.iterrows():
+        item = classify_row(row, min_leverage=min_leverage)
+        item["symbol"] = str(row.get("نماد", "")).strip()
+        item["opportunity_candidate"] = item["status"] not in {"INVALID_MARKET_DATA"}
+        item["scoring_status"] = (
+            "PRODUCTION_ELIGIBLE" if item["status"] == "ACTIVE_ELIGIBLE"
+            else "PRODUCTION_GATED_OR_INCOMPLETE"
+        )
+        rows.append(item)
+    counts = {}
+    for item in rows:
+        key = item["status"]
+        counts[key] = counts.get(key, 0) + 1
+    return {
+        "status": "SUCCESS",
+        "engine_version": ENGINE_VERSION,
+        "rows": rows,
+        "summary": {
+            "rows_scanned": len(rows),
+            "opportunity_candidates": sum(1 for x in rows if x["opportunity_candidate"]),
+            "production_eligible": sum(1 for x in rows if x["scoring_status"] == "PRODUCTION_ELIGIBLE"),
+            "counts": counts,
+        },
+    }
