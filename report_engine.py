@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
 from opportunity_engine import run_shadow
+from eligibility_shadow import classify_dataframe
 from schema_audit import audit_schema
 from replay_engine import verify_shadow_replay
 from audit_integrity import verify_audit
@@ -81,6 +82,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
     from scoring_engine import score_dataframe
 
     scored = score_dataframe(df)
+
+    # Preserve a source-level eligibility view so expired/missing-leverage rows
+    # remain auditable even though production scoring retains its existing gate.
+    source_eligibility = classify_dataframe(scored.copy(), min_leverage=MIN_LEVERAGE)
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
@@ -236,6 +241,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
     work.attrs.update(scored.attrs)
     work.attrs["source_schema_audit"] = source_schema_audit
     work.attrs["unscorable_count"] = int(scored["FinalScore"].isna().sum())
+    work.attrs["eligibility_gate_counts"] = scored.attrs.get("eligibility_gate_counts", {})
+    work.attrs["production_min_leverage"] = scored.attrs.get("production_min_leverage", MIN_LEVERAGE)
+    work.attrs["production_remaining_days_rule"] = scored.attrs.get("production_remaining_days_rule", "RemainingDays > 0")
+    work.attrs["source_eligibility"] = source_eligibility
 
     # فقط قراردادهای فعال و واجد شرایط V4.1
     work = work[
