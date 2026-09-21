@@ -400,3 +400,11 @@ Next Phase: Runtime Verification & Architecture Expansion
 - Layer is non-blocking and does not modify FinalScore, Ranking or Bale output.
 - Regression coverage added for traceability, data gaps and Red Team challenge propagation.
 - GitHub CI for the latest fix is the authoritative validation gate; Termux deployment remains unverified.
+
+
+## Evidence Matrix Integration — 2026-09-21
+
+- Case Explanation Shadow is now invoked by Opportunity Shadow after Red Team review.
+- The complete explanation artifact is returned under `case_explanations` in the Opportunity result.
+- Original Case status and FinalScore remain immutable.
+- Integration regression test added for audit-path presence and score non-mutation.
