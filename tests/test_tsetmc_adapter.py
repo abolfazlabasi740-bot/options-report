@@ -59,6 +59,25 @@ class TSETMCAdapterTests(unittest.TestCase):
                 base_url="https://example.test/api", retries=0, opener=opener
             ).quote("123")
 
+    def test_canonical_consumes_explicit_underlying_identity(self):
+        def opener(request, timeout):
+            if "GetInstrumentIdentity" in request.full_url:
+                return FakeResponse({"instrumentIdentity": {
+                    "lVal18AFC": "ضهرم", "underlyingId": "BASE1",
+                    "underlyingSymbol": "هرم", "contractType": "CALL"
+                }})
+            if "GetInstrumentInfo" in request.full_url:
+                return FakeResponse({"instrumentInfo": {}})
+            return FakeResponse({"closingPriceInfo": {"pDrCotVal": 100, "pClosing": 101}})
+
+        row = TSETMCAdapter(
+            base_url="https://example.test/api", retries=0, opener=opener
+        ).canonical_instrument("123")
+
+        self.assertEqual(row["underlying_id"], "BASE1")
+        self.assertEqual(row["underlying_symbol"], "هرم")
+        self.assertEqual(row["contract_type"], "CALL")
+
     def test_canonical_does_not_infer_identity(self):
         def opener(request, timeout):
             if "GetInstrumentIdentity" in request.full_url:
