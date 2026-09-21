@@ -643,3 +643,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Source eligibility evidence is carried into the audit artifact through report attributes.
 - This is a measurement layer, not a scoring change. FinalScore, Ranking, Top-N and Bale output remain unchanged.
 - The next decision gate is now data-driven: compare the raw-source eligibility population against the scored population on a real workbook before considering any production Gate redesign.
+
+
+## Opportunity Universe Separation — 2026-09-21
+
+- Added a non-scoring `opportunity_universe()` view to `eligibility_shadow.py`.
+- The raw normalized source universe is now explicitly retained for Opportunity/Audit review before production scoring gates.
+- Rows are never assigned a synthetic FinalScore or opportunity status by this layer.
+- Rows are classified as production-eligible versus production-gated/incomplete while retaining the detailed eligibility reason.
+- Invalid market rows are excluded from the opportunity-candidate population; expired, missing-leverage and low-leverage rows remain visible as evidence candidates but are not silently promoted into the production ranking.
+- `report_engine.py` now carries the full opportunity-universe summary in report attributes/audit context.
+- FinalScore, Six-Block scoring, Ranking, Top-N and Bale output remain unchanged.
+- This establishes the required separation: Opportunity Universe discovery can see the full source population, while Production Ranking continues to use the existing hard eligibility gate.
