@@ -27,6 +27,7 @@ from chain_identity_shadow import build_chain_identity
 from relative_value_shadow import analyze_chain
 from case_explanation_shadow import explain_cases
 from schema_audit import audit_schema
+from historical_snapshot import case_historical_context
 import math
 import numpy as np
 import pandas as pd
@@ -304,7 +305,7 @@ def _chain_cases(scored, snapshot_id, chain_result):
 
     return cases
 
-def run_shadow(scored, snapshot_id, memory_path=None):
+def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, historical_current=None):
     if not isinstance(scored, pd.DataFrame):
         raise TypeError("scored must be a pandas DataFrame")
     if not snapshot_id or not str(snapshot_id).strip():
@@ -340,6 +341,20 @@ def run_shadow(scored, snapshot_id, memory_path=None):
     memory = None
     if memory_path:
         memory = update_memory(memory_path, cases)
+    if historical_current is not None:
+        historical_context = case_historical_context(
+            cases,
+            historical_previous,
+            historical_current,
+            identity_key="نماد",
+        )
+    else:
+        historical_context = {
+            "engine_version": "HIST-SNAPSHOT-1.0",
+            "status": "NOT_ATTACHED",
+            "cases": [],
+        }
+
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
     risks = [c for c in cases if c["type"].endswith("_RISK") and c["status"] == "CONFIRMED"]
@@ -367,6 +382,7 @@ def run_shadow(scored, snapshot_id, memory_path=None):
         "case_explanations": explanations,
         "chain_identity": chain_result,
         "schema_audit": schema_audit_result,
+        "historical_context": historical_context,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
