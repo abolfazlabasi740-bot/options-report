@@ -687,3 +687,18 @@ The next controlled change is to evaluate whether production Eligibility should 
 - It does not infer CALL/PUT from symbols and does not classify the relationship as a buy/sell signal.
 - Current OptionSchool24 input does not automatically receive these fields; therefore no live opportunity is claimed from this detector until the underlying fields are actually sourced and evidenced.
 - Added regression coverage for explicit negative underlying return with negative breakeven distance.
+
+
+## Explicit Underlying Context Enrichment — 2026-09-21
+
+- Added `underlying_context_shadow.py`, engine `UNDERLYING-CONTEXT-SHADOW-1.0`.
+- Underlying market data is attached only through an explicit option `underlying_id` → TSETMC `instrument_id` relationship.
+- Symbol matching, symbol-prefix parsing and inferred underlying identity are disabled.
+- Duplicate underlying identifiers are marked `AMBIGUOUS` and are never silently overwritten.
+- Missing identifiers, missing prices, invalid prices and ambiguous identifiers remain `INSUFFICIENT_DATA`/evidence states.
+- Source endpoint, retrieval timestamp and payload SHA-256 are preserved when supplied by the TSETMC record.
+- The resulting `underlying_last_price` and `underlying_close_price` fields are now ready to feed the existing `BASE_BREAKEVEN_CONTEXT` detector without changing Six-Block scoring.
+- Added regression coverage for exact mapping, missing identity, ambiguity, source-reference preservation and rejection of records without explicit instrument identifiers.
+- This is a library-level Shadow enrichment milestone. It is not evidence of live TSETMC data or Termux execution.
+- Production FinalScore, Ranking, Top-N and Bale output remain unchanged.
+
