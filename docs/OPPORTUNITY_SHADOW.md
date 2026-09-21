@@ -112,3 +112,13 @@ synthetic prices, IVs, rates, dividends, or parity values.
 
 A pair remains WATCH/INSUFFICIENT_DATA. No parity mispricing claim is produced
 until the required economic inputs and contract specifications are validated.
+
+
+## Case Explanation Shadow — 2026-09-21
+
+- Engine: `CASE-EXPLANATION-SHADOW-1.0`.
+- Purpose: classify existing case evidence as OBSERVED, EXPLAINED, UNEXPLAINED, DATA_GAP or RED_TEAM_CHALLENGE.
+- EXPLAINED is restricted to mechanically derived relationships; it does not assert economic causality.
+- Missing evidence remains DATA_GAP and is never converted to zero or a negative score.
+- Red Team challenges are carried through as RED_TEAM_CHALLENGE without changing the original case status.
+- The layer is non-blocking, deterministic and score/ranking neutral.
