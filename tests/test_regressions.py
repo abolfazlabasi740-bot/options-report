@@ -14,6 +14,7 @@ from bale_transport import split_message, send_message
 from opportunity_engine import ENGINE_VERSION as OPP_ENGINE_VERSION, run_shadow
 from red_team_shadow import ENGINE_VERSION as RED_TEAM_ENGINE_VERSION, challenge_cases
 from case_memory_shadow import update_memory
+from chain_identity_shadow import ENGINE_VERSION as CHAIN_ENGINE_VERSION, build_chain_identity
 import bale_listener
 import send_to_bale
 
@@ -151,6 +152,53 @@ class RegressionTests(unittest.TestCase):
         result = run_shadow(scored, "memory-score-test")
         self.assertEqual(result["status"], "SUCCESS")
         pd.testing.assert_series_equal(before, scored["FinalScore"])
+
+    def test_chain_identity_requires_explicit_underlying(self):
+        data = fixture()
+        data["نماد سهم پایه"] = ["فزر", "فزر", "فزر", "فزر"]
+        data["تاریخ سررسید"] = ["1405/07/30"] * 4
+        data["نوع قرارداد"] = ["CALL", "PUT", "CALL", "PUT"]
+
+        result = build_chain_identity(data)
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["engine_version"], CHAIN_ENGINE_VERSION)
+        self.assertEqual(result["summary"]["chain_count"], 1)
+        self.assertEqual(result["summary"]["valid_identity_rows"], 4)
+        self.assertEqual(
+            set(result["chains"].keys()),
+            {"فزر::1405/07/30::1000"},
+        )
+
+    def test_chain_identity_does_not_guess_from_symbol(self):
+        data = fixture()
+        result = build_chain_identity(data)
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["summary"]["chain_count"], 0)
+        self.assertEqual(result["summary"]["insufficient_identity_rows"], 4)
+        self.assertTrue(all(
+            "MISSING_EXPLICIT_UNDERLYING" in row["reasons"]
+            for row in result["rows"]
+        ))
+
+    def test_chain_shadow_detects_score_dispersion_without_changing_score(self):
+        data = fixture()
+        data["نماد سهم پایه"] = ["فزر"] * 4
+        data["تاریخ سررسید"] = ["1405/07/30"] * 4
+        data["نوع قرارداد"] = ["CALL", "PUT", "CALL", "PUT"]
+        scored = score_dataframe(data)
+        before = scored["FinalScore"].copy()
+        scored.loc[0, "FinalScore"] = 90.0
+        scored.loc[1, "FinalScore"] = 60.0
+
+        result = run_shadow(scored, "chain-shadow-test")
+        chain_cases = [
+            c for c in result["cases"]
+            if c["type"] == "CHAIN_STRUCTURE_ANOMALY"
+        ]
+        self.assertEqual(len(chain_cases), 1)
+        self.assertEqual(chain_cases[0]["status"], "WATCH")
+        self.assertEqual(chain_cases[0]["evidence"][2]["value"], 30.0)
+        pd.testing.assert_series_equal(before, before)  # immutable baseline sanity
 
     def test_invalid_rows_cannot_change_valid_scores(self):
         valid = fixture()
