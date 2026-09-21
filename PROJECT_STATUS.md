@@ -408,3 +408,14 @@ Next Phase: Runtime Verification & Architecture Expansion
 - The complete explanation artifact is returned under `case_explanations` in the Opportunity result.
 - Original Case status and FinalScore remain immutable.
 - Integration regression test added for audit-path presence and score non-mutation.
+
+
+## Source Schema Audit — 2026-09-21
+
+- Engine: SCHEMA-AUDIT-1.0.
+- A dedicated evidence-only schema audit was added.
+- It records explicit Underlying, Contract Type, Expiry and Strike availability using controlled aliases.
+- Symbol parsing remains disabled; missing explicit identity stays INSUFFICIENT_DATA.
+- Economic parity readiness remains blocked until identity and economic inputs are separately validated.
+- Synthetic regression coverage was added for explicit fields, missing identity and alias normalization.
+- This is a repository-level schema readiness test. It is not evidence that the current live OptionSchool24 workbook contains the explicit identity fields.
