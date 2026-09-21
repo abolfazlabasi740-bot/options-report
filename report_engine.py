@@ -18,6 +18,17 @@ OPTIONSCHOOL_URL = "https://s3.optionschool24.com/export/excel?type=1"
 TOP_COUNT = int(os.getenv("TOP_COUNT", "15"))
 
 
+def snapshot_id_for(path, df):
+    """Return the source-file SHA when available; otherwise a deterministic test hash."""
+    source = Path(path)
+    if source.exists() and source.is_file():
+        return hashlib.sha256(source.read_bytes()).hexdigest()
+    canonical = df.copy()
+    canonical = canonical.sort_index(axis=1)
+    payload = canonical.to_csv(index=True, lineterminator="\n").encode("utf-8", errors="strict")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def download_optionschool():
     data_dir = ROOT / "data"
     data_dir.mkdir(exist_ok=True)
@@ -62,7 +73,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
-    snapshot_id = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    snapshot_id = snapshot_id_for(path, df)
     shadow = run_shadow(scored, snapshot_id)
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
