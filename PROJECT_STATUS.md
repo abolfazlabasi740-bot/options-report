@@ -19,7 +19,7 @@ The historical status below describes the old baseline, not the current test res
 - Cards are split at card/newline boundaries where possible.
 - CLI and Bale use the same engine and write `output/latest_report.txt` plus `output/latest_audit.json` with source SHA-256 and selected score components.
 
-Validation: `python -m unittest discover -s tests -v` (15 regression tests).
+Validation: `python -m unittest discover -s tests -v` (17 regression tests).
 Real workbook fetched on 2026-09-19: 460 rows, 174 eligible, 286 excluded, no entirely missing block among eligible rows.
 No messages were sent to Bale. No production Termux instance was changed.
 
@@ -274,13 +274,14 @@ python3 -m py_compile report_engine.py scoring_engine.py bale_listener.py
 ```
 
 ### Git
-Commit پایه:
+Commit پایه تاریخی:
 `c373d1d`
 
-Commit فعلی:
+Commit Baseline تاریخی:
 `4b908b2`
 
-Push به `main` موفق بوده است.
+آخرین خط GitHub بعد از Audit & Cleanup: زنجیره Commit جدیدتر از `f36c1b9`.
+وضعیت دقیق Termux از GitHub قابل استنتاج نیست و فقط پس از اجرای واقعی قابل ثبت است.
 
 ## فایل‌های اصلی
 
@@ -308,16 +309,13 @@ Push به `main` موفق بوده است.
 
 ## مرحله بعدی
 
-### Project Audit & Cleanup
+### Runtime Verification & Architecture Expansion
 
-1. بررسی وضعیت واقعی Termux و GitHub.
-2. تطبیق فایل‌های Local با GitHub.
-3. شناسایی Backup و فایل‌های قدیمی.
-4. بررسی کاربرد `send_to_bale.py`.
-5. بررسی و تکمیل مستندات.
-6. حذف فقط فایل‌های واقعاً اضافه.
-7. اجرای تست کامل.
-8. Commit و Push نسخه تمیز بعدی.
+1. استقرار و Restart نسخه تمیز روی Termux و ثبت Evidence.
+2. اجرای تست کامل روی آخرین Workbook واقعی OptionSchool24.
+3. تطبیق خروجی Bale با Audit JSON و Snapshot Hash.
+4. سپس ورود کنترل‌شده به لایه‌های Opportunity / Case / Red Team / Attention.
+5. هر موتور جدید ابتدا در Shadow اجرا شود و قبل از Cutover با Golden/Regression Dataset مقایسه شود.
 
 ## دستور ادامه در چت بعدی
 
@@ -334,8 +332,8 @@ Symbol Top 5: VERIFIED
 Bale Listener: VERIFIED
 Bale Card Report: VERIFIED
 GitHub: SYNCED
-Current Baseline: 4b908b2
-Next Phase: Project Audit & Cleanup
+Current Baseline: post-f36c1b9 cleanup line
+Next Phase: Runtime Verification & Architecture Expansion
 
 
 ## Audit & Cleanup — 2026-09-21
