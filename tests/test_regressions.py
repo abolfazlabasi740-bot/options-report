@@ -166,7 +166,7 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(result["summary"]["valid_identity_rows"], 4)
         self.assertEqual(
             set(result["chains"].keys()),
-            {"فزر::1405/07/30::1000"},
+            {"فزر::1405/07/30"},
         )
 
     def test_chain_identity_does_not_guess_from_symbol(self):
@@ -197,7 +197,8 @@ class RegressionTests(unittest.TestCase):
         ]
         self.assertEqual(len(chain_cases), 1)
         self.assertEqual(chain_cases[0]["status"], "WATCH")
-        self.assertEqual(chain_cases[0]["evidence"][2]["value"], 30.0)
+        self.assertEqual(chain_cases[0]["evidence"][2]["value"], 1)
+        self.assertEqual(chain_cases[0]["evidence"][3]["value"], 30.0)
         pd.testing.assert_series_equal(before, scored["FinalScore"])
 
     def test_invalid_rows_cannot_change_valid_scores(self):
