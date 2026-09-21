@@ -30,6 +30,7 @@ from schema_audit import audit_schema
 from historical_snapshot import case_historical_context
 from historical_pattern_shadow import build_historical_patterns
 from attention_allocation_shadow import allocate_attention
+from case_lifecycle_shadow import append_events
 import math
 import numpy as np
 import pandas as pd
@@ -307,7 +308,7 @@ def _chain_cases(scored, snapshot_id, chain_result):
 
     return cases
 
-def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, historical_current=None, historical_sequence=None):
+def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, historical_current=None, historical_sequence=None, lifecycle_path=None):
     if not isinstance(scored, pd.DataFrame):
         raise TypeError("scored must be a pandas DataFrame")
     if not snapshot_id or not str(snapshot_id).strip():
@@ -343,6 +344,10 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
     memory = None
     if memory_path:
         memory = update_memory(memory_path, cases)
+
+    lifecycle = None
+    if lifecycle_path:
+        lifecycle = append_events(lifecycle_path, str(snapshot_id), cases)
     if historical_current is not None:
         historical_context = case_historical_context(
             cases,
@@ -411,6 +416,11 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
             "case_count": len(memory.get("cases", {})) if memory is not None else 0,
+        },
+        "case_lifecycle": lifecycle or {
+            "status": "NOT_ENABLED",
+            "engine_version": "CASE-LIFECYCLE-SHADOW-1.0",
+            "events_written": 0,
         },
     }
 
