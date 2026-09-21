@@ -570,3 +570,22 @@ This decision supersedes the earlier single-source architecture description for 
 - Replay must be REPLAY_MATCH and deterministic.
 - The active report path fails closed before publishing latest_audit.json when the integrity gate fails.
 - This gate validates evidence integrity only; it never adjusts scoring or ranking.
+
+
+## Market Feature & Filter Shadow — 2026-09-21
+
+- Engine: MARKET-FEATURE-SHADOW-1.0.
+- Technical features operate only on explicit market-history bars and require explicit moving-average windows.
+- Current primitives include return, high-low range, volume change, directional sequences, simple moving averages and close-vs-average relations.
+- No default technical window or economic threshold is introduced.
+- Engine: FILTER-SHADOW-1.0.
+- Filters are rule-configurable with explicit operators and nested field paths.
+- Missing values produce INSUFFICIENT_DATA rather than an invented zero.
+- Filter results are analytical evidence only and are not connected to FinalScore or trading direction.
+
+## TSETMC Live Smoke Path — 2026-09-21
+
+- Added `tsetmc_live_smoke.py` and manual workflow `.github/workflows/tsetmc-live-smoke.yml`.
+- The smoke test records source endpoint, retrieval time and payload SHA-256 for the TSETMC market-overview boundary.
+- This workflow is separate from regression CI and does not modify scoring/ranking.
+- No live smoke execution is claimed from this environment; Termux runtime evidence remains a separate gate.
