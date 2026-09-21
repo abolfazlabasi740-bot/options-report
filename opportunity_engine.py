@@ -22,6 +22,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
 from red_team_shadow import challenge_cases
+from case_memory_shadow import update_memory
 import math
 import numpy as np
 import pandas as pd
@@ -189,7 +190,7 @@ def _contract_cases(row, snapshot_id):
     return cases
 
 
-def run_shadow(scored, snapshot_id):
+def run_shadow(scored, snapshot_id, memory_path=None):
     if not isinstance(scored, pd.DataFrame):
         raise TypeError("scored must be a pandas DataFrame")
     if not snapshot_id or not str(snapshot_id).strip():
@@ -217,6 +218,9 @@ def run_shadow(scored, snapshot_id):
         counts[key] = counts.get(key, 0) + 1
 
     red_team = challenge_cases(scored, cases, str(snapshot_id))
+    memory = None
+    if memory_path:
+        memory = update_memory(memory_path, cases)
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
     risks = [c for c in cases if c["type"].endswith("_RISK") and c["status"] == "CONFIRMED"]
@@ -237,6 +241,11 @@ def run_shadow(scored, snapshot_id):
         },
         "cases": cases,
         "red_team": red_team,
+        "case_memory": {
+            "status": "UPDATED" if memory is not None else "NOT_ENABLED",
+            "version": memory.get("memory_version") if memory is not None else None,
+            "case_count": len(memory.get("cases", {})) if memory is not None else 0,
+        },
     }
 
 
