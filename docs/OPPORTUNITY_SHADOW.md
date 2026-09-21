@@ -86,3 +86,18 @@ Each Opportunity Shadow case is independently challenged for data-quality warnin
 Validated chains can generate a `CHAIN_STRUCTURE_ANOMALY` review case when member FinalScores have a dispersion of at least 20 points. This threshold is discovery-only and does not modify scoring or ranking.
 
 If explicit identity fields are absent, the row remains `INSUFFICIENT_DATA`; it is not forced into a guessed chain.
+
+
+## Cross-Chain Structure — 1.1
+
+The chain layer now distinguishes:
+
+- Chain identity: underlying + expiry
+- Strike identity: strike within the chain
+- Contract identity: chain + strike + explicit CALL/PUT when available
+
+A `CHAIN_STRUCTURE_ANOMALY` is emitted only when a validated full chain contains at least two members and the cross-contract FinalScore dispersion is at least 20 points.
+
+A separate `CALL_PUT_STRUCTURE_AVAILABLE` case is emitted only when explicit CALL and PUT fields exist at a common strike. The system does not infer contract type from the option symbol.
+
+Neither case is a pricing verdict. They are evidence for the later Relative Value / Parity analysis layer.
