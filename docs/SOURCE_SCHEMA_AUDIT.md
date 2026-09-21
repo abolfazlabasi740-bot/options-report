@@ -60,3 +60,20 @@ Therefore, for this archived real workbook the schema-audit result is:
 The workbook contains symbols such as `ضهرم6047` and `ضهرم7060`, but the prefix is not used as CALL/PUT evidence by the active chain engine.
 
 This is archived-source evidence, not proof of the current live download on 2026-09-21.
+
+
+## Direct workbook inspection evidence — 2026-09-21
+
+The materialized workbook `optionschool24_all_1788105478761.xlsx` was inspected with the spreadsheet workbook reader.
+
+- Sheet: `sheet1`
+- Used range: `A1:AL410`
+- Columns: 38
+- Header row contains `نماد`, `قیمت اعمال`, `قیمت سهم پایه`, `تاریخ سررسید`, `وضعیت`, `اهرم`, `نوسان ضمنی`, market/liquidity fields and Greeks.
+- No explicit Underlying column was found among the 38 headers.
+- No explicit Contract Type / OptionType column was found among the 38 headers.
+- `تاریخ سررسید` and `قیمت اعمال` are explicit.
+
+Sample rows confirm that the source carries option symbols, but symbol text remains non-authoritative for contract direction. Example source values include `ضهرم6047` and `ضهرم7060`; the runtime policy does not convert the `ض` prefix into CALL evidence.
+
+This is evidence from an archived real workbook dated 2026-08-30, not a proof of the live endpoint schema on 2026-09-21.
