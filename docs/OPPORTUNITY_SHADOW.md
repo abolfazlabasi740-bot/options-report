@@ -155,3 +155,10 @@ base_share_intelligence.py is available as a Shadow engine and requires explicit
 Option linkage requires explicit underlying_id. Symbol text is not used to attach an option to a base share.
 
 Live activation remains gated on real TSETMC runtime evidence.
+
+
+## Attention Allocation Shadow — 2026-09-21
+
+attention_allocation_shadow.py routes cases for analytical follow-up only. Routes include DATA_COMPLETION, RED_TEAM_REVIEW, CROSS_SNAPSHOT_REVIEW, EVIDENCE_REVIEW, FOLLOW_UP and CONTEXT_ONLY.
+
+This layer does not rank contracts, alter FinalScore, issue a trading decision, or change Bale output.
