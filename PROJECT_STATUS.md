@@ -472,3 +472,16 @@ The target FindChart-style intelligence model is explicitly multi-source. Option
 - Detailed source responsibilities and implementation sequence are documented in docs/DATA_SOURCE_ARCHITECTURE.md.
 
 This decision supersedes the earlier single-source architecture description for the future Opportunity/FindChart layer; it does not change the active V4.1.1 Six-Block scoring or current Bale report path.
+
+## TSETMC Source Adapter — Current Phase
+
+- Evidence-preserving TSETMC adapter added as `tsetmc_adapter.py`.
+- The adapter isolates TSETMC CDN JSON access from scoring and Opportunity engines.
+- Supported source boundaries: instrument search, instrument info, instrument identity, current quote, order book, client type, daily history and market overview.
+- Successful responses retain endpoint, retrieval timestamp and SHA-256 payload hash.
+- Canonical normalization uses TSETMC instrument code as the instrument key.
+- Underlying, Contract Type, Strike and Expiry remain unavailable unless explicitly sourced; no symbol-prefix inference is performed.
+- Unit coverage was added in `tests/test_tsetmc_adapter.py` for response unwrapping, payload hashing, symbol encoding, soft-block rejection and identity-inference prevention.
+- Documentation added at `docs/TSETMC_ADAPTER.md`.
+- This is an implementation milestone, not live verification. Termux has not been claimed as updated or tested from this GitHub change.
+- Next controlled layer: TSETMC-to-OptionSchool24 mapping with explicit match states and no synthetic identity.
