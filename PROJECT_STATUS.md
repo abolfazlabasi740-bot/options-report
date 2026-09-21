@@ -702,3 +702,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - This is a library-level Shadow enrichment milestone. It is not evidence of live TSETMC data or Termux execution.
 - Production FinalScore, Ranking, Top-N and Bale output remain unchanged.
 
+
+
+## Canonical Underlying Readiness Integration — 2026-09-21
+
+- Canonical snapshot now exposes `underlying_source_status`.
+- Exact TSETMC records with an explicit `underlying_id` are marked `EXPLICIT_ID_AVAILABLE`; otherwise the state remains `INSUFFICIENT_DATA`.
+- This field is evidence/readiness metadata only and does not infer identity or change scoring.
+- The underlying-context Shadow layer is therefore positioned directly after canonical promotion and before Opportunity contextual analysis.
+- Report Engine production scoring/ranking remains unchanged.
+- Remaining integration gate: feed a real canonical TSETMC snapshot into Report Engine and persist the underlying enrichment/audit artifact; this requires actual source/runtime evidence and is not yet claimed.
+
