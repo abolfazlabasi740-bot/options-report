@@ -5,3 +5,4 @@ report_engine.py.before_*
 __pycache__/
 *.pyc
 .env
+latest_opportunity_shadow.json
