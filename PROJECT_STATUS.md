@@ -19,7 +19,7 @@ The historical status below describes the old baseline, not the current test res
 - Cards are split at card/newline boundaries where possible.
 - CLI and Bale use the same engine and write `output/latest_report.txt` plus `output/latest_audit.json` with source SHA-256 and selected score components.
 
-Validation: `python -m unittest discover -s tests -v` (17 regression tests).
+Validation: `python -m unittest discover -s tests -v` (20 regression tests).
 Real workbook fetched on 2026-09-19: 460 rows, 174 eligible, 286 excluded, no entirely missing block among eligible rows.
 No messages were sent to Bale. No production Termux instance was changed.
 
@@ -344,4 +344,18 @@ Next Phase: Runtime Verification & Architecture Expansion
 - Regression coverage now includes six-block weight integrity and deterministic tie-breaking.
 - GitHub Actions regression workflow added at `.github/workflows/regression.yml`.
 - No claim is made here that the updated code has already been deployed/restarted on Termux.
-- The repository currently represents the V4.1 scoring/reporting slice; the broader target architecture (Opportunity Engine, Case lifecycle, Red Team runtime, Attention Allocation, FindChart integration, Replay/Golden Dataset, etc.) is not claimed as active merely by documentation.
+- The repository now contains a non-blocking Shadow Opportunity Engine. It is executed from the report path and persisted to `output/latest_opportunity_shadow.json`, but it does not alter FinalScore, Top-N ranking, or Bale message content.
+- The final target architecture (Case lifecycle, Red Team runtime, Attention Allocation, FindChart confirmation, Replay/Golden Dataset, etc.) is still not production-active.
+
+
+## Opportunity Shadow — 2026-09-21
+
+- Engine: `OPP-SHADOW-1.0`.
+- State: `SHADOW_ACTIVE_NON_BLOCKING`.
+- Full scored universe is scanned before symbol/Top-N filtering.
+- Snapshot identity uses the real workbook SHA-256; deterministic DataFrame hashing is used only for test doubles without a physical file.
+- Case families currently implemented: Relative Value Anomaly, Breakeven Compression, Liquidity Confirmed, Near Expiry Risk.
+- Statuses: CONFIRMED, WATCH, REJECTED, INSUFFICIENT_DATA.
+- Shadow output is persisted separately from the main report and summarized in `latest_audit.json`.
+- CI regression suite passed on commit `04a7de5`.
+- A complete Opportunity/Case system still requires chain confirmation, TSETMC/base-share confirmation, FindChart, Red Team, persistence/novelty, routing, attention allocation and lifecycle memory.
