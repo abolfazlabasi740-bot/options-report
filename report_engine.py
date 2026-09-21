@@ -9,6 +9,7 @@ import json
 import pandas as pd
 import requests
 from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
+from opportunity_engine import run_shadow
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -59,6 +60,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     scored = score_dataframe(df)
 
+    # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
+    # filtering. It never changes FinalScore, ranking, or report contents.
+    snapshot_id = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    shadow = run_shadow(scored, snapshot_id)
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
     base = find_column(scored, ["قیمت سهم پایه", "Underlying"])
@@ -183,6 +188,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     work = work.head(limit)
 
+    # Keep shadow evidence attached to the report object for audit persistence.
+    work.attrs["opportunity_shadow"] = shadow
+    work.attrs["opportunity_shadow_summary"] = shadow.get("summary", {})
+
     return work
 
 def format_report(work, source):
@@ -266,8 +275,32 @@ def save_report(work, source):
     temporary = output / "latest_report.txt.tmp"
     temporary.write_text(report, encoding="utf-8")
     temporary.replace(report_file)
+    shadow = work.attrs.get("opportunity_shadow", {
+        "status": "INSUFFICIENT_DATA",
+        "engine_version": "OPP-SHADOW-1.0",
+        "snapshot_id": None,
+        "summary": {},
+        "cases": [],
+    })
+    shadow_file = output / "latest_opportunity_shadow.json"
+    shadow_temp = output / "latest_opportunity_shadow.json.tmp"
+    shadow_temp.write_text(
+        json.dumps(shadow, ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
+    shadow_temp.replace(shadow_file)
+
+    audit_attrs = dict(work.attrs)
+    audit_attrs.pop("opportunity_shadow", None)
     audit = {
-        **work.attrs,
+        **audit_attrs,
+        "opportunity_shadow": {
+            "status": shadow.get("status"),
+            "engine_version": shadow.get("engine_version"),
+            "snapshot_id": shadow.get("snapshot_id"),
+            "summary": shadow.get("summary", {}),
+            "case_file": shadow_file.name,
+        },
         "generated_at": datetime.now(TEHRAN).isoformat(),
         "source_file": Path(source).name,
         "source_sha256": hashlib.sha256(Path(source).read_bytes()).hexdigest(),
