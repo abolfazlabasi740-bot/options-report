@@ -32,6 +32,7 @@ from historical_pattern_shadow import build_historical_patterns
 from attention_allocation_shadow import allocate_attention
 from case_lifecycle_shadow import append_events
 from opportunity_config import CONFIG
+from eligibility_shadow import classify_dataframe
 import math
 import numpy as np
 import pandas as pd
@@ -328,12 +329,23 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         }
 
     schema_audit_result = audit_schema(scored)
+    # Eligibility is evidence-only: it explains production-gate side effects
+    # without removing rows from Shadow opportunity discovery.
+    eligibility = classify_dataframe(scored, min_leverage=3.5)
+    eligibility_by_symbol = {item.get("symbol"): item for item in eligibility.get("rows", [])}
     chain_result = build_chain_identity(scored)
     cases = []
     for _, row in scored.iterrows():
         cases.extend(_contract_cases(row, str(snapshot_id)))
     cases.extend(_chain_cases(scored, str(snapshot_id), chain_result))
     cases.extend(analyze_chain(scored, chain_result, str(snapshot_id)))
+
+    for case in cases:
+        item = eligibility_by_symbol.get(case.get("symbol"))
+        case["eligibility"] = item or {
+            "status": "CHAIN_LEVEL",
+            "reason": "CASE_IS_NOT_TIED_TO_A_SINGLE_CONTRACT",
+        }
 
     counts = {}
     for case in cases:
@@ -404,12 +416,14 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "chain_identity_status": chain_result.get("status"),
             "schema_identity_readiness": schema_audit_result.get("identity_readiness"),
             "schema_contract_type_readiness": schema_audit_result.get("contract_type_readiness"),
+            "eligibility_counts": eligibility.get("summary", {}).get("counts", {}),
         },
         "cases": cases,
         "red_team": red_team,
         "case_explanations": explanations,
         "chain_identity": chain_result,
         "schema_audit": schema_audit_result,
+        "eligibility": eligibility,
         "historical_context": historical_context,
         "historical_patterns": historical_patterns,
         "attention_allocation": attention,
