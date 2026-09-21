@@ -79,7 +79,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     source_schema_audit = audit_schema(df)
 
     # V4.1 scoring engine: GitHub six-block production candidate
-    from scoring_engine import score_dataframe
+    from scoring_engine import score_dataframe, shadow_score_dataframe
 
     scored = score_dataframe(df)
 
@@ -90,10 +90,12 @@ def build_report(path, top_count=None, symbol_prefix=None):
     source_view["FinalScore"] = pd.NA
     source_eligibility = classify_dataframe(source_view, min_leverage=MIN_LEVERAGE)
     opportunity_universe_view = opportunity_universe(source_view, min_leverage=MIN_LEVERAGE)
+    shadow_scored = shadow_score_dataframe(source_view)
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
     snapshot_id = snapshot_id_for(path, df)
+    shadow_scored["FinalScore_Production"] = pd.NA
 
     # Historical evidence store: source-local symbol identity is used until
     # an explicit TSETMC instrument identifier is available in the live path.
@@ -250,6 +252,12 @@ def build_report(path, top_count=None, symbol_prefix=None):
     work.attrs["production_remaining_days_rule"] = scored.attrs.get("production_remaining_days_rule", "RemainingDays > 0")
     work.attrs["source_eligibility"] = source_eligibility
     work.attrs["opportunity_universe"] = opportunity_universe_view
+    work.attrs["shadow_scoring"] = {
+        "status": "SUCCESS",
+        "rows_scored": int(len(shadow_scored)),
+        "production_gate_applied": False,
+        "engine_version": shadow_scored.attrs.get("engine_version"),
+    }
 
     # فقط قراردادهای فعال و واجد شرایط V4.1
     work = work[
