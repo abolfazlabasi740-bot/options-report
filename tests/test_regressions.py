@@ -108,6 +108,21 @@ class RegressionTests(unittest.TestCase):
         self.assertNotIn("BUY", relative["reason"].upper())
         self.assertNotIn("SELL", relative["reason"].upper())
 
+
+    def test_expired_shadow_row_is_retained_but_not_active_opportunity(self):
+        data = fixture()
+        data.loc[0, "روزهای تقویمی"] = 1
+        shadow_scored = shadow_score_dataframe(data)
+        result = run_shadow(shadow_scored, "expired-shadow")
+        expired = [
+            case for case in result["cases"]
+            if case.get("symbol") == "ضتست0"
+            and case["type"] != "NEAR_EXPIRY_RISK"
+        ]
+        self.assertTrue(expired)
+        self.assertTrue(all(case["status"] == "REJECTED" for case in expired))
+        self.assertTrue(all(case["eligibility"]["status"] == "EXPIRED" for case in expired))
+
     def test_red_team_challenges_near_expiry_opportunity(self):
         scored = score_dataframe(fixture())
         scored.loc[:, "DataConfidence"] = 100.0
