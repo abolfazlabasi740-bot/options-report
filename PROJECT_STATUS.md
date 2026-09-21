@@ -448,3 +448,13 @@ The archived real workbook `optionschool24_all_1788105478761.xlsx` was inspected
 - Therefore Chain Identity readiness remains `INSUFFICIENT_DATA` for this source, and symbol-based CALL/PUT inference remains disabled.
 
 The archived source contains rows such as `ضهرم6047` and `ضهرم7060`. These are preserved only as observed source symbols; their prefixes are not converted into contract-type evidence.
+
+
+## Live Source Schema Audit Tool — 2026-09-21
+
+- Added `live_schema_audit.py` to download the current OptionSchool24 export and emit schema metadata only.
+- Added manual GitHub workflow: `.github/workflows/live-schema-audit.yml`.
+- Raw live workbook is not committed by the workflow; only the metadata JSON is uploaded as an artifact.
+- The live workflow is intentionally separate from deterministic regression tests.
+- In the current execution environment on 2026-09-21, direct DNS access to `s3.optionschool24.com` was unavailable, so no current-live schema claim is made from this environment.
+- Archived workbook schema remains verified as: 38 columns on `sheet1`, explicit Strike/Expiry, no explicit Underlying/Contract Type.
