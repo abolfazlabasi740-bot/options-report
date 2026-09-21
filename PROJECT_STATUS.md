@@ -380,3 +380,13 @@ Next Phase: Runtime Verification & Architecture Expansion
 - `CALL_PUT_STRUCTURE_AVAILABLE` requires explicit CALL and PUT fields at a common strike.
 - No option type is inferred from symbol naming.
 - Cross-chain cases remain non-blocking and do not modify FinalScore, Ranking or Bale output.
+
+
+## Relative Value Evidence Shadow — 2026-09-21
+
+- Engine: `RELATIVE-VALUE-SHADOW-1.1`.
+- Explicit CALL/PUT common-strike pairs are compared using observed fields only.
+- Adjacent explicit strikes are included as contextual evidence when available.
+- No synthetic IV, rate, dividend, price, or parity value is generated.
+- No parity mispricing is declared without validated economic inputs.
+- Layer remains non-blocking and does not alter FinalScore, Ranking or Bale output.
