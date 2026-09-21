@@ -605,3 +605,12 @@ This decision supersedes the earlier single-source architecture description for 
 - V4.1 Shadow intelligence layers remain observational and do not alter FinalScore or ranking.
 - No unverified legacy file was promoted into the new multi-source canonical path.
 - Current release gate remains: repository tests + deterministic replay + audit integrity + target Termux runtime evidence.
+
+
+## Shadow Configuration Hardening — 2026-09-21
+
+- Added `opportunity_config.py` as the single explicit configuration boundary for Shadow discovery thresholds and historical pattern window.
+- Existing Shadow threshold values were not changed; they are now externally visible, validated and auditable.
+- `opportunity_engine.py` no longer owns hidden literal discovery thresholds.
+- `HISTORICAL_PATTERN_WINDOW` is now explicit configuration rather than an inline engine constant.
+- Configuration changes remain outside FinalScore/Ranking unless a separate documented scoring change is made.
