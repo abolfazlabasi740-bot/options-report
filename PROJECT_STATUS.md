@@ -655,3 +655,16 @@ The next controlled change is to evaluate whether production Eligibility should 
 - `report_engine.py` now carries the full opportunity-universe summary in report attributes/audit context.
 - FinalScore, Six-Block scoring, Ranking, Top-N and Bale output remain unchanged.
 - This establishes the required separation: Opportunity Universe discovery can see the full source population, while Production Ranking continues to use the existing hard eligibility gate.
+
+
+## Gate-Free Shadow Scoring — 2026-09-21
+
+- Added `shadow_score_dataframe()` to `scoring_engine.py`.
+- Shadow scoring reuses the exact existing `add_analytics → score_v3 → score_v4_overlay` path and removes only the production eligibility gate.
+- No alternate scoring formula, new weight, synthetic value, or guessed parameter was introduced.
+- `report_engine.py` now calculates Shadow scores for the full normalized source universe and passes that universe to Opportunity Engine.
+- Production `score_dataframe()` remains unchanged in its eligibility behavior and continues to feed Ranking/Top-N/Bale.
+- Expired contracts remain visible to Shadow for evidence/history, but contract-level opportunity cases are explicitly rejected as active opportunities; expiry-risk cases remain visible.
+- Missing/low leverage rows remain inspectable in Shadow and are classified through Eligibility Shadow rather than silently disappearing.
+- Added regression coverage for gate-free Shadow scoring and expired-contract separation.
+- CI status for these latest commits has not been claimed here because no associated workflow run was returned by the GitHub workflow lookup; target Termux execution has also not been claimed.
