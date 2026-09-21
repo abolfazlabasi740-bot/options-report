@@ -23,6 +23,7 @@ from zoneinfo import ZoneInfo
 import json
 from red_team_shadow import challenge_cases
 from case_memory_shadow import update_memory
+from chain_identity_shadow import build_chain_identity
 import math
 import numpy as np
 import pandas as pd
@@ -190,6 +191,58 @@ def _contract_cases(row, snapshot_id):
     return cases
 
 
+
+
+def _chain_cases(scored, snapshot_id, chain_result):
+    """Create structural cases only from validated explicit chain identities."""
+    if chain_result.get("status") != "SUCCESS":
+        return []
+
+    by_symbol = {}
+    for _, row in scored.iterrows():
+        symbol = str(row.get("نماد", "")).strip()
+        if symbol:
+            by_symbol[symbol] = row
+
+    cases = []
+    for key, chain in chain_result.get("chains", {}).items():
+        members = [by_symbol[s] for s in chain.get("members", []) if s in by_symbol]
+        if len(members) < 2:
+            continue
+
+        scores = []
+        for row in members:
+            value = _num(row, "FinalScore")
+            if value is not None:
+                scores.append(value)
+
+        if len(scores) < 2:
+            status = "INSUFFICIENT_DATA"
+            spread = None
+        else:
+            spread = max(scores) - min(scores)
+            # Discovery-only threshold: score dispersion >= 20 points deserves review.
+            status = "WATCH" if spread >= 20.0 else "REJECTED"
+
+        cases.append({
+            "snapshot_id": snapshot_id,
+            "engine_version": ENGINE_VERSION,
+            "case_id": _case_id(snapshot_id, key, "CHAIN_STRUCTURE"),
+            "type": "CHAIN_STRUCTURE_ANOMALY",
+            "status": status,
+            "symbol": key,
+            "final_score": max(scores) if scores else None,
+            "confidence": None,
+            "reason": "Validated contracts in one explicit chain show material cross-contract score dispersion; this is a review signal, not a trade direction.",
+            "evidence": [
+                _evidence("chain_key", key, "chain_identity_shadow"),
+                _evidence("member_count", len(members), "chain_identity_shadow"),
+                _evidence("score_dispersion", spread, "FinalScore"),
+                _evidence("members", chain.get("members", []), "chain_identity_shadow"),
+            ],
+        })
+    return cases
+
 def run_shadow(scored, snapshot_id, memory_path=None):
     if not isinstance(scored, pd.DataFrame):
         raise TypeError("scored must be a pandas DataFrame")
@@ -208,9 +261,11 @@ def run_shadow(scored, snapshot_id, memory_path=None):
             "summary": {},
         }
 
+    chain_result = build_chain_identity(scored)
     cases = []
     for _, row in scored.iterrows():
         cases.extend(_contract_cases(row, str(snapshot_id)))
+    cases.extend(_chain_cases(scored, str(snapshot_id), chain_result))
 
     counts = {}
     for case in cases:
@@ -238,9 +293,12 @@ def run_shadow(scored, snapshot_id, memory_path=None):
             "confirmed_risk_total": int(len(risks)),
             "counts": counts,
             "red_team_challenged_total": red_team.get("summary", {}).get("challenged_total", 0),
+            "chain_count": chain_result.get("summary", {}).get("chain_count", 0),
+            "chain_identity_status": chain_result.get("status"),
         },
         "cases": cases,
         "red_team": red_team,
+        "chain_identity": chain_result,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
