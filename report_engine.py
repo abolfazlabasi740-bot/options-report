@@ -8,7 +8,7 @@ import hashlib
 import json
 import pandas as pd
 import requests
-from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text
+from scoring_engine import ENGINE_VERSION, MIN_LEVERAGE, normalize_text, normalize_columns, numeric_columns
 from opportunity_engine import run_shadow
 from eligibility_shadow import classify_dataframe
 from schema_audit import audit_schema
@@ -85,7 +85,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     # Preserve a source-level eligibility view so expired/missing-leverage rows
     # remain auditable even though production scoring retains its existing gate.
-    source_eligibility = classify_dataframe(scored.copy(), min_leverage=MIN_LEVERAGE)
+    source_view = numeric_columns(normalize_columns(df.copy()))
+    source_view["RemainingDays"] = (source_view["روزهای تقویمی"] - 1).clip(lower=0)
+    source_view["FinalScore"] = pd.NA
+    source_eligibility = classify_dataframe(source_view, min_leverage=MIN_LEVERAGE)
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
