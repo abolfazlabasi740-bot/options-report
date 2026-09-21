@@ -9,6 +9,7 @@ class OpportunityConfigTests(unittest.TestCase):
     def test_defaults_are_explicit_and_valid(self):
         self.assertEqual(opportunity_config.CONFIG.relative_value_rank, 0.85)
         self.assertEqual(opportunity_config.CONFIG.historical_pattern_window, 3)
+        self.assertEqual(opportunity_config.CONFIG.production_min_leverage_reference, 3.5)
 
     def test_environment_override_is_read(self):
         with patch.dict(os.environ, {"OPP_RELATIVE_VALUE_RANK": "0.9"}, clear=False):
