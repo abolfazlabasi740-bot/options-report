@@ -21,6 +21,7 @@ Important:
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
+from red_team_shadow import challenge_cases
 import math
 import numpy as np
 import pandas as pd
@@ -215,6 +216,7 @@ def run_shadow(scored, snapshot_id):
         key = f"{case['type']}:{case['status']}"
         counts[key] = counts.get(key, 0) + 1
 
+    red_team = challenge_cases(scored, cases, str(snapshot_id))
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
     risks = [c for c in cases if c["type"].endswith("_RISK") and c["status"] == "CONFIRMED"]
@@ -231,8 +233,10 @@ def run_shadow(scored, snapshot_id):
             "watch_total": int(len(watch)),
             "confirmed_risk_total": int(len(risks)),
             "counts": counts,
+            "red_team_challenged_total": red_team.get("summary", {}).get("challenged_total", 0),
         },
         "cases": cases,
+        "red_team": red_team,
     }
 
 
