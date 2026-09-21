@@ -458,3 +458,17 @@ The archived source contains rows such as `ضهرم6047` and `ضهرم7060`. The
 - The live workflow is intentionally separate from deterministic regression tests.
 - In the current execution environment on 2026-09-21, direct DNS access to `s3.optionschool24.com` was unavailable, so no current-live schema claim is made from this environment.
 - Archived workbook schema remains verified as: 38 columns on `sheet1`, explicit Strike/Expiry, no explicit Underlying/Contract Type.
+
+## Multi-Source Data Architecture Decision — 2026-09-21
+
+The target FindChart-style intelligence model is explicitly multi-source. OptionSchool24 remains the option-analytics enrichment source, while TSETMC/TSE becomes the market-state, instrument-identity and historical-market source. The Six-Block scoring model is unchanged.
+
+- TSETMC/TSE is planned for canonical instrument identity, option/base-share market data, history, market state, order book and client-type evidence where explicitly available.
+- OptionSchool24 remains the source for verified option-specific analytics such as Black-Scholes-related fields, IV/HV, Greeks and breakeven that are already present in its export.
+- FindChart-style technical filters, pattern detection, opportunity cases, persistence and novelty will be derived from the merged canonical dataset rather than from a single workbook.
+- Historical timestamped snapshots are required for persistence/recurrence and pattern detection.
+- Symbol prefixes remain invalid as standalone CALL/PUT evidence.
+- No live TSETMC integration is claimed until a real runtime response is captured, normalized and hashed.
+- Detailed source responsibilities and implementation sequence are documented in docs/DATA_SOURCE_ARCHITECTURE.md.
+
+This decision supersedes the earlier single-source architecture description for the future Opportunity/FindChart layer; it does not change the active V4.1.1 Six-Block scoring or current Bale report path.
