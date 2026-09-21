@@ -32,6 +32,7 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 RELATIVE_VALUE_RANK = 0.85
 BREAKEVEN_RANK = 0.80
 LIQUIDITY_RANK = 0.75
+LIQUIDITY_BLOCK_WEIGHT = 20.0
 EXECUTION_PENALTY_MAX = 0.10
 CONFIRMATION_CONFIDENCE = 90.0
 NEAR_EXPIRY_DAYS = 10
@@ -98,7 +99,7 @@ def _contract_cases(row, snapshot_id):
         ]
         if liquidity is not None:
             evidence.append(_evidence("liquidity_block_score", liquidity, "BlockScore_Liquidity"))
-        if valuation >= RELATIVE_VALUE_RANK and confidence is not None and confidence >= CONFIRMATION_CONFIDENCE and liquidity is not None and liquidity >= LIQUIDITY_RANK:
+        if valuation >= RELATIVE_VALUE_RANK and confidence is not None and confidence >= CONFIRMATION_CONFIDENCE and liquidity is not None and liquidity / LIQUIDITY_BLOCK_WEIGHT >= LIQUIDITY_RANK:
             status = "CONFIRMED"
         elif valuation >= RELATIVE_VALUE_RANK:
             status = "WATCH"
@@ -150,9 +151,9 @@ def _contract_cases(row, snapshot_id):
             _evidence("liquidity_block_score", liquidity, "BlockScore_Liquidity"),
             _evidence("execution_penalty", execution_penalty, "ExecutionPenalty"),
         ]
-        if liquidity >= LIQUIDITY_RANK and execution_penalty <= EXECUTION_PENALTY_MAX:
+        if liquidity / LIQUIDITY_BLOCK_WEIGHT >= LIQUIDITY_RANK and execution_penalty <= EXECUTION_PENALTY_MAX:
             status = "CONFIRMED"
-        elif liquidity >= LIQUIDITY_RANK:
+        elif liquidity / LIQUIDITY_BLOCK_WEIGHT >= LIQUIDITY_RANK:
             status = "WATCH"
         else:
             status = "REJECTED"
