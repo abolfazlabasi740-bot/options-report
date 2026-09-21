@@ -12,16 +12,12 @@ from schema_audit import audit_schema
 
 DEFAULT_URL = "https://s3.optionschool24.com/export/excel?type=1"
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--url", default=DEFAULT_URL)
-    parser.add_argument("--output", type=Path, default=Path("output/live_schema_audit.json"))
-    args = parser.parse_args()
-    response = requests.get(args.url, timeout=90)
+def audit_live(url: str = DEFAULT_URL, temp_path: Path = Path("output/.live_optionschool.xlsx")) -> dict:
+    response = requests.get(url, timeout=90)
     response.raise_for_status()
     if len(response.content) < 5000 or not response.content.startswith(b"PK"):
         raise RuntimeError("Live source did not return a valid XLSX workbook")
-    temp = Path("output/.live_optionschool.xlsx")
+    temp = Path(temp_path)
     temp.parent.mkdir(parents=True, exist_ok=True)
     temp.write_bytes(response.content)
     try:
@@ -39,9 +35,19 @@ def main() -> None:
         }
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return result
     finally:
         temp.unlink(missing_ok=True)
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", default=DEFAULT_URL)
+    parser.add_argument("--output", type=Path, default=Path("output/live_schema_audit.json"))
+    args = parser.parse_args()
+    result = audit_live(args.url)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(result, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     main()
