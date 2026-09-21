@@ -74,7 +74,8 @@ def build_report(path, top_count=None, symbol_prefix=None):
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
     snapshot_id = snapshot_id_for(path, df)
-    shadow = run_shadow(scored, snapshot_id)
+    memory_file = output / "case_memory_shadow.json"
+    shadow = run_shadow(scored, snapshot_id, memory_path=memory_file)
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
     base = find_column(scored, ["قیمت سهم پایه", "Underlying"])
