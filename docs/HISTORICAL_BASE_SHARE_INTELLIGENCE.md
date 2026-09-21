@@ -65,3 +65,10 @@ The active Six-Block engine is unchanged.
 Lifecycle states are descriptive: `NEW`, `PERSISTENT`, `STRENGTHENING`, `WEAKENING`, `RESOLVED`, and `RECURRING`. A lifecycle transition is evidence history only; it does not alter the current score or ranking.
 
 `replay_engine.py` executes the Shadow pipeline twice against the same deterministic inputs and compares canonical fingerprints after removing only volatile generation time. A mismatch is an integrity failure rather than a scoring adjustment.
+
+
+## Audit Integrity Gate
+
+`audit_integrity.py` verifies the minimum audit chain before `latest_audit.json` is published. The gate checks source evidence, historical snapshot identity/hash, Opportunity snapshot consistency and deterministic replay.
+
+A failed integrity gate stops report publication. It does not modify FinalScore or ranking and does not convert missing evidence into a score.
