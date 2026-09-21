@@ -134,3 +134,24 @@ The Opportunity Shadow pipeline now runs Case Explanation immediately after Red 
 The Opportunity Shadow result now persists the `schema_audit` block and exposes schema readiness in its summary.
 This is audit-only. It does not alter FinalScore, ranking, case status, or Bale output.
 When explicit Underlying or Contract Type is absent, the result remains `INSUFFICIENT_DATA` and no symbol-based inference is activated.
+
+
+## Historical Snapshot Integration — 2026-09-21
+
+Opportunity Shadow now accepts explicit historical snapshot context.
+
+historical_snapshot.py provides append-only snapshot storage, deterministic record hashing, field-level deltas, explicit added/removed/changed/unchanged states, and historical case context.
+
+historical_pattern_shadow.py adds descriptive, threshold-free sequence detection from retained history: consistent field direction sequences, price/volume concordance or divergence, and FinalScore/price alignment or divergence.
+
+These classifications are evidence only. They never mutate FinalScore, Top-N ranking, Case status, or Bale output.
+
+The current report path stores history using source-local option symbol identity because an explicit TSETMC instrument identifier is not yet available in the live OptionSchool24 report path. This is explicitly marked as SOURCE_LOCAL_SYMBOL and is not presented as canonical cross-source identity.
+
+## Base-Share Intelligence — 2026-09-21
+
+base_share_intelligence.py is available as a Shadow engine and requires explicit instrument_id.
+
+Option linkage requires explicit underlying_id. Symbol text is not used to attach an option to a base share.
+
+Live activation remains gated on real TSETMC runtime evidence.
