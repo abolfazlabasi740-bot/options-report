@@ -969,3 +969,23 @@ The next controlled change is to evaluate whether production Eligibility should 
 - This is genuine live OptionSchool24 schema evidence, but it is not yet Gate 3 full-report evidence: the report engine still must be executed against this fresh workbook and its row/eligibility/report/audit outputs captured.
 - Regression workflow also passed on the same verification commit.
 - No live TSETMC enrichment or Termux/Bale runtime evidence is implied by this gate.
+
+
+## V4.1 Live Gate 3 Verification — 2026-09-22
+
+- Full V4.1 Report Engine was executed successfully against a fresh live OptionSchool24 download in GitHub Actions.
+- Verification commit: f9a42f041d61db8a97e58f28cbc208463e585d4b.
+- Live workflow run: 35684027740; job: 106606928933; conclusion: SUCCESS.
+- Fresh report source file: optionschool_20260922_071052_767703.xlsx.
+- Report source SHA-256: 4252022bd88d2452d856c42bfcd65224e1af430161ad3072bacd925cbeb693fc.
+- Production selected_count: 15.
+- Source universe scanned by Opportunity Shadow: 457 contracts.
+- Eligibility counts: ACTIVE_ELIGIBLE=130; LEVERAGE_LOW=327.
+- Opportunity Shadow status: SUCCESS; cases_total=1828; confirmed_total=233; watch_total=66; confirmed_risk_total=53.
+- Multi-factor cluster count: 73; multi-factor confirmed count: 18.
+- Replay status: REPLAY_MATCH; deterministic=true; first_hash and second_hash are identical.
+- Audit integrity status: PASS.
+- Gate 3 artifact was uploaded successfully as gate3-live-report-evidence, artifact ID 10676111412.
+- TSETMC evidence was DISABLED for this live run; therefore this run does not establish Gate 4.
+- Gate 3 of docs/GO_LIVE_GATE.md is now VERIFIED for this commit.
+- This evidence is GitHub-hosted live-source execution, not Termux deployment evidence and not Bale delivery evidence.
