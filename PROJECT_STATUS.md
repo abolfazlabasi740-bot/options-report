@@ -889,3 +889,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - The profile layer is derived only from existing historical confirmation/memory evidence.
 - No economic threshold, causal inference, direction inference, FinalScore modification or ranking change is introduced.
 - The Opportunity Engine now exposes `historical_memory_profiles` when lifecycle persistence is active.
+
+
+## Equity Historical Timeline Integrity — 2026-09-22
+
+- Corrected `equity_pattern_shadow.py` so RESOLVED lifecycle events are preserved in the historical timeline instead of being discarded.
+- Patterns now expose `timeline_event_count` and `resolution_count`, while `observation_count` continues to represent active/non-resolved observations.
+- Recurrence evidence therefore retains the resolution event that occurred between observations.
+- Added regression coverage for NEW → RESOLVED → RECURRING.
+- No scoring, ranking, direction inference or causal inference is changed.
