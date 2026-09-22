@@ -7,7 +7,7 @@
 ## Gate 1 — Repository Integrity
 
 - Six-Block V4.1 unchanged.
-- Shadow layers remain non-blocking.
+- Shadow analytical failures remain non-blocking; Replay/Integrity failures remain blocking.
 - No secret/token committed.
 - Regression workflow exists.
 - Project status documents every material engine and limitation.
@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest verified code/test run 35729976616 (run 318) on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 completed SUCCESS; job 106752837223; 150 tests passed.
+Status: VERIFIED historically; current remediation evidence must be refreshed on the remediation commit before Gate 2 is re-declared current.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — latest live run 35729976632 (run 54) on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 completed SUCCESS; job 106752837066; fresh source SHA-256 a4e80a58bd2c752de724806adbc514f858331f48109ce9df24c1eb9412318850; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH; deterministic=true.
+Status: VERIFIED historically; a new live run is required after the audit-remediation commit to establish current same-commit evidence.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -73,11 +73,13 @@ Status: PARTIALLY VERIFIED — latest live execution demonstrated Opportunity Sh
 
 Required:
 - same Report Engine output reaches Bale
+- delivered report SHA equals the report SHA recorded and PASS-checked by Audit
+- source SHA is reverified from the deployed source file before delivery
 - no second analysis engine
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729976616 on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 passed 150 tests, including Gate 6 runtime-verification hardening, repository-HEAD binding and the safe Termux deployment launcher.
+Status: CODE/CI REMEDIATION IN PROGRESS; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729976616 on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 passed 150 tests, including Gate 6 runtime-verification hardening, repository-HEAD binding and the safe Termux deployment launcher.
 
 Verified repository-side evidence:
 - Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
@@ -93,12 +95,12 @@ Production cutover is allowed only after Gates 2–6 have current evidence on th
 
 Until then:
 - production Six-Block ranking remains the reference path
-- Shadow intelligence remains non-blocking
+- Shadow analytical failures remain non-blocking; Shadow integrity/replay failures remain blocking
 - no Buy/Sell signal is emitted
 - no ranking is modified by historical memory or Red-Team evidence
 
 ## Current Assessment
 
-The repository and CI gates are substantially verified. The remaining hard gate is physical/runtime evidence from the deployed Termux instance for Bale delivery. Gate 4 also remains pending because exact option instrument identity is not present in the current live OptionSchool24 source.
+The repository contains the formal audit-remediation controls, but the remediation is not considered closed until the exact remediation commit passes regression/live workflows and the deployed Termux runtime produces real Gate 6 evidence. Gate 4 also remains pending because exact option instrument identity is not present in the current live OptionSchool24 source.
 
-The project is therefore at the final runtime-evidence stage rather than requiring redesign of the Six-Block model.
+The Six-Block model is not being redesigned as part of this remediation.
