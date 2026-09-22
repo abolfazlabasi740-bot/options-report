@@ -145,13 +145,14 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         out["opportunities"] = out["historical_memory"]["opportunities"]
         from equity_memory_profile_shadow import build_memory_profiles
         out["historical_memory_profiles"] = build_memory_profiles(out["opportunities"])
-        profiles_by_key = {
-            f"{p.get('instrument_id')}::{p.get('opportunity_type')}::{'|'.join(p.get('evidence_families') or [])}": p
-            for p in out["historical_memory_profiles"].get("profiles", [])
-        }
+        profiles_by_key = {}
+        for p in out["historical_memory_profiles"].get("profiles", []):
+            family_key = "|".join(sorted(p.get("evidence_families") or []))
+            profile_key = f"{p.get('instrument_id')}::{p.get('opportunity_type')}::{family_key}"
+            profiles_by_key[profile_key] = p
         for opp in out["opportunities"]:
             family_key = "|".join(sorted(opp.get("evidence_families") or []))
-            key = f"{opp.get('instrument_id")}::{opp.get('type')}::{family_key}"
+            key = f"{opp.get('instrument_id')}::{opp.get('type')}::{family_key}"
             if key in profiles_by_key:
                 opp["historical_memory_profile"] = profiles_by_key[key]
         from equity_historical_evidence_fusion_shadow import fuse_historical_evidence
