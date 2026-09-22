@@ -1216,3 +1216,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Exact TSETMC promotion remains blocked until accepted explicit instrument identity is available.
 - Signal production remains gated by policy closure.
 - No production scoring, ranking, eligibility or Bale logic was modified.
+
+
+## Engine Dependency & Gate Matrix — 2026-09-22
+
+- Added `docs/ENGINE_DEPENDENCY_GATE_MATRIX_V41.md` at commit `cca0c4e76776d229543a756e319dd1d70f8d52b1`.
+- The matrix converts the organizational chart and Engine Contracts into operational dependency/failure-control rules.
+- It explicitly distinguishes organizational dependency from literal runtime call order; no unsupported runtime sequence is asserted.
+- Failure states are classified as STOP, REJECT/DEGRADE, SHADOW/CONTINUE, or DISABLED/DEFERRED.
+- Gate ownership for Gates 2–7 is documented with required evidence and current state.
+- Current blockers remain: scoring parameter provenance, exact TSETMC identity, source freshness evidence, historical sensitivity/ablation, economic validation, and Gate 7.
+- No Six-Block weight, Overlay constant, eligibility threshold, ranking logic, TSETMC activation, or Bale delivery behavior was changed.
