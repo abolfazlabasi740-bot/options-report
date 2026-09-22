@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 
 from replay_engine import verify_shadow_replay
+from opportunity_engine import run_shadow
 
 
 class ReplayEngineTests(unittest.TestCase):
@@ -15,7 +16,7 @@ class ReplayEngineTests(unittest.TestCase):
                 "AnalyticsFlags": "",
             }
         ])
-        baseline = {"status": "SUCCESS", "snapshot_id": "S1", "cases": [], "summary": {}}
+        baseline = run_shadow(scored, "S1")
         result = verify_shadow_replay(scored, "S1", baseline_shadow=baseline)
         self.assertEqual(result["status"], "REPLAY_MATCH")
         self.assertTrue(result["baseline_match"])
