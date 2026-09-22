@@ -131,4 +131,16 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         },
     }
     out["opportunities_sha256"] = _hash(opportunities)
+    if lifecycle_path:
+        from equity_opportunity_lifecycle_shadow import append_opportunity_events, load_events
+        lifecycle_result = append_opportunity_events(lifecycle_path, str(snapshot_id or ""), opportunities)
+        out["lifecycle"] = lifecycle_result
+        from equity_pattern_shadow import analyze_cross_snapshot_patterns
+        out["cross_snapshot_patterns"] = analyze_cross_snapshot_patterns(load_events(lifecycle_path))
+    else:
+        out["lifecycle"] = {
+            "status": "NOT_PERSISTED",
+            "engine_version": "EQUITY-LIFECYCLE-SHADOW-1.0",
+            "reason": "NO_LIFECYCLE_PATH_SUPPLIED",
+        }
     return out
