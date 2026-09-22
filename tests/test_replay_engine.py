@@ -15,8 +15,10 @@ class ReplayEngineTests(unittest.TestCase):
                 "AnalyticsFlags": "",
             }
         ])
-        result = verify_shadow_replay(scored, "S1")
+        baseline = {"status": "SUCCESS", "snapshot_id": "S1", "cases": [], "summary": {}}
+        result = verify_shadow_replay(scored, "S1", baseline_shadow=baseline)
         self.assertEqual(result["status"], "REPLAY_MATCH")
+        self.assertTrue(result["baseline_match"])
         self.assertTrue(result["deterministic"])
 
     def test_replay_changes_when_input_changes(self):
@@ -35,3 +37,15 @@ class ReplayEngineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_replay_rejects_different_baseline_artifact(self):
+        scored = pd.DataFrame([{
+            "نماد": "ضتست1",
+            "FinalScore": 60.0,
+            "DataConfidence": 100.0,
+            "AnalyticsFlags": "",
+        }])
+        baseline = {"status": "SUCCESS", "snapshot_id": "S1", "cases": [{"tampered": True}], "summary": {}}
+        result = verify_shadow_replay(scored, "S1", baseline_shadow=baseline)
+        self.assertEqual(result["status"], "REPLAY_MISMATCH")
+        self.assertFalse(result["deterministic"])
