@@ -1185,3 +1185,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Rule metadata now states that family count is not source independence.
 - Regression coverage added for both single-source-derived and explicit multi-source cases.
 - This is evidence/provenance hardening only; Six-Block scoring, FinalScore, production eligibility, ranking, Top-N and Bale output are unchanged.
+
+
+## Economic Scoring Audit — 2026-09-22
+
+- Added `docs/ECONOMIC_SCORING_AUDIT_V41.md`.
+- Audit covers all Six-Block factors, Overlay, double exposure, direction-sensitive policies, DataConfidence scope and required economic validation.
+- No Six-Block weight, scoring direction, Overlay constant, eligibility gate, ranking rule or Bale output was changed.
+- Current technical scoring path is documented as reproducible; economic policy validation remains OPEN.
+- Next controlled step: Historical Sensitivity / Ablation Audit using real historical data, without changing Production Scoring.
