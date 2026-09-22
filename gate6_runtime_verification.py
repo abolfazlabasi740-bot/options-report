@@ -37,7 +37,13 @@ def run_step(name: str, argv: list[str]) -> None:
         errors="replace",
     )
     if result.returncode != 0:
-        raise RuntimeError(f"{name} failed with exit code {result.returncode}")
+        detail = (result.stderr or result.stdout or "").strip()
+        if len(detail) > 1200:
+            detail = detail[-1200:]
+        raise RuntimeError(
+            f"{name} failed with exit code {result.returncode}"
+            + (f": {detail}" if detail else "")
+        )
 
 
 def sha256_file(path: Path) -> str:
