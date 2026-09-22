@@ -94,6 +94,7 @@ class TSETMCAdapterTests(unittest.TestCase):
 
         self.assertEqual(row["symbol"], "ضهرم")
         self.assertIsNone(row["contract_type"])
+        self.assertIsNone(row["underlying_id"])
         self.assertIsNone(row["underlying_symbol"])
         self.assertIsNone(row["expiry"])
         self.assertIsNone(row["strike"])
