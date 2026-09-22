@@ -1070,3 +1070,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Fresh live source in that run: optionschool_20260922_121155_364015.xlsx with source SHA-256 2ae00a71476ddf00908e725974d906f20ca149a6eb5b92587d49032fc3384682.
 - Gate 3 report audit: PASS; Opportunity Shadow: SUCCESS; Replay: REPLAY_MATCH, deterministic true; TSETMC evidence remains DISABLED because the source still lacks the required explicit option instrument ID.
 - The verified CI evidence still does not prove execution on the deployed Termux device.
+
+
+## Gate 6 One-Command Orchestrator — 2026-09-22
+
+- Added `gate6_runtime_verification.py` to execute the existing Report Engine, Runtime Verification and Bale Delivery Verification in one controlled sequence.
+- The orchestrator does not implement analysis or ranking logic; it only coordinates existing production components and validates their Evidence.
+- It requires Audit PASS, matching report/source SHA-256 values and non-empty Bale receipts before writing `output/gate6_runtime_evidence.json` with status PASS.
+- Regression verification for the orchestrator passed on commit `9572ffbd1816d81a9156b068e1ca768714cee72a`: run `35706552463`, job `106676761560`; all tests passed.
+- Live OptionSchool24 verification also passed on the same commit: run `35706552454`, job `106676761323`.
+- The orchestrator is repository-ready, but Gate 6 remains runtime-pending until it is executed on the deployed Termux instance and produces real Bale receipts.
