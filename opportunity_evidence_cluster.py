@@ -12,7 +12,7 @@ import json
 import math
 from collections import defaultdict
 
-ENGINE_VERSION = "OPPORTUNITY-CLUSTER-SHADOW-1.0"
+ENGINE_VERSION = "OPPORTUNITY-CLUSTER-SHADOW-1.1"
 MIN_WATCH_FAMILIES = 2
 MIN_CONFIRMED_FAMILIES = 3
 
@@ -42,6 +42,21 @@ def _family(case):
     if explicit:
         return str(explicit)
     return _FAMILY_BY_CASE.get(str(case.get("type", "")), "OTHER")
+
+def _source_family(source):
+    """Classify market-data provenance without treating derived evidence as a new source."""
+    value = str(source or "").strip().lower()
+    if not value:
+        return "UNKNOWN"
+    if "tsetmc" in value or "tse" in value:
+        return "TSETMC"
+    if "optionschool" in value or any(token in value for token in (
+        "black_scholes", "breakeven", "liquidity", "score_", "finalscore",
+        "spread", "greeks", "iv", "volume", "tradevalue",
+    )):
+        return "OPTIONSCHOOL24_OR_DERIVED"
+    return "OTHER_SOURCE_OR_UNSPECIFIED"
+
 
 def _is_active_case(case):
     eligibility = case.get("eligibility") or {}
@@ -83,6 +98,7 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
     for symbol in sorted(grouped):
         members = grouped[symbol]
         families = defaultdict(list)
+        source_families = set()
         contradictions = []
         gaps = []
 
@@ -90,6 +106,7 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
             family = _family(case)
             families[family].append(case.get("case_id"))
             for evidence in case.get("evidence", []) or []:
+                source_families.add(_source_family(evidence.get("source")))
                 if evidence.get("value") is None:
                     gaps.append({
                         "case_id": case.get("case_id"),
@@ -105,6 +122,15 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
         family_names = sorted(families)
         if len(family_names) < MIN_WATCH_FAMILIES:
             continue
+
+        known_source_families = sorted(source for source in source_families if source != "UNKNOWN")
+        source_diversity = (
+            "MULTI_SOURCE"
+            if len(known_source_families) >= 2
+            else "SINGLE_SOURCE_OR_DERIVED"
+            if known_source_families
+            else "SOURCE_METADATA_INSUFFICIENT"
+        )
 
         historical = patterns_by_symbol.get(symbol, [])
         status = (
@@ -127,6 +153,8 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
             "status": status,
             "case_ids": sorted(c.get("case_id") for c in members if c.get("case_id")),
             "evidence_families": evidence_refs,
+            "source_families": known_source_families,
+            "source_diversity": source_diversity,
             "historical_pattern_count": len(historical),
             "contradiction_count": len(contradictions),
             "data_gap_count": len(gaps),
@@ -136,6 +164,7 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
             **payload,
             "cluster_id": cluster_id,
             "independent_family_count": len(family_names),
+            "source_family_count": len(known_source_families),
             "supporting_evidence": evidence_refs,
             "historical_patterns": _clean(historical),
             "contradictory_evidence": contradictions,
@@ -151,6 +180,10 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
         "multi_family_watch": sum(c["status"] == "MULTI_FAMILY_WATCH" for c in clusters),
         "multi_family_confirmed": sum(c["status"] == "MULTI_FAMILY_CONFIRMED" for c in clusters),
         "max_independent_family_count": max((c["independent_family_count"] for c in clusters), default=0),
+        "multi_source_cluster_count": sum(c["source_diversity"] == "MULTI_SOURCE" for c in clusters),
+        "single_source_or_derived_cluster_count": sum(
+            c["source_diversity"] == "SINGLE_SOURCE_OR_DERIVED" for c in clusters
+        ),
     }
     result = {
         "status": "SUCCESS",
@@ -160,6 +193,8 @@ def build_opportunity_evidence_clusters(cases, historical_patterns=None, red_tea
         "rules": {
             "minimum_watch_families": MIN_WATCH_FAMILIES,
             "minimum_confirmed_families": MIN_CONFIRMED_FAMILIES,
+            "family_count_is_not_source_independence": True,
+            "source_diversity_is_descriptive": True,
             "expired_non_risk_cases_active": False,
             "direction_inference": "DISABLED",
             "score_change": "NONE",
