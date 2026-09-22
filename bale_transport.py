@@ -45,6 +45,19 @@ def send_message(token, chat_id, text, return_receipts=False):
                     "message_id": result.get("message_id"),
                     "chat_id": (result.get("chat") or {}).get("id"),
                 })
-        except (requests.RequestException, ValueError):
-            raise RuntimeError("ارسال بله ناموفق بود؛ احتمال ارسال بخشی از گزارش وجود دارد") from None
+        except requests.HTTPError as exc:
+            status = getattr(exc.response, "status_code", None)
+            raise RuntimeError(
+                f"ارسال بله ناموفق بود؛ HTTP_STATUS={status or "UNKNOWN"}؛ احتمال ارسال بخشی از گزارش وجود دارد"
+            ) from None
+        except requests.RequestException as exc:
+            reason = type(exc).__name__
+            raise RuntimeError(
+                f"ارسال بله ناموفق بود؛ NETWORK_ERROR={reason}؛ احتمال ارسال بخشی از گزارش وجود دارد"
+            ) from None
+        except ValueError as exc:
+            reason = "API_REJECTED" if str(exc) == "Bale rejected message" else "INVALID_RESPONSE"
+            raise RuntimeError(
+                f"ارسال بله ناموفق بود؛ REASON={reason}؛ احتمال ارسال بخشی از گزارش وجود دارد"
+            ) from None
     return receipts if return_receipts else len(chunks)
