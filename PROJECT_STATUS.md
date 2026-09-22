@@ -1205,3 +1205,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Gate 6 remains CLOSED based on physical Termux execution and real Bale receipts.
 - Gate 7 remains NOT CLOSED.
 - This documentation change does not modify Six-Block scoring, FinalScore, eligibility, ranking, Opportunity status or Bale output.
+
+
+## Engine Contract & Authority Matrix — 2026-09-22
+
+- Added `docs/ENGINE_CONTRACTS_V41.md`.
+- Converted the organizational chart into explicit Engine contracts, authority levels, hard boundaries and failure propagation rules.
+- Production authority is separated from Shadow authority; no Engine may self-promote or create an alternate production ranking.
+- Bale is explicitly defined as distribution only.
+- Exact TSETMC promotion remains blocked until accepted explicit instrument identity is available.
+- Signal production remains gated by policy closure.
+- No production scoring, ranking, eligibility or Bale logic was modified.
