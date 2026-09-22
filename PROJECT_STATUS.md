@@ -772,3 +772,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - FinalScore, Six-Block weights, Production Eligibility, Ranking, Top-N and Bale output remain unchanged.
 - Regression coverage added for independent-family detection, single-family rejection, contradiction retention, missing-data handling, deterministic hashing, expiry separation and input immutability.
 - This is an architecture/test milestone. No live Termux execution or CI PASS is claimed by the code commits alone.
+
+
+## Standalone Equity Intelligence Shadow — 2026-09-22
+
+- Added `equity_intelligence_shadow.py`, engine `EQUITY-INTELLIGENCE-SHADOW-1.0`.
+- Equity monitoring is now defined as a separate analysis mode: `EQUITY_ONLY`; it does not require option-specific fields and does not alter the existing Six-Block option scoring path.
+- Evidence families: Price Structure, Liquidity, Price/Volume, Flow, Market Relative and Historical Pattern.
+- Equity identity requires an explicit instrument identifier (`instrument_id` / TSETMC `insCode` aliases). Symbol text is never used to infer identity.
+- Missing fields remain `INSUFFICIENT_DATA`; no zero-filling or hidden thresholds are introduced.
+- Output is deterministic and audit-oriented. Direction inference and score changes are explicitly disabled.
+- Added regression coverage for standalone observation, identity safety, missing-data handling, deterministic output and score/direction separation.
+- This milestone establishes Equity Intelligence as a parallel capability. Production Option Ranking and Bale output are unchanged; orchestration integration remains a separate gate requiring real-data validation.
