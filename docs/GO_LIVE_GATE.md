@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest main regression run 35706552463 (run 301) on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS; job 106676761560.
+Status: VERIFIED — latest verified main regression run 35720706997 (run 307) on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 completed SUCCESS; job 106722691428; 148 tests passed.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — latest live run 35706552454 (run 37) on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS; job 106676761323. The run executed live schema audit, full V4.1 report generation, Gate 3 evidence capture and artifact upload.
+Status: VERIFIED — latest live run 35720706945 (run 43) on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 completed SUCCESS; job 106722690022. Fresh source SHA-256 0909c3bea9c8e868f636c24166eefea31a8bec954ee5a37628dddb9a3fccdb08; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -67,7 +67,7 @@ Required evidence:
 - Historical Red-Team fusion
 - deterministic hashes
 
-Status: PARTIALLY VERIFIED — live execution has demonstrated Opportunity Shadow, multi-factor clusters, deterministic replay and Audit PASS. TSETMC enrichment is disabled and historical persistence/runtime execution remain separate validation dimensions.
+Status: PARTIALLY VERIFIED — latest live execution demonstrated Opportunity Shadow, deterministic replay and Audit PASS. TSETMC enrichment remains disabled; historical persistence and deployed runtime execution remain separate validation dimensions.
 
 ## Gate 6 — Bale Delivery
 
@@ -77,7 +77,7 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING.
+Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest repository regression run 35720706997 on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 passed 148 tests, including Gate 6 runtime-verification hardening.
 
 Verified repository-side evidence:
 - Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
