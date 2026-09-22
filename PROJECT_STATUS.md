@@ -784,3 +784,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Output is deterministic and audit-oriented. Direction inference and score changes are explicitly disabled.
 - Added regression coverage for standalone observation, identity safety, missing-data handling, deterministic output and score/direction separation.
 - This milestone establishes Equity Intelligence as a parallel capability. Production Option Ranking and Bale output are unchanged; orchestration integration remains a separate gate requiring real-data validation.
+
+
+## Equity Evidence Graph & Multi-Factor Cluster — 2026-09-22
+
+- Added `equity_evidence_cluster_shadow.py`, engine `EQUITY-CLUSTER-SHADOW-1.0`.
+- Standalone equity cases with at least two independently observed evidence families can be grouped into a deterministic evidence cluster; this is not a score or trade signal.
+- Added `EQUITY-EVIDENCE-GRAPH-SHADOW-1.0` inside the Equity Intelligence layer. The graph connects equity cases to explicit evidence, historical context and Red Team challenges.
+- Equity clustering and graph generation are now attached to the standalone Equity Intelligence output as Shadow artifacts.
+- Direction inference and score changes remain disabled; missing evidence is retained as incomplete evidence.
+- Option Evidence Graph/Cluster engines and the Six-Block option scoring path are not modified by this integration.
+- Regression tests were added for multi-family equity clustering, single-family rejection and deterministic hashing.
+- This remains a Shadow architecture milestone. No production stock ranking, no option ranking change, no Bale production change, and no Termux live execution are claimed.
