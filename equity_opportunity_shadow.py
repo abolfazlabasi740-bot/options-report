@@ -156,6 +156,11 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         from equity_historical_evidence_fusion_shadow import fuse_historical_evidence
         out["historical_evidence_fusion"] = fuse_historical_evidence(out["opportunities"])
         out["opportunities"] = out["historical_evidence_fusion"]["opportunities"]
+        from equity_historical_redteam_shadow import fuse_historical_redteam
+        out["historical_redteam_fusion"] = fuse_historical_redteam(
+            out["opportunities"], load_events(lifecycle_path)
+        )
+        out["opportunities"] = out["historical_redteam_fusion"]["opportunities"]
         out["opportunities_sha256"] = _hash(out["opportunities"])
     else:
         out["lifecycle"] = {
