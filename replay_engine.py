@@ -33,12 +33,18 @@ def _stable(value: Any) -> Any:
 
 
 def stable_shadow_payload(result: dict[str, Any]) -> dict[str, Any]:
-    payload = deepcopy(result)
-    payload.pop("generated_at", None)
-    payload.pop("case_memory", None)
-    payload.pop("case_lifecycle", None)
-    return _stable(payload)
+    """Normalize the persisted analytical case artifact for deterministic replay.
 
+    Stateful memory/lifecycle and presentation-only metadata are excluded.
+    The cases and their summary are the authoritative Shadow analytical artifact.
+    """
+    payload = {
+        "engine_version": result.get("engine_version"),
+        "snapshot_id": result.get("snapshot_id"),
+        "summary": result.get("summary", {}),
+        "cases": result.get("cases", []),
+    }
+    return _stable(payload)
 
 def fingerprint(payload: dict[str, Any]) -> str:
     raw = json.dumps(
@@ -90,7 +96,7 @@ def verify_shadow_replay(
         "status": "REPLAY_MATCH" if regenerated_match and baseline_match else "REPLAY_MISMATCH",
         "engine_version": ENGINE_VERSION,
         "snapshot_id": snapshot_id,
-        "replay_scope": "ANALYTICAL_SHADOW",
+        "replay_scope": "ANALYTICAL_CASE_ARTIFACT",
         "baseline_hash": baseline_hash,
         "first_hash": first_hash,
         "second_hash": second_hash,
