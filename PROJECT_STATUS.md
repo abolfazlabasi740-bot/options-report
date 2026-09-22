@@ -999,3 +999,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - The existing mapping layer retains symbol-only matches as SYMBOL_ONLY_CANDIDATE and promotes only explicit instrument-ID matches to EXACT_INSTRUMENT_ID.
 - Gate 4 therefore remains pending until the deployed source supplies an explicit option instrument ID, or a separately approved identity source provides an exact instrument-ID mapping that satisfies the existing promotion rules.
 - No Six-Block score, ranking, opportunity status or production output is changed by this limitation.
+
+
+## Current Gate Evidence — 2026-09-22
+
+- Latest main regression run: 35686797029 (run 271), commit 56c99b866ab1aea96731c56221e7805a30a04912, conclusion SUCCESS.
+- Latest live-schema run on the same commit: 35686797019 (run 7), conclusion SUCCESS.
+- The current live source still does not expose an explicit option instrument ID accepted by the TSETMC integration; Gate 4 remains pending by design.
+- Gate 6 remains pending because current Termux/Bale delivery has not been re-verified on the deployed V4.1.1 runtime. Repository evidence and GitHub CI do not substitute for that runtime evidence.
+- No Six-Block weights, production eligibility gate, ranking logic, or Bale report content was changed in this step.
