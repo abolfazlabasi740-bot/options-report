@@ -31,6 +31,7 @@ CRITICAL_FILES = [
     "bale_listener.py",
     "bale_transport.py",
     "bale_runtime_verification.py",
+    "gate6_runtime_verification.py",
 ]
 
 
