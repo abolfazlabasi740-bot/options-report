@@ -45,7 +45,7 @@ def _opportunity_type(families):
 
 def detect_equity_opportunities(cases, evidence_clusters=None,
                                 historical_patterns=None, red_team=None,
-                                snapshot_id=None):
+                                snapshot_id=None, lifecycle_path=None):
     case_map = _case_index(cases)
     clusters = _clusters(evidence_clusters)
     patterns = historical_patterns or {}
