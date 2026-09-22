@@ -29,6 +29,8 @@ CRITICAL_FILES = [
     "replay_engine.py",
     "audit_integrity.py",
     "bale_listener.py",
+    "bale_transport.py",
+    "bale_runtime_verification.py",
 ]
 
 
