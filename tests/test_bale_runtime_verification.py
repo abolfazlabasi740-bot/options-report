@@ -37,6 +37,7 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             report, audit, evidence, source_hash = self._fixture(Path(d))
             with (
+                patch.object(verifier, "ROOT", Path(d)),
                 patch.object(verifier, "REPORT_PATH", report),
                 patch.object(verifier, "AUDIT_PATH", audit),
                 patch.object(verifier, "EVIDENCE_PATH", evidence),
