@@ -53,5 +53,16 @@ class EquityOpportunityTests(unittest.TestCase):
         b=detect_equity_opportunities(r["cases"],r["evidence_clusters"],snapshot_id="S1")
         self.assertEqual(a["opportunities_sha256"],b["opportunities_sha256"])
 
+    def test_lifecycle_persistence_and_memory(self):
+        import tempfile, os
+        r=analyze_equities(self._df(),"S1")
+        with tempfile.TemporaryDirectory() as d:
+            path=os.path.join(d,"lifecycle.jsonl")
+            o=detect_equity_opportunities(r["cases"],r["evidence_clusters"],snapshot_id="S1",lifecycle_path=path)
+            self.assertEqual(o["lifecycle"]["status"],"SUCCESS")
+            self.assertIn("historical_memory", o["opportunities"][0])
+            self.assertIn("historical_memory_profiles", o)
+            self.assertTrue(os.path.exists(path))
+
 if __name__=="__main__":
     unittest.main()
