@@ -137,6 +137,9 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         out["lifecycle"] = lifecycle_result
         from equity_pattern_shadow import analyze_cross_snapshot_patterns
         out["cross_snapshot_patterns"] = analyze_cross_snapshot_patterns(load_events(lifecycle_path))
+        from equity_historical_confirmation_shadow import enrich_opportunities
+        out["historical_confirmation"] = enrich_opportunities(out["opportunities"], out["cross_snapshot_patterns"])
+        out["opportunities"] = out["historical_confirmation"]["opportunities"]
     else:
         out["lifecycle"] = {
             "status": "NOT_PERSISTED",
