@@ -1046,3 +1046,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Live OptionSchool24 workflow run: `35704198237`, job `106669091168`, SUCCESS.
 - Live workflow completed schema audit, full V4.1 report, Gate 3 evidence generation and artifact upload successfully on the same commit.
 - These CI results verify the new runtime-evidence tooling at repository level; they do not constitute actual Termux/Bale delivery evidence.
+
+
+## Bale Runtime Evidence Hardening — 2026-09-22
+
+- Regression workflow verified commit `822b30a8908d955ccacb3815901414e4c3ff9b3f`: run `35704668186`, job `106670595740`, SUCCESS.
+- Live OptionSchool24 workflow verified the same commit: run `35704668179`, SUCCESS; fresh Gate 3 artifact was uploaded as artifact `10683887197`.
+- Bale transport now supports an opt-in receipt mode that records only non-secret `message_id` and `chat_id` returned by Bale.
+- `bale_runtime_verification.py` now fails closed if Bale does not return a message receipt and records the receipt in `output/bale_delivery_verification.json` without recording the bot token.
+- Default Listener behavior is unchanged: it still returns the chunk count and uses the same Report Engine.
+- No Six-Block, FinalScore, ranking, Opportunity Shadow, or production output logic was changed.
+- Gate 6 remains pending actual execution of `python3 bale_runtime_verification.py` on the deployed Termux instance with the real Bale environment; GitHub CI cannot substitute for that runtime evidence.
