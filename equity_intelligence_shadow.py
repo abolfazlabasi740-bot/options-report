@@ -75,7 +75,38 @@ def _historical(row,s,i):
     ok=p is not None and not pd.isna(p) and p!=""
     return _case(s,i,"HISTORICAL_PATTERN","OBSERVED" if ok else "INSUFFICIENT_DATA",ev,"Historical pattern is descriptive prior evidence only.")
 
-def analyze_equities(df: pd.DataFrame, snapshot_id: str):
+def build_equity_evidence_graph(cases, historical_patterns=None, red_team=None):
+    patterns=historical_patterns or {}
+    red=red_team or {}
+    pmap={}
+    for p in patterns.get("patterns",[]) or []:
+        key=str(p.get("instrument_id") or p.get("identity") or p.get("symbol") or "")
+        if key: pmap.setdefault(key,[]).append(p)
+    rmap={str(x.get("case_id")):x for x in red.get("cases",[]) or []}
+    nodes=[]; edges=[]
+    for c in list(cases or []):
+        cid=c.get("case_id")
+        if not cid: continue
+        iid=str(c.get("instrument_id") or "")
+        cn={"id":f"case:{cid}","kind":"EQUITY_CASE","case_id":cid,"instrument_id":iid,"family":c.get("family"),"status":c.get("status")}
+        nodes.append(cn)
+        for ev in c.get("evidence",[]) or []:
+            eid=f"evidence:{cid}:{ev.get('name')}"
+            nodes.append({"id":eid,"kind":"EVIDENCE","name":ev.get("name"),"value":ev.get("value"),"source":ev.get("source")})
+            edges.append({"from":cn["id"],"to":eid,"relation":"SUPPORTED_BY"})
+        for p in pmap.get(iid,[]):
+            pid=f"pattern:{iid}:{p.get('type')}:{p.get('snapshot_id')}"
+            nodes.append({"id":pid,"kind":"HISTORICAL_PATTERN","instrument_id":iid,"type":p.get("type"),"classification":p.get("classification")})
+            edges.append({"from":cn["id"],"to":pid,"relation":"HISTORICAL_CONTEXT"})
+        if cid in rmap:
+            rid=f"redteam:{cid}"
+            nodes.append({"id":rid,"kind":"RED_TEAM","challenges":rmap[cid].get("challenges",[])})
+            edges.append({"from":cn["id"],"to":rid,"relation":"CHALLENGED_BY"})
+    graph={"engine_version":"EQUITY-EVIDENCE-GRAPH-SHADOW-1.0","case_count":sum(1 for c in cases if c.get("case_id")),"nodes":nodes,"edges":edges}
+    graph["graph_sha256"]=_hash(graph)
+    return graph
+
+def analyze_equities(df: pd.DataFrame, snapshot_id: str, *, historical_patterns=None, red_team=None):
     if not isinstance(df,pd.DataFrame): raise TypeError("df must be a pandas DataFrame")
     if not str(snapshot_id).strip(): raise ValueError("snapshot_id is required")
     col=next((c for c in ("instrument_id","insCode","InstrumentID","کد معاملاتی") if c in df.columns),None)
@@ -96,4 +127,7 @@ def analyze_equities(df: pd.DataFrame, snapshot_id: str):
             "rules":{"explicit_instrument_id_required":True,"symbol_inference":False,
                      "direction_inference":"DISABLED","score_change":"NONE","missing_data_policy":"INSUFFICIENT_DATA"}}
     result["cases_sha256"]=_hash(cases)
+    from equity_evidence_cluster_shadow import build_equity_evidence_clusters
+    result["evidence_clusters"]=build_equity_evidence_clusters(cases, historical_patterns=historical_patterns, red_team=red_team)
+    result["evidence_graph"]=build_equity_evidence_graph(cases, historical_patterns=historical_patterns, red_team=red_team)
     return result
