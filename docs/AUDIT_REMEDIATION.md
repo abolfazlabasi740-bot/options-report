@@ -94,3 +94,19 @@ A remediation is considered closed only after:
 - regression workflow passes on that exact commit;
 - live schema workflow passes where applicable;
 - the relevant test/evidence is traceable to that commit.
+
+
+## Latest verification evidence
+
+The remediation runtime code was verified on commit `12265117de44da096f9caa854ef51704b57334d4`:
+- Regression workflow: `35734232609` / run `349` — SUCCESS.
+- Live Schema workflow: `35734232621` / run `85` — SUCCESS.
+- Live source: `optionschool_20260922_170353_475195.xlsx`.
+- Source SHA-256: `4dcfcdfce5d602b6620006c33e731a018cd55ca2ae610d2ecb85b32dccaf7939`.
+- Selected contracts: 15.
+- Opportunity Shadow: SUCCESS.
+- Replay: REPLAY_MATCH; baseline, first and second analytical-case hashes are equal; deterministic=true.
+- Audit Integrity: PASS.
+- TSETMC: DISABLED because exact option identity is not present in the live source.
+
+This evidence closes AUD-01 through AUD-05 at the code/CI/live-source level. AUD-06 has code and regression coverage; physical deployed Termux execution remains pending.
