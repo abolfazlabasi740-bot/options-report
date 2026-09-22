@@ -25,6 +25,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
     replay = audit.get("replay_verification") or {}
     historical = audit.get("historical_snapshot") or {}
     shadow = audit.get("opportunity_shadow") or {}
+    tsetmc = audit.get("tsetmc_evidence") or {}
 
     if replay.get("status") not in {"REPLAY_MATCH"}:
         failures.append("REPLAY_NOT_VERIFIED")
@@ -40,6 +41,11 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
         failures.append("OPPORTUNITY_SNAPSHOT_ID_MISSING")
     if shadow.get("snapshot_id") != historical.get("snapshot_id"):
         failures.append("SNAPSHOT_ID_MISMATCH")
+    # TSETMC evidence is optional Shadow enrichment. If present, its declared
+    # status must be structurally valid; it must never silently claim success
+    # without an evidence summary.
+    if tsetmc and tsetmc.get("status") == "SUCCESS" and "summary" not in tsetmc:
+        failures.append("TSETMC_EVIDENCE_SUMMARY_MISSING")
 
     status = "PASS" if not missing and not failures else "FAIL"
     return {
@@ -55,5 +61,6 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             "historical_records_hash": bool(historical.get("records_hash")),
             "opportunity_snapshot": bool(shadow.get("snapshot_id")),
             "snapshot_consistency": shadow.get("snapshot_id") == historical.get("snapshot_id"),
+            "tsetmc_evidence_structurally_valid": not (tsetmc and tsetmc.get("status") == "SUCCESS" and "summary" not in tsetmc),
         },
     }
