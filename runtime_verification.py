@@ -32,6 +32,7 @@ CRITICAL_FILES = [
     "bale_transport.py",
     "bale_runtime_verification.py",
     "gate6_runtime_verification.py",
+    "termux_gate6_launcher.py",
 ]
 
 
