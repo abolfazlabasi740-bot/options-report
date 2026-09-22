@@ -77,7 +77,7 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CURRENT CODE/CI HARDENING VERIFIED; deployed runtime still pending. Regression run 35704198322 on commit 3ec5da91247aad3e893f75e1006328eba06a1325 completed SUCCESS with 142 tests. Live OptionSchool24 workflow 35704198237 on the same commit also completed SUCCESS. A one-shot verifier `bale_runtime_verification.py` is now available to capture the actual delivery evidence from Termux. This does not substitute for executing it on the deployed Termux instance.
+Status: CURRENT CODE/CI HARDENING VERIFIED; deployed runtime still pending. Regression run 35704668186 on commit 822b30a8908d955ccacb3815901414e4c3ff9b3f completed SUCCESS. Live OptionSchool24 workflow 35704668179 on the same commit also completed SUCCESS and uploaded Gate 3 artifact 10683887197. `bale_runtime_verification.py` now records non-secret Bale message receipts (`message_id`/`chat_id`) and fails closed if a receipt is absent. This still does not substitute for executing the verifier on the deployed Termux instance.
 
 ## Gate 7 — Cutover
 
