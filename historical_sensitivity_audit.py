@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 import hashlib, json
 import pandas as pd
-from scoring_engine import shadow_score_dataframe
+from scoring_engine import shadow_score_dataframe, score_v4_overlay
 
 BLOCKS = {
     "Liquidity": ("BlockScore_Liquidity", 20.0),
@@ -46,16 +46,13 @@ def run_sensitivity(df: pd.DataFrame, top_n: int = 15) -> dict[str, Any]:
              pd.to_numeric(variant[column], errors="coerce"))
             * 100.0 / remaining_weight
         )
-        spread = pd.to_numeric(variant.get("Spread_Percentage"), errors="coerce")
-        execution = ((spread - 12.0) / 28.0).clip(lower=0, upper=0.35).where(spread.notna(), 0.10).clip(0, 0.45)
-        days = pd.to_numeric(variant.get("RemainingDays"), errors="coerce")
-        decay = pd.Series(0.0, index=variant.index)
-        decay.loc[days <= 2] = 0.30
-        decay.loc[(days > 2) & (days <= 5)] = 0.18
-        decay.loc[(days > 5) & (days <= 10)] = 0.08
-        confidence = (pd.to_numeric(variant["DataConfidence"], errors="coerce").fillna(0) / 100.0).clip(0.55, 1.0)
-        variant["_AblatedFinal"] = (variant["_AblatedBase"] * (1.0-execution) * (1.0-decay) * confidence).round(2)
-        ranked = _ranked(variant.rename(columns={"_AblatedFinal":"AuditScore"}), "AuditScore")
+        # Reuse the canonical production overlay implementation. Only BaseScore is
+        # replaced with the ablated value; execution/decay/confidence mechanics
+        # therefore cannot drift between production and this evidence-only audit.
+        variant["BaseScore"] = variant["_AblatedBase"]
+        variant = score_v4_overlay(variant)
+        variant["AuditScore"] = variant["FinalScore"]
+        ranked = _ranked(variant, "AuditScore")
         top = ranked.head(top_n)
         symbols = list(top["نماد"].astype(str))
         base_rank = base.set_index("نماد")["_rank"].to_dict()
@@ -74,7 +71,7 @@ def run_sensitivity(df: pd.DataFrame, top_n: int = 15) -> dict[str, Any]:
         })
     evidence = {
         "audit":"G7-2_HISTORICAL_SENSITIVITY_ABLATION", "status":"EVIDENCE_ONLY",
-        "production_mutation":False, "engine":"V4.1.1",
+        "production_mutation":False, "engine":"V4.1.1","overlay_source":"scoring_engine.score_v4_overlay",
         "input_row_count":int(len(df)), "scored_row_count":int(len(scored)),
         "top_n":top_n, "baseline_top_symbols":base_symbols, "blocks":rows,
     }
