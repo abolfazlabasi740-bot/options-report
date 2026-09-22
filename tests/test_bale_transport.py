@@ -26,8 +26,8 @@ class BaleTransportTests(unittest.TestCase):
             self.assertEqual(call.kwargs["data"]["chat_id"], "CHAT")
 
     def test_send_message_fails_closed_on_http_error(self):
-        with patch("bale_transport.requests.post", side_effect=Exception("network")):
-            with self.assertRaises(Exception):
+        with patch("bale_transport.requests.post", side_effect=bale_transport.requests.RequestException("network")):
+            with self.assertRaises(RuntimeError):
                 bale_transport.send_message("TOKEN", "CHAT", "test")
 
 
