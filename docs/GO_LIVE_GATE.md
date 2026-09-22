@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: PENDING VERIFIED RUN.
+Status: VERIFIED — regression run 35684027778 on commit f9a42f041d61db8a97e58f28cbc208463e585d4b completed SUCCESS.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: architecture ready; fresh runtime evidence required.
+Status: VERIFIED — live run 35684027740 on commit f9a42f041d61db8a97e58f28cbc208463e585d4b captured a fresh workbook, source SHA-256, schema, 457-row universe, eligibility counts, successful Report Engine completion, Opportunity Shadow, replay and Audit PASS.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -67,7 +67,7 @@ Required evidence:
 - Historical Red-Team fusion
 - deterministic hashes
 
-Status: repository implementation present; end-to-end runtime evidence pending.
+Status: PARTIALLY VERIFIED — live run captured Opportunity Shadow, multi-factor clusters, deterministic replay and Audit PASS; TSETMC was disabled and historical persistence/Termux runtime remain separate gates.
 
 ## Gate 6 — Bale Delivery
 
