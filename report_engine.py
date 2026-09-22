@@ -448,6 +448,11 @@ def save_report(work, source):
             **work.attrs.get("replay_verification", {}),
             "artifact_file": replay_file.name,
         },
+        "tsetmc_evidence": work.attrs.get("tsetmc_evidence", {
+            "status": "NOT_ATTACHED",
+            "summary": {},
+            "production_scoring_changed": False,
+        }),
         "opportunity_shadow": {
             "status": shadow.get("status"),
             "engine_version": shadow.get("engine_version"),
