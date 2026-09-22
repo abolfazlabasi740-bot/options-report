@@ -1017,3 +1017,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Added regression coverage for Bale message chunk integrity, multi-chunk POST delivery, and fail-closed network errors in `tests/test_bale_transport.py`.
 - This hardening does not alter Six-Block scoring, production eligibility, ranking, opportunity detection, or report calculations.
 - Gate 6 is still not claimed as VERIFIED: real delivery from the deployed Termux runtime requires runtime evidence and an actual Bale delivery acknowledgement.
+
+
+## Bale Regression Gate — 2026-09-22
+
+- The Bale transport hardening commit `0588683b877323f702efdc7673d5cf464b8ce37e` passed the full GitHub regression workflow.
+- Regression run: `35687931714` (run 278); conclusion: SUCCESS.
+- The same commit also passed the live OptionSchool24 schema/report workflow: `35687931728` (run 14); conclusion: SUCCESS.
+- Bale transport tests now cover message-content preservation across chunks, multi-chunk POST delivery, and fail-closed handling of network errors.
+- The `گزارش`, `همه` and `کل` commands share the same global Top-15 report path.
+- This verifies repository/CI behavior only. Gate 6 is still not marked VERIFIED because actual deployed Termux execution and a real Bale delivery acknowledgement have not been captured on this commit.
