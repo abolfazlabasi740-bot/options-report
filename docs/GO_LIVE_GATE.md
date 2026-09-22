@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED historically; current remediation evidence must be refreshed on the remediation commit before Gate 2 is re-declared current.
+Status: CURRENT CODE VERIFIED — regression run 35734232609 (run 349) on code commit 12265117de44da096f9caa854ef51704b57334d4 completed SUCCESS.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED historically; a new live run is required after the audit-remediation commit to establish current same-commit evidence.
+Status: CURRENT CODE VERIFIED — live run 35734232621 (run 85) on code commit 12265117de44da096f9caa854ef51704b57334d4 completed SUCCESS. Source: optionschool_20260922_170353_475195.xlsx; source SHA-256 4dcfcdfce5d602b6620006c33e731a018cd55ca2ae610d2ecb85b32dccaf7939; selected_count=15; Audit PASS; Opportunity Shadow SUCCESS; Replay MATCH with baseline/first/second hash equality; TSETMC disabled.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -67,7 +67,7 @@ Required evidence:
 - Historical Red-Team fusion
 - deterministic hashes
 
-Status: PARTIALLY VERIFIED — latest live execution demonstrated Opportunity Shadow, deterministic replay and Audit PASS. TSETMC enrichment remains disabled; historical persistence and deployed runtime execution remain separate validation dimensions.
+Status: CURRENT CODE VERIFIED for analytical Shadow/Replay/Audit on live input. Replay now reproduces the same Shadow-scored input artifact; TSETMC remains disabled until exact option identity is available. Deployed runtime execution remains a separate validation dimension.
 
 ## Gate 6 — Bale Delivery
 
