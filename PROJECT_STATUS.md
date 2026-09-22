@@ -796,3 +796,18 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Option Evidence Graph/Cluster engines and the Six-Block option scoring path are not modified by this integration.
 - Regression tests were added for multi-family equity clustering, single-family rejection and deterministic hashing.
 - This remains a Shadow architecture milestone. No production stock ranking, no option ranking change, no Bale production change, and no Termux live execution are claimed.
+
+
+## Equity Opportunity Detector Shadow — 2026-09-22
+
+- Added `equity_opportunity_shadow.py`, engine `EQUITY-OPPORTUNITY-SHADOW-1.0`.
+- Equity opportunity discovery consumes only already-observed multi-family evidence clusters for the same explicit equity instrument.
+- At least two independently observed evidence families are required; single-family or incomplete evidence cannot create an opportunity candidate.
+- Candidate types are descriptive context classifications; no hidden numeric threshold was introduced.
+- Each candidate retains supporting cases, evidence families, cluster identity, historical context and Red Team challenges.
+- Status is `WATCH`; the detector does not issue Buy/Sell instructions, directional conclusions, FinalScore changes or ranking changes.
+- Missing evidence is never converted to zero or neutral evidence. Explicit benchmark fields remain mandatory for market-relative evidence.
+- Deterministic `opportunity_id`, `opportunity_sha256` and aggregate `opportunities_sha256` are generated.
+- Standalone Equity Intelligence now exposes the opportunity detector output alongside its evidence graph and multi-factor clusters.
+- Regression tests were added for multi-family detection, single-family rejection, missing-data handling, descriptive price/volume evidence, explicit benchmark requirements and deterministic output.
+- This remains a Shadow milestone. No production stock ranking, option ranking, Bale output or Termux live execution is changed or claimed.
