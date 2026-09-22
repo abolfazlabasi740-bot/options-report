@@ -147,26 +147,51 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     memory_file = ROOT / "output" / "case_memory_shadow.json"
     lifecycle_file = ROOT / "output" / "case_lifecycle_shadow.jsonl"
-    shadow = run_shadow(
-        shadow_scored,
-        snapshot_id,
-        memory_path=memory_file,
-        historical_previous=previous_history,
-        historical_current=current_history,
-        historical_sequence=history_sequence,
-        lifecycle_path=lifecycle_file,
-    )
+    try:
+        shadow = run_shadow(
+            shadow_scored,
+            snapshot_id,
+            memory_path=memory_file,
+            historical_previous=previous_history,
+            historical_current=current_history,
+            historical_sequence=history_sequence,
+            lifecycle_path=lifecycle_file,
+        )
+    except Exception as exc:
+        # Shadow analytical failure is explicitly non-blocking for Production.
+        # Integrity/provenance failures remain blocking at Audit/Replay gates.
+        shadow = {
+            "status": "FAILED",
+            "engine_version": "OPP-SHADOW-1.0",
+            "snapshot_id": snapshot_id,
+            "summary": {"failure_type": type(exc).__name__},
+            "cases": [],
+            "failure": {"error_type": type(exc).__name__},
+        }
 
-    replay = verify_shadow_replay(
-        scored,
-        snapshot_id,
-        baseline_shadow=shadow,
-        historical_previous=previous_history,
-        historical_current=current_history,
-        historical_sequence=history_sequence,
-    )
-    if not replay.get("deterministic"):
-        raise RuntimeError("Shadow replay mismatch; report generation stopped")
+    if shadow.get("status") == "FAILED":
+        replay = {
+            "status": "SKIPPED_SHADOW_FAILURE",
+            "engine_version": "REPLAY-SHADOW-1.1",
+            "snapshot_id": snapshot_id,
+            "replay_scope": "ANALYTICAL_CASE_ARTIFACT",
+            "baseline_hash": None,
+            "first_hash": None,
+            "second_hash": None,
+            "baseline_match": False,
+            "deterministic": False,
+        }
+    else:
+        replay = verify_shadow_replay(
+            scored,
+            snapshot_id,
+            baseline_shadow=shadow,
+            historical_previous=previous_history,
+            historical_current=current_history,
+            historical_sequence=history_sequence,
+        )
+        if not replay.get("deterministic"):
+            raise RuntimeError("Shadow replay mismatch; report generation stopped")
     symbol = find_column(scored, ["نماد", "Symbol"])
     premium = find_column(scored, ["آخرین قیمت", "آخرین", "Last"])
     base = find_column(scored, ["قیمت سهم پایه", "Underlying"])
