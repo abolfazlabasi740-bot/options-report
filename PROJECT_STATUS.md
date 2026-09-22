@@ -862,3 +862,19 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Historical confirmation is evidence-only: no Buy/Sell direction, no FinalScore change, no ranking change and no causal inference.
 - The opportunity detector now attaches this confirmation when an explicit lifecycle path is supplied.
 - This establishes a clean separation between current evidence and historical recurrence evidence.
+
+
+## Equity Multi-Level Historical Memory — 2026-09-22
+
+- Added `equity_memory_shadow.py`, engine `EQUITY-MEMORY-SHADOW-1.0`.
+- Historical confirmation is now classified into explicit evidence-memory levels:
+  - `NEW_OR_UNCONFIRMED`
+  - `REPEATED`
+  - `PERSISTENT_OR_STRENGTHENING`
+  - `OSCILLATING`
+  - `RECURRING`
+- Classification is descriptive and derives only from lifecycle/cross-snapshot evidence already observed.
+- The memory layer is attached to Equity opportunities when lifecycle persistence is supplied.
+- No hidden economic threshold, causal inference, direction inference, FinalScore change or ranking change is introduced.
+- Missing historical evidence remains explicitly unconfirmed; it is never converted to zero evidence.
+- Deterministic `memory_sha256` is produced.
