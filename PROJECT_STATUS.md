@@ -1093,3 +1093,17 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Replay: REPLAY_MATCH; deterministic=true; both replay hashes identical.
 - TSETMC evidence remains DISABLED because the current live OptionSchool24 source still lacks the explicit option instrument ID required for exact identity mapping.
 - The latest Gate 6 hardening also passes repository regression. Runtime deployment and real Bale receipts are still not verified from the deployed Termux instance.
+
+
+## Latest Gate 6 Integrity Hardening — 2026-09-22
+
+- Added repository-HEAD binding to `gate6_runtime_verification.py`.
+- Gate 6 now requires `runtime_verification.json.git_sha` to be present and exactly equal to `git rev-parse HEAD` on the deployed runtime before PASS can be written.
+- The generated Gate 6 evidence also records the runtime Git SHA.
+- Latest verified code/test commit: `51a6cd1339896fd2c62967697a6fe24956855d28`.
+- Regression run: `35729625543`, job `106751682394`, SUCCESS; 148 tests passed.
+- Live OptionSchool24 run: `35729625650`, job `106751683268`, SUCCESS.
+- Fresh source: `optionschool_20260922_162045_505515.xlsx`; source SHA-256 `fbfdcaec5fb804149d5c6a7184c1df180646b1885203c550599a39fae6b488f4`.
+- Gate 3 Audit: PASS; selected_count=15; Opportunity Shadow=SUCCESS; Replay=REPLAY_MATCH; deterministic=true.
+- TSETMC evidence remains DISABLED because no explicit option instrument ID is present in the live source.
+- This still does not constitute real Termux/Bale runtime evidence; Gate 6 remains runtime-pending until the one-command orchestrator executes on the deployed environment and records real Bale receipts.
