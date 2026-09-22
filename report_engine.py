@@ -252,6 +252,9 @@ def build_report(path, top_count=None, symbol_prefix=None):
             work[col] = pd.to_numeric(scored[col], errors="coerce")
     work["AnalyticsFlags"] = scored["AnalyticsFlags"]
     work.attrs.update(scored.attrs)
+    # pre_gate_rows is an internal DataFrame retained by scoring for diagnostics;
+    # it must not leak into JSON audit artifacts.
+    work.attrs.pop("pre_gate_rows", None)
     work.attrs["source_schema_audit"] = source_schema_audit
     work.attrs["unscorable_count"] = int(scored["FinalScore"].isna().sum())
     work.attrs["eligibility_gate_counts"] = scored.attrs.get("eligibility_gate_counts", {})
