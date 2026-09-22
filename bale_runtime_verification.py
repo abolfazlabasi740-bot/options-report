@@ -51,12 +51,25 @@ def main() -> None:
 
     report_sha256 = sha256_file(REPORT_PATH)
     source_sha256 = audit.get("source_sha256")
+    source_sha256_recomputed = audit.get("source_sha256_recomputed")
     source_file = audit.get("source_file")
+    audit_report_sha256 = audit.get("report_sha256")
     audit_status = (audit.get("audit_integrity") or {}).get("status")
     generated_at = audit.get("generated_at")
 
     if not source_sha256 or not source_file:
         raise RuntimeError("هویت منبع در latest_audit.json موجود نیست")
+    if source_sha256 != source_sha256_recomputed:
+        raise RuntimeError("هش منبع ثبت‌شده با هش بازمحاسبه‌شده یکسان نیست")
+    if not audit_report_sha256:
+        raise RuntimeError("هش گزارش در latest_audit.json موجود نیست")
+    if report_sha256 != audit_report_sha256:
+        raise RuntimeError("هش گزارش با هش گزارش تأییدشده در Audit یکسان نیست")
+    source_path = ROOT / "data" / source_file
+    if not source_path.exists():
+        raise RuntimeError("فایل منبع ثبت‌شده برای تطبیق هش در دسترس نیست")
+    if sha256_file(source_path) != source_sha256:
+        raise RuntimeError("هش فایل منبع با هش ثبت‌شده در Audit یکسان نیست")
     if audit_status != "PASS":
         raise RuntimeError("Audit integrity در latest_audit.json باید PASS باشد")
 
@@ -79,7 +92,9 @@ def main() -> None:
             "report_sha256": report_sha256,
             "source_file": source_file,
             "source_sha256": source_sha256,
+            "source_hash_verified": False,
             "report_generated_at": generated_at,
+            "audit_report_sha256": audit_report_sha256,
             "audit_integrity": audit_status,
             "chunks": None,
             "environment_presence_only": {
@@ -103,7 +118,9 @@ def main() -> None:
         "report_sha256": report_sha256,
         "source_file": source_file,
         "source_sha256": source_sha256,
+        "source_hash_verified": True,
         "report_generated_at": generated_at,
+        "audit_report_sha256": audit_report_sha256,
         "audit_integrity": audit_status,
         "chunks": chunks,
         "receipts": receipts,
