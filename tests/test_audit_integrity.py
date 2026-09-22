@@ -45,10 +45,6 @@ class AuditIntegrityTests(unittest.TestCase):
         self.assertIn("SNAPSHOT_ID_MISMATCH", result["failures"])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
     def test_source_hash_mismatch_fails_closed(self):
         audit = self._audit()
         audit["source_sha256_recomputed"] = "different"
@@ -69,3 +65,7 @@ if __name__ == "__main__":
         result = verify_audit(audit)
         self.assertEqual(result["status"], "FAIL")
         self.assertIn("REPLAY_BASELINE_HASH_MISSING", result["failures"])
+
+
+if __name__ == "__main__":
+    unittest.main()
