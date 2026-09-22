@@ -150,7 +150,8 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
             for p in out["historical_memory_profiles"].get("profiles", [])
         }
         for opp in out["opportunities"]:
-            key = f"{opp.get('instrument_id")}::{opp.get('type')}::{"|".join(sorted(opp.get('evidence_families") or []))}"
+            family_key = "|".join(sorted(opp.get("evidence_families") or []))
+            key = f"{opp.get('instrument_id")}::{opp.get('type')}::{family_key}"
             if key in profiles_by_key:
                 opp["historical_memory_profile"] = profiles_by_key[key]
         from equity_historical_evidence_fusion_shadow import fuse_historical_evidence
