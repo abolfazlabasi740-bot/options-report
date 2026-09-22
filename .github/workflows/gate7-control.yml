@@ -54,3 +54,5 @@ jobs:
             exit 1
           fi
           echo "SECRET_TRACKING_CHECK_OK"
+
+      # Control-only revision: preserve the Gate 7 boundary and force a fresh CI execution.
