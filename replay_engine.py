@@ -38,11 +38,20 @@ def stable_shadow_payload(result: dict[str, Any]) -> dict[str, Any]:
     Stateful memory/lifecycle and presentation-only metadata are excluded.
     The cases and their summary are the authoritative Shadow analytical artifact.
     """
+    cases = result.get("cases", []) or []
+    cases = sorted(
+        cases,
+        key=lambda item: (
+            str(item.get("case_id", "")),
+            str(item.get("type", "")),
+            str(item.get("symbol", "")),
+        ),
+    )
     payload = {
         "engine_version": result.get("engine_version"),
         "snapshot_id": result.get("snapshot_id"),
         "summary": result.get("summary", {}),
-        "cases": result.get("cases", []),
+        "cases": cases,
     }
     return _stable(payload)
 
