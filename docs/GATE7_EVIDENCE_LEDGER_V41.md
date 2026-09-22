@@ -21,9 +21,11 @@ The active V4 Overlay constants are observed from production code but do not yet
 Required: evidence source for each affected numeric parameter family. No guessed replacement values.
 
 ### G7-2 — Historical sensitivity / ablation
-Status: OPEN
+Status: OPEN — IMPLEMENTATION READY
 
-Required: real historical source files, SHA-256, deterministic reruns, block/overlay sensitivity measurements, and retained unresolved cases.
+An evidence-only implementation now exists in historical_sensitivity_audit.py with regression coverage. It reuses the canonical V4.1.1 shadow scorer and measures one-block-at-a-time Top-N overlap, rank changes and score deltas without changing Production FinalScore, eligibility, ranking, report or Bale output.
+
+Required for closure: real historical source files, SHA-256, deterministic reruns, block/overlay sensitivity measurements, and retained unresolved cases.
 
 The golden Gate 3 fixture is an output-regression baseline only; it is not historical economic validation.
 
