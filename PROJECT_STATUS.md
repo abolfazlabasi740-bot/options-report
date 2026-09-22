@@ -1174,3 +1174,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 3. Build exact TSETMC identity evidence when an explicit option instrument ID becomes available; symbol inference remains prohibited.
 4. Use the Golden baseline for controlled ranking/output regression comparisons.
 5. Validate economic quality of Opportunity Intelligence separately from technical integrity.
+
+
+## Opportunity Cluster Provenance Hardening — 2026-09-22
+
+- Opportunity Evidence Cluster upgraded from `OPPORTUNITY-CLUSTER-SHADOW-1.0` to `1.1`.
+- The Shadow artifact now distinguishes `independent_family_count` from actual `source_family_count`.
+- A cluster with three evidence families derived from the same source is explicitly marked `SINGLE_SOURCE_OR_DERIVED` rather than being treated as multi-source confirmation.
+- When explicit TSETMC evidence is present alongside another recognized source family, the cluster may be marked `MULTI_SOURCE`.
+- Rule metadata now states that family count is not source independence.
+- Regression coverage added for both single-source-derived and explicit multi-source cases.
+- This is evidence/provenance hardening only; Six-Block scoring, FinalScore, production eligibility, ranking, Top-N and Bale output are unchanged.
