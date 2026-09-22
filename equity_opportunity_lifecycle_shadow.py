@@ -57,6 +57,8 @@ def append_opportunity_events(path:str|Path,snapshot_id:str,opportunities:Iterab
             "transition":transition,"first_seen_snapshot":first,"seen_count":count,
             "evidence_families":sorted(o.get("evidence_families") or []),
             "cluster_id":o.get("cluster_id"),
+            "red_team_challenges":list(o.get("red_team_challenges") or []),
+            "red_team_challenge_count":len(o.get("red_team_challenges") or []),
         })
     for key,old in latest.items():
         if key in keys or old.get("state")=="RESOLVED": continue
@@ -70,6 +72,8 @@ def append_opportunity_events(path:str|Path,snapshot_id:str,opportunities:Iterab
             "seen_count":int(old.get("seen_count",0)),
             "evidence_families":old.get("evidence_families",[]),
             "cluster_id":old.get("cluster_id"),
+            "red_team_challenges":old.get("red_team_challenges",[]),
+            "red_team_challenge_count":len(old.get("red_team_challenges",[]) or []),
         })
     events.sort(key=lambda e:(e["opportunity_key"],e["state"],str(e.get("opportunity_id") or "")))
     with p.open("a",encoding="utf-8") as f:
