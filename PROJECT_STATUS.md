@@ -1122,3 +1122,35 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Gate 3 Audit: PASS; selected_count=15; Opportunity Shadow=SUCCESS; Replay=REPLAY_MATCH; deterministic=true.
 - TSETMC evidence remains DISABLED because the current live source still lacks explicit option instrument ID.
 - Physical Termux/Bale execution remains the only unverified runtime step for Gate 6.
+
+
+## Gate 6 Deployed Runtime Closure — 2026-09-22
+
+- Physical Termux Gate 6 was executed successfully against the deployed `main` runtime.
+- Bale delivery status: `SUCCESS`.
+- Delivered report was split into 2 Bale messages.
+- Real Bale receipts: `message_id=1143`, `chat_id=770429773`; `message_id=1144`, `chat_id=770429773`.
+- `secrets_recorded=false`.
+- Final launcher result: `TERMUX_GATE6_OK COMMIT=e73168b5d3496fa14d388cddb5aa3ecd5e5278fc`.
+- Gate 6 is therefore operationally CLOSED. This evidence is physical deployed-runtime evidence, not merely CI evidence.
+- `docs/GO_LIVE_GATE.md` was updated accordingly in the follow-up documentation commit.
+
+## Scoring Overlay Parameter Provenance Gate — 2026-09-22
+
+- A dedicated audit was opened for the numeric parameters used by `score_v4_overlay()` because their explicit approved-source provenance is not currently visible in the repository documentation.
+- Observed active values include spread references/scaling, execution caps, decay thresholds, confidence clipping and leverage normalization caps.
+- No scoring value was changed in this audit.
+- The Six-Block weights remain unchanged.
+- The constants are recorded as **active observed parameters**, not as newly approved economic thresholds.
+- Documentation: `docs/SCORING_PARAMETER_PROVENANCE.md`.
+- Status: **OPEN — PROVENANCE VALIDATION**.
+- Closing this gate requires an authoritative protocol/decision or reproducible historical baseline for the affected parameters; guessed replacement values are prohibited.
+
+## Current Strategic Gate Status — 2026-09-22
+
+- Gate 2: VERIFIED by regression evidence.
+- Gate 3: VERIFIED by fresh live OptionSchool24 report/audit evidence.
+- Gate 4: PENDING because the live OptionSchool24 source does not expose the explicit option instrument ID required for exact TSETMC promotion.
+- Gate 5: Shadow/Replay/Audit architecture verified on live source; economic opportunity-quality validation remains separate.
+- Gate 6: **CLOSED — deployed Termux + real Bale receipts**.
+- Gate 7: NOT CLOSED; final cutover still depends on the remaining identity, data-freshness, economic-validation and scoring-parameter-provenance gates.
