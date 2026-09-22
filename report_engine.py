@@ -80,6 +80,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     # V4.1 scoring engine: GitHub six-block production candidate
     from scoring_engine import score_dataframe, shadow_score_dataframe
+    from tsetmc_shadow_integration import enrich_shadow_with_tsetmc
 
     scored = score_dataframe(df)
 
@@ -91,6 +92,12 @@ def build_report(path, top_count=None, symbol_prefix=None):
     source_eligibility = classify_dataframe(source_view, min_leverage=MIN_LEVERAGE)
     opportunity_universe_view = opportunity_universe(source_view, min_leverage=MIN_LEVERAGE)
     shadow_scored = shadow_score_dataframe(source_view)
+
+    # Optional evidence-only TSETMC enrichment. It requires explicit option
+    # instrument IDs and never changes production scoring/ranking.
+    shadow_scored, tsetmc_evidence = enrich_shadow_with_tsetmc(
+        shadow_scored, df
+    )
 
     # Shadow Opportunity Engine scans the full scored universe before symbol/Top-N
     # filtering. It never changes FinalScore, ranking, or report contents.
@@ -252,6 +259,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     work.attrs["production_remaining_days_rule"] = scored.attrs.get("production_remaining_days_rule", "RemainingDays > 0")
     work.attrs["source_eligibility"] = source_eligibility
     work.attrs["opportunity_universe"] = opportunity_universe_view
+    work.attrs["tsetmc_evidence"] = tsetmc_evidence
     work.attrs["shadow_scoring"] = {
         "status": "SUCCESS",
         "rows_scored": int(len(shadow_scored)),
