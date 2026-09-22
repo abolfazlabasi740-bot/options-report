@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest verified main regression run 35720706997 (run 307) on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 completed SUCCESS; job 106722691428; 148 tests passed.
+Status: VERIFIED — latest verified code/test run 35729625543 (run 311) on commit 51a6cd1339896fd2c62967697a6fe24956855d28 completed SUCCESS; job 106751682394; 148 tests passed.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — latest live run 35720706945 (run 43) on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 completed SUCCESS; job 106722690022. Fresh source SHA-256 0909c3bea9c8e868f636c24166eefea31a8bec954ee5a37628dddb9a3fccdb08; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH.
+Status: VERIFIED — latest live run 35729625650 (run 47) on commit 51a6cd1339896fd2c62967697a6fe24956855d28 completed SUCCESS; job 106751683268. Fresh source SHA-256 fbfdcaec5fb804149d5c6a7184c1df180646b1885203c550599a39fae6b488f4; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH; deterministic=true.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -77,7 +77,7 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest repository regression run 35720706997 on commit ea7f4618dfb3596fc5d1749c03551a2570bcf770 passed 148 tests, including Gate 6 runtime-verification hardening.
+Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729625543 on commit 51a6cd1339896fd2c62967697a6fe24956855d28 passed 148 tests, including Gate 6 runtime-verification hardening and repository-HEAD binding.
 
 Verified repository-side evidence:
 - Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
