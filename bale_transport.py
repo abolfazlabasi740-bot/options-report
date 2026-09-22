@@ -24,10 +24,11 @@ def split_message(text, limit=3500):
     return chunks
 
 
-def send_message(token, chat_id, text):
+def send_message(token, chat_id, text, return_receipts=False):
     if not token or not str(chat_id).strip():
         raise ValueError("BALE_BOT_TOKEN و BALE_CHAT_ID باید تنظیم شوند")
     chunks = split_message(text)
+    receipts = []
     for chunk in chunks:
         try:
             response = requests.post(
@@ -35,8 +36,15 @@ def send_message(token, chat_id, text):
                 data={"chat_id": chat_id, "text": chunk}, timeout=30,
             )
             response.raise_for_status()
-            if not response.json().get("ok"):
+            payload = response.json()
+            if not payload.get("ok"):
                 raise ValueError("Bale rejected message")
+            if return_receipts:
+                result = payload.get("result") or {}
+                receipts.append({
+                    "message_id": result.get("message_id"),
+                    "chat_id": (result.get("chat") or {}).get("id"),
+                })
         except (requests.RequestException, ValueError):
             raise RuntimeError("ارسال بله ناموفق بود؛ احتمال ارسال بخشی از گزارش وجود دارد") from None
-    return len(chunks)
+    return receipts if return_receipts else len(chunks)
