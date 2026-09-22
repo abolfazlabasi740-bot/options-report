@@ -45,6 +45,17 @@ class AuditIntegrityTests(unittest.TestCase):
         self.assertIn("SNAPSHOT_ID_MISMATCH", result["failures"])
 
 
+    def test_shadow_analytical_failure_is_explicitly_nonblocking(self):
+        audit = self._audit()
+        audit["opportunity_shadow"]["status"] = "FAILED"
+        audit["replay_verification"] = {
+            "status": "SKIPPED_SHADOW_FAILURE",
+            "deterministic": False,
+        }
+        result = verify_audit(audit)
+        self.assertEqual(result["status"], "PASS")
+        self.assertTrue(result["checks"]["shadow_failure_nonblocking"])
+
     def test_source_hash_mismatch_fails_closed(self):
         audit = self._audit()
         audit["source_sha256_recomputed"] = "different"
