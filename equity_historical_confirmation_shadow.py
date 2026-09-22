@@ -4,6 +4,7 @@
 from __future__ import annotations
 import hashlib,json
 from typing import Any
+from equity_opportunity_lifecycle_shadow import opportunity_key
 
 ENGINE_VERSION="EQUITY-HISTORICAL-CONFIRMATION-SHADOW-1.0"
 
@@ -17,7 +18,7 @@ def enrich_opportunities(opportunities:Any, cross_snapshot_patterns:Any=None)->d
     out=[]
     for o in opps:
         x=dict(o)
-        key=f'{x.get("instrument_id","")}::{x.get("type","")}::{"|".join(sorted(x.get("evidence_families") or []))}'
+        key=opportunity_key(x)
         p=pmap.get(key)
         if p:
             x["historical_confirmation"]={
