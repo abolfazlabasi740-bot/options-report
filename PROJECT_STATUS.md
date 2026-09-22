@@ -989,3 +989,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - TSETMC evidence was DISABLED for this live run; therefore this run does not establish Gate 4.
 - Gate 3 of docs/GO_LIVE_GATE.md is now VERIFIED for this commit.
 - This evidence is GitHub-hosted live-source execution, not Termux deployment evidence and not Bale delivery evidence.
+
+
+## TSETMC Gate 4 Identity Boundary — 2026-09-22
+
+- Live OptionSchool24 data currently exposes no explicit option instrument-ID field among the accepted TSETMC integration aliases.
+- The live schema therefore remains identity-incomplete for exact option→underlying evidence attachment.
+- The TSETMC integration correctly refuses symbol-prefix or symbol-only inference; this is an intentional safety boundary, not a failure of the scoring engine.
+- The existing mapping layer retains symbol-only matches as SYMBOL_ONLY_CANDIDATE and promotes only explicit instrument-ID matches to EXACT_INSTRUMENT_ID.
+- Gate 4 therefore remains pending until the deployed source supplies an explicit option instrument ID, or a separately approved identity source provides an exact instrument-ID mapping that satisfies the existing promotion rules.
+- No Six-Block score, ranking, opportunity status or production output is changed by this limitation.
