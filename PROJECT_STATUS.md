@@ -851,3 +851,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - `analyze_equities()` now exposes the same optional lifecycle path and passes it through to the opportunity detector.
 - This creates the intended evidence chain: Equity evidence → multi-family cluster → opportunity → lifecycle memory → cross-snapshot pattern.
 - No Termux live execution, CI pass, or production ranking change is claimed by this integration.
+
+
+## Equity Historical Confirmation Layer — 2026-09-22
+
+- Added `equity_historical_confirmation_shadow.py`, engine `EQUITY-HISTORICAL-CONFIRMATION-SHADOW-1.0`.
+- Matching is performed only against the stable lifecycle opportunity identity: explicit instrument ID + opportunity type + sorted evidence-family set.
+- A matching cross-snapshot pattern is attached as `REPEATED_EVIDENCE`; otherwise the opportunity explicitly reports `NO_CROSS_SNAPSHOT_CONFIRMATION`.
+- Historical confirmation records observation count, recurrence count, first/last snapshot and evidence families.
+- Historical confirmation is evidence-only: no Buy/Sell direction, no FinalScore change, no ranking change and no causal inference.
+- The opportunity detector now attaches this confirmation when an explicit lifecycle path is supplied.
+- This establishes a clean separation between current evidence and historical recurrence evidence.
