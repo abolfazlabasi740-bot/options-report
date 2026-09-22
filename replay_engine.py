@@ -18,7 +18,11 @@ ENGINE_VERSION = "REPLAY-SHADOW-1.0"
 
 def _stable(value: Any) -> Any:
     if isinstance(value, dict):
-        return {str(k): _stable(v) for k, v in sorted(value.items(), key=lambda x: str(x[0]))}
+        return {
+            str(k): _stable(v)
+            for k, v in sorted(value.items(), key=lambda x: str(x[0]))
+            if str(k) != "generated_at"
+        }
     if isinstance(value, list):
         return [_stable(v) for v in value]
     if isinstance(value, tuple):
