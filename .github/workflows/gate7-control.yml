@@ -1,0 +1,56 @@
+name: gate7-control
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  gate7-control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Regression suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Verify release boundary
+        shell: python
+        run: |
+          from pathlib import Path
+          required = [
+              "docs/GO_LIVE_GATE.md",
+              "docs/GATE7_EXECUTION_CONTROL_V41.md",
+              "docs/SCORING_PARAMETER_PROVENANCE.md",
+              "docs/MASTER_ENGINE_CONTROL_MATRIX_V41.md",
+              "docs/ENGINE_DEPENDENCY_GATE_MATRIX_V41.md",
+          ]
+          missing = [p for p in required if not Path(p).is_file()]
+          if missing:
+              raise SystemExit("Missing control documents: " + ", ".join(missing))
+
+          status = Path("docs/GATE7_EXECUTION_CONTROL_V41.md").read_text(encoding="utf-8")
+          provenance = Path("docs/SCORING_PARAMETER_PROVENANCE.md").read_text(encoding="utf-8")
+          if "Gate 7: NOT CLOSED" not in status:
+              raise SystemExit("Gate 7 status must remain explicit until evidence closes it.")
+          if "OPEN — PROVENANCE VALIDATION" not in provenance:
+              raise SystemExit("Parameter provenance state must remain explicit.")
+          print("GATE7_CONTROL_BOUNDARY_OK")
+
+      - name: Verify no obvious secret-bearing files
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env|.*\.pem|.*\.key)$'; then
+            echo "Potential secret-bearing tracked file detected."
+            exit 1
+          fi
+          echo "SECRET_TRACKING_CHECK_OK"
