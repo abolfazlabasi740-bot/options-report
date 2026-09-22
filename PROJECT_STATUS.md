@@ -878,3 +878,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - No hidden economic threshold, causal inference, direction inference, FinalScore change or ranking change is introduced.
 - Missing historical evidence remains explicitly unconfirmed; it is never converted to zero evidence.
 - Deterministic `memory_sha256` is produced.
+
+
+## Equity Historical Memory Profiles — 2026-09-22
+
+- Added `equity_memory_profile_shadow.py`, engine `EQUITY-MEMORY-PROFILE-SHADOW-1.0`.
+- Historical memory is now summarized per Opportunity as a descriptive profile.
+- Profile continuity distinguishes `SINGLE_OR_UNCONFIRMED`, `REPEATED`, and `RECURRING`.
+- Profile records preserve observation count, recurrence count, pattern type and first/last snapshot when supplied.
+- The profile layer is derived only from existing historical confirmation/memory evidence.
+- No economic threshold, causal inference, direction inference, FinalScore modification or ranking change is introduced.
+- The Opportunity Engine now exposes `historical_memory_profiles` when lifecycle persistence is active.
