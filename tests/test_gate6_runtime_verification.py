@@ -20,7 +20,7 @@ class Gate6RuntimeVerificationTests(unittest.TestCase):
             evidence = output / "gate6_runtime_evidence.json"
 
             report.write_text("REPORT", encoding="utf-8")
-            runtime.write_text(json.dumps({"status": "PASS"}), encoding="utf-8")
+            runtime.write_text(json.dumps({"status": "PASS", "git_sha": "GIT-SHA"}), encoding="utf-8")
             audit.write_text(json.dumps({
                 "source_file": "source.xlsx",
                 "source_sha256": "source-sha",
@@ -42,6 +42,7 @@ class Gate6RuntimeVerificationTests(unittest.TestCase):
                 patch.object(gate6, "BALE_EVIDENCE", bale),
                 patch.object(gate6, "GATE6_EVIDENCE", evidence),
                 patch.object(gate6, "run_step") as run_step,
+                patch.object(gate6, "current_git_sha", return_value="GIT-SHA"),
             ):
                 gate6.main()
 
@@ -63,7 +64,7 @@ class Gate6RuntimeVerificationTests(unittest.TestCase):
             evidence = output / "gate6_runtime_evidence.json"
             report.write_text("REPORT", encoding="utf-8")
             audit.write_text(json.dumps({"source_file": "source.xlsx", "source_sha256": "source-sha", "audit_integrity": {"status": "PASS"}}), encoding="utf-8")
-            runtime.write_text(json.dumps({"status": "FAIL"}), encoding="utf-8")
+            runtime.write_text(json.dumps({"status": "FAIL", "git_sha": "GIT-SHA"}), encoding="utf-8")
             bale.write_text(json.dumps({"status": "SUCCESS", "report_sha256": gate6.sha256_file(report), "source_sha256": "source-sha", "chunks": 1, "receipts": [{"message_id": 10, "chat_id": 20}]}), encoding="utf-8")
             with (
                 patch.object(gate6, "AUDIT", audit),
@@ -88,7 +89,7 @@ class Gate6RuntimeVerificationTests(unittest.TestCase):
             evidence = output / "gate6_runtime_evidence.json"
 
             report.write_text("REPORT", encoding="utf-8")
-            runtime.write_text(json.dumps({"status": "PASS"}), encoding="utf-8")
+            runtime.write_text(json.dumps({"status": "PASS", "git_sha": "GIT-SHA"}), encoding="utf-8")
             audit.write_text(json.dumps({
                 "source_file": "source.xlsx",
                 "source_sha256": "source-sha",
