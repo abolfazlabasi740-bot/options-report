@@ -447,6 +447,18 @@ class RegressionTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 bale_listener.main()
 
+    def test_saved_audit_excludes_internal_pre_gate_dataframe(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "fixture.xlsx"
+            fixture().to_excel(source, index=False)
+            work = build_report(source)
+            self.assertNotIn("pre_gate_rows", work.attrs)
+            with patch("report_engine.ROOT", root):
+                save_report(work, source)
+            audit = json.loads((root / "output/latest_audit.json").read_text(encoding="utf-8"))
+            self.assertNotIn("pre_gate_rows", audit)
+
     def test_saved_audit_matches_report_and_source(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
