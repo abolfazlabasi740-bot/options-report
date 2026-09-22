@@ -106,6 +106,7 @@ def main() -> None:
         "report_generated_at": generated_at,
         "audit_integrity": audit_status,
         "chunks": chunks,
+        "receipts": receipts,
         "environment_presence_only": {
             "BALE_BOT_TOKEN": True,
             "BALE_CHAT_ID": True,
