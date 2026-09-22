@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest main regression run 35706184245 (run 297) on commit bce45e5e3023885727be5e8f6c4273c1cb70aede completed SUCCESS; 145 tests passed in job 106675574611.n 271) on commit 56c99b866ab1aea96731c56221e7805a30a04912 completed SUCCESS.
+Status: VERIFIED — latest main regression run 35706552463 (run 301) on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS; job 106676761560.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — latest live run 35706184331 on commit bce45e5e3023885727be5e8f6c4273c1cb70aede completed SUCCESS in job 106675574751, with fresh source SHA-256 2ae00a71476ddf00908e725974d906f20ca149a6eb5b92587d49032fc3384682 and Audit PASS.n commit f9a42f041d61db8a97e58f28cbc208463e585d4b captured a fresh workbook, source SHA-256, schema, 457-row universe, eligibility counts, successful Report Engine completion, Opportunity Shadow, replay and Audit PASS.
+Status: VERIFIED — latest live run 35706552454 (run 37) on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS; job 106676761323. The run executed live schema audit, full V4.1 report generation, Gate 3 evidence capture and artifact upload.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -54,7 +54,7 @@ Required only when TSETMC enrichment is enabled:
 
 Symbol inference is prohibited.
 
-Status: architecture ready; live evidence pending.
+Status: architecture ready; live evidence pending. Current live OptionSchool24 data does not expose the explicit option instrument ID required by the integration, so TSETMC enrichment remains disabled by design.
 
 ## Gate 5 — Shadow Intelligence
 
@@ -67,7 +67,7 @@ Required evidence:
 - Historical Red-Team fusion
 - deterministic hashes
 
-Status: PARTIALLY VERIFIED — live run captured Opportunity Shadow, multi-factor clusters, deterministic replay and Audit PASS; TSETMC was disabled and historical persistence/Termux runtime remain separate gates.
+Status: PARTIALLY VERIFIED — live execution has demonstrated Opportunity Shadow, multi-factor clusters, deterministic replay and Audit PASS. TSETMC enrichment is disabled and historical persistence/runtime execution remain separate validation dimensions.
 
 ## Gate 6 — Bale Delivery
 
@@ -77,7 +77,15 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CURRENT CODE/CI HARDENING VERIFIED; deployed runtime still pending. Regression run 35704668186 on commit 822b30a8908d955ccacb3815901414e4c3ff9b3f completed SUCCESS. Live OptionSchool24 workflow 35704668179 on the same commit also completed SUCCESS and uploaded Gate 3 artifact 10683887197. `bale_runtime_verification.py` now records non-secret Bale message receipts (`message_id`/`chat_id`) and fails closed if a receipt is absent. This still does not substitute for executing the verifier on the deployed Termux instance.
+Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING.
+
+Verified repository-side evidence:
+- Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
+- Live OptionSchool24 workflow 35706552454 on the same commit completed SUCCESS.
+- `bale_runtime_verification.py` requests non-secret Bale receipts and fails closed when `message_id` is absent or `chat_id` does not match the configured destination.
+- `gate6_runtime_verification.py` orchestrates Report Engine → Runtime Verification → Bale Delivery Verification and cross-checks report/source SHA-256 plus Bale receipts.
+
+Gate 6 is NOT considered operationally closed until the orchestrator is actually executed on the deployed Termux runtime and its `output/gate6_runtime_evidence.json` shows PASS with real Bale receipts.
 
 ## Gate 7 — Cutover
 
@@ -91,4 +99,6 @@ Until then:
 
 ## Current Assessment
 
-The project is structurally close to the operational gate, but repository completeness is not equivalent to live deployment. The remaining critical work is evidence collection and end-to-end runtime validation, not redesign of the Six-Block model.
+The repository and CI gates are substantially verified. The remaining hard gate is physical/runtime evidence from the deployed Termux instance for Bale delivery. Gate 4 also remains pending because exact option instrument identity is not present in the current live OptionSchool24 source.
+
+The project is therefore at the evidence-collection stage rather than requiring redesign of the Six-Block model.
