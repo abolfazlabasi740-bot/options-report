@@ -21,6 +21,37 @@ jobs:
         run: python live_schema_audit.py --output output/live_schema_audit.json
       - name: Print live schema metadata
         run: cat output/live_schema_audit.json
+      - name: Run full V4.1 report on fresh live source
+        run: python report_engine.py
+      - name: Print Gate 3 report evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          audit=json.loads(Path("output/latest_audit.json").read_text(encoding="utf-8"))
+          shadow=json.loads(Path("output/latest_opportunity_shadow.json").read_text(encoding="utf-8"))
+          replay=json.loads(Path("output/latest_replay_verification.json").read_text(encoding="utf-8"))
+          print("GATE3_AUDIT_STATUS =", audit.get("audit_integrity", {}).get("status"))
+          print("SOURCE_FILE =", audit.get("source_file"))
+          print("SOURCE_SHA256 =", audit.get("source_sha256"))
+          print("SELECTED_COUNT =", audit.get("selected_count"))
+          print("ELIGIBILITY =", audit.get("eligibility_summary"))
+          print("OPPORTUNITY_SHADOW_STATUS =", shadow.get("status"))
+          print("OPPORTUNITY_SHADOW_SUMMARY =", shadow.get("summary"))
+          print("REPLAY =", replay)
+          print("TSETMC_EVIDENCE =", audit.get("tsetmc_evidence"))
+          PY
+      - name: Upload Gate 3 report evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate3-live-report-evidence
+          path: |
+            output/latest_report.txt
+            output/latest_audit.json
+            output/latest_opportunity_shadow.json
+            output/latest_replay_verification.json
+            output/latest_historical_diff.json
+          if-no-files-found: error
       - name: Upload schema metadata
         uses: actions/upload-artifact@v4
         with:
