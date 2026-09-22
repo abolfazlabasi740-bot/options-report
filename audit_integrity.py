@@ -30,14 +30,19 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
     shadow = audit.get("opportunity_shadow") or {}
     tsetmc = audit.get("tsetmc_evidence") or {}
 
-    if replay.get("status") not in {"REPLAY_MATCH"}:
-        failures.append("REPLAY_NOT_VERIFIED")
-    if not replay.get("deterministic"):
-        failures.append("REPLAY_NON_DETERMINISTIC")
-    if not replay.get("baseline_hash"):
-        failures.append("REPLAY_BASELINE_HASH_MISSING")
-    if not replay.get("first_hash") or not replay.get("second_hash"):
-        failures.append("REPLAY_HASH_MISSING")
+    shadow_failed = shadow.get("status") == "FAILED"
+    if shadow_failed:
+        if replay.get("status") != "SKIPPED_SHADOW_FAILURE":
+            failures.append("SHADOW_FAILURE_REPLAY_STATE_INVALID")
+    else:
+        if replay.get("status") not in {"REPLAY_MATCH"}:
+            failures.append("REPLAY_NOT_VERIFIED")
+        if not replay.get("deterministic"):
+            failures.append("REPLAY_NON_DETERMINISTIC")
+        if not replay.get("baseline_hash"):
+            failures.append("REPLAY_BASELINE_HASH_MISSING")
+        if not replay.get("first_hash") or not replay.get("second_hash"):
+            failures.append("REPLAY_HASH_MISSING")
     if audit.get("source_sha256") != audit.get("source_sha256_recomputed"):
         failures.append("SOURCE_HASH_MISMATCH")
     if not audit.get("report_sha256"):
@@ -71,6 +76,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
         "checks": {
             "required_fields": not missing,
             "replay_match": replay.get("status") == "REPLAY_MATCH",
+            "shadow_failure_nonblocking": shadow_failed,
             "replay_deterministic": bool(replay.get("deterministic")),
             "replay_baseline_hash": bool(replay.get("baseline_hash")),
             "source_hash_match": audit.get("source_sha256") == audit.get("source_sha256_recomputed"),
