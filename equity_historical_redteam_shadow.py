@@ -4,6 +4,7 @@
 from __future__ import annotations
 import hashlib, json
 from typing import Any
+from equity_opportunity_lifecycle_shadow import opportunity_key
 
 ENGINE_VERSION = "EQUITY-HISTORICAL-REDTEAM-SHADOW-1.0"
 
@@ -18,12 +19,6 @@ def _events(value: Any) -> list[dict[str, Any]]:
         return list(value.get("events", []) or [])
     return list(value or [])
 
-def _key(o: dict[str, Any]) -> str:
-    iid = str(o.get("instrument_id") or "").strip()
-    typ = str(o.get("type") or "").strip()
-    fams = "|".join(sorted(str(x) for x in (o.get("evidence_families") or []) if x))
-    return f"{iid}::{typ}::{fams}"
-
 def fuse_historical_redteam(opportunities: Any, lifecycle_events: Any = None) -> dict[str, Any]:
     rows = list((opportunities or {}).get("opportunities", []) if isinstance(opportunities, dict) else opportunities or [])
     events = _events(lifecycle_events)
@@ -36,7 +31,7 @@ def fuse_historical_redteam(opportunities: Any, lifecycle_events: Any = None) ->
     out = []
     for opportunity in rows:
         item = dict(opportunity)
-        key = _key(item)
+        key = opportunity_key(item)
         history = by_key.get(key, [])
         prior = [e for e in history if str(e.get("snapshot_id") or "") != str(item.get("snapshot_id") or "")]
         historical_support = any(e.get("state") != "RESOLVED" for e in prior)
