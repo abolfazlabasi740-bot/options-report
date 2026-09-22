@@ -1194,3 +1194,14 @@ The next controlled change is to evaluate whether production Eligibility should 
 - No Six-Block weight, scoring direction, Overlay constant, eligibility gate, ranking rule or Bale output was changed.
 - Current technical scoring path is documented as reproducible; economic policy validation remains OPEN.
 - Next controlled step: Historical Sensitivity / Ablation Audit using real historical data, without changing Production Scoring.
+
+
+## Organizational Chart Formalization — 2026-09-22
+
+- Formalized the V4.1 organization as a controlled set of specialized Engines under a central Orchestrator / Project Management layer.
+- Added `docs/ORGANIZATIONAL_CHART_V41.md`.
+- The chart distinguishes production Engines from Shadow, Transitional and Pending units.
+- The non-independent-engine rule is explicit: Shadow/auxiliary engines cannot create an alternate production ranking or bypass Validation, Audit or release gates.
+- Gate 6 remains CLOSED based on physical Termux execution and real Bale receipts.
+- Gate 7 remains NOT CLOSED.
+- This documentation change does not modify Six-Block scoring, FinalScore, eligibility, ranking, Opportunity status or Bale output.
