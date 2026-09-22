@@ -7,6 +7,7 @@ import termux_gate6_launcher as launcher
 class TermuxGate6LauncherTests(unittest.TestCase):
     def test_fast_forward_then_runs_gate6(self):
         calls = []
+        state = {"head": "old"}
 
         def fake_run(argv, capture=True):
             calls.append(argv)
@@ -15,9 +16,12 @@ class TermuxGate6LauncherTests(unittest.TestCase):
             if argv == ["git", "status", "--porcelain"]:
                 return ""
             if argv == ["git", "rev-parse", "HEAD"]:
-                return "old"
+                return state["head"]
             if argv == ["git", "rev-parse", "origin/main"]:
                 return "new"
+            if argv == ["git", "pull", "--ff-only", "origin", "main"]:
+                state["head"] = "new"
+                return ""
             return ""
 
         class Result:
