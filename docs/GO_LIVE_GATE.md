@@ -67,7 +67,7 @@ Required evidence:
 - Historical Red-Team fusion
 - deterministic hashes
 
-Status: CURRENT CODE VERIFIED for analytical Shadow/Replay/Audit on live input. Replay now reproduces the same Shadow-scored input artifact; TSETMC remains disabled until exact option identity is available. Deployed runtime execution remains a separate validation dimension.
+Status: CURRENT CODE VERIFIED for analytical Shadow/Replay/Audit on live input. Replay reproduces the same Shadow-scored input artifact; TSETMC remains disabled until exact option identity is available. Deployed runtime execution is separately verified by Gate 6.
 
 ## Gate 6 — Bale Delivery
 
@@ -79,15 +79,16 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CODE/CI REMEDIATION IN PROGRESS; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729976616 on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 passed 150 tests, including Gate 6 runtime-verification hardening, repository-HEAD binding and the safe Termux deployment launcher.
+Status: **CLOSED — DEPLOYED TERMUX VERIFIED.**
 
-Verified repository-side evidence:
-- Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
-- Live OptionSchool24 workflow 35706552454 on the same commit completed SUCCESS.
-- `bale_runtime_verification.py` requests non-secret Bale receipts and fails closed when `message_id` is absent or `chat_id` does not match the configured destination.
-- `gate6_runtime_verification.py` orchestrates Report Engine → Runtime Verification → Bale Delivery Verification and cross-checks report/source SHA-256 plus Bale receipts.
+Physical runtime evidence supplied from the deployed Termux execution:
+- `bale_delivery_status=SUCCESS`
+- `bale_chunks=2`
+- Bale receipts: `message_id=1143`, `chat_id=770429773`; `message_id=1144`, `chat_id=770429773`
+- `secrets_recorded=false`
+- final launcher result: `TERMUX_GATE6_OK COMMIT=e73168b5d3496fa14d388cddb5aa3ecd5e5278fc`
 
-Gate 6 is NOT considered operationally closed until the orchestrator is actually executed on the deployed Termux runtime and its `output/gate6_runtime_evidence.json` shows PASS with real Bale receipts.
+The deployed runtime therefore demonstrated real Bale delivery with non-secret receipts to the configured private chat. No token is recorded in this document.
 
 ## Gate 7 — Cutover
 
@@ -99,8 +100,16 @@ Until then:
 - no Buy/Sell signal is emitted
 - no ranking is modified by historical memory or Red-Team evidence
 
+Status: **NOT YET CLOSED.** Gate 4 remains pending because exact option instrument identity is not present in the current live OptionSchool24 source. Economic/financial validation of opportunity quality and market-data freshness validation also remain independent requirements.
+
 ## Current Assessment
 
-The repository contains the formal audit-remediation controls, but the remediation is not considered closed until the exact remediation commit passes regression/live workflows and the deployed Termux runtime produces real Gate 6 evidence. Gate 4 also remains pending because exact option instrument identity is not present in the current live OptionSchool24 source.
+Gate 6 is now operationally closed based on actual deployed Termux execution and real Bale receipts. This does not by itself constitute full V4.1 production cutover.
 
-The Six-Block model is not being redesigned as part of this remediation.
+The remaining work is focused on:
+1. exact TSETMC option identity and live evidence integration;
+2. market-data timestamp/freshness validation;
+3. economic/financial validation of Opportunity Intelligence;
+4. final production validation of the Six-Block ranking and V4.1 overlay on live data.
+
+The Six-Block model is not being redesigned as part of the Gate 6 remediation.
