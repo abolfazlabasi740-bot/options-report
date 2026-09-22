@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest main regression run 35686797029 (run 271) on commit 56c99b866ab1aea96731c56221e7805a30a04912 completed SUCCESS.
+Status: VERIFIED — latest main regression run 35706184245 (run 297) on commit bce45e5e3023885727be5e8f6c4273c1cb70aede completed SUCCESS; 145 tests passed in job 106675574611.n 271) on commit 56c99b866ab1aea96731c56221e7805a30a04912 completed SUCCESS.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — live run 35684027740 on commit f9a42f041d61db8a97e58f28cbc208463e585d4b captured a fresh workbook, source SHA-256, schema, 457-row universe, eligibility counts, successful Report Engine completion, Opportunity Shadow, replay and Audit PASS.
+Status: VERIFIED — latest live run 35706184331 on commit bce45e5e3023885727be5e8f6c4273c1cb70aede completed SUCCESS in job 106675574751, with fresh source SHA-256 2ae00a71476ddf00908e725974d906f20ca149a6eb5b92587d49032fc3384682 and Audit PASS.n commit f9a42f041d61db8a97e58f28cbc208463e585d4b captured a fresh workbook, source SHA-256, schema, 457-row universe, eligibility counts, successful Report Engine completion, Opportunity Shadow, replay and Audit PASS.
 
 ## Gate 4 — TSETMC Evidence
 
