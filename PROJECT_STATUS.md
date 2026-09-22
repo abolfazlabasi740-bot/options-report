@@ -811,3 +811,17 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Standalone Equity Intelligence now exposes the opportunity detector output alongside its evidence graph and multi-factor clusters.
 - Regression tests were added for multi-family detection, single-family rejection, missing-data handling, descriptive price/volume evidence, explicit benchmark requirements and deterministic output.
 - This remains a Shadow milestone. No production stock ranking, option ranking, Bale output or Termux live execution is changed or claimed.
+
+
+## Equity Opportunity Lifecycle & Cross-Snapshot Memory — 2026-09-22
+
+- Added `equity_opportunity_lifecycle_shadow.py`, engine `EQUITY-LIFECYCLE-SHADOW-1.0`.
+- Equity opportunities now have a stable cross-snapshot identity based on explicit instrument ID, opportunity type and evidence-family set.
+- Lifecycle states: `NEW`, `PERSISTENT`, `STRENGTHENING`, `WEAKENING`, `RECURRING`, `RESOLVED`.
+- The lifecycle is append-only JSONL evidence and never changes FinalScore, ranking or opportunity classification.
+- A disappeared opportunity is marked `RESOLVED`; if the same stable opportunity identity later reappears it is marked `RECURRING`.
+- Changes in the explicit opportunity status are recorded as strengthening or weakening; unchanged status is persistent.
+- Lifecycle persistence is optional and requires an explicit path. Without a path the detector reports `NOT_PERSISTED` rather than silently writing to an unknown location.
+- Deterministic event hashing is retained for audit/replay.
+- Regression coverage was added for new→persistent, resolve→recur, strength transition and explicit identity separation.
+- No production stock ranking, option ranking, Bale output or Termux execution is changed or claimed.
