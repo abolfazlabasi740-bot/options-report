@@ -932,3 +932,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - This removes duplicated key-construction logic and reduces the risk of identity drift between lifecycle, pattern, confirmation and Red-Team layers.
 - No scoring, ranking, direction inference, causal inference or production output is changed.
 - This is a deterministic integrity/refactoring milestone; runtime/CI execution evidence is still required before claiming PASS.
+
+
+## Historical Opportunity Identity Hardening — 2026-09-22
+
+- Fixed the Equity historical-memory profile attachment so both lifecycle/profile identity keys use the same sorted evidence-family representation.
+- Added regression coverage that verifies a persisted Equity opportunity receives its historical memory profile under the canonical identity.
+- Historical confirmation and historical Red-Team fusion already reuse the shared lifecycle `opportunity_key()` helper.
+- This hardening changes no scoring, ranking, direction inference, causal inference or production output.
+- Runtime/CI execution evidence is still pending; repository commits alone are not treated as PASS.
