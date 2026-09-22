@@ -67,6 +67,24 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     verifier.main()
 
+    def test_fails_closed_when_receipt_targets_wrong_chat(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            report = root / "latest_report.txt"
+            audit = root / "latest_audit.json"
+            evidence = root / "bale_delivery_verification.json"
+            report.write_text("REPORT\n", encoding="utf-8")
+            audit.write_text(json.dumps({"source_file": "optionschool_test.xlsx", "source_sha256": "source-hash", "audit_integrity": {"status": "PASS"}}), encoding="utf-8")
+            with (
+                patch.object(verifier, "REPORT_PATH", report),
+                patch.object(verifier, "AUDIT_PATH", audit),
+                patch.object(verifier, "EVIDENCE_PATH", evidence),
+                patch.dict(verifier.os.environ, {"BALE_BOT_TOKEN": "SECRET-TOKEN", "BALE_CHAT_ID": "123"}, clear=False),
+                patch.object(verifier, "send_message", return_value=[{"message_id": 101, "chat_id": 999}]),
+            ):
+                with self.assertRaises(RuntimeError):
+                    verifier.main()
+
     def test_fails_before_send_without_pass_audit(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
