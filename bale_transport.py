@@ -48,7 +48,7 @@ def send_message(token, chat_id, text, return_receipts=False):
         except requests.HTTPError as exc:
             status = getattr(exc.response, "status_code", None)
             raise RuntimeError(
-                f"ارسال بله ناموفق بود؛ HTTP_STATUS={status or "UNKNOWN"}؛ احتمال ارسال بخشی از گزارش وجود دارد"
+                "ارسال بله ناموفق بود؛ HTTP_STATUS=" + str(status or "UNKNOWN") + "؛ احتمال ارسال بخشی از گزارش وجود دارد"
             ) from None
         except requests.RequestException as exc:
             reason = type(exc).__name__
