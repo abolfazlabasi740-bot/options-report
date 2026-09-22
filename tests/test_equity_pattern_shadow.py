@@ -15,6 +15,14 @@ class PatternTests(unittest.TestCase):
         r=analyze_cross_snapshot_patterns([e("S1","NEW"),e("S2","RESOLVED"),e("S3","RECURRING")])
         self.assertEqual(r["pattern_count"],1)
         self.assertEqual(r["patterns"][0]["type"],"RECURRING_PATTERN")
+    def test_resolution_is_preserved(self):
+        r=analyze_cross_snapshot_patterns([e("S1","NEW"),e("S2","RESOLVED"),e("S3","RECURRING")])
+        p=r["patterns"][0]
+        self.assertEqual(p["states"],["NEW","RESOLVED","RECURRING"])
+        self.assertEqual(p["timeline_event_count"],3)
+        self.assertEqual(p["resolution_count"],1)
+        self.assertEqual(p["observation_count"],2)
+
     def test_min_observations(self):
         r=analyze_cross_snapshot_patterns([e("S1")])
         self.assertEqual(r["pattern_count"],0)
