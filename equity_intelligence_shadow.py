@@ -130,4 +130,7 @@ def analyze_equities(df: pd.DataFrame, snapshot_id: str, *, historical_patterns=
     from equity_evidence_cluster_shadow import build_equity_evidence_clusters
     result["evidence_clusters"]=build_equity_evidence_clusters(cases, historical_patterns=historical_patterns, red_team=red_team)
     result["evidence_graph"]=build_equity_evidence_graph(cases, historical_patterns=historical_patterns, red_team=red_team)
+    from equity_opportunity_shadow import detect_equity_opportunities
+    result["opportunities"]=detect_equity_opportunities(cases, result["evidence_clusters"], historical_patterns=historical_patterns, red_team=red_team, snapshot_id=str(snapshot_id))
+    result["summary"]["opportunity_count"]=result["opportunities"]["summary"]["opportunity_count"]
     return result
