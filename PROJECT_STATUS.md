@@ -732,3 +732,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Regression coverage added for exact option→underlying mapping, missing identity, insufficient quote data, duplicate IDs, disabled integration, no-option-ID protection and the corrected no-inference rule.
 - This phase is code/test architecture only. No live TSETMC response or Termux deployment is claimed from these repository changes.
 - Production scoring remains unchanged.
+
+
+
+## Canonical Underlying Quote Readiness & Audit Integration — 2026-09-22
+
+- Canonical Snapshot now distinguishes `underlying_source_status` (explicit identity availability) from `underlying_quote_status` (actual base-price context availability).
+- Default canonical quote state is `NOT_ATTACHED`; identity availability alone is no longer treated as price-context availability.
+- TSETMC Shadow evidence metadata is now persisted into `latest_audit.json`.
+- Audit Integrity validates the optional TSETMC evidence structure without making TSETMC availability a production scoring dependency.
+- Production scoring/ranking remains unchanged and network-independent by default.
+- Regression coverage was extended to prevent conflating explicit underlying identity with an attached underlying quote.
+- Repository CI status for the latest changes has not been observed; no CI PASS or Termux deployment is claimed.
