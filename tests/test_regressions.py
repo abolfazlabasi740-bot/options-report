@@ -408,6 +408,13 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(one.iloc[0].FinalScore, expected)
         self.assertAlmostEqual(one.iloc[0]["فاصله سر به سری"], 50/1050*100)
 
+    def test_shadow_failure_does_not_block_production_report(self):
+        with patch("report_engine.pd.read_excel", return_value=fixture()), \
+             patch("report_engine.run_shadow", side_effect=RuntimeError("synthetic shadow failure")):
+            work = build_report("unused.xlsx")
+        self.assertEqual(work.attrs["opportunity_shadow"]["status"], "FAILED")
+        self.assertEqual(work.attrs["replay_verification"]["status"], "SKIPPED_SHADOW_FAILURE")
+
     def test_report_discloses_limits_and_missing_expiry(self):
         with patch("report_engine.pd.read_excel", return_value=fixture()):
             work = build_report("unused.xlsx")
