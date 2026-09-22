@@ -20,6 +20,7 @@ def build_evidence_graph(
     tsetmc_evidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build an evidence-only graph; never modifies scores or case statuses."""
+    cases = list(cases)
     patterns = historical_patterns or {}
     red = red_team or {}
     pattern_map: dict[str, list[dict[str, Any]]] = {}
