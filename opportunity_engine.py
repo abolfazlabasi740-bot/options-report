@@ -30,6 +30,7 @@ from schema_audit import audit_schema
 from historical_snapshot import case_historical_context
 from historical_pattern_shadow import build_historical_patterns
 from attention_allocation_shadow import allocate_attention
+from evidence_graph_shadow import build_evidence_graph
 from case_lifecycle_shadow import append_events
 from opportunity_config import CONFIG
 from eligibility_shadow import classify_dataframe
@@ -425,6 +426,11 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         cases,
         red_team=red_team,
         historical_patterns=historical_patterns,
+    )
+    evidence_graph = build_evidence_graph(
+        cases,
+        historical_patterns=historical_patterns,
+        red_team=red_team,
     )
 
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
