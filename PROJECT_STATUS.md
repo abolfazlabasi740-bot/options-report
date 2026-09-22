@@ -756,3 +756,19 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Opportunity Engine now returns the Evidence Graph alongside existing cases, explanations and attention allocation.
 - This is an evidence/audit layer only. It does not modify FinalScore, Six-Block weights, Production eligibility, ranking or Bale output.
 - The graph is designed to support later multi-family opportunity detection by proving which independent evidence families contributed to attention without turning that evidence into a hidden score.
+
+
+## Multi-Factor Opportunity Evidence Cluster — 2026-09-22
+
+- Added `opportunity_evidence_cluster.py`, engine `OPPORTUNITY-CLUSTER-SHADOW-1.0`.
+- The detector aggregates already-observed evidence into independent evidence families without introducing a new FinalScore or ranking layer.
+- Explicit families include Relative Value, Breakeven, Base Context, Liquidity/Execution, Chain Structure and Time Risk.
+- Two independent families produce `MULTI_FAMILY_WATCH`; three or more produce `MULTI_FAMILY_CONFIRMED`. These are evidence classifications, not trade recommendations.
+- Historical patterns and Red Team challenges remain attached to the cluster; contradictory evidence is preserved rather than netted away.
+- Missing evidence remains a data gap and is never converted to zero or neutral evidence.
+- Expired non-risk cases cannot form an active multi-factor cluster; expiry-risk evidence remains observable.
+- Each cluster has deterministic `cluster_sha256`; the aggregate also has `clusters_sha256`.
+- Opportunity Engine now exposes the Evidence Graph and Multi-Factor Evidence Clusters together in Shadow output and reports cluster counts in the summary.
+- FinalScore, Six-Block weights, Production Eligibility, Ranking, Top-N and Bale output remain unchanged.
+- Regression coverage added for independent-family detection, single-family rejection, contradiction retention, missing-data handling, deterministic hashing, expiry separation and input immutability.
+- This is an architecture/test milestone. No live Termux execution or CI PASS is claimed by the code commits alone.
