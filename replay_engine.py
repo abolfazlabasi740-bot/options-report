@@ -31,6 +31,8 @@ def _stable(value: Any) -> Any:
 def stable_shadow_payload(result: dict[str, Any]) -> dict[str, Any]:
     payload = deepcopy(result)
     payload.pop("generated_at", None)
+    payload.pop("case_memory", None)
+    payload.pop("case_lifecycle", None)
     return _stable(payload)
 
 
@@ -50,6 +52,7 @@ def verify_shadow_replay(
     scored: pd.DataFrame,
     snapshot_id: str,
     *,
+    baseline_shadow: dict[str, Any] | None = None,
     historical_previous: dict[str, Any] | None = None,
     historical_current: dict[str, Any] | None = None,
     historical_sequence: list[dict[str, Any]] | None = None,
@@ -75,14 +78,20 @@ def verify_shadow_replay(
     second_payload = stable_shadow_payload(second)
     first_hash = fingerprint(first_payload)
     second_hash = fingerprint(second_payload)
+    baseline_hash = fingerprint(stable_shadow_payload(baseline_shadow)) if baseline_shadow is not None else None
+    regenerated_match = first_hash == second_hash
+    baseline_match = baseline_hash is None or (baseline_hash == first_hash == second_hash)
 
     return {
-        "status": "REPLAY_MATCH" if first_hash == second_hash else "REPLAY_MISMATCH",
+        "status": "REPLAY_MATCH" if regenerated_match and baseline_match else "REPLAY_MISMATCH",
         "engine_version": ENGINE_VERSION,
         "snapshot_id": snapshot_id,
+        "replay_scope": "ANALYTICAL_SHADOW",
+        "baseline_hash": baseline_hash,
         "first_hash": first_hash,
         "second_hash": second_hash,
-        "deterministic": first_hash == second_hash,
+        "baseline_match": baseline_match,
+        "deterministic": regenerated_match and baseline_match,
     }
 
 
