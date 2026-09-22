@@ -44,6 +44,18 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def current_git_sha() -> str | None:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return None
+
+
 def main() -> None:
     started = datetime.now(timezone.utc).isoformat()
 
@@ -58,8 +70,12 @@ def main() -> None:
     runtime = json.loads(RUNTIME_EVIDENCE.read_text(encoding="utf-8"))
     bale = json.loads(BALE_EVIDENCE.read_text(encoding="utf-8"))
 
+    runtime_git_sha = runtime.get("git_sha")
+    repository_git_sha = current_git_sha()
     if runtime.get("status") != "PASS":
         raise RuntimeError("runtime_verification.json is not PASS")
+    if not runtime_git_sha or not repository_git_sha or runtime_git_sha != repository_git_sha:
+        raise RuntimeError("Runtime Git SHA does not match deployed repository HEAD")
     if (audit.get("audit_integrity") or {}).get("status") != "PASS":
         raise RuntimeError("latest_audit.json is not PASS")
     if bale.get("status") != "SUCCESS":
@@ -80,6 +96,7 @@ def main() -> None:
         "source_file": audit.get("source_file"),
         "source_sha256": audit.get("source_sha256"),
         "audit_integrity": (audit.get("audit_integrity") or {}).get("status"),
+        "runtime_git_sha": runtime_git_sha,
         "bale_delivery_status": bale.get("status"),
         "bale_chunks": bale.get("chunks"),
         "bale_receipts": bale.get("receipts"),
