@@ -952,3 +952,20 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Historical confirmation and historical Red-Team fusion already reuse the shared lifecycle `opportunity_key()` helper.
 - This hardening changes no scoring, ranking, direction inference, causal inference or production output.
 - Runtime/CI execution evidence is still pending; repository commits alone are not treated as PASS.
+
+
+## Live OptionSchool24 Schema Gate — 2026-09-22
+
+- The live OptionSchool24 schema audit was promoted from manual-only dispatch to also run automatically on pushes to main; manual workflow_dispatch remains available.
+- Verification commit: 1a95b1d34f4c957ed4da82a361e51fb4c06c2e24.
+- Live schema workflow run: 35683941940; job: 106606672001; conclusion: SUCCESS.
+- The workflow fetched the live OptionSchool24 export and completed the schema audit successfully.
+- Retrieval timestamp: 2026-09-22T03:39:34.323109+00:00.
+- Source SHA-256: bdf7278bd3fe091d563f53ebfb58b58665a2ef1cbfda491b48582c5a4bd7fcb9.
+- Fresh source observed by the audit: 457 rows and 38 columns.
+- Core schema fields including symbol, strike, underlying-price field, expiry, trading days, open interest, volume, trade value, last/close prices, breakeven, Black-Scholes difference, leverage, IV/HV and bid/ask fields were present.
+- Identity readiness remains INSUFFICIENT_DATA; contract-type readiness remains INSUFFICIENT_DATA; symbol inference remains DISABLED.
+- Economic parity remains NOT_READY_UNTIL_IDENTITY_AND_ECONOMIC_INPUTS_ARE_VALIDATED.
+- This is genuine live OptionSchool24 schema evidence, but it is not yet Gate 3 full-report evidence: the report engine still must be executed against this fresh workbook and its row/eligibility/report/audit outputs captured.
+- Regression workflow also passed on the same verification commit.
+- No live TSETMC enrichment or Termux/Bale runtime evidence is implied by this gate.
