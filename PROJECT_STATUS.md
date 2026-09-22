@@ -1008,3 +1008,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - The current live source still does not expose an explicit option instrument ID accepted by the TSETMC integration; Gate 4 remains pending by design.
 - Gate 6 remains pending because current Termux/Bale delivery has not been re-verified on the deployed V4.1.1 runtime. Repository evidence and GitHub CI do not substitute for that runtime evidence.
 - No Six-Block weights, production eligibility gate, ranking logic, or Bale report content was changed in this step.
+
+
+## Bale Delivery Hardening — 2026-09-22
+
+- Reviewed the live Bale path: `bale_listener.py` → `report_engine.py` → `bale_transport.py`.
+- Fixed the documented all-market command alias: `همه` now follows the same 15-contract path as `گزارش` and `کل`.
+- Added regression coverage for Bale message chunk integrity, multi-chunk POST delivery, and fail-closed network errors in `tests/test_bale_transport.py`.
+- This hardening does not alter Six-Block scoring, production eligibility, ranking, opportunity detection, or report calculations.
+- Gate 6 is still not claimed as VERIFIED: real delivery from the deployed Termux runtime requires runtime evidence and an actual Bale delivery acknowledgement.
