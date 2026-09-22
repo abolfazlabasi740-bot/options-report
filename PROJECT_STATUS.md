@@ -908,3 +908,19 @@ The next controlled change is to evaluate whether production Eligibility should 
 - The layer does not infer direction, causality, Buy/Sell action, FinalScore or ranking.
 - Missing evidence is not converted to zero.
 - Opportunity Engine integration includes the memory profile on each opportunity and recalculates the final `opportunities_sha256` after all historical enrichment.
+
+
+## Equity Historical Red Team & Conflict Fusion — 2026-09-22
+
+- Added `equity_historical_redteam_shadow.py`, engine `EQUITY-HISTORICAL-REDTEAM-SHADOW-1.0`.
+- Equity lifecycle events now preserve explicit Red Team challenge evidence so historical challenge context is not lost between snapshots.
+- The fusion layer compares the current opportunity with prior lifecycle events using the same explicit opportunity identity.
+- States are descriptive only: `HISTORICAL_SUPPORT_PRESENT`, `HISTORICAL_CONTRADICTION_PRESENT`, `HISTORICAL_MIXED_EVIDENCE`, `HISTORICAL_DATA_GAP`, `HISTORICAL_NO_MATCH`.
+- A historical contradiction is reported only when explicit prior Red Team evidence exists; no contradiction is inferred from price movement, resolution, or disappearance alone.
+- Resolved lifecycle events remain historical evidence but are not treated as active support.
+- Current and historical Red Team evidence remain attached for audit/review; no evidence is netted into a score.
+- Direction inference, causal inference and score changes remain disabled.
+- The Equity Opportunity Engine now exposes `historical_redteam_fusion` after historical confirmation/memory enrichment and recomputes `opportunities_sha256`.
+- Added regression coverage for no historical match, historical support, mixed historical Red Team evidence and safety isolation.
+- No production stock ranking, option ranking, Six-Block scoring, Bale output or Termux runtime behavior is changed by this Shadow layer.
+- Repository-side implementation is complete for this phase; runtime/CI execution evidence has not been claimed.
