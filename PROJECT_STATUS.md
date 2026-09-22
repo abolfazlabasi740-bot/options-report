@@ -839,3 +839,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Deterministic `patterns_sha256` is generated.
 - Regression tests cover repeated patterns, recurrence, minimum observation requirements, determinism and direction/score isolation.
 - Integration into runtime orchestration remains deliberately separate until explicit lifecycle persistence is supplied; no live execution is claimed.
+
+
+## Equity Opportunity → Lifecycle → Cross-Snapshot Integration — 2026-09-22
+
+- Equity opportunity detection now accepts an optional explicit `lifecycle_path`.
+- When supplied, detected opportunities are persisted through `EQUITY-LIFECYCLE-SHADOW-1.0`.
+- The same append-only lifecycle evidence is then analyzed by `EQUITY-PATTERN-SHADOW-1.0`.
+- Cross-snapshot patterns are exposed as Shadow evidence only; they do not modify FinalScore, ranking, direction, or production decisions.
+- When no lifecycle path is supplied, the result explicitly reports `NOT_PERSISTED`; no default filesystem path is assumed.
+- `analyze_equities()` now exposes the same optional lifecycle path and passes it through to the opportunity detector.
+- This creates the intended evidence chain: Equity evidence → multi-family cluster → opportunity → lifecycle memory → cross-snapshot pattern.
+- No Termux live execution, CI pass, or production ranking change is claimed by this integration.
