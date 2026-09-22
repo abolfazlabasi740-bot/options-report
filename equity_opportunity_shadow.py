@@ -146,7 +146,7 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         from equity_memory_profile_shadow import build_memory_profiles
         out["historical_memory_profiles"] = build_memory_profiles(out["opportunities"])
         profiles_by_key = {
-            f"{p.get('instrument_id')}::{p.get('opportunity_type')}::{"|".join(p.get('evidence_families') or [])}": p
+            f"{p.get('instrument_id')}::{p.get('opportunity_type')}::{'|'.join(p.get('evidence_families') or [])}": p
             for p in out["historical_memory_profiles"].get("profiles", [])
         }
         for opp in out["opportunities"]:
