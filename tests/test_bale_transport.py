@@ -11,7 +11,7 @@ class BaleTransportTests(unittest.TestCase):
         self.assertEqual("".join(chunks), text)
 
     def test_send_message_posts_all_chunks(self):
-        text = "🔹 A\n" + ("x" * 80) + "\n🔹 B\n" + ("y" * 80)
+        text = "🔹 A\n" + ("x" * 1800) + "\n🔹 B\n" + ("y" * 1800)
         class Response:
             def raise_for_status(self):
                 return None
