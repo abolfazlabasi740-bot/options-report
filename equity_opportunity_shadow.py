@@ -140,6 +140,9 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         from equity_historical_confirmation_shadow import enrich_opportunities
         out["historical_confirmation"] = enrich_opportunities(out["opportunities"], out["cross_snapshot_patterns"])
         out["opportunities"] = out["historical_confirmation"]["opportunities"]
+        from equity_memory_shadow import build_memory
+        out["historical_memory"] = build_memory(out["opportunities"])
+        out["opportunities"] = out["historical_memory"]["opportunities"]
     else:
         out["lifecycle"] = {
             "status": "NOT_PERSISTED",
