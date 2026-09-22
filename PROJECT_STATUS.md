@@ -713,3 +713,22 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Report Engine production scoring/ranking remains unchanged.
 - Remaining integration gate: feed a real canonical TSETMC snapshot into Report Engine and persist the underlying enrichment/audit artifact; this requires actual source/runtime evidence and is not yet claimed.
 
+
+
+
+## TSETMC Evidence Collector & Underlying Context — 2026-09-22
+
+- Added `tsetmc_evidence_collector.py`, engine `TSETMC-EVIDENCE-COLLECTOR-1.0`.
+- The collector accepts explicit option instrument IDs only.
+- It reads an explicit `underlying_id/underlyingId` from the option identity response and then requests the underlying quote by that exact instrument ID.
+- Symbol search, symbol-prefix parsing and inferred CALL/PUT semantics are not used.
+- Every successful source response retains endpoint, retrieval timestamp and payload SHA-256 through the adapter evidence structure.
+- Missing underlying identity, insufficient quote data and source failure remain explicit evidence states; no zero-filling is performed.
+- Added `tsetmc_shadow_integration.py`, engine `TSETMC-SHADOW-INTEGRATION-1.0`.
+- The integration is disabled by default and can be enabled with `TSETMC_EVIDENCE_ENABLED=1`; it only enriches the Shadow universe and does not change Six-Block scoring, production eligibility, ranking or Bale output.
+- If an explicit option instrument-ID column is absent, the integration returns `NO_EXPLICIT_OPTION_ID` and does not infer identity from the option symbol.
+- Explicit underlying last/close prices are attached to Shadow rows when available, enabling the existing `BASE_BREAKEVEN_CONTEXT` detector to operate on real source evidence.
+- Corrected a critical identity-safety issue in `tsetmc_adapter.py`: the option's own `insCode` is no longer accepted as `underlying_id` when an explicit underlying field is absent.
+- Regression coverage added for exact option→underlying mapping, missing identity, insufficient quote data, duplicate IDs, disabled integration, no-option-ID protection and the corrected no-inference rule.
+- This phase is code/test architecture only. No live TSETMC response or Termux deployment is claimed from these repository changes.
+- Production scoring remains unchanged.
