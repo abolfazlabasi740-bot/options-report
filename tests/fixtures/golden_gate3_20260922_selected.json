@@ -1,0 +1,27 @@
+{
+  "fixture_version": "GOLDEN-OUTPUT-1.0",
+  "purpose": "selected-output regression baseline; not a full source snapshot",
+  "source_file": "optionschool_20260922_071052_767703.xlsx",
+  "source_sha256": "4252022bd88d2452d856c42bfcd65224e1af430161ad3072bacd925cbeb693fc",
+  "selected_count": 15,
+  "audit_integrity": "PASS",
+  "replay_status": "REPLAY_MATCH",
+  "replay_deterministic": true,
+  "selected": [
+    {"rank":1,"symbol":"ضستا7062","final_score":66.4},
+    {"rank":2,"symbol":"ضستا7060","final_score":66.25},
+    {"rank":3,"symbol":"ضملت7042","final_score":65.73},
+    {"rank":4,"symbol":"ضخود7132","final_score":65.18},
+    {"rank":5,"symbol":"ضستا7061","final_score":64.75},
+    {"rank":6,"symbol":"ضخود7133","final_score":64.2},
+    {"rank":7,"symbol":"ضهرم7062","final_score":63.44},
+    {"rank":8,"symbol":"ضذوب7044","final_score":63.4},
+    {"rank":9,"symbol":"ضذوب7043","final_score":62.79},
+    {"rank":10,"symbol":"ضخود7131","final_score":62.77},
+    {"rank":11,"symbol":"ضملت7041","final_score":62.58},
+    {"rank":12,"symbol":"ضسپا7029","final_score":62.35},
+    {"rank":13,"symbol":"ضملت7043","final_score":62.15},
+    {"rank":14,"symbol":"ضستا7063","final_score":61.3},
+    {"rank":15,"symbol":"ضهرم7061","final_score":59.49}
+  ]
+}
