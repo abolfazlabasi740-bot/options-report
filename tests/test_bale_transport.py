@@ -25,6 +25,16 @@ class BaleTransportTests(unittest.TestCase):
             self.assertIn("/botTOKEN/sendMessage", call.args[0])
             self.assertEqual(call.kwargs["data"]["chat_id"], "CHAT")
 
+
+    def test_send_message_can_return_non_secret_receipts(self):
+        class Response:
+            def raise_for_status(self):
+                return None
+            def json(self):
+                return {"ok": True, "result": {"message_id": 123, "chat": {"id": "CHAT"}}}
+        with patch("bale_transport.requests.post", return_value=Response()):
+            receipts = bale_transport.send_message("TOKEN", "CHAT", "test", return_receipts=True)
+        self.assertEqual(receipts, [{"message_id": 123, "chat_id": "CHAT"}])
     def test_send_message_fails_closed_on_http_error(self):
         with patch("bale_transport.requests.post", side_effect=bale_transport.requests.RequestException("network")):
             with self.assertRaises(RuntimeError):
