@@ -924,3 +924,11 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Added regression coverage for no historical match, historical support, mixed historical Red Team evidence and safety isolation.
 - No production stock ranking, option ranking, Six-Block scoring, Bale output or Termux runtime behavior is changed by this Shadow layer.
 - Repository-side implementation is complete for this phase; runtime/CI execution evidence has not been claimed.
+
+
+## Stable Opportunity-Key Consolidation — 2026-09-22
+
+- Historical confirmation and historical Red-Team fusion now reuse the canonical `opportunity_key()` helper from `equity_opportunity_lifecycle_shadow.py`.
+- This removes duplicated key-construction logic and reduces the risk of identity drift between lifecycle, pattern, confirmation and Red-Team layers.
+- No scoring, ranking, direction inference, causal inference or production output is changed.
+- This is a deterministic integrity/refactoring milestone; runtime/CI execution evidence is still required before claiming PASS.
