@@ -1107,3 +1107,18 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Gate 3 Audit: PASS; selected_count=15; Opportunity Shadow=SUCCESS; Replay=REPLAY_MATCH; deterministic=true.
 - TSETMC evidence remains DISABLED because no explicit option instrument ID is present in the live source.
 - This still does not constitute real Termux/Bale runtime evidence; Gate 6 remains runtime-pending until the one-command orchestrator executes on the deployed environment and records real Bale receipts.
+
+
+## Termux Safe Deployment Launcher — 2026-09-22
+
+- Added `termux_gate6_launcher.py` as the controlled deployment entry point for Gate 6.
+- It requires branch `main`, refuses to continue when local working-tree changes exist, fetches `origin/main`, fast-forwards only via `git pull --ff-only`, verifies deployed HEAD against `origin/main`, then executes the existing Gate 6 orchestrator.
+- The launcher does not print or store Bale secrets.
+- Runtime verification now also checks that the launcher itself is present and compilable.
+- Final verified code commit before this documentation-only update: `70a8df16cb0c627d919c078849c9abb6851fd1d6`.
+- Regression run `35729976616`, job `106752837223`: SUCCESS; 150 tests passed.
+- Live OptionSchool24 run `35729976632`, job `106752837066`: SUCCESS.
+- Fresh source: `optionschool_20260922_162408_077896.xlsx`; source SHA-256 `a4e80a58bd2c752de724806adbc514f858331f48109ce9df24c1eb9412318850`.
+- Gate 3 Audit: PASS; selected_count=15; Opportunity Shadow=SUCCESS; Replay=REPLAY_MATCH; deterministic=true.
+- TSETMC evidence remains DISABLED because the current live source still lacks explicit option instrument ID.
+- Physical Termux/Bale execution remains the only unverified runtime step for Gate 6.

@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — latest verified code/test run 35729625543 (run 311) on commit 51a6cd1339896fd2c62967697a6fe24956855d28 completed SUCCESS; job 106751682394; 148 tests passed.
+Status: VERIFIED — latest verified code/test run 35729976616 (run 318) on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 completed SUCCESS; job 106752837223; 150 tests passed.
 
 ## Gate 3 — Real OptionSchool24 Input
 
@@ -40,7 +40,7 @@ Required:
 - row/eligibility counts recorded
 - Report Engine completes without fabricated values
 
-Status: VERIFIED — latest live run 35729625650 (run 47) on commit 51a6cd1339896fd2c62967697a6fe24956855d28 completed SUCCESS; job 106751683268. Fresh source SHA-256 fbfdcaec5fb804149d5c6a7184c1df180646b1885203c550599a39fae6b488f4; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH; deterministic=true.
+Status: VERIFIED — latest live run 35729976632 (run 54) on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 completed SUCCESS; job 106752837066; fresh source SHA-256 a4e80a58bd2c752de724806adbc514f858331f48109ce9df24c1eb9412318850; Audit PASS; selected_count=15; Opportunity Shadow SUCCESS; Replay MATCH; deterministic=true.
 
 ## Gate 4 — TSETMC Evidence
 
@@ -77,7 +77,7 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729625543 on commit 51a6cd1339896fd2c62967697a6fe24956855d28 passed 148 tests, including Gate 6 runtime-verification hardening and repository-HEAD binding.
+Status: CODE/CI HARDENING VERIFIED; DEPLOYED RUNTIME PENDING. Latest verified code/test run 35729976616 on commit 70a8df16cb0c627d919c078849c9abb6851fd1d6 passed 150 tests, including Gate 6 runtime-verification hardening, repository-HEAD binding and the safe Termux deployment launcher.
 
 Verified repository-side evidence:
 - Regression run 35706552463 on commit 9572ffbd1816d81a9156b068e1ca768714cee72a completed SUCCESS.
@@ -101,4 +101,4 @@ Until then:
 
 The repository and CI gates are substantially verified. The remaining hard gate is physical/runtime evidence from the deployed Termux instance for Bale delivery. Gate 4 also remains pending because exact option instrument identity is not present in the current live OptionSchool24 source.
 
-The project is therefore at the evidence-collection stage rather than requiring redesign of the Six-Block model.
+The project is therefore at the final runtime-evidence stage rather than requiring redesign of the Six-Block model.
