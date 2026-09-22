@@ -143,6 +143,8 @@ def detect_equity_opportunities(cases, evidence_clusters=None,
         from equity_memory_shadow import build_memory
         out["historical_memory"] = build_memory(out["opportunities"])
         out["opportunities"] = out["historical_memory"]["opportunities"]
+        from equity_memory_profile_shadow import build_memory_profiles
+        out["historical_memory_profiles"] = build_memory_profiles(out["opportunities"])
     else:
         out["lifecycle"] = {
             "status": "NOT_PERSISTED",
