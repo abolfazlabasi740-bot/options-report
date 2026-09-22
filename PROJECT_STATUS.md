@@ -1237,3 +1237,12 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Recovery is explicitly upstream: downstream Engines may not repair or invent upstream data.
 - Gate 7 readiness explicitly separates repository, CI, real-source, deployed-runtime, distribution and economic/historical evidence classes.
 - No production scoring, ranking, eligibility, TSETMC activation, signal policy or Bale logic was changed.
+
+
+## Gate 7 Evidence Ledger — 2026-09-22
+
+- Added `docs/GATE7_EVIDENCE_LEDGER_V41.md` at commit `15906881225864f56640106be9cacee3ee9652e9`.
+- The ledger separates verified operational evidence from the remaining Gate 7 evidence requirements.
+- Verified: Gate 2 regression, Gate 3 live-source integrity, Gate 6 physical Termux/Bale deployment, and Gate 7 control CI.
+- Open: parameter provenance, historical sensitivity/ablation, market timestamp/freshness, exact TSETMC identity, and economic Opportunity validation.
+- No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
