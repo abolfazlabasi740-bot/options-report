@@ -29,7 +29,7 @@ Required evidence:
 
 A code commit without workflow evidence is not a test PASS claim.
 
-Status: VERIFIED — regression run 35684027778 on commit f9a42f041d61db8a97e58f28cbc208463e585d4b completed SUCCESS.
+Status: VERIFIED — latest main regression run 35686797029 (run 271) on commit 56c99b866ab1aea96731c56221e7805a30a04912 completed SUCCESS.
 
 ## Gate 3 — Real OptionSchool24 Input
 
