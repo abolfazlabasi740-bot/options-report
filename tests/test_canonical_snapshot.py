@@ -16,6 +16,7 @@ class CanonicalSnapshotTests(unittest.TestCase):
         canonical,_=build_canonical_snapshot(options,[{"instrument_id":"A","symbol":"ضهرم"}])
         self.assertIsNone(canonical.iloc[0]["underlying_id"])
         self.assertIsNone(canonical.iloc[0]["contract_type"])
+        self.assertEqual(canonical.iloc[0]["underlying_quote_status"], "NOT_ATTACHED")
     def test_snapshot_id_is_deterministic(self):
         options=pd.DataFrame([{"نماد":"ضهرم","insCode":"A"}])
         t=[{"instrument_id":"A","symbol":"ضهرم"}]
