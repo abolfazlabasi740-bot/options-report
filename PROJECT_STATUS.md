@@ -898,3 +898,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Recurrence evidence therefore retains the resolution event that occurred between observations.
 - Added regression coverage for NEW → RESOLVED → RECURRING.
 - No scoring, ranking, direction inference or causal inference is changed.
+
+
+## Equity Historical Evidence Fusion — 2026-09-22
+
+- Added `equity_historical_evidence_fusion_shadow.py`, engine `EQUITY-HISTORICAL-EVIDENCE-FUSION-SHADOW-1.0`.
+- Current opportunities can now receive a descriptive historical evidence state derived from cross-snapshot confirmation, historical memory and memory continuity.
+- States are limited to evidence descriptions such as `NO_HISTORICAL_CONFIRMATION`, `HISTORICAL_CONTEXT_PRESENT`, `REPEATED_HISTORICAL_EVIDENCE`, and `RECURRING_HISTORICAL_EVIDENCE`.
+- The layer does not infer direction, causality, Buy/Sell action, FinalScore or ranking.
+- Missing evidence is not converted to zero.
+- Opportunity Engine integration includes the memory profile on each opportunity and recalculates the final `opportunities_sha256` after all historical enrichment.
