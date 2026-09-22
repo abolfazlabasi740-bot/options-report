@@ -106,7 +106,7 @@ def build_equity_evidence_graph(cases, historical_patterns=None, red_team=None):
     graph["graph_sha256"]=_hash(graph)
     return graph
 
-def analyze_equities(df: pd.DataFrame, snapshot_id: str, *, historical_patterns=None, red_team=None):
+def analyze_equities(df: pd.DataFrame, snapshot_id: str, *, historical_patterns=None, red_team=None, lifecycle_path=None):
     if not isinstance(df,pd.DataFrame): raise TypeError("df must be a pandas DataFrame")
     if not str(snapshot_id).strip(): raise ValueError("snapshot_id is required")
     col=next((c for c in ("instrument_id","insCode","InstrumentID","کد معاملاتی") if c in df.columns),None)
@@ -131,6 +131,6 @@ def analyze_equities(df: pd.DataFrame, snapshot_id: str, *, historical_patterns=
     result["evidence_clusters"]=build_equity_evidence_clusters(cases, historical_patterns=historical_patterns, red_team=red_team)
     result["evidence_graph"]=build_equity_evidence_graph(cases, historical_patterns=historical_patterns, red_team=red_team)
     from equity_opportunity_shadow import detect_equity_opportunities
-    result["opportunities"]=detect_equity_opportunities(cases, result["evidence_clusters"], historical_patterns=historical_patterns, red_team=red_team, snapshot_id=str(snapshot_id))
+    result["opportunities"]=detect_equity_opportunities(cases, result["evidence_clusters"], historical_patterns=historical_patterns, red_team=red_team, snapshot_id=str(snapshot_id), lifecycle_path=lifecycle_path)
     result["summary"]["opportunity_count"]=result["opportunities"]["summary"]["opportunity_count"]
     return result
