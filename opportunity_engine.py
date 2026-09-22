@@ -31,6 +31,7 @@ from historical_snapshot import case_historical_context
 from historical_pattern_shadow import build_historical_patterns
 from attention_allocation_shadow import allocate_attention
 from evidence_graph_shadow import build_evidence_graph
+from opportunity_evidence_cluster import build_opportunity_evidence_clusters
 from case_lifecycle_shadow import append_events
 from opportunity_config import CONFIG
 from eligibility_shadow import classify_dataframe
@@ -432,6 +433,11 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         historical_patterns=historical_patterns,
         red_team=red_team,
     )
+    evidence_clusters = build_opportunity_evidence_clusters(
+        cases,
+        historical_patterns=historical_patterns,
+        red_team=red_team,
+    )
 
     confirmed = [c for c in cases if c["status"] == "CONFIRMED"]
     watch = [c for c in cases if c["status"] == "WATCH"]
@@ -455,6 +461,8 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
             "schema_identity_readiness": schema_audit_result.get("identity_readiness"),
             "schema_contract_type_readiness": schema_audit_result.get("contract_type_readiness"),
             "eligibility_counts": eligibility.get("summary", {}).get("counts", {}),
+            "multi_factor_cluster_count": evidence_clusters.get("summary", {}).get("cluster_count", 0),
+            "multi_factor_confirmed_count": evidence_clusters.get("summary", {}).get("multi_family_confirmed", 0),
         },
         "cases": cases,
         "red_team": red_team,
@@ -465,6 +473,8 @@ def run_shadow(scored, snapshot_id, memory_path=None, historical_previous=None, 
         "historical_context": historical_context,
         "historical_patterns": historical_patterns,
         "attention_allocation": attention,
+        "evidence_graph": evidence_graph,
+        "opportunity_evidence_clusters": evidence_clusters,
         "case_memory": {
             "status": "UPDATED" if memory is not None else "NOT_ENABLED",
             "version": memory.get("memory_version") if memory is not None else None,
