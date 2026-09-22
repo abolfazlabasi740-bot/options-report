@@ -22,6 +22,22 @@ def test_three_independent_families_create_confirmed_cluster():
     cluster = result["clusters"][0]
     assert cluster["status"] == "MULTI_FAMILY_CONFIRMED"
     assert cluster["independent_family_count"] == 3
+    assert cluster["source_diversity"] == "SINGLE_SOURCE_OR_DERIVED"
+    assert cluster["source_family_count"] == 1
+
+
+def test_source_diversity_does_not_equate_family_count_with_multi_source_confirmation():
+    c1 = case("1", "ABC", "RELATIVE_VALUE_ANOMALY")
+    c2 = case("2", "ABC", "BREAKEVEN_COMPRESSION")
+    c3 = case("3", "ABC", "LIQUIDITY_CONFIRMED")
+    c3["evidence"] = [{"name": "quote", "value": 1, "source": "TSETMC_CURRENT_QUOTE"}]
+    result = build_opportunity_evidence_clusters([c1, c2, c3])
+    cluster = result["clusters"][0]
+    assert cluster["independent_family_count"] == 3
+    assert cluster["source_diversity"] == "MULTI_SOURCE"
+    assert cluster["source_family_count"] == 2
+    assert result["summary"]["multi_source_cluster_count"] == 1
+    assert result["rules"]["family_count_is_not_source_independence"] is True
 
 def test_one_family_does_not_create_cluster():
     result = build_opportunity_evidence_clusters(
