@@ -1057,3 +1057,16 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Default Listener behavior is unchanged: it still returns the chunk count and uses the same Report Engine.
 - No Six-Block, FinalScore, ranking, Opportunity Shadow, or production output logic was changed.
 - Gate 6 remains pending actual execution of `python3 bale_runtime_verification.py` on the deployed Termux instance with the real Bale environment; GitHub CI cannot substitute for that runtime evidence.
+
+
+## Bale Receipt Integrity — 2026-09-22
+
+- Corrected bale_runtime_verification.py so the verifier explicitly requests Bale delivery receipts and fails closed when message_id is missing or the returned chat_id does not match the configured destination.
+- The evidence artifact now persists only non-secret receipts (message_id, chat_id) together with report/source SHA-256 values.
+- An intermediate regression failure exposed that the receipts field was not being persisted; this was fixed and the latest regression gate is green.
+- Final verified code commit: bce45e5e3023885727be5e8f6c4273c1cb70aede.
+- Regression run: 35706184245, job 106675574611, SUCCESS; 145 tests passed.
+- Live OptionSchool24 workflow: 35706184331, job 106675574751, SUCCESS.
+- Fresh live source in that run: optionschool_20260922_121155_364015.xlsx with source SHA-256 2ae00a71476ddf00908e725974d906f20ca149a6eb5b92587d49032fc3384682.
+- Gate 3 report audit: PASS; Opportunity Shadow: SUCCESS; Replay: REPLAY_MATCH, deterministic true; TSETMC evidence remains DISABLED because the source still lacks the required explicit option instrument ID.
+- The verified CI evidence still does not prove execution on the deployed Termux device.
