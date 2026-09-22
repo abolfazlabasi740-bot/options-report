@@ -22,7 +22,7 @@ def analyze_cross_snapshot_patterns(events:Iterable[dict[str,Any]]|dict[str,Any]
     groups=defaultdict(list)
     for e in rows:
         key=e.get("opportunity_key")
-        if key and e.get("state") not in {"RESOLVED"}:
+        if key:
             groups[str(key)].append(e)
     patterns=[]
     for key,items in sorted(groups.items()):
@@ -30,6 +30,9 @@ def analyze_cross_snapshot_patterns(events:Iterable[dict[str,Any]]|dict[str,Any]
         if len(items)<min_observations: continue
         states=[str(x.get("state")) for x in items]
         transitions=[str(x.get("transition")) for x in items]
+        active_items=[x for x in items if str(x.get("state")) != "RESOLVED"]
+        active_observation_count=len(active_items)
+        resolution_count=sum(str(x.get("state")) == "RESOLVED" for x in items)
         fams=sorted({f for x in items for f in (x.get("evidence_families") or [])})
         counts=dict(Counter(states))
         recurring=sum(s=="RECURRING" for s in states)
@@ -41,7 +44,9 @@ def analyze_cross_snapshot_patterns(events:Iterable[dict[str,Any]]|dict[str,Any]
             "opportunity_key":key,
             "instrument_id":items[-1].get("instrument_id"),
             "type":pattern_type,
-            "observation_count":len(items),
+            "observation_count":active_observation_count,
+            "timeline_event_count":len(items),
+            "resolution_count":resolution_count,
             "snapshots":[x.get("snapshot_id") for x in items],
             "states":states,
             "transitions":transitions,
@@ -60,6 +65,7 @@ def analyze_cross_snapshot_patterns(events:Iterable[dict[str,Any]]|dict[str,Any]
          "rules":{"minimum_observations":min_observations,
                   "source":"lifecycle_events_only","causal_inference":False,
                   "direction_inference":"DISABLED","score_change":"NONE",
-                  "missing_data_policy":"NO_ZERO_FILL"}}
+                  "missing_data_policy":"NO_ZERO_FILL",
+                  "resolution_events_preserved":True}}
     out["patterns_sha256"]=_hash(patterns)
     return out
