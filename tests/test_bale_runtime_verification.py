@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -13,13 +14,21 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
             root = Path(d)
             report = root / "latest_report.txt"
             audit = root / "latest_audit.json"
+            source_dir = root / "data"
+            source_dir.mkdir()
+            source = source_dir / "optionschool_test.xlsx"
             evidence = root / "bale_delivery_verification.json"
             report.write_text("REPORT\n", encoding="utf-8")
+            source.write_bytes(b"SOURCE")
+            source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+            report_hash = hashlib.sha256(report.read_bytes()).hexdigest()
             audit.write_text(
                 json.dumps(
                     {
                         "source_file": "optionschool_test.xlsx",
-                        "source_sha256": "source-hash",
+                        "source_sha256": source_hash,
+                        "source_sha256_recomputed": source_hash,
+                        "report_sha256": report_hash,
                         "generated_at": "2026-09-22T10:00:00+03:30",
                         "audit_integrity": {"status": "PASS"},
                     }
@@ -27,6 +36,9 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
+            source.write_bytes(b"SOURCE")
+            source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+            report_hash = hashlib.sha256(report.read_bytes()).hexdigest()
             with (
                 patch.object(verifier, "REPORT_PATH", report),
                 patch.object(verifier, "AUDIT_PATH", audit),
@@ -44,7 +56,7 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
             self.assertEqual(payload["status"], "SUCCESS")
             self.assertEqual(payload["chunks"], 2)
             self.assertEqual(payload["receipts"], [{"message_id": 101, "chat_id": 123}, {"message_id": 102, "chat_id": 123}])
-            self.assertEqual(payload["source_sha256"], "source-hash")
+            self.assertEqual(payload["source_sha256"], source_hash)
             self.assertFalse(payload["secrets_recorded"])
             self.assertNotIn("SECRET-TOKEN", evidence.read_text(encoding="utf-8"))
             send.assert_called_once_with("SECRET-TOKEN", "123", "REPORT\n", return_receipts=True)
@@ -54,9 +66,12 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
             root = Path(d)
             report = root / "latest_report.txt"
             audit = root / "latest_audit.json"
+            source_dir = root / "data"
+            source_dir.mkdir()
+            source = source_dir / "optionschool_test.xlsx"
             evidence = root / "bale_delivery_verification.json"
             report.write_text("REPORT\n", encoding="utf-8")
-            audit.write_text(json.dumps({"source_file": "optionschool_test.xlsx", "source_sha256": "source-hash", "audit_integrity": {"status": "PASS"}}), encoding="utf-8")
+            audit.write_text(json.dumps({"source_file": "optionschool_test.xlsx", "source_sha256": source_hash, "source_sha256_recomputed": source_hash, "report_sha256": report_hash, "audit_integrity": {"status": "PASS"}}), encoding="utf-8")
             with (
                 patch.object(verifier, "REPORT_PATH", report),
                 patch.object(verifier, "AUDIT_PATH", audit),
@@ -72,6 +87,9 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
             root = Path(d)
             report = root / "latest_report.txt"
             audit = root / "latest_audit.json"
+            source_dir = root / "data"
+            source_dir.mkdir()
+            source = source_dir / "optionschool_test.xlsx"
             evidence = root / "bale_delivery_verification.json"
             report.write_text("REPORT\n", encoding="utf-8")
             audit.write_text(json.dumps({"source_file": "optionschool_test.xlsx", "source_sha256": "source-hash", "audit_integrity": {"status": "PASS"}}), encoding="utf-8")
@@ -90,6 +108,9 @@ class BaleRuntimeVerificationTests(unittest.TestCase):
             root = Path(d)
             report = root / "latest_report.txt"
             audit = root / "latest_audit.json"
+            source_dir = root / "data"
+            source_dir.mkdir()
+            source = source_dir / "optionschool_test.xlsx"
             evidence = root / "bale_delivery_verification.json"
             report.write_text("REPORT\n", encoding="utf-8")
             audit.write_text(
