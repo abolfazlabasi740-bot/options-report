@@ -1027,3 +1027,22 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Bale transport tests now cover message-content preservation across chunks, multi-chunk POST delivery, and fail-closed handling of network errors.
 - The `گزارش`, `همه` and `کل` commands share the same global Top-15 report path.
 - This verifies repository/CI behavior only. Gate 6 is still not marked VERIFIED because actual deployed Termux execution and a real Bale delivery acknowledgement have not been captured on this commit.
+
+
+## Bale Runtime Evidence Tooling — 2026-09-22
+
+- Added `bale_runtime_verification.py` as a one-shot, evidence-preserving delivery verifier.
+- It does not run a second analysis engine and does not regenerate data; it sends the existing `output/latest_report.txt` produced by Report Engine.
+- Before sending, it requires `latest_audit.json` with `audit_integrity.status=PASS` and explicit source filename/SHA-256.
+- On success it writes `output/bale_delivery_verification.json` containing report SHA-256, source SHA-256, audit status, generation time and chunk count.
+- Token values are never written to the evidence artifact.
+- Runtime verification now also compiles the Bale transport and delivery-verification modules.
+
+## Current CI Verification — 2026-09-22
+
+- Commit: `3ec5da91247aad3e893f75e1006328eba06a1325`.
+- Regression workflow run: `35704198322`, job `106669091419`, SUCCESS.
+- Regression result: `142 tests`, all passed.
+- Live OptionSchool24 workflow run: `35704198237`, job `106669091168`, SUCCESS.
+- Live workflow completed schema audit, full V4.1 report, Gate 3 evidence generation and artifact upload successfully on the same commit.
+- These CI results verify the new runtime-evidence tooling at repository level; they do not constitute actual Termux/Bale delivery evidence.
