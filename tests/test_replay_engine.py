@@ -18,7 +18,6 @@ class ReplayEngineTests(unittest.TestCase):
         ])
         baseline = run_shadow(scored, "S1")
         result = verify_shadow_replay(scored, "S1", baseline_shadow=baseline)
-        print("REPLAY_DIAGNOSTIC", result)
         self.assertEqual(result["status"], "REPLAY_MATCH")
         self.assertTrue(result["baseline_match"])
         self.assertTrue(result["deterministic"])
