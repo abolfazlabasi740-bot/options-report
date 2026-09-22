@@ -183,7 +183,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
         }
     else:
         replay = verify_shadow_replay(
-            scored,
+            shadow_scored,
             snapshot_id,
             baseline_shadow=shadow,
             historical_previous=previous_history,
