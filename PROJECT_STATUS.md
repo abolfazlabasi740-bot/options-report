@@ -1080,3 +1080,16 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Regression verification for the orchestrator passed on commit `9572ffbd1816d81a9156b068e1ca768714cee72a`: run `35706552463`, job `106676761560`; all tests passed.
 - Live OptionSchool24 verification also passed on the same commit: run `35706552454`, job `106676761323`.
 - The orchestrator is repository-ready, but Gate 6 remains runtime-pending until it is executed on the deployed Termux instance and produces real Bale receipts.
+
+
+## Latest Verified Main — 2026-09-22
+
+- Latest verified code commit before this documentation update: ea7f4618dfb3596fc5d1749c03551a2570bcf770.
+- Regression workflow run 35720706997, job 106722691428: SUCCESS; 148 tests passed.
+- Live OptionSchool24 workflow run 35720706945, job 106722690022: SUCCESS.
+- Fresh live source: optionschool_20260922_144845_642981.xlsx.
+- Source SHA-256: 0909c3bea9c8e868f636c24166eefea31a8bec954ee5a37628dddb9a3fccdb08.
+- Gate 3 Audit: PASS; selected_count=15; Opportunity Shadow=SUCCESS.
+- Replay: REPLAY_MATCH; deterministic=true; both replay hashes identical.
+- TSETMC evidence remains DISABLED because the current live OptionSchool24 source still lacks the explicit option instrument ID required for exact identity mapping.
+- The latest Gate 6 hardening also passes repository regression. Runtime deployment and real Bale receipts are still not verified from the deployed Termux instance.
