@@ -39,7 +39,7 @@ def send_message(chat_id, text):
 def generate_report(command):
     source = download_optionschool()
 
-    if command in ("گزارش", "کل"):
+    if command in ("گزارش", "همه", "کل"):
         work = build_report(
             source,
             top_count=15,
