@@ -15,9 +15,8 @@ from pathlib import Path
 
 
 _CARD_RE = re.compile(
-    r"🔹s+(?P<rank>d+).s+(?P<symbol>.+?)
-"
-    r".*?🏆 امتیاز:s+(?P<score>d+(?:.d+)?)",
+    r"🔹\s+(?P<rank>\d+)\.\s+(?P<symbol>.+?)\n"
+    r".*?🏆 امتیاز:\s+(?P<score>\d+(?:\.\d+)?)",
     re.DOTALL,
 )
 
