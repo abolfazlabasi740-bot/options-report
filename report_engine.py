@@ -160,6 +160,7 @@ def build_report(path, top_count=None, symbol_prefix=None):
     replay = verify_shadow_replay(
         scored,
         snapshot_id,
+        baseline_shadow=shadow,
         historical_previous=previous_history,
         historical_current=current_history,
         historical_sequence=history_sequence,
@@ -396,13 +397,11 @@ def format_flags(flags):
 
 
 def save_report(work, source):
+    """Stage all report/audit artifacts and publish them only after integrity PASS."""
     report = format_report(work, source)
     output = ROOT / "output"
     output.mkdir(exist_ok=True)
-    report_file = output / "latest_report.txt"
-    temporary = output / "latest_report.txt.tmp"
-    temporary.write_text(report, encoding="utf-8")
-    temporary.replace(report_file)
+
     shadow = work.attrs.get("opportunity_shadow", {
         "status": "INSUFFICIENT_DATA",
         "engine_version": "OPP-SHADOW-1.0",
@@ -410,13 +409,6 @@ def save_report(work, source):
         "summary": {},
         "cases": [],
     })
-    shadow_file = output / "latest_opportunity_shadow.json"
-    shadow_temp = output / "latest_opportunity_shadow.json.tmp"
-    shadow_temp.write_text(
-        json.dumps(shadow, ensure_ascii=False, indent=2, allow_nan=False),
-        encoding="utf-8",
-    )
-    shadow_temp.replace(shadow_file)
 
     historical_diff = {
         "status": work.attrs.get("historical_snapshot", {}).get("status"),
@@ -426,30 +418,25 @@ def save_report(work, source):
         "diff_summary": work.attrs.get("historical_snapshot", {}).get("diff_summary", {}),
         "store_file": work.attrs.get("historical_snapshot", {}).get("store_file"),
     }
-    replay_file = output / "latest_replay_verification.json"
-    replay_file.write_text(
-        json.dumps(work.attrs.get("replay_verification", {}), ensure_ascii=False, indent=2, allow_nan=False),
-        encoding="utf-8",
-    )
-    history_diff_file = output / "latest_historical_diff.json"
-    history_diff_temp = output / "latest_historical_diff.json.tmp"
-    history_diff_temp.write_text(
-        json.dumps(historical_diff, ensure_ascii=False, indent=2, allow_nan=False),
-        encoding="utf-8",
-    )
-    history_diff_temp.replace(history_diff_file)
+
+    source_path = Path(source)
+    source_sha256 = hashlib.sha256(source_path.read_bytes()).hexdigest()
+    report_sha256 = hashlib.sha256(report.encode("utf-8")).hexdigest()
+    selected = json.loads(work.to_json(orient="records", force_ascii=False))
 
     audit_attrs = dict(work.attrs)
     audit_attrs.pop("opportunity_shadow", None)
+    audit_attrs.pop("pre_gate_rows", None)
+
     audit = {
         **audit_attrs,
         "historical_snapshot": {
             **historical_diff,
-            "diff_file": history_diff_file.name,
+            "diff_file": "latest_historical_diff.json",
         },
         "replay_verification": {
             **work.attrs.get("replay_verification", {}),
-            "artifact_file": replay_file.name,
+            "artifact_file": "latest_replay_verification.json",
         },
         "tsetmc_evidence": work.attrs.get("tsetmc_evidence", {
             "status": "NOT_ATTACHED",
@@ -461,24 +448,58 @@ def save_report(work, source):
             "engine_version": shadow.get("engine_version"),
             "snapshot_id": shadow.get("snapshot_id"),
             "summary": shadow.get("summary", {}),
-            "case_file": shadow_file.name,
+            "case_file": "latest_opportunity_shadow.json",
         },
         "generated_at": datetime.now(TEHRAN).isoformat(),
-        "source_file": Path(source).name,
-        "source_sha256": hashlib.sha256(Path(source).read_bytes()).hexdigest(),
+        "source_file": source_path.name,
+        "source_sha256": source_sha256,
+        "source_sha256_recomputed": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+        "report_sha256": report_sha256,
         "market_data_timestamp": None,
         "freshness_status": "UNVERIFIED_SOURCE_TIMESTAMP_MISSING",
         "selected_count": len(work),
-        "selected": json.loads(work.to_json(orient="records", force_ascii=False)),
+        "selected": selected,
     }
     audit["audit_integrity"] = verify_audit(audit)
     if audit["audit_integrity"]["status"] != "PASS":
         raise RuntimeError("Audit integrity verification failed")
-    audit_temp = output / "latest_audit.json.tmp"
-    audit_temp.write_text(json.dumps(audit, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
-    audit_temp.replace(output / "latest_audit.json")
-    return report
 
+    artifacts = {
+        "latest_report.txt": report.encode("utf-8"),
+        "latest_opportunity_shadow.json": json.dumps(
+            shadow, ensure_ascii=False, indent=2, allow_nan=False
+        ).encode("utf-8"),
+        "latest_replay_verification.json": json.dumps(
+            work.attrs.get("replay_verification", {}),
+            ensure_ascii=False, indent=2, allow_nan=False
+        ).encode("utf-8"),
+        "latest_historical_diff.json": json.dumps(
+            historical_diff, ensure_ascii=False, indent=2, allow_nan=False
+        ).encode("utf-8"),
+        "latest_audit.json": json.dumps(
+            audit, ensure_ascii=False, indent=2, allow_nan=False
+        ).encode("utf-8"),
+    }
+
+    temporary_paths = []
+    try:
+        for name, payload in artifacts.items():
+            tmp = output / (name + ".tmp")
+            tmp.write_bytes(payload)
+            temporary_paths.append(tmp)
+
+        for name in artifacts:
+            tmp = output / (name + ".tmp")
+            tmp.replace(output / name)
+    except Exception:
+        for tmp in temporary_paths:
+            try:
+                tmp.unlink()
+            except FileNotFoundError:
+                pass
+        raise
+
+    return report
 
 def main():
     parser = argparse.ArgumentParser(description="Generate V4.1.1 report without sending to Bale")
