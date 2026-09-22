@@ -744,3 +744,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Production scoring/ranking remains unchanged and network-independent by default.
 - Regression coverage was extended to prevent conflating explicit underlying identity with an attached underlying quote.
 - Repository CI status for the latest changes has not been observed; no CI PASS or Termux deployment is claimed.
+
+
+
+## Opportunity Intelligence Evidence Graph — 2026-09-22
+
+- Added `evidence_graph_shadow.py`, engine `EVIDENCE-GRAPH-SHADOW-1.0`.
+- The graph connects each Shadow case to its observed evidence, historical descriptive patterns and explicit Red Team challenges.
+- Each evidence node retains its upstream source label; no causal explanation or trade direction is added by the graph.
+- A deterministic `graph_sha256` is generated for the complete graph.
+- Opportunity Engine now returns the Evidence Graph alongside existing cases, explanations and attention allocation.
+- This is an evidence/audit layer only. It does not modify FinalScore, Six-Block weights, Production eligibility, ranking or Bale output.
+- The graph is designed to support later multi-family opportunity detection by proving which independent evidence families contributed to attention without turning that evidence into a hidden score.
