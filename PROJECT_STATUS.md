@@ -825,3 +825,17 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Deterministic event hashing is retained for audit/replay.
 - Regression coverage was added for new→persistent, resolve→recur, strength transition and explicit identity separation.
 - No production stock ranking, option ranking, Bale output or Termux execution is changed or claimed.
+
+
+## Equity Cross-Snapshot Pattern Intelligence — 2026-09-22
+
+- Added `equity_pattern_shadow.py`, engine `EQUITY-PATTERN-SHADOW-1.0`.
+- It analyzes append-only Equity opportunity lifecycle events across snapshots.
+- A pattern requires at least two observations of the same stable opportunity identity.
+- Descriptive pattern classes include repeated observation, recurring pattern, oscillating pattern, and persistent/strengthening pattern.
+- Resolved snapshots are retained as historical evidence and are not silently treated as missing observations.
+- The engine reports observed states, transitions, snapshots, evidence families and recurrence counts.
+- No causal conclusion, directional inference, score modification or ranking change is produced.
+- Deterministic `patterns_sha256` is generated.
+- Regression tests cover repeated patterns, recurrence, minimum observation requirements, determinism and direction/score isolation.
+- Integration into runtime orchestration remains deliberately separate until explicit lifecycle persistence is supplied; no live execution is claimed.
