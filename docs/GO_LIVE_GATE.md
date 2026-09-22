@@ -77,7 +77,7 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: previously verified on an older baseline; current V4.1.1 runtime must be re-verified after deployment.
+Status: CURRENT CODE/CI HARDENING VERIFIED; deployed runtime still pending. Regression run 35687931714 on commit 0588683b877323f702efdc7673d5cf464b8ce37e completed SUCCESS, including Bale transport tests. Live OptionSchool24 workflow 35687931728 on the same commit also completed SUCCESS. This does not substitute for actual Termux execution and Bale acknowledgement.
 
 ## Gate 7 — Cutover
 
