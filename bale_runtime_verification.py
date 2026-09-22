@@ -63,8 +63,13 @@ def main() -> None:
     started_at = datetime.now(timezone.utc).isoformat()
     try:
         receipts = send_message(token, chat_id, report_text, return_receipts=True)
-        if not receipts or any(not r.get("message_id") or r.get("chat_id") is None for r in receipts):
-            raise RuntimeError("Bale delivery receipt ناقص است")
+        if (not receipts or any(
+            not r.get("message_id")
+            or r.get("chat_id") is None
+            or str(r.get("chat_id")) != str(chat_id)
+            for r in receipts
+        )):
+            raise RuntimeError("Bale delivery receipt ناقص یا مربوط به مقصد دیگری است")
         chunks = len(receipts)
     except Exception as exc:
         evidence = {
