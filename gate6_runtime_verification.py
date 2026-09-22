@@ -22,6 +22,7 @@ OUTPUT = ROOT / "output"
 AUDIT = OUTPUT / "latest_audit.json"
 REPORT = OUTPUT / "latest_report.txt"
 BALE_EVIDENCE = OUTPUT / "bale_delivery_verification.json"
+RUNTIME_EVIDENCE = OUTPUT / "runtime_verification.json"
 GATE6_EVIDENCE = OUTPUT / "gate6_runtime_evidence.json"
 
 
@@ -50,12 +51,15 @@ def main() -> None:
     run_step("RUNTIME_VERIFICATION", [sys.executable, "runtime_verification.py"])
     run_step("BALE_DELIVERY_VERIFICATION", [sys.executable, "bale_runtime_verification.py"])
 
-    if not AUDIT.exists() or not REPORT.exists() or not BALE_EVIDENCE.exists():
+    if not AUDIT.exists() or not REPORT.exists() or not RUNTIME_EVIDENCE.exists() or not BALE_EVIDENCE.exists():
         raise RuntimeError("Gate 6 evidence artifacts are incomplete")
 
     audit = json.loads(AUDIT.read_text(encoding="utf-8"))
+    runtime = json.loads(RUNTIME_EVIDENCE.read_text(encoding="utf-8"))
     bale = json.loads(BALE_EVIDENCE.read_text(encoding="utf-8"))
 
+    if runtime.get("status") != "PASS":
+        raise RuntimeError("runtime_verification.json is not PASS")
     if (audit.get("audit_integrity") or {}).get("status") != "PASS":
         raise RuntimeError("latest_audit.json is not PASS")
     if bale.get("status") != "SUCCESS":
