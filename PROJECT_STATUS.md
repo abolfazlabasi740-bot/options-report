@@ -1227,3 +1227,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Gate ownership for Gates 2–7 is documented with required evidence and current state.
 - Current blockers remain: scoring parameter provenance, exact TSETMC identity, source freshness evidence, historical sensitivity/ablation, economic validation, and Gate 7.
 - No Six-Block weight, Overlay constant, eligibility threshold, ranking logic, TSETMC activation, or Bale delivery behavior was changed.
+
+
+## Master Engine Control Matrix — 2026-09-22
+
+- Added `docs/MASTER_ENGINE_CONTROL_MATRIX_V41.md` at commit `4a52451f3eeb42ed1c85466a2e7c48cb0e50bbf1`.
+- The Matrix consolidates Owner/Control, Input, Output, Gate, Evidence, Failure, Recovery and Authority for the full Engine organization.
+- Single-source-of-truth ownership is now explicit: Data owns source identity, Scoring owns FinalScore, Ranking owns ordering, Reporting owns presentation, Audit owns integrity evidence, Bale owns delivery, and Orchestrator/Governance own release/change control.
+- Recovery is explicitly upstream: downstream Engines may not repair or invent upstream data.
+- Gate 7 readiness explicitly separates repository, CI, real-source, deployed-runtime, distribution and economic/historical evidence classes.
+- No production scoring, ranking, eligibility, TSETMC activation, signal policy or Bale logic was changed.
