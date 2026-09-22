@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import time
 import requests
+import json
 from bale_transport import send_message as transport_send
 
 from report_engine import download_optionschool, build_report, save_report
@@ -11,11 +12,33 @@ from report_engine import download_optionschool, build_report, save_report
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
 REPORT_FILE = OUTPUT / "latest_report.txt"
+STATE_FILE = OUTPUT / "bale_listener_state.json"
 
 TOKEN = os.getenv("BALE_BOT_TOKEN", "").strip()
 CHAT_ID = os.getenv("BALE_CHAT_ID", "").strip()
 
 API = f"https://tapi.bale.ai/bot{TOKEN}"
+
+
+def load_offset():
+    if not STATE_FILE.exists():
+        return None
+    try:
+        payload = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        value = payload.get("next_offset")
+        return int(value) if value is not None else None
+    except (OSError, ValueError, TypeError):
+        raise RuntimeError("Bale listener state قابل خواندن نیست")
+
+
+def save_offset(next_offset):
+    OUTPUT.mkdir(exist_ok=True)
+    temporary = STATE_FILE.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps({"next_offset": int(next_offset)}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    temporary.replace(STATE_FILE)
 
 
 def normalize_command(text):
@@ -91,14 +114,14 @@ def main():
     print("نماد    -> 5 اختیار برتر همان نماد")
     print("====================================")
 
-    offset = None
+    offset = load_offset()
 
     while True:
         try:
             updates = get_updates(offset)
 
             for update in updates:
-                offset = update["update_id"] + 1
+                next_offset = int(update["update_id"]) + 1
 
                 message = (
                     update.get("message")
@@ -114,9 +137,13 @@ def main():
                 )
 
                 if not chat_id or not text:
+                    save_offset(next_offset)
+                    offset = next_offset
                     continue
 
                 if CHAT_ID and str(chat_id) != str(CHAT_ID):
+                    save_offset(next_offset)
+                    offset = next_offset
                     continue
 
                 print(
@@ -134,6 +161,8 @@ def main():
                     print(
                         f"REPORT_OK command={text}"
                     )
+                    save_offset(next_offset)
+                    offset = next_offset
 
                 except Exception as e:
                     print(
@@ -151,6 +180,9 @@ def main():
                             "ERROR_MESSAGE_SEND_FAILED:",
                             type(send_error).__name__,
                         )
+                    else:
+                        save_offset(next_offset)
+                        offset = next_offset
 
         except KeyboardInterrupt:
             print("\nLISTENER_STOPPED")
