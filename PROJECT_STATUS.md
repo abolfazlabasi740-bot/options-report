@@ -1154,3 +1154,23 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Gate 5: Shadow/Replay/Audit architecture verified on live source; economic opportunity-quality validation remains separate.
 - Gate 6: **CLOSED — deployed Termux + real Bale receipts**.
 - Gate 7: NOT CLOSED; final cutover still depends on the remaining identity, data-freshness, economic-validation and scoring-parameter-provenance gates.
+
+
+## Golden Output Baseline — 2026-09-22
+
+- A real live Gate 3 selected-output baseline was captured from source `optionschool_20260922_071052_767703.xlsx`.
+- Source SHA-256: `4252022bd88d2452d856c42bfcd65224e1af430161ad3072bacd925cbeb693fc`.
+- Baseline contains the exact Top-15 rank, symbol and FinalScore values from the audited live report.
+- Baseline status: Audit Integrity = PASS; Replay = REPLAY_MATCH; deterministic = true.
+- Fixture: `tests/fixtures/golden_gate3_20260922_selected.json`.
+- The fixture is a selected-output regression baseline, not a substitute for the full raw workbook.
+- Added `golden_output_validator.py` and `tests/test_golden_output_validator.py` to detect source/rank/symbol/score drift without changing the production ranking path.
+- This validator is evidence-only and is not wired into Report Engine or Bale delivery.
+
+## Current Development Priority
+
+1. Preserve Gate 6 deployed runtime closure.
+2. Close scoring-parameter provenance before changing any active Overlay constant.
+3. Build exact TSETMC identity evidence when an explicit option instrument ID becomes available; symbol inference remains prohibited.
+4. Use the Golden baseline for controlled ranking/output regression comparisons.
+5. Validate economic quality of Opportunity Intelligence separately from technical integrity.
