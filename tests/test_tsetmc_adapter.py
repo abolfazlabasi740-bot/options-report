@@ -68,7 +68,10 @@ class TSETMCAdapterTests(unittest.TestCase):
                 }})
             if "GetInstrumentInfo" in request.full_url:
                 return FakeResponse({"instrumentInfo": {}})
-            return FakeResponse({"closingPriceInfo": {"pDrCotVal": 100, "pClosing": 101}})
+            return FakeResponse({"closingPriceInfo": {
+                "pDrCotVal": 100, "pClosing": 101,
+                "dEven": 20260922, "hEven": 123456
+            }})
 
         row = TSETMCAdapter(
             base_url="https://example.test/api", retries=0, opener=opener
@@ -77,6 +80,8 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertEqual(row["underlying_id"], "BASE1")
         self.assertEqual(row["underlying_symbol"], "هرم")
         self.assertEqual(row["contract_type"], "CALL")
+        self.assertEqual(row["source_market_timestamp"], "2026-09-22T12:34:56")
+        self.assertEqual(row["source_market_timestamp_status"], "AVAILABLE")
 
     def test_canonical_does_not_infer_identity(self):
         def opener(request, timeout):
