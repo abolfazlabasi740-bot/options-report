@@ -139,7 +139,7 @@ Code existence, CI success, and Bale delivery are necessary operational evidence
 
 ## Current conclusion
 
-The operational reporter is deployed and verified. G7-2 now has real multi-workbook sensitivity evidence, but its closure remains pending artifact SHA/provenance reconciliation. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
+The operational reporter is deployed and verified. G7-2 is VERIFIED/CLOSED with reconciled artifact SHA/provenance evidence. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
 
 ## Continuation Audit — 2026-09-23
 
