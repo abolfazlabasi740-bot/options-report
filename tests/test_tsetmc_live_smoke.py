@@ -27,6 +27,8 @@ class TSETMCLiveSmokeTests(unittest.TestCase):
             self.assertEqual(payload["status"], "SUCCESS")
             self.assertEqual(payload["snapshot_sha256"], "abc123")
             self.assertTrue(payload["data_present"])
+            self.assertEqual(payload["explicit_ins_code_count"], 0)
+            self.assertTrue((target.with_suffix(".raw.json")).exists())
 
 
 if __name__ == "__main__":
