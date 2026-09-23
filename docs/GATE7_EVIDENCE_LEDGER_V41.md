@@ -275,3 +275,13 @@ The audit remediation exposed a secondary integrity issue: historical snapshot r
 - Regression coverage: 7884db3eac7a147cdd641ce805495195f0928bd7.
 - The intermediate regression run 35896620856 failed before this correction because the existing test invoked two scopes against the same fallback source ID and historical record. The failure was inspected from the actual job log; it was not a scoring assertion failure.
 - No Gate 7 status is changed by this correction. No CI success is claimed yet for the corrected head.
+
+## Audit Remediation CI Verification — 2026-09-23
+
+Corrected head `94c8800c76a592b62b384d4880e379a32b1c8993` passed all three validation workflows:
+
+- Regression Tests: run `35896794682` — `success`.
+- Gate 7 Control: run `35896794557` — `success`.
+- Live Schema Audit: run `35896794677` — `success`.
+
+This verifies the repository-level implementation/control boundary after the audit remediation. It does not by itself constitute live Termux evidence or close any open Gate 7 evidence requirement.
