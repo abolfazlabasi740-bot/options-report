@@ -213,3 +213,21 @@ The latest main head `b59e1b526e4796f92a86175d456cd5233e8a9e07` was rechecked th
 - These CI results validate repository regression/control boundaries only; they do not constitute Termux live TSETMC evidence.
 - The controlled Termux command remains the only pending runtime action for collecting the raw Option Market-Watch evidence needed for G7-3/G7-4.
 - No scoring, ranking, eligibility, TSETMC activation or Bale behavior was changed by this verification.
+
+
+## G7-3/G7-4 Termux Live Smoke Evidence — 2026-09-23
+
+User-provided Termux execution produced a real TSETMC Option Market-Watch response.
+
+- Status: `SUCCESS`
+- Test: `TSETMC_OPTION_MARKET_WATCH`
+- Adapter version: `1.0`
+- Retrieved at UTC: `2026-09-23T17:17:58.479447+00:00`
+- Source: `TSETMC`
+- Endpoint: `https://cdn.tsetmc.com/api/Instrument/GetInstrumentOptionMarketWatch/1`
+- Snapshot SHA-256: `8a1bf7720c812a3f80af1b3df8b0eeaa79db57e77701000174a4ed66d8435d65`
+- Data present: `true`
+- Raw evidence file: `option_market_watch.raw.json`
+- Explicit option `insCode` count: `0`
+
+Interpretation: the live source path is reachable and returned data, but this particular response exposed no explicit option instrument IDs under the accepted evidence fields. Therefore G7-4 exact identity is NOT closed and no identity inference is permitted. The retrieval timestamp proves live observation of the endpoint, but does not by itself prove a market observation timestamp (`dEven/hEven`); G7-3 therefore remains open for source-market timestamp evidence.
