@@ -99,7 +99,16 @@ Current live OptionSchool24 evidence does not expose the explicit option instrum
 Required evidence: exact option identifier, exact underlying identifier, endpoint/source, retrieval time, payload hash, normalized mapping.
 
 ### G7-5 — Economic Opportunity validation
-Status: OPEN
+Status: OPEN — VALIDATION PROTOCOL FROZEN
+
+A dedicated validation protocol has been added without introducing synthetic labels, new production thresholds, or ranking mutations.
+
+- Protocol: `docs/G7-5_OPPORTUNITY_VALIDATION_PROTOCOL.md`
+- Commit: `14aafd7ace775790a51f456c62f0e86783edd6bc`
+- The protocol freezes case-family definitions, independence requirements, unresolved-case handling, false-positive/false-negative retention, and the evidence package required for closure.
+- Current Opportunity Shadow `CONFIRMED/WATCH` statuses are explicitly not accepted as independent economic labels because they are derived from the same scored dataset under evaluation.
+
+Required for closure: at least one real retained dataset with independently sourced outcome labels and reproducible provenance. No synthetic validation labels will be created.
 
 Opportunity Shadow is technically executable and provenance-hardened, but technical execution is not economic validation.
 
