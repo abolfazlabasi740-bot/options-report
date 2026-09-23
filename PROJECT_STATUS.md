@@ -1267,3 +1267,16 @@ The next controlled change is to evaluate whether production Eligibility should 
 - These are evidence-only sensitivity measurements; they do not justify changing weights, thresholds, or economic direction.
 - G7-2 is CLOSED/VERIFIED; Termux evidence artifact SHA-256/provenance has been reconciled with the project ledger.
 - No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
+
+## Gate 7 Continuation Audit — 2026-09-23
+
+- G7-2 is VERIFIED with reconciled historical evidence artifacts; the earlier stale wording that described artifact reconciliation as pending is superseded by the Gate 7 Evidence Ledger.
+- G7-3 remains OPEN. TSETMC source-timestamp capture is implemented and tested, but no new live runtime evidence has been obtained in this audit.
+- G7-4 remains OPEN. Exact option and underlying identifiers are still required; symbol/prefix inference remains disabled.
+- G7-5 remains OPEN. The independent economic validation protocol is frozen, but independently sourced observed outcome labels are still absent.
+- G7-1 remains OPEN. The active Overlay numeric constants are observed in code, but no authoritative provenance/approval record has been found.
+- The TSETMC live-smoke workflow remains manual (workflow_dispatch). No live TSETMC workflow run is claimed from this audit because the available GitHub integration does not expose workflow dispatch.
+- Direct TSETMC access from the current execution environment failed at DNS resolution. This is recorded as a connectivity limitation only; no market-data result was inferred.
+- tsetmc_evidence_collector.py was inspected and requires explicit option instrument identity and explicit underlying_id; identity inference remains disabled.
+- No scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed by this audit.
+- Gate 7 final release remains blocked by the open evidence gates.
