@@ -15,7 +15,7 @@ ENGINE_VERSION = "TSETMC-SHADOW-INTEGRATION-1.0"
 
 
 def _find_option_id_column(df: pd.DataFrame) -> str | None:
-    aliases = ("insCode", "InsCode", "instrument_id", "InstrumentID", "کد معاملاتی")
+    aliases = ("insCode", "InsCode", "instrument_id", "InstrumentID", "کد نماد", "کد معاملاتی")
     for name in aliases:
         if name in df.columns:
             return name
