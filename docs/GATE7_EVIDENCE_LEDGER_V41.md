@@ -231,3 +231,24 @@ User-provided Termux execution produced a real TSETMC Option Market-Watch respon
 - Explicit option `insCode` count: `0`
 
 Interpretation: the live source path is reachable and returned data, but this particular response exposed no explicit option instrument IDs under the accepted evidence fields. Therefore G7-4 exact identity is NOT closed and no identity inference is permitted. The retrieval timestamp proves live observation of the endpoint, but does not by itself prove a market observation timestamp (`dEven/hEven`); G7-3 therefore remains open for source-market timestamp evidence.
+
+
+## G7-4 Exact Identity Evidence — 2026-09-23
+
+The real Termux raw Option Market-Watch payload has now been inspected. The response contains an explicit structured option record under `instrumentOptMarketWatch` with separate fields `insCode_P`, `insCode_C`, and `uaInsCode`, plus explicit option/underlying metadata.
+
+Observed live evidence includes:
+- `instrumentOptMarketWatch` list length: 541.
+- First record explicit option identifiers: `insCode_P=68991773475135927`, `insCode_C=62444611500832644`.
+- First record explicit underlying identifier: `uaInsCode=17914401175772326`.
+- First record explicit source symbols: `lVal18AFC_P=طهرم7050`, `lVal18AFC_C=ضهرم7050`, `lval30_UA=اهرم`.
+- First record explicit strike: `strikePrice=20000`.
+- First record explicit expiry fields: `beginDate=20260725`, `endDate=20261021`, `remainedDay=28`.
+- No symbol-prefix inference was used to obtain these identifiers; they are directly returned fields.
+
+The smoke utility was updated to capture `insCode_P`, `insCode_C`, and `uaInsCode` as explicit identity evidence and to retain the complete raw response. The production scoring/ranking path remains unchanged.
+
+- Smoke implementation commit: `6cfd4d40c962dfee4777eab3e60979892054349e`.
+- Regression test commit: `f28c87a63db2d2e9933cc0bb53f92827f21162b4`.
+
+Boundary: this evidence establishes that TSETMC returns explicit option and underlying identifiers in the live Option Market-Watch response. It does not by itself authorize production TSETMC activation, nor does it establish a market observation timestamp or economic outcome label. G7-3 remains OPEN pending explicit source-market timestamp/freshness evidence; G7-5 and G7-1 remain OPEN.
