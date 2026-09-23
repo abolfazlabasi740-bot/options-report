@@ -50,3 +50,13 @@ Build the TSETMC-to-OptionSchool24 mapping layer with four explicit outcomes:
 - no match
 
 Only exact evidence-backed matches may enter the canonical merged snapshot.
+
+
+## Option Market-Watch Evidence Boundary — 2026-09-23
+
+- Added `TSETMCAdapter.option_market_watch(flow=1)` as a raw, evidence-preserving source method.
+- Endpoint: `Instrument/GetInstrumentOptionMarketWatch/{flow}`.
+- The method retains source, endpoint, retrieval timestamp, payload SHA-256 and the unmodified response payload.
+- No option-side field is normalized from this endpoint yet; explicit field mapping remains a separate evidence task.
+- A regression test verifies URL construction, payload preservation and deterministic evidence-hash presence.
+- This method is non-blocking and does not modify scoring, ranking, eligibility or Bale output.
