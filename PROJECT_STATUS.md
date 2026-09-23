@@ -1288,3 +1288,18 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Added regression coverage for URL construction and payload/evidence preservation.
 - This is an evidence-only source boundary. It does not activate TSETMC data in scoring/ranking and does not change Bale behavior.
 - G7-4 remains OPEN until a real response supplies sufficient exact option/underlying identity evidence.
+
+
+## Latest Repository Audit — 2026-09-23
+
+- Main head verified: `52243666d974cf6d67ca77e2fbf7516a93268e55`.
+- The latest change records the TSETMC option market-watch smoke expansion in the Gate 7 ledger.
+- The latest adapter/test/smoke/workflow commits were inspected; no production scoring, ranking, eligibility, TSETMC activation or Bale logic was changed.
+- Combined status/workflow lookup for the new TSETMC commits returned no associated checks from the available GitHub integration; CI success is therefore not claimed for those commits.
+- The TSETMC smoke workflow remains `workflow_dispatch` only, and the available GitHub integration does not expose workflow dispatch.
+- G7-3 remains OPEN pending live source timestamp evidence and an approved freshness policy.
+- G7-4 remains OPEN pending exact option and underlying identity evidence.
+- G7-5 remains OPEN pending independently sourced economic outcome labels.
+- G7-1 remains OPEN pending authoritative provenance for active Overlay parameters.
+- G7-2 remains VERIFIED/CLOSED with reconciled historical evidence artifacts.
+- Gate 7 remains blocked by the unresolved evidence gates; no production Signal/Buy/Sell behavior is enabled.
