@@ -191,3 +191,13 @@ A raw option-market-watch source boundary was added to improve the path toward G
 - Repository evidence still shows the live OptionSchool24 report path uses source-local symbol identity because no explicit TSETMC option instrument ID has been recorded in the live path.
 - The Option Market-Watch adapter preserves raw `insCode` when present, but no real live response has been obtained and retained in this audit.
 - G7-4 remains OPEN. No option or underlying identity was inferred or promoted.
+
+
+## G7-4 Live Evidence Capture Hardening — 2026-09-23
+
+- The TSETMC live smoke utility was hardened to retain the raw Option Market-Watch response as a sibling evidence artifact and to count/list only explicitly returned `insCode`/instrument-ID fields.
+- No symbol, prefix, strike, expiry, CALL/PUT, or underlying identity is inferred by this utility.
+- Code commit: `83c6b987a05f473293e5f44795ad17629a219053`.
+- Test commit: `e7e9def5a1961639e0531e82dd6a346bed79329a`.
+- Current GitHub combined-status lookup for both commits returned an empty status list; CI success is not claimed.
+- This hardening makes the next real Termux smoke execution capable of producing the raw evidence required to advance G7-4 and potentially G7-3, without activating TSETMC in production scoring.
