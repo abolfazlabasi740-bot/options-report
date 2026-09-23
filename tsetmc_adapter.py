@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import time
+from datetime import datetime
 from dataclasses import dataclass
 from typing import Any, Callable
 from urllib.parse import quote
@@ -163,6 +164,25 @@ class TSETMCAdapter:
                     return value
             return None
 
+        # TSETMC closingPriceInfo carries dEven (YYYYMMDD) and hEven (HHMMSS).
+        # This is source-observation time, not adapter retrieval time and not
+        # a guessed session-close timestamp. Preserve it only when both fields
+        # are explicitly present and valid.
+        source_market_timestamp = None
+        source_market_timestamp_status = "UNAVAILABLE"
+        try:
+            d_even = int(quote_data.get("dEven"))
+            h_even = int(quote_data.get("hEven"))
+            hh = h_even // 10000
+            mm = (h_even // 100) % 100
+            ss = h_even % 100
+            source_market_timestamp = datetime.strptime(
+                f"{d_even:08d} {hh:02d}:{mm:02d}:{ss:02d}", "%Y%m%d %H:%M:%S"
+            ).isoformat()
+            source_market_timestamp_status = "AVAILABLE"
+        except (TypeError, ValueError):
+            pass
+
         return {
             "instrument_id": str(ins_code),
             "symbol": first(
@@ -195,5 +215,7 @@ class TSETMCAdapter:
             "volume": first(quote_data.get("qTotTran5J"), quote_data.get("zTotTran")),
             "trade_value": quote_data.get("qTotCap"),
             "trade_count": quote_data.get("zTotTran"),
+            "source_market_timestamp": source_market_timestamp,
+            "source_market_timestamp_status": source_market_timestamp_status,
             "source_refs": {"identity": identity, "info": info, "quote": quote},
         }
