@@ -1280,3 +1280,11 @@ The next controlled change is to evaluate whether production Eligibility should 
 - tsetmc_evidence_collector.py was inspected and requires explicit option instrument identity and explicit underlying_id; identity inference remains disabled.
 - No scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed by this audit.
 - Gate 7 final release remains blocked by the open evidence gates.
+
+## TSETMC Option Market-Watch Evidence Boundary — 2026-09-23
+
+- Added a raw `Instrument/GetInstrumentOptionMarketWatch/{flow}` adapter method for evidence collection.
+- The method preserves the source endpoint, retrieval timestamp, payload SHA-256 and raw response without inferring option identity fields.
+- Added regression coverage for URL construction and payload/evidence preservation.
+- This is an evidence-only source boundary. It does not activate TSETMC data in scoring/ranking and does not change Bale behavior.
+- G7-4 remains OPEN until a real response supplies sufficient exact option/underlying identity evidence.
