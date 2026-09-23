@@ -285,3 +285,17 @@ Corrected head `94c8800c76a592b62b384d4880e379a32b1c8993` passed all three valid
 - Live Schema Audit: run `35896794677` — `success`.
 
 This verifies the repository-level implementation/control boundary after the audit remediation. It does not by itself constitute live Termux evidence or close any open Gate 7 evidence requirement.
+
+
+## G7-4 Adapter Normalization and CI Verification — 2026-09-23
+
+The TSETMC adapter now provides an evidence-only normalized record layer preserving explicit Option Market-Watch identity fields (insCode_P, insCode_C, uaInsCode) together with explicit source metadata. This layer does not infer identity and is not connected to production scoring/ranking.
+
+- Adapter implementation: ef5151c9b3b9ca160c9e37606123812eca798317.
+- The first added regression test was rejected by CI because it referenced a nonexistent _adapter helper. The failure was inspected from the actual run logs.
+- Corrected test/removal commit: 4d0027a3ba38dcf258c6b4294f58d74feedd702e.
+- Regression Tests: 35902280979 — success.
+- Gate 7 Control: 35902280876 — success.
+- Live Schema Audit: 35902280821 — success.
+
+The repository control boundary is green on the corrected head. This does not close G7-4: exact OptionSchool-row to TSETMC option ID to explicit uaInsCode to exact underlying quote remains to be proven on the deployed/live path. G7-3 freshness and G7-5 economic validation remain open.
