@@ -64,7 +64,14 @@ def map_option_rows(
         ins_id = _clean(record.get("instrument_id") or record.get("insCode"))
         symbol = _clean(record.get("symbol") or record.get("lVal18AFC"))
         if ins_id:
-            records.append({"instrument_id": ins_id, "symbol": symbol})
+            records.append({
+                "instrument_id": ins_id,
+                "symbol": symbol,
+                "contract_type": _clean(record.get("contract_type")),
+                "underlying_id": _clean(record.get("underlying_id")),
+                "strike": _clean(record.get("strike")),
+                "expiry": _clean(record.get("expiry") or record.get("end_date")),
+            })
 
     by_id: dict[str, list[dict[str, str | None]]] = {}
     by_symbol: dict[str, list[dict[str, str | None]]] = {}
