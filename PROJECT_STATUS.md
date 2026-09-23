@@ -1325,3 +1325,13 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Test commit: `e7e9def5a1961639e0531e82dd6a346bed79329a`.
 - Current GitHub combined-status lookup for both commits returned an empty status list; CI success is not claimed.
 - This hardening makes the next real Termux smoke execution capable of producing the raw evidence required to advance G7-4 and potentially G7-3, without activating TSETMC in production scoring.
+
+
+## Continuation Verification — 2026-09-23
+
+- Main head verified at `b59e1b526e4796f92a86175d456cd5233e8a9e07`.
+- GitHub Actions regression run `35892765390`: `success`.
+- GitHub Actions Gate 7 control run `35892765197`: `success`.
+- These are repository/CI evidence only and do not prove Termux deployment or live TSETMC access.
+- The next runtime evidence step remains the controlled command in `docs/G7-4_TERMUX_LIVE_EXECUTION.md`.
+- G7-3/G7-4 remain OPEN until real source evidence is captured; no identity or market timestamp is inferred.
