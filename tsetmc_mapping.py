@@ -69,6 +69,7 @@ def map_option_rows(
                 "symbol": symbol,
                 "contract_type": _clean(record.get("contract_type")),
                 "underlying_id": _clean(record.get("underlying_id")),
+                "underlying_symbol": _clean(record.get("underlying_symbol") or record.get("underlyingSymbol") or record.get("lval30_UA")),
                 "strike": _clean(record.get("strike")),
                 "expiry": _clean(record.get("expiry") or record.get("end_date")),
             })
