@@ -1248,6 +1248,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
 
 
+## G7-2 Historical Sensitivity Evidence Closure — 2026-09-23
+
+- G7-2 is now **VERIFIED/CLOSED** after reconciliation of the Termux evidence artifact hashes.
+- Historical evidence run: 35 files/sheets; 35 sensitivity runs OK; 0 unresolved.
+- Evidence artifact SHA-256: `g7_2_historical_sensitivity_evidence.json` = `702ed0de3a68abd2fc86be51165c29a64c9b02241857abcd1ba95d7059fe02fc`.
+- Evidence artifact SHA-256: `g7_2_optionschool24_historical_evidence.json` = `d669d721de052c58a7b65b621759fe714fce1743553d99fb14123b4582fa3a5d`.
+- The evidence remains sensitivity/ablation evidence only and does not justify changing Six-Block weights, thresholds, scoring directions or production ranking.
+- No production scoring, ranking, eligibility, TSETMC activation, Signal policy or Bale behavior was changed.
+
 ## G7-2 Historical Sensitivity Evidence — 2026-09-23
 
 - Termux generated six-block sensitivity evidence across 35 historical OptionSchool24 workbooks/sheets.
@@ -1256,5 +1265,5 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Aggregate mean score delta: Liquidity 3.603773; Valuation 2.614506; Payoff 2.127964; Time 1.988990; Greeks 1.151357; Market 1.755308.
 - Aggregate mean max score delta: Liquidity 11.132857; Valuation 9.042000; Payoff 8.500000; Time 7.409714; Greeks 4.170286; Market 6.042000.
 - These are evidence-only sensitivity measurements; they do not justify changing weights, thresholds, or economic direction.
-- G7-2 remains closure-pending until the Termux evidence artifacts and their SHA-256/provenance are reconciled with repository evidence.
+- G7-2 is CLOSED/VERIFIED; Termux evidence artifact SHA-256/provenance has been reconciled with the project ledger.
 - No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
