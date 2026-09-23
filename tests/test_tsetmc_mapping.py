@@ -27,6 +27,20 @@ class TSETMCMappingTests(unittest.TestCase):
         self.assertEqual(result[0].status, EXACT)
         self.assertEqual(len(exact_only(result)), 1)
 
+    def test_exact_mapping_preserves_explicit_option_metadata(self):
+        options = pd.DataFrame([{"نماد": "ضهرم7050", "insCode": "C456"}])
+        records = [{
+            "instrument_id": "C456",
+            "symbol": "ضهرم7050",
+            "contract_type": "CALL",
+            "underlying_id": "UA789",
+            "strike": 20000,
+            "end_date": "20261021",
+        }]
+        result = map_option_rows(options, records)
+        self.assertEqual(result[0].status, EXACT)
+        self.assertEqual(result[0].instrument_id, "C456")
+
     def test_symbol_collision_is_ambiguous(self):
         options = pd.DataFrame([{"نماد": "نماد"}])
         records = [
