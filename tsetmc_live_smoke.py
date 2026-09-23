@@ -12,6 +12,20 @@ from pathlib import Path
 from tsetmc_adapter import TSETMCAdapter
 
 
+def _explicit_ins_codes(value):
+    """Collect only explicitly returned insCode/instrument_id fields; never infer from symbols."""
+    found = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in {"insCode", "InsCode", "instrument_id", "InstrumentID"} and item not in (None, ""):
+                found.append(str(item))
+            found.extend(_explicit_ins_codes(item))
+    elif isinstance(value, list):
+        for item in value:
+            found.extend(_explicit_ins_codes(item))
+    return list(dict.fromkeys(found))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=Path("output/tsetmc_live_smoke.json"))
@@ -27,6 +41,13 @@ def main() -> None:
         result = adapter.market_overview(flow=args.flow)
         test_name = "TSETMC_MARKET_OVERVIEW"
 
+    raw_evidence_path = args.output.with_suffix(".raw.json")
+    raw_evidence_path.write_text(
+        json.dumps(result.get("data"), ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
+    explicit_ins_codes = _explicit_ins_codes(result.get("data"))
+
     payload = {
         "status": "SUCCESS",
         "test": test_name,
@@ -36,6 +57,9 @@ def main() -> None:
         "endpoint": result.get("endpoint"),
         "snapshot_sha256": result.get("snapshot_sha256"),
         "data_present": result.get("data") is not None,
+        "raw_evidence_file": raw_evidence_path.name,
+        "explicit_ins_code_count": len(explicit_ins_codes),
+        "explicit_ins_codes": explicit_ins_codes,
     }
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
