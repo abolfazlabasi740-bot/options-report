@@ -12,18 +12,33 @@ from pathlib import Path
 from tsetmc_adapter import TSETMCAdapter
 
 
-def _explicit_ins_codes(value):
-    """Collect only explicitly returned insCode/instrument_id fields; never infer from symbols."""
-    found = []
+def _explicit_instrument_evidence(value):
+    """Collect only explicit option/underlying IDs returned by the source; never infer identity."""
+    option_records = []
+    explicit_ids = []
     if isinstance(value, dict):
+        if "insCode_P" in value or "insCode_C" in value:
+            option_records.append({
+                "insCode_P": str(value["insCode_P"]) if value.get("insCode_P") not in (None, "") else None,
+                "insCode_C": str(value["insCode_C"]) if value.get("insCode_C") not in (None, "") else None,
+                "uaInsCode": str(value["uaInsCode"]) if value.get("uaInsCode") not in (None, "") else None,
+            })
         for key, item in value.items():
-            if key in {"insCode", "InsCode", "instrument_id", "InstrumentID"} and item not in (None, ""):
-                found.append(str(item))
-            found.extend(_explicit_ins_codes(item))
+            if key in {
+                "insCode", "InsCode", "instrument_id", "InstrumentID",
+                "insCode_P", "insCode_C", "uaInsCode"
+            } and item not in (None, ""):
+                explicit_ids.append(str(item))
+            option_records.extend(_explicit_instrument_evidence(item)["option_records"])
     elif isinstance(value, list):
         for item in value:
-            found.extend(_explicit_ins_codes(item))
-    return list(dict.fromkeys(found))
+            nested = _explicit_instrument_evidence(item)
+            explicit_ids.extend(nested["explicit_ids"])
+            option_records.extend(nested["option_records"])
+    return {
+        "explicit_ids": list(dict.fromkeys(explicit_ids)),
+        "option_records": option_records,
+    }
 
 
 def main() -> None:
@@ -46,12 +61,14 @@ def main() -> None:
         json.dumps(result.get("data"), ensure_ascii=False, indent=2, allow_nan=False),
         encoding="utf-8",
     )
-    explicit_ins_codes = _explicit_ins_codes(result.get("data"))
+    evidence = _explicit_instrument_evidence(result.get("data"))
+    explicit_ins_codes = evidence["explicit_ids"]
+    option_records = evidence["option_records"]
 
     payload = {
         "status": "SUCCESS",
         "test": test_name,
-        "adapter_version": "1.0",
+        "adapter_version": "1.1",
         "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
         "source": result.get("source"),
         "endpoint": result.get("endpoint"),
@@ -60,6 +77,8 @@ def main() -> None:
         "raw_evidence_file": raw_evidence_path.name,
         "explicit_ins_code_count": len(explicit_ins_codes),
         "explicit_ins_codes": explicit_ins_codes,
+        "explicit_option_record_count": len(option_records),
+        "explicit_option_records": option_records,
     }
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
