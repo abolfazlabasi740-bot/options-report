@@ -33,7 +33,9 @@ def _explicit_instrument_evidence(value):
                 "insCode_P", "insCode_C", "uaInsCode"
             } and item not in (None, ""):
                 explicit_ids.append(str(item))
-            option_records.extend(_explicit_instrument_evidence(item)["option_records"])
+            nested = _explicit_instrument_evidence(item)
+            explicit_ids.extend(nested["explicit_ids"])
+            option_records.extend(nested["option_records"])
     elif isinstance(value, list):
         for item in value:
             nested = _explicit_instrument_evidence(item)
