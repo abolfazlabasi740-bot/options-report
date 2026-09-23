@@ -118,5 +118,28 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertEqual(len(result["snapshot_sha256"]), 64)
 
 
+    def test_option_market_watch_records_preserve_explicit_identity(self):
+        adapter = self._adapter({
+            "instrumentOptMarketWatch": [{
+                "insCode_P": "P123",
+                "insCode_C": "C456",
+                "uaInsCode": "UA789",
+                "lVal18AFC_P": "طهرم7050",
+                "lVal18AFC_C": "ضهرم7050",
+                "lval30_UA": "اهرم",
+                "strikePrice": 20000,
+                "beginDate": "20260725",
+                "endDate": "20261021",
+                "remainedDay": 28,
+            }]
+        })
+        result = adapter.option_market_watch_records(flow=1)
+        self.assertEqual(result["record_count"], 1)
+        self.assertEqual(result["records"][0]["option_put_id"], "P123")
+        self.assertEqual(result["records"][0]["option_call_id"], "C456")
+        self.assertEqual(result["records"][0]["underlying_id"], "UA789")
+        self.assertEqual(result["records"][0]["strike"], 20000)
+        self.assertEqual(result["records"][0]["end_date"], "20261021")
+
 if __name__ == "__main__":
     unittest.main()
