@@ -201,3 +201,15 @@ A raw option-market-watch source boundary was added to improve the path toward G
 - Test commit: `e7e9def5a1961639e0531e82dd6a346bed79329a`.
 - Current GitHub combined-status lookup for both commits returned an empty status list; CI success is not claimed.
 - This hardening makes the next real Termux smoke execution capable of producing the raw evidence required to advance G7-4 and potentially G7-3, without activating TSETMC in production scoring.
+
+
+## Continuation CI Verification — 2026-09-23
+
+The latest main head `b59e1b526e4796f92a86175d456cd5233e8a9e07` was rechecked through GitHub Actions.
+
+- `regression-tests`: run `35892765390` — completed `success`.
+- `gate7-control`: run `35892765197` — completed `success`.
+- The main branch now points to `b59e1b526e4796f92a86175d456cd5233e8a9e07`.
+- These CI results validate repository regression/control boundaries only; they do not constitute Termux live TSETMC evidence.
+- The controlled Termux command remains the only pending runtime action for collecting the raw Option Market-Watch evidence needed for G7-3/G7-4.
+- No scoring, ranking, eligibility, TSETMC activation or Bale behavior was changed by this verification.
