@@ -1,6 +1,6 @@
 # Gate 7 Evidence Ledger — V4.1
 
-Date: 2026-09-22
+Date: 2026-09-23
 
 ## Verified evidence
 
@@ -21,11 +21,41 @@ The active V4 Overlay constants are observed from production code but do not yet
 Required: evidence source for each affected numeric parameter family. No guessed replacement values.
 
 ### G7-2 — Historical sensitivity / ablation
-Status: OPEN — IMPLEMENTATION READY
+Status: EVIDENCE COLLECTED — CLOSURE PENDING ARTIFACT HASH/PROVENANCE
 
-An evidence-only implementation now exists in historical_sensitivity_audit.py with regression coverage. It reuses the canonical V4.1.1 shadow scorer and measures one-block-at-a-time Top-N overlap, rank changes and score deltas without changing Production FinalScore, eligibility, ranking, report or Bale output.
+The evidence-only implementation reuses the canonical V4.1.1 shadow scorer and performs one-block-at-a-time ablation. It does not modify Production FinalScore, eligibility, ranking, report or Bale output.
 
-Required for closure: real historical source files, SHA-256, deterministic reruns, block/overlay sensitivity measurements, and retained unresolved cases.
+Termux evidence run:
+- Files: 35
+- Sheets: 35
+- Sensitivity OK: 35
+- Unresolved: 0
+- Top-N: 15
+- Source period: historical OptionSchool24 workbooks already present in the project; no new market session is required while the market is closed.
+
+Aggregate sensitivity evidence across 35 records:
+
+| Block | Mean Top-15 overlap | Mean rank changes | Mean max score delta | Mean score delta |
+|---|---:|---:|---:|---:|
+| Liquidity | 6.400000 | 449.142857 | 11.132857 | 3.603773 |
+| Valuation | 10.000000 | 445.285714 | 9.042000 | 2.614506 |
+| Payoff | 11.228571 | 442.485714 | 8.500000 | 2.127964 |
+| Time | 11.514286 | 442.371429 | 7.409714 | 1.988990 |
+| Greeks | 13.085714 | 432.000000 | 4.170286 | 1.151357 |
+| Market | 12.600000 | 443.114286 | 6.042000 | 1.755308 |
+
+Ranges retained from the same run:
+
+- Liquidity: overlap 5–9; rank changes 237–472; max delta 10.26–12.22; mean delta 3.412690–4.033709.
+- Valuation: overlap 8–13; rank changes 228–472; max delta 8.13–9.93; mean delta 2.347813–2.953458.
+- Payoff: overlap 10–13; rank changes 227–466; max delta 8.14–9.36; mean delta 2.058977–2.550192.
+- Time: overlap 8–12; rank changes 232–468; max delta 6.57–9.00; mean delta 1.725427–2.273042.
+- Greeks: overlap 11–14; rank changes 215–461; max delta 3.52–4.31; mean delta 1.088222–1.216261.
+- Market: overlap 11–13; rank changes 229–470; max delta 5.24–6.43; mean delta 1.709147–2.068159.
+
+Interpretation boundary: these are sensitivity/ablation measurements only. They do not establish that any block, weight or economic direction is correct, optimal, predictive, or causally important.
+
+Closure remains pending because the repository does not yet contain the two Termux-generated evidence artifacts and their SHA-256/provenance. The existing project rule requiring real historical source files, SHA-256, deterministic reruns, sensitivity measurements and retained unresolved cases remains in force.
 
 The golden Gate 3 fixture is an output-regression baseline only; it is not historical economic validation.
 
@@ -35,6 +65,8 @@ Status: OPEN
 The current OptionSchool24 workbook path does not establish an authoritative market timestamp. Download time must not be treated as market time.
 
 Required: source market timestamp or authoritative endpoint timestamp, with explicit unknown/stale handling.
+
+Market-closure note: the absence of a new trading session does not itself create a market timestamp; it only means no new traded-market observation is expected during the closure interval.
 
 ### G7-4 — Exact TSETMC identity
 Status: OPEN
@@ -83,4 +115,4 @@ Code existence, CI success, and Bale delivery are necessary operational evidence
 
 ## Current conclusion
 
-The operational reporter is deployed and verified. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
+The operational reporter is deployed and verified. G7-2 now has real multi-workbook sensitivity evidence, but its closure remains pending artifact SHA/provenance reconciliation. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
