@@ -104,6 +104,19 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertIsNone(row["expiry"])
         self.assertIsNone(row["strike"])
 
+    def test_option_market_watch_preserves_raw_payload_and_evidence(self):
+        def opener(request, timeout):
+            self.assertIn("/Instrument/GetInstrumentOptionMarketWatch/1", request.full_url)
+            return FakeResponse({"optionMarketWatch": [{"insCode": "OPT1"}]})
+
+        result = TSETMCAdapter(
+            base_url="https://example.test/api", retries=0, opener=opener
+        ).option_market_watch(1)
+
+        self.assertEqual(result["source"], "TSETMC")
+        self.assertEqual(result["data"]["optionMarketWatch"][0]["insCode"], "OPT1")
+        self.assertEqual(len(result["snapshot_sha256"]), 64)
+
 
 if __name__ == "__main__":
     unittest.main()
