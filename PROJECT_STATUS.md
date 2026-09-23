@@ -1397,3 +1397,19 @@ The corrected audit-remediation head `94c8800c76a592b62b384d4880e379a32b1c8993` 
 - The corrected implementation therefore has repository-level regression/control/schema validation evidence.
 - This CI evidence does not constitute Termux deployment evidence and does not close G7-1, G7-3, G7-4 or G7-5.
 - The scoped-report correction and source-wide historical snapshot correction remain the active implementation.
+
+
+## TSETMC Option-Market-Watch Adapter Normalization — 2026-09-23
+
+The adapter now exposes a normalized evidence-only record layer for the explicit TSETMC Option Market-Watch fields insCode_P, insCode_C, uaInsCode, symbols, strike and expiry. No symbol/prefix inference is performed and the production scoring/ranking path remains unchanged.
+
+- Adapter implementation commit: ef5151c9b3b9ca160c9e37606123812eca798317.
+- Initial regression test commit: 80b23c257f24fb2cdca17d089aeaa3b504c82fd9 failed because the test referenced a nonexistent _adapter helper; this was identified from the actual CI log.
+- Corrected test commit: 4d0027a3ba38dcf258c6b4294f58d74feedd702e.
+- Regression Tests: run 35902280979 — completed success.
+- Gate 7 Control: run 35902280876 — completed success.
+- Live Schema Audit: run 35902280821 — completed success.
+
+The failed intermediate runs 35902257333 and 35902257321 are not treated as evidence against the corrected head because they executed commit 1c55d73a4b646c7deb1c61271049cbb5b9b59771, before the obsolete duplicate test was removed.
+
+G7-4 remains OPEN: the normalized records preserve exact identifiers returned by TSETMC, but the OptionSchool production source still does not provide an explicit TSETMC option ID for an end-to-end exact mapping. No inference is permitted.
