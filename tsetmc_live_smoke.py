@@ -15,14 +15,21 @@ from tsetmc_adapter import TSETMCAdapter
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=Path("output/tsetmc_live_smoke.json"))
+    parser.add_argument("--flow", type=int, default=0)
+    parser.add_argument("--option-market-watch", action="store_true")
     args = parser.parse_args()
 
     adapter = TSETMCAdapter()
-    result = adapter.market_overview(flow=0)
+    if args.option_market_watch:
+        result = adapter.option_market_watch(flow=args.flow)
+        test_name = "TSETMC_OPTION_MARKET_WATCH"
+    else:
+        result = adapter.market_overview(flow=args.flow)
+        test_name = "TSETMC_MARKET_OVERVIEW"
 
     payload = {
         "status": "SUCCESS",
-        "test": "TSETMC_MARKET_OVERVIEW",
+        "test": test_name,
         "adapter_version": "1.0",
         "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
         "source": result.get("source"),
