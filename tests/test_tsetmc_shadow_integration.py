@@ -33,6 +33,16 @@ class TsetmcShadowIntegrationTests(unittest.TestCase):
         self.assertEqual(out["underlying_close_price"].iloc[0], 100.0)
         self.assertEqual(out["underlying_context_status"].iloc[0], "EXACT_UNDERLYING_QUOTE")
 
+    def test_persian_explicit_id_alias_is_accepted(self):
+        shadow = pd.DataFrame({"نماد": ["ضX"]})
+        source = pd.DataFrame({"کد نماد": ["OPT1"]})
+        out, meta = enrich_shadow_with_tsetmc(
+            shadow, source, enabled=True, adapter=FakeAdapter()
+        )
+        self.assertEqual(meta["status"], "SUCCESS")
+        self.assertEqual(meta["option_identity_key"], "کد نماد")
+        self.assertEqual(out["underlying_context_status"].iloc[0], "EXACT_UNDERLYING_QUOTE")
+
     def test_no_option_id_does_not_infer_from_symbol(self):
         shadow = pd.DataFrame({"نماد": ["ضهرم7060"]})
         source = pd.DataFrame({"نماد": ["ضهرم7060"]})
