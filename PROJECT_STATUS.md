@@ -1357,3 +1357,20 @@ The live-smoke parser was hardened to retain `insCode_P`, `insCode_C`, and `uaIn
 - Test commit: `f28c87a63db2d2e9933cc0bb53f92827f21162b4`.
 
 This advances G7-4 from “no explicit IDs observed” to “explicit option/underlying IDs observed in live source evidence.” It does not yet close the gate: the canonical mapping/promotion path still needs to consume and validate these fields end-to-end on the deployed runtime, and G7-3 freshness evidence remains separate. No production scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed.
+
+
+## External Audit Reconciliation — 2026-09-23
+
+The submitted Optionschool V4 audit was reconciled against the current main implementation.
+
+- Finding 1 was confirmed: symbol-scoped reporting previously scored the full population before applying the report filter. This was corrected so schema-normalized symbol scope is applied before the canonical scoring call and therefore before cross-sectional percentile calculation.
+- Code commit: b1864e0dadfabd01c8ec519a45d5780976d76f00.
+- Regression-test commit: 5eb37f3b05c3272f23e3a78657f81fbc55b65dc4.
+- Finding 2 is only partially applicable: exact TSETMC identity cannot replace source-local report filtering because the current OptionSchool production input does not expose an explicit TSETMC option ID. No identity inference from symbol/prefix/strike/expiry is permitted.
+- Finding 3 remains OPEN/UNAPPROVED: Status has no numeric mapping and continues to be flagged STATUS_MAPPING_NOT_APPROVED.
+- Finding 4 is stale against current main: the described 0/5/10/20 RiskPenalty is not the active production implementation. Current RiskPenalty is 0.0 with KNOWN_GAP_THRESHOLDS_NOT_AVAILABLE; no undocumented thresholds were introduced.
+- Finding 5 remains an operational control: deployed Termux must synchronize with main using git pull --ff-only origin main before controlled execution.
+- Finding 6 remains an operational hygiene procedure; no Bale secret values were changed.
+- Full reconciliation: docs/AUDIT_RECONCILIATION_2026-09-23.md.
+
+This remediation changes the scoring population for symbol-scoped reports only. Full-market reports retain the full source population. Shadow Opportunity remains evidence-only and full-universe; it does not mutate production FinalScore, ranking or Bale output.
