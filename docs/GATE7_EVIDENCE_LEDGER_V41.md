@@ -266,3 +266,12 @@ The external Optionschool V4 audit was reconciled with the current repository be
 - Status mapping remains unapproved and unchanged.
 - TSETMC remains non-production and Gate 7 status is unchanged by this remediation.
 - Detailed reconciliation: docs/AUDIT_RECONCILIATION_2026-09-23.md.
+
+## Scoped-Report History Integrity Correction — 2026-09-23
+
+The audit remediation exposed a secondary integrity issue: historical snapshot records must remain source-wide even when the user requests a symbol-scoped report. Otherwise the same source SHA can generate conflicting record hashes.
+
+- Corrected in code commit: 18fd26be90199c4e1f28dd3aa980d2220c9519dc.
+- Regression coverage: 7884db3eac7a147cdd641ce805495195f0928bd7.
+- The intermediate regression run 35896620856 failed before this correction because the existing test invoked two scopes against the same fallback source ID and historical record. The failure was inspected from the actual job log; it was not a scoring assertion failure.
+- No Gate 7 status is changed by this correction. No CI success is claimed yet for the corrected head.
