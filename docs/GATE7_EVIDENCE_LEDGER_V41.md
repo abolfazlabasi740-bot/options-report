@@ -21,7 +21,7 @@ The active V4 Overlay constants are observed from production code but do not yet
 Required: evidence source for each affected numeric parameter family. No guessed replacement values.
 
 ### G7-2 — Historical sensitivity / ablation
-Status: EVIDENCE COLLECTED — CLOSURE PENDING ARTIFACT HASH/PROVENANCE
+Status: VERIFIED — EVIDENCE ARTIFACT HASH/PROVENANCE RECONCILED
 
 The evidence-only implementation reuses the canonical V4.1.1 shadow scorer and performs one-block-at-a-time ablation. It does not modify Production FinalScore, eligibility, ranking, report or Bale output.
 
@@ -55,7 +55,11 @@ Ranges retained from the same run:
 
 Interpretation boundary: these are sensitivity/ablation measurements only. They do not establish that any block, weight or economic direction is correct, optimal, predictive, or causally important.
 
-Closure remains pending because the repository does not yet contain the two Termux-generated evidence artifacts and their SHA-256/provenance. The existing project rule requiring real historical source files, SHA-256, deterministic reruns, sensitivity measurements and retained unresolved cases remains in force.
+Closure evidence has now been reconciled with the Termux run. The two generated evidence artifacts have verified SHA-256 values recorded below. The underlying run retained the real historical source files, source SHA-256 values, deterministic sensitivity measurements and unresolved-case accounting.
+
+Artifact SHA-256:
+- `g7_2_historical_sensitivity_evidence.json`: `702ed0de3a68abd2fc86be51165c29a64c9b02241857abcd1ba95d7059fe02fc`
+- `g7_2_optionschool24_historical_evidence.json`: `d669d721de052c58a7b65b621759fe714fce1743553d99fb14123b4582fa3a5d`
 
 The golden Gate 3 fixture is an output-regression baseline only; it is not historical economic validation.
 
