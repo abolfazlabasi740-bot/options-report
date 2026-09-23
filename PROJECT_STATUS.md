@@ -1246,3 +1246,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - Verified: Gate 2 regression, Gate 3 live-source integrity, Gate 6 physical Termux/Bale deployment, and Gate 7 control CI.
 - Open: parameter provenance, historical sensitivity/ablation, market timestamp/freshness, exact TSETMC identity, and economic Opportunity validation.
 - No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
+
+
+## G7-2 Historical Sensitivity Evidence — 2026-09-23
+
+- Termux generated six-block sensitivity evidence across 35 historical OptionSchool24 workbooks/sheets.
+- Result: 35 sensitivity runs OK; 0 unresolved.
+- Aggregate mean Top-15 overlap: Liquidity 6.400000; Valuation 10.000000; Payoff 11.228571; Time 11.514286; Greeks 13.085714; Market 12.600000.
+- Aggregate mean score delta: Liquidity 3.603773; Valuation 2.614506; Payoff 2.127964; Time 1.988990; Greeks 1.151357; Market 1.755308.
+- Aggregate mean max score delta: Liquidity 11.132857; Valuation 9.042000; Payoff 8.500000; Time 7.409714; Greeks 4.170286; Market 6.042000.
+- These are evidence-only sensitivity measurements; they do not justify changing weights, thresholds, or economic direction.
+- G7-2 remains closure-pending until the Termux evidence artifacts and their SHA-256/provenance are reconciled with repository evidence.
+- No production scoring, ranking, eligibility, TSETMC activation, Signal policy, or Bale behavior was changed.
