@@ -64,7 +64,18 @@ Artifact SHA-256:
 The golden Gate 3 fixture is an output-regression baseline only; it is not historical economic validation.
 
 ### G7-3 — Market timestamp / freshness
-Status: OPEN
+Status: OPEN — SOURCE TIMESTAMP CAPTURE IMPLEMENTED, LIVE EVIDENCE PENDING
+
+The TSETMC adapter now preserves an explicit source observation timestamp from `closingPriceInfo.dEven` + `hEven` when both fields are present and valid. This timestamp is explicitly treated as source observation time, not adapter retrieval time and not an inferred session-close time.
+
+- Implementation commit: `c633fa9f04fd386cf8a7d35c5f86ebf748a9b526`
+- Regression fixture/test commit: `eab12bcab93db3ff164ab86fe33a5a444191f9c0`
+- Output fields: `source_market_timestamp`, `source_market_timestamp_status`.
+- Missing/invalid source fields remain `UNAVAILABLE`; no timestamp is synthesized.
+- External TSETMC references document `dEven` as YYYYMMDD and `hEven` as HHMMSS and identify `GetClosingPriceInfo/{InsCode}` as the current closing-price information endpoint. citeturn1search0turn1search3
+- No freshness threshold has been introduced because no approved threshold/provenance exists yet.
+- G7-3 therefore remains OPEN until a real runtime response demonstrates the field on the deployed data path and the stale/fresh policy is separately evidenced.
+
 
 The current OptionSchool24 workbook path does not establish an authoritative market timestamp. Download time must not be treated as market time.
 
