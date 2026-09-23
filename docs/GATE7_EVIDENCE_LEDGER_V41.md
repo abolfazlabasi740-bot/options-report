@@ -180,3 +180,14 @@ A raw option-market-watch source boundary was added to improve the path toward G
 - Documentation commit: `a4b96d23317006681fe8e71df5ea70b47c420706`.
 - No live workflow execution is claimed; the available GitHub integration does not expose workflow dispatch.
 - G7-4 remains OPEN pending an actual source response and exact identity evidence.
+
+
+## G7-4 Identity Boundary Audit — 2026-09-23
+
+- Repository-wide identity search confirmed that accepted explicit option-ID aliases include `insCode`, `InsCode`, `instrument_id`, `InstrumentID`, `کد نماد` and `کد معاملاتی` at the mapping boundary.
+- The Shadow TSETMC integration was aligned to the same alias set by adding `کد نماد`; this is a consistency fix only and does not infer identity from symbol text.
+- Code/test commits: `a04a6b064f9c907d492de910722dd8a2b02b37cb`, `72ce36451af89f47426c1750940d685eb943e7fa`.
+- Regression/workflow lookup for the latest test commit returned no associated workflow runs or commit statuses from the available GitHub integration; CI success is therefore not claimed for these commits.
+- Repository evidence still shows the live OptionSchool24 report path uses source-local symbol identity because no explicit TSETMC option instrument ID has been recorded in the live path.
+- The Option Market-Watch adapter preserves raw `insCode` when present, but no real live response has been obtained and retained in this audit.
+- G7-4 remains OPEN. No option or underlying identity was inferred or promoted.
