@@ -119,6 +119,39 @@ class TSETMCAdapterTests(unittest.TestCase):
 
 
     def test_option_market_watch_records_preserve_explicit_identity(self):
+        def opener(request, timeout):
+            self.assertIn("/Instrument/GetInstrumentOptionMarketWatch/1", request.full_url)
+            return FakeResponse({"instrumentOptMarketWatch": [{
+                "insCode_P": "P123",
+                "insCode_C": "C456",
+                "uaInsCode": "UA789",
+                "lVal18AFC_P": "طهرم7050",
+                "lVal18AFC_C": "ضهرم7050",
+                "lval30_UA": "اهرم",
+                "strikePrice": 20000,
+                "beginDate": "20260725",
+                "endDate": "20261021",
+                "remainedDay": 28,
+            }]})
+
+        adapter = TSETMCAdapter(
+            base_url="https://example.test/api", retries=0, opener=opener
+        )
+        result = adapter.option_market_watch_records(flow=1)
+        self.assertEqual(result["record_count"], 1)
+        self.assertEqual(result["records"][0]["option_put_id"], "P123")
+        self.assertEqual(result["records"][0]["option_call_id"], "C456")
+        self.assertEqual(result["records"][0]["underlying_id"], "UA789")
+        self.assertEqual(result["records"][0]["strike"], 20000)
+        self.assertEqual(result["records"][0]["end_date"], "20261021")
+
+    def test_option_market_watch_records_shape_placeholder(self):
+        adapter = TSETMCAdapter(
+            base_url="https://example.test/api", retries=0, opener=lambda request, timeout: FakeResponse({"instrumentOptMarketWatch": []})
+        )
+        self.assertEqual(adapter.option_market_watch_records(1)["record_count"], 0)
+
+    def test_option_market_watch_records_preserve_explicit_identity_legacy(self):
         adapter = self._adapter({
             "instrumentOptMarketWatch": [{
                 "insCode_P": "P123",
