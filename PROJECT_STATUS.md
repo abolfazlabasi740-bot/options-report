@@ -1335,3 +1335,8 @@ The next controlled change is to evaluate whether production Eligibility should 
 - These are repository/CI evidence only and do not prove Termux deployment or live TSETMC access.
 - The next runtime evidence step remains the controlled command in `docs/G7-4_TERMUX_LIVE_EXECUTION.md`.
 - G7-3/G7-4 remain OPEN until real source evidence is captured; no identity or market timestamp is inferred.
+
+
+## G7-3/G7-4 Live Termux Result — 2026-09-23
+
+A real Termux execution of `tsetmc_live_smoke.py --option-market-watch --flow 1` reached TSETMC successfully. The returned snapshot was present and hashed (`8a1bf7720c812a3f80af1b3df8b0eeaa79db57e77701000174a4ed66d8435d65`), with retrieval time `2026-09-23T17:17:58.479447+00:00`. However, the response contained `0` explicit option `insCode` values. Accordingly, G7-4 exact instrument identity remains OPEN and no symbol/prefix inference is allowed. Retrieval time is not treated as market observation time, so G7-3 also remains OPEN pending explicit market timestamp evidence.
