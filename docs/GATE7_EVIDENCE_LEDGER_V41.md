@@ -157,3 +157,16 @@ A continuous repository/runtime audit was performed after the G7-5 protocol free
 - G7-6 remains BLOCKED by the unresolved evidence gates.
 
 This continuation audit changes no scoring, ranking, eligibility, TSETMC activation, or Bale behavior.
+
+
+## TSETMC Option Market-Watch Expansion — 2026-09-23
+
+A raw option-market-watch source boundary was added to improve the path toward G7-4 without making identity assumptions.
+
+- Adapter commit: `a60c02fe354ae6bf5022b7c69422044a5412a8fb`
+- Test commit: `eef540ee34ea96194add77c08a124ac240c38063`
+- Documentation commit: `4027dc04fea9ee8649439d1f4bc2f03d6f8b8121`
+- Endpoint: `Instrument/GetInstrumentOptionMarketWatch/{flow}`
+- Behavior: preserve raw payload + endpoint + retrieval timestamp + SHA-256; no symbol-prefix inference and no unvalidated field mapping.
+- The new path is evidence-only and does not modify production scoring, ranking, eligibility, TSETMC activation, or Bale output.
+- No live response has been claimed from this environment. G7-4 therefore remains OPEN pending real source evidence and exact identity validation.
