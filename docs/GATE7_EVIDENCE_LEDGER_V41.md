@@ -72,7 +72,7 @@ The TSETMC adapter now preserves an explicit source observation timestamp from `
 - Regression fixture/test commit: `eab12bcab93db3ff164ab86fe33a5a444191f9c0`
 - Output fields: `source_market_timestamp`, `source_market_timestamp_status`.
 - Missing/invalid source fields remain `UNAVAILABLE`; no timestamp is synthesized.
-- External TSETMC references document `dEven` as YYYYMMDD and `hEven` as HHMMSS and identify `GetClosingPriceInfo/{InsCode}` as the current closing-price information endpoint. citeturn1search0turn1search3
+- External TSETMC references document `dEven` as YYYYMMDD and `hEven` as HHMMSS and identify `GetClosingPriceInfo/{InsCode}` as the current closing-price information endpoint.
 - No freshness threshold has been introduced because no approved threshold/provenance exists yet.
 - G7-3 therefore remains OPEN until a real runtime response demonstrates the field on the deployed data path and the stale/fresh policy is separately evidenced.
 
