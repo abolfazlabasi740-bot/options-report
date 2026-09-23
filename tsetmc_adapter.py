@@ -155,6 +155,37 @@ class TSETMCAdapter:
             "data": r.payload,
         }
 
+    def option_market_watch_records(self, flow: int = 1) -> dict[str, Any]:
+        """Normalize explicit option-market-watch identity records without inference."""
+        result = self.option_market_watch(flow=flow)
+        data = result.get("data") or {}
+        raw_records = data.get("instrumentOptMarketWatch", [])
+        records = []
+        if isinstance(raw_records, list):
+            for item in raw_records:
+                if not isinstance(item, dict):
+                    continue
+                if not any(item.get(k) not in (None, "") for k in ("insCode_P", "insCode_C", "uaInsCode")):
+                    continue
+                records.append({
+                    "option_put_id": str(item["insCode_P"]) if item.get("insCode_P") not in (None, "") else None,
+                    "option_call_id": str(item["insCode_C"]) if item.get("insCode_C") not in (None, "") else None,
+                    "underlying_id": str(item["uaInsCode"]) if item.get("uaInsCode") not in (None, "") else None,
+                    "put_symbol": item.get("lVal18AFC_P"),
+                    "call_symbol": item.get("lVal18AFC_C"),
+                    "underlying_symbol": item.get("lval30_UA"),
+                    "strike": item.get("strikePrice"),
+                    "begin_date": item.get("beginDate"),
+                    "end_date": item.get("endDate"),
+                    "remaining_days": item.get("remainedDay"),
+                })
+        return {
+            **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
+            "records": records,
+            "record_count": len(records),
+            "raw_data": data,
+        }
+
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
         if int(flow) < 0:
             raise ValueError("flow must be non-negative")
