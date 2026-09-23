@@ -252,3 +252,17 @@ The smoke utility was updated to capture `insCode_P`, `insCode_C`, and `uaInsCod
 - Regression test commit: `f28c87a63db2d2e9933cc0bb53f92827f21162b4`.
 
 Boundary: this evidence establishes that TSETMC returns explicit option and underlying identifiers in the live Option Market-Watch response. It does not by itself authorize production TSETMC activation, nor does it establish a market observation timestamp or economic outcome label. G7-3 remains OPEN pending explicit source-market timestamp/freshness evidence; G7-5 and G7-1 remain OPEN.
+
+
+## External Audit Reconciliation — 2026-09-23
+
+The external Optionschool V4 audit was reconciled with the current repository before applying remediation.
+
+- G7 evidence gates were not altered by the audit reconciliation.
+- The confirmed production defect was symbol-scoped percentile population: symbol filtering occurred after the scoring call. This is corrected in code commit b1864e0dadfabd01c8ec519a45d5780976d76f00.
+- Regression coverage was added in commit 5eb37f3b05c3272f23e3a78657f81fbc55b65dc4.
+- The audit request to replace source-local symbol filtering with TSETMC identity is not applied because the current OptionSchool production source does not expose an explicit TSETMC option ID. Exact TSETMC identity remains governed by the no-inference boundary and Gate 7 evidence path.
+- The audit's described 0/5/10/20 RiskPenalty is stale for current main. The active scoring engine keeps RiskPenalty at 0.0 and marks KNOWN_GAP_THRESHOLDS_NOT_AVAILABLE; no thresholds were invented.
+- Status mapping remains unapproved and unchanged.
+- TSETMC remains non-production and Gate 7 status is unchanged by this remediation.
+- Detailed reconciliation: docs/AUDIT_RECONCILIATION_2026-09-23.md.
