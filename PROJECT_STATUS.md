@@ -1374,3 +1374,15 @@ The submitted Optionschool V4 audit was reconciled against the current main impl
 - Full reconciliation: docs/AUDIT_RECONCILIATION_2026-09-23.md.
 
 This remediation changes the scoring population for symbol-scoped reports only. Full-market reports retain the full source population. Shadow Opportunity remains evidence-only and full-universe; it does not mutate production FinalScore, ranking or Bale output.
+
+## Scoped-Report History Integrity Correction — 2026-09-23
+
+During regression of the audit remediation, the same source workbook could be written to the historical snapshot store once as a full-market score and again as a symbol-scoped score, producing a records-hash conflict for the same source SHA. This was corrected without changing the scoped report scoring rule.
+
+- Symbol-scoped production scoring remains population-scoped before percentile calculation.
+- Historical snapshot evidence is now source-wide and independent of requested report scope.
+- This preserves one canonical historical record per source snapshot while allowing full-market and single-symbol reports from the same workbook.
+- Code commit: 18fd26be90199c4e1f28dd3aa980d2220c9519dc.
+- Regression-test commit: 7884db3eac7a147cdd641ce805495195f0928bd7.
+- The earlier failed regression run 35896620856 was on the intermediate code commit b1864e0dadfabd01c8ec519a45d5780976d76f00 and failed because the test suite still contained the pre-change historical snapshot assumption. It is not treated as evidence against the corrected implementation.
+- Current validation is pending on the newer commits; no CI PASS is claimed until the corresponding runs complete successfully.
