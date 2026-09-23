@@ -82,7 +82,27 @@ def build_report(path, top_count=None, symbol_prefix=None):
     from scoring_engine import score_dataframe, shadow_score_dataframe
     from tsetmc_shadow_integration import enrich_shadow_with_tsetmc
 
-    scored = score_dataframe(df)
+    # Symbol-scoped reports must define the scoring population before any
+    # cross-sectional percentile calculation. Schema validation is performed
+    # first; no TSETMC identity is inferred from the symbol text.
+    scoring_source = normalize_columns(df.copy())
+    symbol_col = find_column(scoring_source, ["نماد", "Symbol"])
+    if symbol_prefix:
+        if symbol_col is None:
+            raise RuntimeError("ستون نماد برای فیلتر تک‌نماد موجود نیست")
+        prefix = normalize_text(symbol_prefix)
+        symbol_values = scoring_source[symbol_col].astype("string").map(
+            lambda value: normalize_text(value) if pd.notna(value) else value
+        )
+        scoring_source = scoring_source[
+            symbol_values.str.startswith(prefix, na=False)
+        ].copy()
+        if scoring_source.empty:
+            raise RuntimeError(
+                f"هیچ رکوردی برای نماد «{prefix}» پس از اعتبارسنجی Schema پیدا نشد"
+            )
+
+    scored = score_dataframe(scoring_source)
 
     # Preserve a source-level eligibility view so expired/missing-leverage rows
     # remain auditable even though production scoring retains its existing gate.
@@ -315,18 +335,9 @@ def build_report(path, top_count=None, symbol_prefix=None):
             "هیچ قرارداد دارای داده کافی برای امتیازدهی شش‌بلوک پیدا نشد"
         )
 
-    # فیلتر نماد باید قبل از رتبه‌بندی و انتخاب Top-N انجام شود.
-    # بنابراین درخواست نماد، از بین کل قراردادهای همان نماد رتبه‌بندی می‌شود.
-    if symbol_prefix:
-        prefix = normalize_text(symbol_prefix)
-        work = work[
-            work["نماد"].str.startswith(prefix, na=False)
-        ].copy()
-
-        if work.empty:
-            raise RuntimeError(
-                f"هیچ قرارداد فعال و واجد شرایطی برای نماد «{prefix}» پیدا نشد"
-            )
+    # Symbol filtering has already been applied to the validated scoring
+    # population above. Keeping no second text filter here prevents a
+    # post-score population change from being mistaken for a pre-percentile gate.
 
     # رتبه‌بندی نهایی فقط بر اساس FinalScore موتور V4.1
     work = work.sort_values(
