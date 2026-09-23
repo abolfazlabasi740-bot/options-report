@@ -17,9 +17,11 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Run TSETMC market overview smoke test
         run: python tsetmc_live_smoke.py --output output/tsetmc_live_smoke.json
+      - name: Run TSETMC option market-watch smoke test
+        run: python tsetmc_live_smoke.py --option-market-watch --flow 1 --output output/tsetmc_option_market_watch.json
       - name: Upload source evidence
         uses: actions/upload-artifact@v4
         with:
           name: tsetmc-live-smoke
-          path: output/tsetmc_live_smoke.json
+          path: output/tsetmc_*.json
           if-no-files-found: error
