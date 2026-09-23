@@ -1340,3 +1340,20 @@ The next controlled change is to evaluate whether production Eligibility should 
 ## G7-3/G7-4 Live Termux Result — 2026-09-23
 
 A real Termux execution of `tsetmc_live_smoke.py --option-market-watch --flow 1` reached TSETMC successfully. The returned snapshot was present and hashed (`8a1bf7720c812a3f80af1b3df8b0eeaa79db57e77701000174a4ed66d8435d65`), with retrieval time `2026-09-23T17:17:58.479447+00:00`. However, the response contained `0` explicit option `insCode` values. Accordingly, G7-4 exact instrument identity remains OPEN and no symbol/prefix inference is allowed. Retrieval time is not treated as market observation time, so G7-3 also remains OPEN pending explicit market timestamp evidence.
+
+
+## G7-4 Live Exact Identity Discovery — 2026-09-23
+
+The real Termux raw TSETMC Option Market-Watch response was inspected and contains explicit structured identity fields:
+- `instrumentOptMarketWatch`: 541 records.
+- First record: `insCode_P=68991773475135927`, `insCode_C=62444611500832644`.
+- First record underlying: `uaInsCode=17914401175772326`.
+- The same record explicitly returns `strikePrice=20000`, `beginDate=20260725`, `endDate=20261021`, `remainedDay=28`, and source-local option/underlying symbols.
+- These identifiers come directly from named TSETMC payload fields; no symbol/prefix inference was used.
+
+The live-smoke parser was hardened to retain `insCode_P`, `insCode_C`, and `uaInsCode` as explicit evidence records.
+
+- Implementation commit: `6cfd4d40c962dfee4777eab3e60979892054349e`.
+- Test commit: `f28c87a63db2d2e9933cc0bb53f92827f21162b4`.
+
+This advances G7-4 from “no explicit IDs observed” to “explicit option/underlying IDs observed in live source evidence.” It does not yet close the gate: the canonical mapping/promotion path still needs to consume and validate these fields end-to-end on the deployed runtime, and G7-3 freshness evidence remains separate. No production scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed.
