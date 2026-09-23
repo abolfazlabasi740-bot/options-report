@@ -1303,3 +1303,15 @@ The next controlled change is to evaluate whether production Eligibility should 
 - G7-1 remains OPEN pending authoritative provenance for active Overlay parameters.
 - G7-2 remains VERIFIED/CLOSED with reconciled historical evidence artifacts.
 - Gate 7 remains blocked by the unresolved evidence gates; no production Signal/Buy/Sell behavior is enabled.
+
+
+## G7-4 Identity Boundary Audit — 2026-09-23
+
+- Repository-wide search was completed for explicit TSETMC identity fields and OptionSchool24 mapping paths.
+- The accepted explicit option-ID aliases are now consistent across the mapping and Shadow integration boundaries, including `کد نماد`.
+- Implementation commit: `a04a6b064f9c907d492de910722dd8a2b02b37cb`.
+- Regression test commit: `72ce36451af89f47426c1750940d685eb943e7fa`.
+- The test covers a Persian explicit identifier column and confirms that it reaches the exact option→underlying evidence path.
+- No workflow run or commit status is available for the latest test commit through the current GitHub integration, so CI success is not claimed.
+- This change does not activate TSETMC, change scoring/ranking/eligibility, or change Bale output.
+- G7-4 remains OPEN because the live OptionSchool24 path still has no retained real-source evidence proving an explicit option instrument ID, and no live Option Market-Watch response has been retained for exact mapping.
