@@ -170,3 +170,13 @@ A raw option-market-watch source boundary was added to improve the path toward G
 - Behavior: preserve raw payload + endpoint + retrieval timestamp + SHA-256; no symbol-prefix inference and no unvalidated field mapping.
 - The new path is evidence-only and does not modify production scoring, ranking, eligibility, TSETMC activation, or Bale output.
 - No live response has been claimed from this environment. G7-4 therefore remains OPEN pending real source evidence and exact identity validation.
+
+
+## Option Market-Watch Smoke Expansion — 2026-09-23
+
+- `tsetmc_live_smoke.py` now supports `--option-market-watch --flow 1` and preserves the raw evidence metadata.
+- Workflow commit: `f3b8278bf4456b98240fa5bcb16adaaa9e10cdfc`.
+- Smoke script commit: `d9802ded14c37bb34117dcb096778c95b28b96dc`.
+- Documentation commit: `a4b96d23317006681fe8e71df5ea70b47c420706`.
+- No live workflow execution is claimed; the available GitHub integration does not expose workflow dispatch.
+- G7-4 remains OPEN pending an actual source response and exact identity evidence.
