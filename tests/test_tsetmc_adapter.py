@@ -145,6 +145,34 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertEqual(result["records"][0]["strike"], 20000)
         self.assertEqual(result["records"][0]["end_date"], "20261021")
 
+    def test_option_market_watch_instrument_records_expand_explicit_ids(self):
+        def opener(request, timeout):
+            return FakeResponse({"instrumentOptMarketWatch": [{
+                "insCode_P": "P123",
+                "insCode_C": "C456",
+                "uaInsCode": "UA789",
+                "lVal18AFC_P": "طهرم7050",
+                "lVal18AFC_C": "ضهرم7050",
+                "lval30_UA": "اهرم",
+                "strikePrice": 20000,
+                "beginDate": "20260725",
+                "endDate": "20261021",
+                "remainedDay": 28,
+            }]})
+
+        adapter = TSETMCAdapter(
+            base_url="https://example.test/api", retries=0, opener=opener
+        )
+        result = adapter.option_market_watch_instrument_records(flow=1)
+        self.assertEqual(result["record_count"], 2)
+        by_id = {r["instrument_id"]: r for r in result["records"]}
+        self.assertEqual(by_id["P123"]["contract_type"], "PUT")
+        self.assertEqual(by_id["P123"]["identity_source_field"], "insCode_P")
+        self.assertEqual(by_id["P123"]["underlying_id"], "UA789")
+        self.assertEqual(by_id["C456"]["contract_type"], "CALL")
+        self.assertEqual(by_id["C456"]["identity_source_field"], "insCode_C")
+        self.assertEqual(by_id["C456"]["strike"], 20000)
+
     def test_option_market_watch_records_shape_placeholder(self):
         adapter = TSETMCAdapter(
             base_url="https://example.test/api", retries=0, opener=lambda request, timeout: FakeResponse({"instrumentOptMarketWatch": []})
