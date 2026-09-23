@@ -104,6 +104,14 @@ def build_report(path, top_count=None, symbol_prefix=None):
 
     scored = score_dataframe(scoring_source)
 
+    # Historical snapshot evidence is source-wide and must not depend on the
+    # requested report scope. This prevents the same source SHA from producing
+    # conflicting history records when both a full-market and symbol-scoped
+    # report are generated from the same workbook.
+    history_scored = None
+    if symbol_prefix:
+        history_scored = score_dataframe(normalize_columns(df.copy()))
+
     # Preserve a source-level eligibility view so expired/missing-leverage rows
     # remain auditable even though production scoring retains its existing gate.
     source_view = numeric_columns(normalize_columns(df.copy()))
@@ -143,7 +151,10 @@ def build_report(path, top_count=None, symbol_prefix=None):
         "Score_BlackScholesDiff",
         "Score_BreakevenDistance",
     ]
-    history_records = dataframe_records(scored, history_columns)
+    history_records = dataframe_records(
+        history_scored if history_scored is not None else scored,
+        history_columns,
+    )
     current_history = build_snapshot(
         snapshot_id,
         history_records,
