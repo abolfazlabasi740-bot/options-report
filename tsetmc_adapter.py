@@ -186,6 +186,42 @@ class TSETMCAdapter:
             "raw_data": data,
         }
 
+    def option_market_watch_instrument_records(self, flow: int = 1) -> dict[str, Any]:
+        """Expand explicit P/C IDs into instrument records without inference."""
+        result = self.option_market_watch_records(flow=flow)
+        instruments = []
+        for record in result.get("records", []):
+            common = {
+                "underlying_id": record.get("underlying_id"),
+                "underlying_symbol": record.get("underlying_symbol"),
+                "strike": record.get("strike"),
+                "begin_date": record.get("begin_date"),
+                "end_date": record.get("end_date"),
+                "remaining_days": record.get("remaining_days"),
+            }
+            if record.get("option_put_id"):
+                instruments.append({
+                    **common,
+                    "instrument_id": record["option_put_id"],
+                    "symbol": record.get("put_symbol"),
+                    "contract_type": "PUT",
+                    "identity_source_field": "insCode_P",
+                })
+            if record.get("option_call_id"):
+                instruments.append({
+                    **common,
+                    "instrument_id": record["option_call_id"],
+                    "symbol": record.get("call_symbol"),
+                    "contract_type": "CALL",
+                    "identity_source_field": "insCode_C",
+                })
+        return {
+            **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
+            "records": instruments,
+            "record_count": len(instruments),
+            "raw_data": result.get("raw_data"),
+        }
+
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
         if int(flow) < 0:
             raise ValueError("flow must be non-negative")
