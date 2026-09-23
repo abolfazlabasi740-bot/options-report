@@ -1386,3 +1386,14 @@ During regression of the audit remediation, the same source workbook could be wr
 - Regression-test commit: 7884db3eac7a147cdd641ce805495195f0928bd7.
 - The earlier failed regression run 35896620856 was on the intermediate code commit b1864e0dadfabd01c8ec519a45d5780976d76f00 and failed because the test suite still contained the pre-change historical snapshot assumption. It is not treated as evidence against the corrected implementation.
 - Current validation is pending on the newer commits; no CI PASS is claimed until the corresponding runs complete successfully.
+
+## Audit Remediation CI Verification — 2026-09-23
+
+The corrected audit-remediation head `94c8800c76a592b62b384d4880e379a32b1c8993` has now passed the three repository validation workflows.
+
+- Regression Tests: run `35896794682` — completed `success`.
+- Gate 7 Control: run `35896794557` — completed `success`.
+- Live Schema Audit: run `35896794677` — completed `success`.
+- The corrected implementation therefore has repository-level regression/control/schema validation evidence.
+- This CI evidence does not constitute Termux deployment evidence and does not close G7-1, G7-3, G7-4 or G7-5.
+- The scoped-report correction and source-wide historical snapshot correction remain the active implementation.
