@@ -398,15 +398,25 @@ class RegressionTests(unittest.TestCase):
         data.loc[0, "روزهای تقویمی"] = 1
         self.assertNotIn("ضتست0", score_dataframe(data)["نماد"].tolist())
 
-    def test_symbol_filter_before_top_and_global_score_consistent(self):
+    def test_symbol_filter_before_percentile_and_top_n(self):
         data = fixture()
         with patch("report_engine.pd.read_excel", return_value=data):
-            all_rows = build_report("unused.xlsx", top_count=100)
             one = build_report("unused.xlsx", top_count=1, symbol_prefix="ضتست0")
+        filtered = data[data["نماد"] == "ضتست0"].copy()
+        expected = score_dataframe(filtered).iloc[0]["FinalScore"]
         self.assertEqual(one.iloc[0]["نماد"], "ضتست0")
-        expected = all_rows.set_index("نماد").loc["ضتست0", "FinalScore"]
         self.assertEqual(one.iloc[0].FinalScore, expected)
         self.assertAlmostEqual(one.iloc[0]["فاصله سر به سری"], 50/1050*100)
+
+    def test_symbol_filter_changes_cross_sectional_percentile_population(self):
+        data = fixture()
+        with patch("report_engine.pd.read_excel", return_value=data):
+            scoped = build_report("unused.xlsx", top_count=1, symbol_prefix="ضتست0")
+            global_report = build_report("unused.xlsx", top_count=4)
+        self.assertNotEqual(
+            scoped.iloc[0]["FinalScore"],
+            global_report.set_index("نماد").loc["ضتست0", "FinalScore"],
+        )
 
     def test_shadow_failure_does_not_block_production_report(self):
         with patch("report_engine.pd.read_excel", return_value=fixture()), \
