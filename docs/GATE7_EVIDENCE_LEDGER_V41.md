@@ -140,3 +140,20 @@ Code existence, CI success, and Bale delivery are necessary operational evidence
 ## Current conclusion
 
 The operational reporter is deployed and verified. G7-2 now has real multi-workbook sensitivity evidence, but its closure remains pending artifact SHA/provenance reconciliation. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
+
+## Continuation Audit — 2026-09-23
+
+A continuous repository/runtime audit was performed after the G7-5 protocol freeze.
+
+- Current main head observed: `baddccde7f91f8730f1a43ecaeebc0584e4e78a8`.
+- The TSETMC live-smoke workflow is present but intentionally `workflow_dispatch` only.
+- The available GitHub integration does not expose a workflow-dispatch action, so no live TSETMC workflow execution is claimed from this audit.
+- Direct TSETMC access from the current execution environment failed at DNS resolution; this is recorded as source-unavailable evidence, not as a market-data result.
+- `tsetmc_evidence_collector.py` was inspected and confirmed to require an explicit option instrument ID and an explicit `underlying_id`; it does not infer identity from symbol naming.
+- No TSETMC identity, market timestamp, or economic outcome label was fabricated from this limitation.
+- G7-3, G7-4 and G7-5 therefore remain OPEN.
+- G7-2 remains VERIFIED; its artifact hashes are already reconciled above.
+- G7-1 remains OPEN because no authoritative provenance record for the active Overlay numeric constants has been found.
+- G7-6 remains BLOCKED by the unresolved evidence gates.
+
+This continuation audit changes no scoring, ranking, eligibility, TSETMC activation, or Bale behavior.
