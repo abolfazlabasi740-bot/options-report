@@ -142,6 +142,19 @@ class TSETMCAdapter:
         )
         return self._unwrap(r, "closingPriceDaily")
 
+    def option_market_watch(self, flow: int = 1) -> dict[str, Any]:
+        """Fetch the TSETMC option market-watch payload without inferring fields."""
+        if int(flow) < 0:
+            raise ValueError("flow must be non-negative")
+        r = self._request(f"Instrument/GetInstrumentOptionMarketWatch/{int(flow)}")
+        return {
+            "source": "TSETMC",
+            "endpoint": r.endpoint,
+            "snapshot_sha256": r.sha256,
+            "retrieved_at": r.retrieved_at,
+            "data": r.payload,
+        }
+
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
         if int(flow) < 0:
             raise ValueError("flow must be non-negative")
