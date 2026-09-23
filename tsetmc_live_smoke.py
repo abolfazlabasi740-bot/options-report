@@ -18,11 +18,15 @@ def _explicit_instrument_evidence(value):
     explicit_ids = []
     if isinstance(value, dict):
         if "insCode_P" in value or "insCode_C" in value:
-            option_records.append({
+            record = {
                 "insCode_P": str(value["insCode_P"]) if value.get("insCode_P") not in (None, "") else None,
                 "insCode_C": str(value["insCode_C"]) if value.get("insCode_C") not in (None, "") else None,
                 "uaInsCode": str(value["uaInsCode"]) if value.get("uaInsCode") not in (None, "") else None,
-            })
+            }
+            option_records.append(record)
+            explicit_ids.extend(v for v in (
+                record["insCode_P"], record["insCode_C"], record["uaInsCode"]
+            ) if v)
         for key, item in value.items():
             if key in {
                 "insCode", "InsCode", "instrument_id", "InstrumentID",
@@ -68,7 +72,7 @@ def main() -> None:
     payload = {
         "status": "SUCCESS",
         "test": test_name,
-        "adapter_version": "1.1",
+        "adapter_version": "1.0",
         "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
         "source": result.get("source"),
         "endpoint": result.get("endpoint"),
