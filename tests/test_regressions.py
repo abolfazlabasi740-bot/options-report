@@ -418,6 +418,20 @@ class RegressionTests(unittest.TestCase):
             global_report.set_index("نماد").loc["ضتست0", "FinalScore"],
         )
 
+    def test_scoped_and_full_reports_share_source_history_snapshot(self):
+        data = fixture()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "fixture.xlsx"
+            data.to_excel(source, index=False)
+            with patch("report_engine.ROOT", root):
+                full = build_report(source, top_count=4)
+                scoped = build_report(source, top_count=1, symbol_prefix="ضتست0")
+            self.assertEqual(len(full), 4)
+            self.assertEqual(len(scoped), 1)
+            history = (root / "output" / "historical_snapshots.jsonl").read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(history), 1)
+
     def test_shadow_failure_does_not_block_production_report(self):
         with patch("report_engine.pd.read_excel", return_value=fixture()), \
              patch("report_engine.run_shadow", side_effect=RuntimeError("synthetic shadow failure")):
