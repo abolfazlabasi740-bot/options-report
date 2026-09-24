@@ -65,8 +65,15 @@ def validate_package(package):
     roles = package.get("instrument_roles", {})
     if not isinstance(roles, dict):
         roles = {}
-    options = {i for i,r in roles.items() if r == "option"}
-    underlyings = {i for i,r in roles.items() if r == "underlying"}
+    def role_set(role_name):
+        result = set()
+        for iid, value in roles.items():
+            values = value if isinstance(value, list) else [value]
+            if role_name in values:
+                result.add(iid)
+        return result
+    options = role_set("option")
+    underlyings = role_set("underlying")
     if options & underlyings:
         errors.append("instrument_role_overlap_option_underlying")
     if len(options) < 3:
