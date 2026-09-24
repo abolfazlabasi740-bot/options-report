@@ -32,3 +32,8 @@ Until step 7, no FinalScore is promoted from the old OptionSchool-backed runtime
 
 ## Consequence
 The old reconciliation loop is no longer on the critical path. The 109 unmatched OptionSchool symbols do not block TSETMC development. Historical reconciliation remains available only for audit/history.
+
+
+## 2026-09-24 control update
+
+The active TSETMC report path now applies an optional symbol-prefix filter to the TSETMC Market-Watch universe before the bounded per-instrument enrichment limit. This prevents a symbol-scoped request from accidentally inspecting only the first N market-watch records. No ranking is implied; scoring remains OFF.
