@@ -120,7 +120,7 @@ def parse_expiry(value):
 
     # OptionSchool expiry values are commonly Jalali (e.g. 1405/09/29).
     # Detect the explicit 13xx/14xx Persian year before trying Gregorian forms.
-    m = re.fullmatch(r"(13\\d{2}|14\\d{2})[/-](\\d{1,2})[/-](\\d{1,2})", text)
+    m = re.fullmatch(r"(13\d{2}|14\d{2})[/-](\d{1,2})[/-](\d{1,2})", text)
     if m:
         jy, jm, jd = map(int, m.groups())
         if not (1 <= jm <= 12 and 1 <= jd <= 31):
