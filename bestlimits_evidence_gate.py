@@ -80,6 +80,12 @@ def validate_package(package):
     if not isinstance(semantic, list) or not semantic:
         errors.append("independent_same_time_semantic_evidence_missing")
     else:
+        capture_pairs = {
+            (str(item.get("instrument_id", "")).strip(), str(item.get("retrieved_at_utc", "")).strip())
+            for item in captures
+            if str(item.get("instrument_id", "")).strip() and str(item.get("retrieved_at_utc", "")).strip()
+        }
+        evidence_pairs = set()
         for idx, evidence in enumerate(semantic):
             if not isinstance(evidence, dict):
                 errors.append(f"semantic_evidence[{idx}]:must_be_object")
@@ -88,14 +94,23 @@ def validate_package(package):
             missing_semantic = sorted(required_semantic - evidence.keys())
             if missing_semantic:
                 errors.append(f"semantic_evidence[{idx}]:missing:" + ",".join(missing_semantic))
-            if evidence.get("instrument_id") not in seen:
+            iid = str(evidence.get("instrument_id", "")).strip()
+            ts = str(evidence.get("capture_timestamp_utc", "")).strip()
+            if iid not in seen:
                 errors.append(f"semantic_evidence[{idx}]:instrument_not_captured")
-            if not str(evidence.get("capture_timestamp_utc", "")).strip():
+            if not ts:
                 errors.append(f"semantic_evidence[{idx}]:missing_capture_timestamp")
             if not str(evidence.get("evidence_source", "")).strip():
                 errors.append(f"semantic_evidence[{idx}]:missing_source")
             if not str(evidence.get("evidence_location", "")).strip():
                 errors.append(f"semantic_evidence[{idx}]:missing_location")
+            pair = (iid, ts)
+            if pair not in capture_pairs:
+                errors.append(f"semantic_evidence[{idx}]:timestamp_not_exactly_matched_to_capture")
+            evidence_pairs.add(pair)
+        missing_pairs = sorted(capture_pairs - evidence_pairs)
+        if missing_pairs:
+            errors.append(f"semantic_evidence_missing_for_captures:{len(missing_pairs)}")
     return {
         "status": "READY_FOR_REVIEW" if not errors else "INCOMPLETE",
         "capture_count": len(captures),
