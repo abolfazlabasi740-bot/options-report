@@ -558,15 +558,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
     """TSETMC-only validation report. No scoring/ranking is applied until field evidence gate closes."""
     from tsetmc_first_source import build_tsetmc_snapshot
     limit = TOP_COUNT if top_count is None else int(top_count)
-    snapshot = build_tsetmc_snapshot(flow=flow, max_instruments=max(limit, 1))
-    rows = []
-    prefix = normalize_text(symbol_prefix) if symbol_prefix else None
-    for item in snapshot.get("rows", []):
-        canonical = item.get("canonical", {})
-        symbol = normalize_text(canonical.get("نماد")) if canonical.get("نماد") else ""
-        if prefix and not symbol.startswith(prefix):
-            continue
-        rows.append(item)
+    snapshot = build_tsetmc_snapshot(flow=flow, max_instruments=max(limit, 1), symbol_prefix=symbol_prefix)
+    rows = list(snapshot.get("rows", []))
 
     def number(value):
         if value in (None, ""):
