@@ -57,3 +57,11 @@ No Buy/Sell signal is emitted during this evidence-only phase.
 Repository inspection alone is not runtime evidence. Termux execution, source freshness and Bale delivery must be reverified on the deployed commit after cutover changes.
 
 The repository now contains a mocked regression test for the capture harness, but no live-market capture artifact is being represented as completed by repository changes alone.
+
+
+## Latest controlled change
+The active report boundary has been hardened so an off-market snapshot is explicitly labeled OFFMARKET, and a single source observation is never presented as proof of live market movement. The report and audit artifact now persist the market-state evidence and explicitly keep the live-movement claim unasserted.
+
+Latest implementation commit: 7b54fec9f2c6d590c992580f7ffb58eb27703e11.
+
+The next blocking gate remains live BestLimits evidence. No scoring or ranking has been re-enabled by this change.
