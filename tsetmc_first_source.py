@@ -34,10 +34,14 @@ def _quote_values(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(data,dict): return data
     if isinstance(data,list) and data and isinstance(data[0],dict): return data[0]
     return {}
-def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1) -> dict[str,Any]:
+def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, max_instruments: int | None=None) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
     mw=adapter.option_market_watch_instrument_records(flow=flow)
     instruments=mw.get("records",[])
+    if max_instruments is not None:
+        if isinstance(max_instruments, bool) or int(max_instruments) <= 0:
+            raise ValueError("max_instruments must be a positive integer")
+        instruments = instruments[:int(max_instruments)]
     rows=[]; quote_evidence=[]; orderbook_evidence=[]; underlying_evidence={}
     for instrument in instruments:
         option_id=instrument.get("instrument_id"); underlying_id=instrument.get("underlying_id")
