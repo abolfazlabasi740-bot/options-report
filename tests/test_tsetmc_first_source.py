@@ -13,6 +13,9 @@ class FakeAdapter:
                             "priceMin":1300,"priceMax":1600}}
         return {"source":"TSETMC","endpoint":"quote/UA1","snapshot_sha256":"qh2","retrieved_at":"t2",
                 "data":{"pDrCotVal":21000,"pClosing":20500}}
+    def instrument_info(self, ins_code):
+        return {"source":"TSETMC","endpoint":f"info/{ins_code}","snapshot_sha256":"ih","retrieved_at":"t4",
+                "data":{"contractSize":1000}}
     def order_book(self, ins_code):
         return {"source":"TSETMC","endpoint":f"book/{ins_code}","snapshot_sha256":"bh","retrieved_at":"t3","data":[]}
 class TsetmcFirstSourceTests(unittest.TestCase):
