@@ -1507,3 +1507,16 @@ G7-4 is materially advanced: identity is proven for 369 rows by exact unique sou
 ### G7-4 lifecycle evidence correction — 2026-09-24
 
 The Termux result previously showing 109/109 unmatched OptionSchool symbols as `EXPIRED_BEFORE_SNAPSHOT` has been invalidated. Audit found that the lifecycle analyzer interpreted Jalali OptionSchool expiry strings such as `1405/09/29` as Gregorian years. The analyzer is now corrected to parse explicit 13xx/14xx Jalali dates, with regression coverage. Correction commits: `a02bec0457901b727a0dcbe1be2b7fe3b213f176`, `976bc54b5c22de6ffff99361e961940cd183a5db`; test commit: `7a248860d628f65698da67d5e992bbf68e653a46`. No production path changed. A fresh Termux rerun against the same workbook and TSETMC snapshot is required before any lifecycle conclusion is recorded.
+
+## TSETMC-ONLY CUTOVER — 2026-09-24
+
+- Architectural decision changed: TSETMC is the sole source of truth for option instruments and market data.
+- Added `tsetmc_first_source.py` as the evidence-preserving canonical source layer.
+- Added `tests/test_tsetmc_first_source.py`.
+- Added `docs/TSETMC_ONLY_CUTOVER_V41.md`.
+- OptionSchool24 is archival evidence only; it is not used by the new source layer and must not fill missing TSETMC fields.
+- TSETMC Option Market-Watch is the identity universe; explicit option/underlying IDs are retained.
+- Option quote, underlying quote and BestLimits evidence are attached by explicit TSETMC IDs.
+- Unproven fields remain null. No formula, date convention, IV/HV, Greeks, leverage, collateral or open-interest value is invented.
+- The 109 historical unmatched OptionSchool symbols are no longer a blocker for the TSETMC-only development path.
+- Six-Block promotion remains gated until TSETMC-only field evidence is sufficient. No claim is made that the old OptionSchool-backed ranking has been cut over.
