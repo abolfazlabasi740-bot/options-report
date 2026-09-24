@@ -23,7 +23,7 @@ class FakeAdapter:
         return {"source":"TSETMC","endpoint":f"book/{ins_code}","snapshot_sha256":"bh","retrieved_at":"t3","data":[]}
 class TsetmcFirstSourceTests(unittest.TestCase):
     def test_tsetmc_is_only_source(self):
-        s=build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=1); self.assertEqual(s["source_of_truth"],"TSETMC")
+        s=build_tsetmc_snapshot(adapter=FakeAdapter(), symbol_prefix="ضTEST", max_instruments=1); self.assertEqual(s["source_of_truth"],"TSETMC")
         self.assertIsNone(s["external_comparison_source"]); self.assertEqual(s["row_count"],1)
         r=s["rows"][0]
         self.assertEqual(r["identity"]["instrument_id"],"OPT1"); self.assertEqual(r["identity"]["contract_type"],"CALL")
