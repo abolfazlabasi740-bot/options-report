@@ -7,7 +7,7 @@ import requests
 import json
 from bale_transport import send_message as transport_send
 
-from report_engine import download_optionschool, build_report, save_report
+from report_engine import build_tsetmc_report, save_tsetmc_report
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -60,22 +60,12 @@ def send_message(chat_id, text):
 
 
 def generate_report(command):
-    source = download_optionschool()
-
     if command in ("گزارش", "همه", "کل"):
-        work = build_report(
-            source,
-            top_count=15,
-        )
+        report, snapshot = build_tsetmc_report(top_count=15, flow=1)
     else:
-        work = build_report(
-            source,
-            top_count=5,
-            symbol_prefix=command,
-        )
+        report, snapshot = build_tsetmc_report(top_count=5, symbol_prefix=command, flow=1)
 
-    report = save_report(work, source)
-
+    save_tsetmc_report(report, snapshot)
     return report
 
 
@@ -110,8 +100,8 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("گزارش  -> 15 اختیار برتر کل بازار")
-    print("نماد    -> 5 اختیار برتر همان نماد")
+    print("گزارش  -> 15 قرارداد اول TSETMC برای اعتبارسنجی")
+    print("نماد    -> 5 قرارداد TSETMC همان نماد")
     print("====================================")
 
     offset = load_offset()
