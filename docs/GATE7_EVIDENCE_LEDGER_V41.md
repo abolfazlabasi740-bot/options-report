@@ -372,3 +372,12 @@ The runner has now been hardened to preserve the partial deterministic evidence:
 GitHub combined-status lookup for both commits returned no associated status checks; CI PASS is not claimed.
 
 Boundary: this evidence advances G7-4 identity readiness for 369 rows but does not close full G7-4. The remaining 109 symbols require source-level reconciliation before promotion. No prefix, strike, expiry or CALL/PUT inference is used.
+
+
+## G7-4 lifecycle-analysis correction — 2026-09-24
+
+The first Termux lifecycle summary for `output/g7_tsetmc/unmatched_symbols_v2.json` reported all 109 unmatched OptionSchool symbols as `EXPIRED_BEFORE_SNAPSHOT`. Repository audit identified a parsing defect in `scripts/analyze_unmatched_optionschool_symbols.py`: OptionSchool expiry values such as `1405/09/29` are Jalali dates, but the prior parser treated the year `1405` as Gregorian. Therefore that 109/109 lifecycle classification is invalid evidence and must not be used for Gate 7 closure or production filtering.
+
+The analyzer has now been hardened to explicitly parse 13xx/14xx Jalali expiry values before Gregorian forms, and a regression test was added for `1405/09/29` against the retained TSETMC snapshot time `2026-09-23T17:17:58.479447+00:00`. The corrected implementation is committed in `a02bec0457901b727a0dcbe1be2b7fe3b213f176` and the regex correction in `976bc54b5c22de6ffff99361e961940cd183a5db`; the regression test is in `7a248860d628f65698da67d5e992bbf68e653a46`. No production scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed.
+
+**Required next evidence:** rerun the corrected analyzer on the same retained workbook/snapshot and replace the invalid lifecycle result with the new exact status counts. Until that rerun is evidenced, G7-4 lifecycle analysis remains open.
