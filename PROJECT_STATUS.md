@@ -1452,3 +1452,21 @@ The controlled deployed-runtime command is documented in `docs/G7-4_TERMUX_LIVE_
 - The reconciliation runner never infers identity and never modifies production scoring, ranking, eligibility or Bale behavior.
 - GitHub workflow lookup for the documentation commit returned no run; no CI PASS is claimed for these new changes.
 - The remaining technical work is now narrowed to a real-source TSETMC↔OptionSchool row-level capture and formula reconciliation for the OPEN fields. This is the final evidence step before any consideration of replacing OptionSchool24 as a production dependency.
+
+
+## G7-4 Identity Key Clarification — 2026-09-24
+
+The deployed OptionSchool24 schema does not expose the numeric TSETMC `insCode`, but it does expose the explicit option symbol in `نماد`. TSETMC Option Market-Watch exposes the same option symbol in `lVal18AFC_P` / `lVal18AFC_C` alongside the authoritative numeric `insCode_P` / `insCode_C` and `uaInsCode`.
+
+Accordingly, absence of a numeric OptionSchool24 ID is not, by itself, an identity blocker. The reconciliation rule is now:
+- verify `نماد` is unique in the OptionSchool snapshot;
+- verify the corresponding TSETMC option symbols are unique in the retained TSETMC snapshot;
+- require an exact symbol equality;
+- retain TSETMC numeric option ID and underlying ID as authoritative metadata;
+- reject duplicate, missing or ambiguous symbol mappings;
+- never infer identity from prefix, strike, expiry or CALL/PUT.
+
+Implementation commit: `76457fc860ffea36264b63046a08781057dc7cb6`.
+Regression coverage commit: `913526d95eb68008ee2b5a9c9635932809e6eb2d`.
+
+The reconciliation runner now reports `EXPLICIT_SYMBOL_MATCH` separately from `EXACT_ID_MATCH`. Production scoring/ranking/eligibility/Bale behavior remains unchanged. G7-4 therefore moves from "blocked solely by missing OptionSchool ID" to "ready for real-source unique-symbol reconciliation"; it is not yet closed until a real retained TSETMC snapshot is reconciled against the actual OptionSchool workbook and the row-level field evidence is captured.
