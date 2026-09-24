@@ -80,6 +80,16 @@ class BestLimitsEvidenceHarnessTests(unittest.TestCase):
             },
         ]
 
+    def test_candidate_mapping_field_contract_is_explicit(self):
+        self.assertEqual(CANDIDATE_FIELDS, {
+            "bid_price": "pd",
+            "ask_price": "po",
+            "bid_quantity": "qd",
+            "ask_quantity": "qo",
+            "bid_order_count": "zd",
+            "ask_order_count": "zo",
+        })
+
     def test_candidate_mapping_passes_structural_invariants(self):
         for fixture in self._fixtures():
             self.assertEqual(
