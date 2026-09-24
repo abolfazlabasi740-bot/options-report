@@ -52,16 +52,39 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("output/tsetmc_live_smoke.json"))
     parser.add_argument("--flow", type=int, default=0)
     parser.add_argument("--option-market-watch", action="store_true")
+    parser.add_argument("--allow-network-unavailable", action="store_true")
     args = parser.parse_args()
 
     adapter = TSETMCAdapter()
-    if args.option_market_watch:
-        result = adapter.option_market_watch(flow=args.flow)
-        test_name = "TSETMC_OPTION_MARKET_WATCH"
-    else:
-        result = adapter.market_overview(flow=args.flow)
-        test_name = "TSETMC_MARKET_OVERVIEW"
-
+    try:
+        if args.option_market_watch:
+            result = adapter.option_market_watch(flow=args.flow)
+            test_name = "TSETMC_OPTION_MARKET_WATCH"
+        else:
+            result = adapter.market_overview(flow=args.flow)
+            test_name = "TSETMC_MARKET_OVERVIEW"
+    except Exception as exc:
+        if not args.allow_network_unavailable:
+            raise
+        payload = {
+            "status": "NETWORK_UNAVAILABLE",
+            "test": "TSETMC_OPTION_MARKET_WATCH" if args.option_market_watch else "TSETMC_MARKET_OVERVIEW",
+            "adapter_version": "1.0",
+            "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source": "TSETMC",
+            "data_present": False,
+            "network_error": type(exc).__name__,
+            "network_error_message": str(exc),
+            "explicit_ins_code_count": 0,
+            "explicit_ins_codes": [],
+            "explicit_option_record_count": 0,
+            "explicit_option_records": [],
+        }
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        args.output.with_suffix(".raw.json").write_text(json.dumps({"status": "NETWORK_UNAVAILABLE"}, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return
     raw_evidence_path = args.output.with_suffix(".raw.json")
     raw_evidence_path.write_text(
         json.dumps(result.get("data"), ensure_ascii=False, indent=2, allow_nan=False),
