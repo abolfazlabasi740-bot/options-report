@@ -1,18 +1,18 @@
 # TSETMC-First 38-Field Audit — V4.1.1
 
 Date: 2026-09-24
-Scope: OptionSchool24 38-column live schema versus the currently implemented TSETMC evidence boundary.
+Scope: Historical 38-field reference versus the currently implemented TSETMC-only evidence boundary.
 Authority: evidence-only. This document does not activate TSETMC in production scoring/ranking.
 
 ## Executive conclusion
 
 The current repository proves that TSETMC can supply the exact option/underlying identity boundary and the core market-watch/quote/order-book evidence required for a TSETMC-first architecture.
 
-It does NOT prove that all 38 OptionSchool24 columns are raw TSETMC fields. The safe architecture is therefore:
+It does NOT prove that all historical 38 fields are raw TSETMC fields. The active architecture is therefore:
 
-TSETMC raw source -> OptimusAI canonical raw layer -> derived calculations -> Intelligence/Scoring
+TSETMC raw source -> OptimusAI canonical evidence layer -> derived calculations -> Intelligence/Scoring
 
-OptionSchool24 remains a benchmark/cross-check until the derived formulas are independently reconciled.
+Historical OptionSchool24 files are archive/evidence only. They are not an active source, fallback, reconciliation dependency, or mapping authority.
 
 No production ranking, scoring, eligibility, Signal or Bale behavior is changed by this audit.
 
@@ -32,7 +32,7 @@ No production ranking, scoring, eligibility, Signal or Bale behavior is changed 
 3. Exact option instrument records preserve instrument_id, symbol, contract_type, underlying_id, underlying_symbol, strike, begin_date, end_date and remaining_days.
 4. Quote boundary preserves pDrCotVal/pl, pClosing/pc, qTotTran5J/zTotTran, qTotCap and source observation timestamp when dEven/hEven are present.
 5. BestLimits is implemented as an explicit TSETMC order-book boundary.
-6. The active OptionSchool24 workbook boundary currently contains no accepted explicit TSETMC option-ID column in the inspected live workbook; therefore end-to-end row promotion remains blocked.
+6. Historical OptionSchool24 material is outside the active runtime and cannot be used to promote or validate TSETMC rows.
 
 ## 38-field mapping
 
@@ -63,10 +63,10 @@ No production ranking, scoring, eligibility, Signal or Bale behavior is changed 
 | 23 | نوسان ضمنی | Derived | implied-volatility solve from option price/model | OPEN formula/model reconciliation |
 | 24 | نوسان تاریخی | Derived | historical underlying returns/volatility window | OPEN window/source reconciliation |
 | 25 | اندازه قرارداد | Raw/Source-specific | option contract specification; exact live field not yet captured in current adapter | OPEN |
-| 26 | حجم بهترین تقاضا | Raw | BestLimits demand quantity | VERIFIED boundary; live option-row capture pending |
-| 27 | قیمت بهترین تقاضا | Raw | BestLimits demand price | VERIFIED boundary; live option-row capture pending |
-| 28 | حجم بهترین عرضه | Raw | BestLimits offer quantity | VERIFIED boundary; live option-row capture pending |
-| 29 | قیمت بهترین عرضه | Raw | BestLimits offer price | VERIFIED boundary; live option-row capture pending |
+| 26 | حجم بهترین تقاضا | Raw | BestLimits raw field exists; semantic mapping to demand quantity is not yet proven | OPEN — semantic mapping gate |
+| 27 | قیمت بهترین تقاضا | Raw | BestLimits raw field exists; semantic mapping to demand price is not yet proven | OPEN — semantic mapping gate |
+| 28 | حجم بهترین عرضه | Raw | BestLimits raw field exists; semantic mapping to offer quantity is not yet proven | OPEN — semantic mapping gate |
+| 29 | قیمت بهترین عرضه | Raw | BestLimits raw field exists; semantic mapping to offer price is not yet proven | OPEN — semantic mapping gate |
 | 30 | کمترین قیمت | Raw | quote priceMin | VERIFIED boundary |
 | 31 | بیشترین قیمت | Raw | quote priceMax | VERIFIED boundary |
 | 32 | شکاف قیمتی | Derived | best ask - best bid / frozen spread convention | DERIVED |
@@ -80,28 +80,27 @@ No production ranking, scoring, eligibility, Signal or Bale behavior is changed 
 ## Hard rules
 
 - No numeric option ID is inferred from symbol, prefix, strike, expiry or CALL/PUT.
-- OptionSchool24 symbol (نماد) is an explicit source field and may be used as an identity key only when the symbol is unique in the OptionSchool snapshot, unique in the TSETMC snapshot, and exactly matches.
-- A TSETMC numeric option instrument ID remains the strongest identity evidence. Where OptionSchool24 does not expose it, an exact unique symbol match may establish cross-source row identity for reconciliation; the underlying ID must still come from TSETMC and no ID is fabricated.
+- TSETMC numeric option instrument ID is the active identity boundary. Symbol text is not an identity resolver and is not used to manufacture or promote a TSETMC instrument ID.
 - TSETMC retrieval time is not treated as market observation time.
 - Unknown fields remain UNKNOWN/OPEN; they are not filled with guessed formulas.
-- OptionSchool24 values may be used for reconciliation, not as proof that a field is a raw TSETMC field.
+- Historical OptionSchool24 values are archive/evidence only and are not used for active reconciliation or production mapping.
 - Production scoring/ranking remains unchanged until the field-level reconciliation is completed and independently evidenced.
 
 ## Current release impact
 
-This audit closes the architectural question at the boundary level: a TSETMC-first raw-data layer is technically feasible and the exact option identity is available from TSETMC Option Market-Watch.
+This audit records the TSETMC-only boundary: a TSETMC-first raw-data layer is technically feasible and the explicit option identity is available from TSETMC Option Market-Watch.
 
-It does not close G7-1, G7-3 or G7-5 by itself. For G7-4, the absence of a numeric OptionSchool24 ID is no longer by itself a blocker: the project can use a verified unique exact symbol mapping, while retaining TSETMC's explicit numeric option/underlying IDs as the authoritative identity evidence.
+It does not close the remaining evidence gates. In particular, BestLimits semantic mapping remains open and historical OptionSchool material cannot close that gate.
 
 ## Next implementation gate
 
-The next technical gate is not more guessing. It is a real-source reconciliation run that captures, for the same option instruments:
+The next technical gate is direct TSETMC evidence, not cross-source reconciliation:
 
 1. TSETMC explicit option identity and underlying identity.
-2. Exact unique OptionSchool symbol-to-TSETMC symbol mapping, with uniqueness evidence on both sides.
-3. TSETMC quote and BestLimits payloads.
-4. OptionSchool24 38 columns.
-5. Field-by-field equality/tolerance results.
-6. Formula/provenance evidence for every Derived/OPEN field.
+2. Raw BestLimits payload with instrument ID, timestamp, endpoint and hash.
+3. Independent semantic evidence for zo/zd/pd/po/qd/qo.
+4. Time-locked validation across multiple instruments and timestamps.
+5. Regression fixtures including one-sided/zero-depth cases.
+6. Explicit adapter contract and mapping freeze only after the evidence chain is complete.
 
-Only after that evidence exists should the project consider replacing OptionSchool24 as a production dependency.
+Historical OptionSchool24 material cannot close this gate.
