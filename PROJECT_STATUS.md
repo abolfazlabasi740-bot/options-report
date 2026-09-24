@@ -29,7 +29,7 @@ Current status:
 - evidence package validator: IMPLEMENTED
 - payload SHA integrity check: IMPLEMENTED
 - structured independent-evidence reference check: IMPLEMENTED
-- exact capture/evidence timestamp-pair check: IMPLEMENTED
+- deterministic capture/evidence time-window check: IMPLEMENTED
 - validator regression tests: PRESENT (execution not claimed)
 
 Structural invariants such as `po >= pd` and non-negative quantities/counts are rejection tests only; they cannot independently prove field identity.
@@ -40,7 +40,7 @@ Six-Block scoring and production ranking remain OFF while the TSETMC field-evide
 ## Next controlled gates
 1. Execute isolated live BestLimits captures against explicitly identified instruments.
 2. Preserve complete raw payload, extracted raw levels, endpoint, instrument ID, UTC capture times and SHA-256 for each capture.
-3. Pair every captured observation with an independently established semantic-evidence reference at the exact captured timestamp; nearby timestamps are not accepted.
+3. Pair every captured observation with an independently established semantic-evidence reference within a deterministic 2-second window of the capture timestamp; the exact same second is not required because independent capture introduces transport/observation latency.
 4. Run regression across normal, one-sided and zero-depth observations where actually observed.
 5. Freeze `BestLimitsAdapter` only after the evidence chain passes review.
 6. Verify contract specification and open-interest evidence.
