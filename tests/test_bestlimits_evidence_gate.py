@@ -48,10 +48,10 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
 
     def test_semantic_evidence_timestamp_must_match_capture_exactly(self):
         package = self._package()
-        package["independent_semantic_evidence"][0]["capture_timestamp_utc"] = "2026-09-24T10:00:00+00:01"
+        package["independent_semantic_evidence"][0]["capture_timestamp_utc"] = "2026-09-24T10:00:03+00:00"
         result = gate.validate_package(package)
         self.assertEqual(result["status"], "INCOMPLETE")
-        self.assertIn("semantic_evidence[0]:timestamp_not_exactly_matched_to_capture", result["errors"])
+        self.assertIn("semantic_evidence[0]:timestamp_outside_2s_capture_window", result["errors"])
 
     def test_payload_hash_mismatch_is_rejected(self):
         package = self._package()
