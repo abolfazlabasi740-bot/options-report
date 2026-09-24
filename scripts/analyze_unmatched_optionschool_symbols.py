@@ -22,8 +22,8 @@ import pandas as pd
 def sha256_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
-        for b in iter(lambda: f.read(1024 * 1024), b):
-            h.update(b)
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
     return h.hexdigest()
 
 
