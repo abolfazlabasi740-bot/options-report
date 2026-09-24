@@ -7,6 +7,7 @@ and never unlocks scoring.
 """
 from __future__ import annotations
 import argparse, hashlib, json
+from datetime import datetime
 from pathlib import Path
 
 REQUIRED_FIELDS = {
@@ -104,13 +105,40 @@ def validate_package(package):
                 errors.append(f"semantic_evidence[{idx}]:missing_source")
             if not str(evidence.get("evidence_location", "")).strip():
                 errors.append(f"semantic_evidence[{idx}]:missing_location")
-            pair = (iid, ts)
-            if pair not in capture_pairs:
-                errors.append(f"semantic_evidence[{idx}]:timestamp_not_exactly_matched_to_capture")
-            evidence_pairs.add(pair)
-        missing_pairs = sorted(capture_pairs - evidence_pairs)
-        if missing_pairs:
-            errors.append(f"semantic_evidence_missing_for_captures:{len(missing_pairs)}")
+            if iid in seen and ts:
+                try:
+                    evidence_time = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    capture_times = [datetime.fromisoformat(str(x).replace("Z", "+00:00")) for x in seen[iid] if x]
+                    if not any(abs((evidence_time - ct).total_seconds()) <= 2 for ct in capture_times):
+                        errors.append(f"semantic_evidence[{idx}]:timestamp_outside_2s_capture_window")
+                except (ValueError, TypeError):
+                    errors.append(f"semantic_evidence[{idx}]:invalid_timestamp")
+            else:
+                errors.append(f"semantic_evidence[{idx}]:cannot_correlate_timestamp")
+        for iid, timestamps in seen.items():
+            for raw_ts in timestamps:
+                if not raw_ts:
+                    continue
+                try:
+                    ct = datetime.fromisoformat(str(raw_ts).replace("Z", "+00:00"))
+                    matching = False
+                    for evidence in semantic:
+                        if not isinstance(evidence, dict) or str(evidence.get("instrument_id", "")).strip() != iid:
+                            continue
+                        ets = str(evidence.get("capture_timestamp_utc", "")).strip()
+                        if not ets:
+                            continue
+                        try:
+                            et = datetime.fromisoformat(ets.replace("Z", "+00:00"))
+                            if abs((et - ct).total_seconds()) <= 2:
+                                matching = True
+                                break
+                        except (ValueError, TypeError):
+                            continue
+                    if not matching:
+                        errors.append(f"semantic_evidence_missing_for_capture:{iid}:{raw_ts}")
+                except (ValueError, TypeError):
+                    errors.append(f"capture_timestamp_invalid:{iid}:{raw_ts}")
     return {
         "status": "READY_FOR_REVIEW" if not errors else "INCOMPLETE",
         "capture_count": len(captures),
