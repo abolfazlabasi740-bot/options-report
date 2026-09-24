@@ -29,6 +29,25 @@ This table is a TEST HYPOTHESIS ONLY. It is not an adapter contract and must not
 
 ## Evidence currently available
 
+### Semantic cross-reference found — candidate mapping strongly corroborated
+
+A published TSETMC filter-variable reference explicitly defines the level-1 fields as:
+- `pd1`: purchase/buy price
+- `zd1`: number of buyers
+- `qd1`: buy volume
+- `po1`: sell price
+- `zo1`: number of sellers
+- `qo1`: sell volume
+
+The same six-field definitions are independently reproduced by another TSETMC/PyTse reference. This is materially stronger than the earlier wire-schema evidence because the variables are tied to explicit market semantics, not merely their raw names.
+
+The evidence therefore supports the candidate mapping:
+`pd -> Bid Price`, `po -> Ask Price`, `qd -> Bid Quantity`, `qo -> Ask Quantity`, `zd -> Bid Order Count`, `zo -> Ask Order Count`.
+
+However, these are third-party published references rather than an official TSETMC field-definition document. They therefore move the hypothesis from "unsubstantiated" to "independently corroborated", but do not by themselves authorize production freeze. A live time-locked TSETMC regression remains required.
+
+
+
 A public implementation of TSETMC MarketWatch parsing exposes the six fields with the schema `zo, zd, pd, po, qd, qo` and preserves them as numeric raw fields. Its documentation also points to TSETMC pages for field-name meaning, but the implementation itself does not establish the semantic translation required by this project. Therefore it is evidence of wire format, not sufficient evidence of meaning. citeturn0search0turn0search1
 
 A separate implementation exposes a reconstructed order-book representation using semantic names such as BidPrice, BidVolume, AskPrice, and AskVolume, but this is an independent implementation and is not treated as authoritative proof for the raw six-field mapping. It can be used only as a candidate cross-reference during the evidence phase.
