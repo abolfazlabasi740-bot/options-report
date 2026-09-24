@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""TSETMC-only production source boundary for OptimusAI V4.1.1.
+"""TSETMC-only production report boundary for OptimusAI V4.1.1.
 
-No legacy workbook is consumed by the active runtime.
-Historical external-source artifacts remain archival evidence only.
-
-The report is operational while keeping live-market claims fail-closed:
-- SESSION_OPEN: source may be current, but scoring remains gated.
-- OFFMARKET: the latest TSETMC snapshot is reportable, never as live movement.
-- SINGLE_SOURCE_OBSERVATION: movement is not proven from one observation.
+Reporting remains available outside market hours by using the latest valid
+TSETMC snapshot. Cached data is explicitly labelled and never presented as
+live movement. Scoring/ranking remain fail-closed behind the evidence gate.
 """
 from __future__ import annotations
 
@@ -61,7 +57,10 @@ def _source_observation_state(snapshot):
 def _market_state(snapshot):
     session = _session_state()
     observation = _source_observation_state(snapshot)
-    if session == "OFFMARKET":
+    data_mode = snapshot.get("data_mode")
+    if data_mode == "LAST_KNOWN_TSETMC_SNAPSHOT":
+        status = "OFFMARKET_USING_LAST_KNOWN_TSETMC" if session == "OFFMARKET" else "SESSION_OPEN_USING_LAST_KNOWN_TSETMC"
+    elif session == "OFFMARKET":
         status = "OFFMARKET"
     elif observation["status"] == "SINGLE_SOURCE_OBSERVATION":
         status = "SESSION_OPEN_BUT_MOVEMENT_NOT_PROVEN"
@@ -73,6 +72,9 @@ def _market_state(snapshot):
         "session_state": session,
         "observation_state": observation["status"],
         "status": status,
+        "data_mode": data_mode,
+        "live_refresh_status": snapshot.get("live_refresh_status"),
+        "fallback_reason": snapshot.get("fallback_reason"),
         "unique_timestamp_count": observation["unique_timestamp_count"],
         "latest_source_market_timestamp": observation["latest_source_market_timestamp"],
     }
@@ -88,7 +90,19 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
         max_instruments=limit,
         symbol_prefix=symbol_prefix,
     )
-    rows = list(snapshot.get("rows", []))[:limit]
+    # Cache fallback returns the previously persisted universe; apply the
+    # caller's limit/filter here as well so live and cached paths are identical.
+    rows = list(snapshot.get("rows", []))
+    if symbol_prefix:
+        prefix = str(symbol_prefix).strip()
+        rows = [
+            row for row in rows
+            if str(row.get("canonical", {}).get("نماد") or "").startswith(prefix)
+        ]
+    rows = rows[:limit]
+    snapshot["rows"] = rows
+    snapshot["row_count"] = len(rows)
+
     market_state = _market_state(snapshot)
     snapshot["market_state"] = market_state
 
@@ -101,26 +115,41 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
             return str(value)
 
     mw = snapshot.get("evidence", {}).get("market_watch", {})
+    data_mode = snapshot.get("data_mode") or "UNKNOWN"
+    basis_timestamp = market_state["latest_source_market_timestamp"] or "داده موجود نیست"
+
     lines = [
         "📊 گزارش اولیه بازار اختیار معامله — TSETMC-ONLY",
         "━━━━━━━━━━━━━━━━━━━━",
         "📥 منبع حقیقت: TSETMC",
+        f"📌 حالت داده: {data_mode}",
+        f"📌 وضعیت به‌روزرسانی زنده: {snapshot.get('live_refresh_status', 'داده موجود نیست')}",
         f"📌 وضعیت جلسه بازار: {market_state['session_state']}",
-        f"📌 وضعیت مشاهده منبع: {market_state['status']}",
+        f"📌 وضعیت گزارش: {market_state['status']}",
         f"📌 تعداد timestamp مشاهده‌شده از منبع: {market_state['unique_timestamp_count']}",
-        f"📌 آخرین timestamp صریح منبع: {market_state['latest_source_market_timestamp'] or 'داده موجود نیست'}",
+        f"📌 آخرین timestamp صریح منبع: {basis_timestamp}",
         f"📌 تعداد رکوردهای Market-Watch: {mw.get('record_count', 0)}",
-        f"📌 تعداد قراردادهای قابل استخراج: {snapshot.get('row_count', 0)}",
-        f"⏱ زمان دریافت: {mw.get('retrieved_at', 'داده موجود نیست')}",
+        f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
+        f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
         "⚠️ امتیازدهی شش‌بلوک و رتبه‌بندی تولیدی تا تکمیل Evidence Gate فعال نیست.",
         "⚠️ هر فیلد فاقد شواهد مستقیم TSETMC عمداً «داده موجود نیست» باقی می‌ماند.",
     ]
 
-    if market_state["session_state"] == "OFFMARKET":
-        lines.append("ℹ️ بازار خارج از جلسه معاملاتی است؛ این خروجی snapshot منبع است و به‌عنوان حرکت زنده بازار تفسیر نمی‌شود.")
+    if data_mode == "LAST_KNOWN_TSETMC_SNAPSHOT":
+        lines.append(
+            "ℹ️ بازار/endpoint در این اجرا refresh زنده نداده است؛ مبنای گزارش آخرین Snapshot معتبر TSETMC است و این خروجی حرکت زنده فعلی را ادعا نمی‌کند."
+        )
+        if snapshot.get("fallback_reason"):
+            lines.append(f"ℹ️ علت استفاده از Snapshot قبلی: {snapshot['fallback_reason']}")
+    elif market_state["session_state"] == "OFFMARKET":
+        lines.append(
+            "ℹ️ بازار خارج از جلسه معاملاتی است؛ داده TSETMC در این خروجی به‌عنوان آخرین وضعیت معتبر منبع گزارش می‌شود، نه حرکت زنده."
+        )
     elif market_state["observation_state"] == "SINGLE_SOURCE_OBSERVATION":
-        lines.append("ℹ️ timestamp مشاهده‌شده یکتا است؛ حرکت لحظه‌ای بازار اثبات نشده و گزارش live-moving محسوب نمی‌شود.")
+        lines.append(
+            "ℹ️ timestamp مشاهده‌شده یکتا است؛ حرکت لحظه‌ای بازار اثبات نشده و گزارش live-moving محسوب نمی‌شود."
+        )
 
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
@@ -161,6 +190,11 @@ def save_tsetmc_report(report, snapshot):
         "snapshot_sha256": snapshot.get("snapshot_sha256"),
         "row_count": snapshot.get("row_count"),
         "generated_at": snapshot.get("generated_at"),
+        "data_mode": snapshot.get("data_mode"),
+        "live_refresh_status": snapshot.get("live_refresh_status"),
+        "fallback_reason": snapshot.get("fallback_reason"),
+        "basis_source_market_timestamp": snapshot.get("market_state", {}).get("latest_source_market_timestamp"),
+        "last_known_snapshot": snapshot.get("data_mode") == "LAST_KNOWN_TSETMC_SNAPSHOT",
         "market_watch": snapshot.get("evidence", {}).get("market_watch", {}),
         "market_state": snapshot.get("market_state", {}),
         "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
@@ -194,6 +228,8 @@ def main():
     print("\nREPORT_FILE =", report_path)
     print("SOURCE_OF_TRUTH = TSETMC")
     print("EXTERNAL_COMPARISON_SOURCE = NONE")
+    print("DATA_MODE =", snapshot.get("data_mode"))
+    print("LIVE_REFRESH_STATUS =", snapshot.get("live_refresh_status"))
     print("SCORING_STATUS = OFF_FIELD_EVIDENCE_GATE_OPEN")
     print("LIVE_MOVEMENT_CLAIM = NOT_CLAIMED")
 
