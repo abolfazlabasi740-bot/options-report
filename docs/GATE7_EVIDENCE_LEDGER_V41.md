@@ -341,3 +341,34 @@ The evidence-only reconciliation rule is therefore deterministic exact symbol ma
 - Production scoring/ranking/eligibility/Bale behavior is unchanged.
 
 G7-4 is not closed by this code change alone. Closure still requires a real retained TSETMC snapshot reconciled with the actual OptionSchool workbook, with row-level field evidence and the explicit underlying linkage preserved.
+
+
+## G7-4 Real Termux Unique-Symbol Reconciliation — 2026-09-24
+
+User-provided Termux execution of the evidence-only reconciliation runner against a real OptionSchool24 workbook and retained TSETMC Option Market-Watch raw response produced:
+
+- Workbook: `optionschool_20260922_174818_730899.xlsx`
+- Workbook SHA-256: `78ef5ffe945138748076ee81694e8b1d0319dd5d79d8e50ff99c238934931693`
+- Workbook dimensions: 478 rows × 38 columns
+- Explicit OptionSchool numeric TSETMC ID: none
+- TSETMC normalized instrument records: 1,082
+- OptionSchool `نماد` unique: true
+- TSETMC option symbols unique: true
+- Exact unique symbol matches: 369
+- Unmatched symbols: 109
+- Ambiguous symbol matches: 0
+- Match rate: 0.7719665271966527
+- Identity inference: disabled
+
+The initial runner returned `NO_SAFE_IDENTITY_MATCH` because its acceptance condition required complete 478/478 coverage. That result did not mean that the 369 exact matches were invalid; it meant full-snapshot promotion was withheld.
+
+The runner has now been hardened to preserve the partial deterministic evidence:
+- Implementation: `a79e2d9424ef57538910e9d6962b47da173f1bf1`
+- Test: `e8d18d5aa597d2b719681b20ee4b574b051abc53`
+- State for partial coverage: `PARTIAL_EXPLICIT_SYMBOL_MATCH`
+- Unmatched rows remain blocked.
+- Row-level evidence retains the exact OptionSchool symbol and corresponding explicit TSETMC option/underlying identifiers and source metadata.
+
+GitHub combined-status lookup for both commits returned no associated status checks; CI PASS is not claimed.
+
+Boundary: this evidence advances G7-4 identity readiness for 369 rows but does not close full G7-4. The remaining 109 symbols require source-level reconciliation before promotion. No prefix, strike, expiry or CALL/PUT inference is used.
