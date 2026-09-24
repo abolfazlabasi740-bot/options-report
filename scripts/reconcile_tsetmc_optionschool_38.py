@@ -82,9 +82,35 @@ def reconcile(workbook,tsetmc):
     elif os_symbols and os_unique and t_unique and symbol_matches == len(os_symbols):
         identity_method="EXPLICIT_SYMBOL_MATCH"
         field_reconciliation="IDENTITY_READY_FOR_FIELD_COMPARISON"
+    elif os_symbols and os_unique and t_unique and symbol_matches > 0:
+        identity_method="PARTIAL_EXPLICIT_SYMBOL_MATCH"
+        field_reconciliation="PARTIAL_IDENTITY_READY_UNMATCHED_ROWS_BLOCKED"
     else:
         identity_method="NO_SAFE_IDENTITY_MATCH"
         field_reconciliation="BLOCKED_UNTIL_EXPLICIT_ID_OR_UNIQUE_SYMBOL_MATCH"
+
+    row_mappings=[]
+    for i, s in enumerate(os_symbols, start=1):
+        matches=t_by_symbol.get(s,[])
+        if len(matches)==1:
+            r=matches[0]
+            row_mappings.append({
+                "optionschool_row":i,
+                "symbol":s,
+                "mapping_status":"EXACT_UNIQUE_SYMBOL_MATCH",
+                "tsetmc_instrument_id":r["instrument_id"],
+                "tsetmc_contract_type":r["contract_type"],
+                "tsetmc_underlying_id":r["underlying_id"],
+                "tsetmc_underlying_symbol":r["underlying_symbol"],
+                "tsetmc_strike":r["strike"],
+                "tsetmc_begin_date":r["begin_date"],
+                "tsetmc_end_date":r["end_date"],
+                "tsetmc_remaining_days":r["remaining_days"]
+            })
+        elif len(matches)>1:
+            row_mappings.append({"optionschool_row":i,"symbol":s,"mapping_status":"AMBIGUOUS_SYMBOL"})
+        else:
+            row_mappings.append({"optionschool_row":i,"symbol":s,"mapping_status":"SYMBOL_NOT_FOUND"})
 
     return {
       "status":"SUCCESS",
@@ -112,6 +138,10 @@ def reconcile(workbook,tsetmc):
       "identity_inference":"DISABLED",
       "production_changed":False,
       "field_reconciliation":field_reconciliation,
+      "row_mapping_count":len(row_mappings),
+      "row_mapping_exact_unique_count":sum(1 for x in row_mappings if x["mapping_status"]=="EXACT_UNIQUE_SYMBOL_MATCH"),
+      "row_mapping_unmatched_count":sum(1 for x in row_mappings if x["mapping_status"]!="EXACT_UNIQUE_SYMBOL_MATCH"),
+      "row_mappings":row_mappings,
       "note":"Symbol matching is accepted only as an exact explicit source-field match after uniqueness is verified in both snapshots. It is not inference. Derived-field equality requires a separate formula reconciliation layer."
     }
 
