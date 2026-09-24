@@ -61,3 +61,32 @@ Those 109 are not yet proven to be closed/expired.
 ## Next gate
 
 After the updated reconciliation is executed on the retained raw snapshot, use the 369 exact row mappings for field-by-field comparison. Derived fields remain OPEN until their formulas, source inputs, conventions, and tolerances are independently evidenced.
+
+## Corrected lifecycle result — 2026-09-24
+
+The corrected Termux run on the same retained evidence produced:
+
+- TOTAL unmatched: 109
+- NOT_EXPIRED_BEFORE_SNAPSHOT: 109
+- EXPIRED_BEFORE_SNAPSHOT: 0
+- NOT_PROVABLE_FROM_CURRENT_EVIDENCE: 0
+
+Snapshot retrieval time used: 2026-09-23T17:17:58.479447+00:00
+
+Therefore all 109 unmatched symbols had an OptionSchool expiry date after the retained TSETMC snapshot time. This does not prove that the contracts were active, tradable, or omitted from the snapshot for one particular reason. It proves only that expiry-before-snapshot is not an explanation supported by the current evidence.
+
+The previous 109/109 expired result is invalid and must not be used.
+
+## Next evidence boundary
+
+Because the unmatched set is future-dated relative to the retained snapshot, the next investigation is an authoritative TSETMC InstrumentSearch lookup for each exact unmatched symbol. The new evidence-only runner is scripts/investigate_unmatched_tsetmc_search.py.
+
+Termux command:
+
+    cd ~/OptimusAI_V41_LIVE
+    git pull --ff-only origin main
+    python3 scripts/investigate_unmatched_tsetmc_search.py --unmatched output/g7_tsetmc/unmatched_symbols_v3.json --output output/g7_tsetmc/unmatched_tsetmc_search.json
+
+Then summarize status counts and print exact returned symbol matches. The runner accepts only exact returned symbol equality and records the TSETMC endpoint, response hash, retrieval time, exact match count, and returned records. It does not infer identity and does not modify production behavior.
+
+Next G7-4 evidence requirement: execute this lookup on Termux and retain the output artifact. No production activation is permitted from this investigation alone.
