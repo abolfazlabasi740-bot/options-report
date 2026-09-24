@@ -1423,3 +1423,19 @@ Commit `e4700a7776ae99abaa0658aed9077a18ee53c5df` passed the repository validati
 - live-schema-audit: run `35904888379` — success
 
 The corrected mapping now preserves explicit TSETMC `underlying_symbol` metadata through the mapping layer. G7-4 remains OPEN because repository CI does not substitute for deployed Termux evidence and the active OptionSchool24 production workbook still lacks an accepted explicit TSETMC option instrument ID. No symbol/prefix/strike/expiry inference is permitted.
+
+
+## G7-4 OptionSchool Explicit-Identity Readiness Control — 2026-09-24
+
+A repository-side evidence-only readiness check was added for the actual OptionSchool24 workbook boundary. It checks only accepted explicit TSETMC option-ID aliases and never derives an ID from symbol, strike, expiry or CALL/PUT prefix.
+
+- Implementation commit: `f8b017c306990443f9e71423b4bec8b6e6c404e3`.
+- Regression test commit: `975e251d73c2b5fdeae4ba3dc70640d2d4a7e7e0`.
+- Runtime documentation commit: `ae35c1bdfa9aca2d3d047c4c653c24e5b24c5808`.
+- Accepted aliases checked: `insCode`, `InsCode`, `instrument_id`, `InstrumentID`, `کد نماد`, `کد معاملاتی`.
+- Output states are `NO_EXPLICIT_OPTION_ID` or `EXPLICIT_ID_AVAILABLE`.
+- The check records source SHA-256, row/column counts, aliases present and populated-ID counts.
+- No production scoring, ranking, eligibility, TSETMC activation or Bale behavior is changed.
+- The available GitHub integration currently returns no workflow runs/commit statuses for these three commits, so CI PASS is not claimed for them.
+
+The controlled deployed-runtime command is documented in `docs/G7-4_TERMUX_LIVE_EXECUTION.md`. G7-4 remains OPEN until an actual OptionSchool24 source row with a populated accepted explicit option ID is captured and promoted through the exact mapping path. No synthetic identity is permitted.
