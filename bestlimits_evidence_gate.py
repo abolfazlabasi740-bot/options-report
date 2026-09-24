@@ -76,8 +76,26 @@ def validate_package(package):
     for iid, timestamps in seen.items():
         if len(set(timestamps)) < 2:
             errors.append(f"multiple_timestamps_required:{iid}")
-    if not package.get("independent_semantic_evidence"):
+    semantic = package.get("independent_semantic_evidence")
+    if not isinstance(semantic, list) or not semantic:
         errors.append("independent_same_time_semantic_evidence_missing")
+    else:
+        for idx, evidence in enumerate(semantic):
+            if not isinstance(evidence, dict):
+                errors.append(f"semantic_evidence[{idx}]:must_be_object")
+                continue
+            required_semantic = {"instrument_id", "capture_timestamp_utc", "evidence_source", "evidence_location"}
+            missing_semantic = sorted(required_semantic - evidence.keys())
+            if missing_semantic:
+                errors.append(f"semantic_evidence[{idx}]:missing:" + ",".join(missing_semantic))
+            if evidence.get("instrument_id") not in seen:
+                errors.append(f"semantic_evidence[{idx}]:instrument_not_captured")
+            if not str(evidence.get("capture_timestamp_utc", "")).strip():
+                errors.append(f"semantic_evidence[{idx}]:missing_capture_timestamp")
+            if not str(evidence.get("evidence_source", "")).strip():
+                errors.append(f"semantic_evidence[{idx}]:missing_source")
+            if not str(evidence.get("evidence_location", "")).strip():
+                errors.append(f"semantic_evidence[{idx}]:missing_location")
     return {
         "status": "READY_FOR_REVIEW" if not errors else "INCOMPLETE",
         "capture_count": len(captures),
