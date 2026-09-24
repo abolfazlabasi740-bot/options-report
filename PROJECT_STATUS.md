@@ -1439,3 +1439,16 @@ A repository-side evidence-only readiness check was added for the actual OptionS
 - The available GitHub integration currently returns no workflow runs/commit statuses for these three commits, so CI PASS is not claimed for them.
 
 The controlled deployed-runtime command is documented in `docs/G7-4_TERMUX_LIVE_EXECUTION.md`. G7-4 remains OPEN until an actual OptionSchool24 source row with a populated accepted explicit option ID is captured and promoted through the exact mapping path. No synthetic identity is permitted.
+
+
+## TSETMC-First 38-Field Completion — 2026-09-24
+
+- Completed the evidence-only TSETMC-first audit for all 38 OptionSchool24 fields in `docs/TSETMC_FIRST_38_FIELD_AUDIT_V41.md`.
+- Audit commit: `03598ffcd948b24fc81807069adc7eb5e2e0b9c9`.
+- The audit separates Raw TSETMC fields, OptimusAI-derived fields, source-specific/unknown fields, and formula-reconciliation gaps. No field was populated by inference.
+- Added `scripts/reconcile_tsetmc_optionschool_38.py` to perform exact-ID evidence reconciliation between a real OptionSchool24 workbook and retained TSETMC Option Market-Watch evidence.
+- Runner commit: `a15953775f3fba73fd2640b939bc9883fa8834ca`.
+- Added regression coverage for both the no-ID blocked path and exact-ID match path: `528f7aeaed4cd1a59d10e0a222ad0d71babbc87a`.
+- The reconciliation runner never infers identity and never modifies production scoring, ranking, eligibility or Bale behavior.
+- GitHub workflow lookup for the documentation commit returned no run; no CI PASS is claimed for these new changes.
+- The remaining technical work is now narrowed to a real-source TSETMC↔OptionSchool row-level capture and formula reconciliation for the OPEN fields. This is the final evidence step before any consideration of replacing OptionSchool24 as a production dependency.
