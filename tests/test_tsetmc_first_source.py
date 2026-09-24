@@ -13,7 +13,7 @@ class FakeAdapter:
         if ins_code=="OPT1":
             return {"source":"TSETMC","endpoint":"quote/OPT1","snapshot_sha256":"qh1","retrieved_at":"t1",
                     "data":{"pDrCotVal":1500,"pClosing":1400,"qTotTran5J":100,"qTotCap":150000,
-                            "priceMin":1300,"priceMax":1600}}
+                            "priceMin":1300,"priceMax":1600,"dEven":20260924,"hEven":101530}}
         return {"source":"TSETMC","endpoint":"quote/UA1","snapshot_sha256":"qh2","retrieved_at":"t2",
                 "data":{"pDrCotVal":21000,"pClosing":20500}}
     def instrument_info(self, ins_code):
@@ -30,6 +30,8 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["نماد"],"ضTEST"); self.assertEqual(r["canonical"]["قیمت اعمال"],20000)
         self.assertEqual(r["canonical"]["آخرین قیمت"],1500); self.assertEqual(r["canonical"]["قیمت سهم پایه"],21000)
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
+        self.assertEqual(r["source_market_timestamp"],"2026-09-24T10:15:30")
+        self.assertEqual(r["source_market_timestamp_status"],"AVAILABLE")
         self.assertIsNone(r["canonical"]["روزهای تقویمی"]); self.assertEqual(r["raw_remaining_days"],28)
     def test_symbol_filter_applies_before_enrichment_bound(self):
         s=build_tsetmc_snapshot(adapter=FakeAdapter(), symbol_prefix="ضTEST", max_instruments=1)
