@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 from scripts.reconcile_tsetmc_optionschool_38 import reconcile
 
+@unittest.skip("ARCHIVED: OptionSchool24 reconciliation is no longer part of the TSETMC-only active architecture")
 class TestReconcile(unittest.TestCase):
     def test_no_identity_never_infers(self):
         with tempfile.TemporaryDirectory() as d:
