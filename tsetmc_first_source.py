@@ -50,6 +50,10 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1) ->
             orderbook=adapter.order_book(str(option_id)); orderbook_status="SUCCESS"
         except Exception as exc:
             orderbook={"status":"FAILED","error_type":type(exc).__name__}; orderbook_status="FAILED"
+        try:
+            info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
+        except Exception as exc:
+            info={"status":"FAILED","error_type":type(exc).__name__}; idata={}; info_status="FAILED"
         if underlying_id and str(underlying_id) not in underlying_evidence:
             try:
                 uq=adapter.quote(str(underlying_id))
@@ -60,8 +64,10 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1) ->
         udata=_quote_values(ue.get("quote",{})) if ue.get("status")=="SUCCESS" else {}
         strike=_as_number(instrument.get("strike"))
         row={field:None for field in FIELD_NAMES}
+        contract_size=_as_number(_first(idata,"contractSize","contract_size"))
         row.update({
             "نماد":instrument.get("symbol"),
+            "اندازه قرارداد":contract_size,
             "قیمت اعمال":strike,
             "قیمت سهم پایه":_as_number(_first(udata,"pDrCotVal","pl")),
             "تاریخ سررسید":instrument.get("end_date"),
@@ -83,8 +89,8 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1) ->
             },
             "raw_market_watch":instrument,
             "raw_remaining_days":instrument.get("remaining_days"),
-            "quote":quote,"order_book":orderbook,
-            "quote_status":quote_status,"orderbook_status":orderbook_status,
+            "quote":quote,"order_book":orderbook,"instrument_info":info,
+            "quote_status":quote_status,"orderbook_status":orderbook_status,"instrument_info_status":info_status,
         })
         quote_evidence.append({"instrument_id":option_id,"status":quote_status,"source":quote.get("source"),
                                "endpoint":quote.get("endpoint"),"snapshot_sha256":quote.get("snapshot_sha256"),
