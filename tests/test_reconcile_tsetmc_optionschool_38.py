@@ -57,6 +57,21 @@ class TestReconcile(unittest.TestCase):
             self.assertEqual(out["identity_method"],"EXPLICIT_SYMBOL_MATCH")
             self.assertEqual(out["field_reconciliation"],"IDENTITY_READY_FOR_FIELD_COMPARISON")
 
+
+    def test_partial_unique_symbol_preserves_row_evidence(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d); wb=p/"x.xlsx"; js=p/"t.json"
+            pd.DataFrame([{"نماد":"ضهرم7050"},{"نماد":"ضهرم7060"}]).to_excel(wb,index=False)
+            js.write_text(json.dumps({"data":{"instrumentOptMarketWatch":[
+                {"insCode_C":123,"uaInsCode":456,"lVal18AFC_C":"ضهرم7050"}]}}),encoding="utf-8")
+            out=reconcile(wb,js)
+            self.assertEqual(out["identity_method"],"PARTIAL_EXPLICIT_SYMBOL_MATCH")
+            self.assertEqual(out["row_mapping_exact_unique_count"],1)
+            self.assertEqual(out["row_mapping_unmatched_count"],1)
+            self.assertEqual(out["row_mappings"][0]["mapping_status"],"EXACT_UNIQUE_SYMBOL_MATCH")
+            self.assertEqual(out["row_mappings"][1]["mapping_status"],"SYMBOL_NOT_FOUND")
+            self.assertEqual(out["row_mappings"][0]["tsetmc_instrument_id"],"123")
+
     def test_duplicate_symbol_is_blocked(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d); wb=p/"x.xlsx"; js=p/"t.json"
