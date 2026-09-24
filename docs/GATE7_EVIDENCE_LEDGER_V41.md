@@ -386,3 +386,17 @@ The analyzer has now been hardened to explicitly parse 13xx/14xx Jalali expiry v
 ## G7-4 corrected lifecycle evidence — 2026-09-24
 
 Real Termux rerun using the corrected Jalali expiry parser produced 109 unmatched symbols, all classified `NOT_EXPIRED_BEFORE_SNAPSHOT`; `EXPIRED_BEFORE_SNAPSHOT=0`; `NOT_PROVABLE_FROM_CURRENT_EVIDENCE=0`. Snapshot time: `2026-09-23T17:17:58.479447+00:00`. This establishes that expiry-before-snapshot does not explain the 109 unmatched symbols. It does not establish active/tradable status or the reason for TSETMC snapshot absence. Next evidence boundary is exact-symbol TSETMC `InstrumentSearch` for the 109 symbols using the new evidence-only runner `scripts/investigate_unmatched_tsetmc_search.py` (commit `2277859469c2d2a84d5892cd4828f18d6595a012`) with exact-only matching. No production path changed.
+
+
+## G7-4 raw field reconciliation implementation — 2026-09-24
+
+The next evidence-only layer is now implemented for the exact unique symbol mappings already established on Termux.
+
+- Runner: scripts/reconcile_tsetmc_optionschool_fields.py
+- Commit: 1f31b6fed3436c6bd31c21d050bcde80d63c5f72
+- Test: 6f19faec687eee67dc0bab807362cf2cba80c9d2
+- Scope: direct comparison of retained TSETMC Option Market-Watch fields against the corresponding OptionSchool24 rows.
+- No formula, tolerance, lifecycle inference, or production activation is performed.
+- Termux execution is still required to generate the real field_reconciliation.json artifact.
+
+The implementation intentionally keeps expiry and calendar-day convention differences OPEN until independently proven. It does not treat TSETMC remainedDay as automatically identical to the OptionSchool روزهای تقویمی field.
