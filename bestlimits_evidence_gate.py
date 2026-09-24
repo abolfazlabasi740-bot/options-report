@@ -67,6 +67,8 @@ def validate_package(package):
         roles = {}
     options = {i for i,r in roles.items() if r == "option"}
     underlyings = {i for i,r in roles.items() if r == "underlying"}
+    if options & underlyings:
+        errors.append("instrument_role_overlap_option_underlying")
     if len(options) < 3:
         errors.append("need_at_least_3_explicit_option_instruments")
     if len(underlyings) < 1:
@@ -91,7 +93,7 @@ def validate_package(package):
             if not isinstance(evidence, dict):
                 errors.append(f"semantic_evidence[{idx}]:must_be_object")
                 continue
-            required_semantic = {"instrument_id", "capture_timestamp_utc", "evidence_source", "evidence_location"}
+            required_semantic = {"instrument_id", "capture_timestamp_utc", "evidence_source", "evidence_location", "evidence_type", "matched_fields"}
             missing_semantic = sorted(required_semantic - evidence.keys())
             if missing_semantic:
                 errors.append(f"semantic_evidence[{idx}]:missing:" + ",".join(missing_semantic))
@@ -105,6 +107,15 @@ def validate_package(package):
                 errors.append(f"semantic_evidence[{idx}]:missing_source")
             if not str(evidence.get("evidence_location", "")).strip():
                 errors.append(f"semantic_evidence[{idx}]:missing_location")
+            evidence_type = str(evidence.get("evidence_type", "")).strip()
+            if not evidence_type:
+                errors.append(f"semantic_evidence[{idx}]:missing_evidence_type")
+            elif evidence_type != "TSETMC_WEB_BOARD_OBSERVATION":
+                errors.append(f"semantic_evidence[{idx}]:unsupported_evidence_type")
+            matched_fields = evidence.get("matched_fields")
+            required_fields = {"pd", "po", "qd", "qo", "zd", "zo"}
+            if not isinstance(matched_fields, list) or set(matched_fields) != required_fields:
+                errors.append(f"semantic_evidence[{idx}]:matched_fields_must_cover_pd_po_qd_qo_zd_zo")
             if iid in seen and ts:
                 try:
                     evidence_time = datetime.fromisoformat(ts.replace("Z", "+00:00"))
