@@ -299,3 +299,16 @@ The TSETMC adapter now provides an evidence-only normalized record layer preserv
 - Live Schema Audit: 35902280821 — success.
 
 The repository control boundary is green on the corrected head. This does not close G7-4: exact OptionSchool-row to TSETMC option ID to explicit uaInsCode to exact underlying quote remains to be proven on the deployed/live path. G7-3 freshness and G7-5 economic validation remain open.
+
+
+## G7-4 Exact Identity CI Verification — 2026-09-24
+
+The explicit-identity preservation fix at commit `e4700a7776ae99abaa0658aed9077a18ee53c5df` completed the required GitHub Actions checks successfully:
+- regression-tests run `35904888387`: completed / success.
+- gate7-control run `35904888382`: completed / success.
+- live-schema-audit run `35904888379`: completed / success.
+- Corresponding check-runs for the commit also completed successfully.
+
+The fix preserves the explicitly returned TSETMC `underlying_symbol` field in mapping records and closes the regression failure found in the canonical exact-promotion test. This is CI evidence only; it does not constitute Termux deployment evidence and does not close G7-4 end-to-end because the active OptionSchool24 production workbook still does not retain an accepted explicit TSETMC option instrument ID.
+
+Current boundary: exact TSETMC identifiers are proven in the live Option Market-Watch source, and the repository mapping/canonical layers preserve them correctly. End-to-end OptionSchool24-to-TSETMC exact promotion on the deployed runtime still requires a real OptionSchool source row carrying an accepted explicit option ID. Symbol/prefix/strike/expiry inference remains prohibited.
