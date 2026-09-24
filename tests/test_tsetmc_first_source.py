@@ -32,6 +32,8 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
         self.assertEqual(r["source_market_timestamp"],"2026-09-24T10:15:30")
         self.assertEqual(r["source_market_timestamp_status"],"AVAILABLE")
+        self.assertEqual(r["orderbook_level_count"], 0)
+        self.assertEqual(r["orderbook_raw_levels"], [])
         self.assertIsNone(r["canonical"]["روزهای تقویمی"]); self.assertEqual(r["raw_remaining_days"],28)
     def test_symbol_filter_applies_before_enrichment_bound(self):
         s=build_tsetmc_snapshot(adapter=FakeAdapter(), symbol_prefix="ضTEST", max_instruments=1)
