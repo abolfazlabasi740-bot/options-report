@@ -79,8 +79,9 @@ No production ranking, scoring, eligibility, Signal or Bale behavior is changed 
 
 ## Hard rules
 
-- No option ID is inferred from symbol, prefix, strike, expiry or CALL/PUT.
-- No production TSETMC promotion occurs without an explicit option instrument ID and explicit underlying ID.
+- No numeric option ID is inferred from symbol, prefix, strike, expiry or CALL/PUT.
+- OptionSchool24 symbol (نماد) is an explicit source field and may be used as an identity key only when the symbol is unique in the OptionSchool snapshot, unique in the TSETMC snapshot, and exactly matches.
+- A TSETMC numeric option instrument ID remains the strongest identity evidence. Where OptionSchool24 does not expose it, an exact unique symbol match may establish cross-source row identity for reconciliation; the underlying ID must still come from TSETMC and no ID is fabricated.
 - TSETMC retrieval time is not treated as market observation time.
 - Unknown fields remain UNKNOWN/OPEN; they are not filled with guessed formulas.
 - OptionSchool24 values may be used for reconciliation, not as proof that a field is a raw TSETMC field.
@@ -90,16 +91,17 @@ No production ranking, scoring, eligibility, Signal or Bale behavior is changed 
 
 This audit closes the architectural question at the boundary level: a TSETMC-first raw-data layer is technically feasible and the exact option identity is available from TSETMC Option Market-Watch.
 
-It does not close G7-1, G7-3, G7-4 or G7-5 by itself. In particular, G7-4 still requires an actual OptionSchool24 source row carrying an accepted explicit option ID, or a formally approved source replacement path that supplies that identity.
+It does not close G7-1, G7-3 or G7-5 by itself. For G7-4, the absence of a numeric OptionSchool24 ID is no longer by itself a blocker: the project can use a verified unique exact symbol mapping, while retaining TSETMC's explicit numeric option/underlying IDs as the authoritative identity evidence.
 
 ## Next implementation gate
 
 The next technical gate is not more guessing. It is a real-source reconciliation run that captures, for the same option instruments:
 
 1. TSETMC explicit option identity and underlying identity.
-2. TSETMC quote and BestLimits payloads.
-3. OptionSchool24 38 columns.
-4. Field-by-field equality/tolerance results.
-5. Formula/provenance evidence for every Derived/OPEN field.
+2. Exact unique OptionSchool symbol-to-TSETMC symbol mapping, with uniqueness evidence on both sides.
+3. TSETMC quote and BestLimits payloads.
+4. OptionSchool24 38 columns.
+5. Field-by-field equality/tolerance results.
+6. Formula/provenance evidence for every Derived/OPEN field.
 
 Only after that evidence exists should the project consider replacing OptionSchool24 as a production dependency.
