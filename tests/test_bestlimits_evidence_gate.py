@@ -28,7 +28,7 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
         return {
             "captures": captures,
             "instrument_roles": {"o1": "option", "o2": "option", "o3": "option", "u1": "underlying"},
-            "independent_semantic_evidence": ["placeholder-reference-for-unit-test"],
+            "independent_semantic_evidence": [{"instrument_id": "o1", "capture_timestamp_utc": "2026-09-24T10:00:00+00:00", "evidence_source": "TEST_ONLY", "evidence_location": "synthetic://unit-test"}],
         }
 
     def test_complete_package_is_ready_for_review_but_stays_blocked(self):
