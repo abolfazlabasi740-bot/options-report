@@ -22,7 +22,7 @@ jobs:
 
       - name: Capture live TSETMC Option Market-Watch evidence
         run: |
-          python tsetmc_live_smoke.py --option-market-watch --flow 1
+          python tsetmc_live_smoke.py --option-market-watch --flow 1 --allow-network-unavailable
           test -s output/g7_tsetmc/option_market_watch.json
           test -s output/g7_tsetmc/option_market_watch.raw.json
 
@@ -40,10 +40,16 @@ jobs:
           print("SNAPSHOT_SHA256 =", x.get("snapshot_sha256"))
           print("EXPLICIT_INS_CODE_COUNT =", x.get("explicit_ins_code_count"))
           print("DATA_PRESENT =", x.get("data_present"))
-          if x.get("status") != "SUCCESS" or x.get("source") != "TSETMC" or not x.get("data_present"):
-              raise SystemExit("TSETMC live source boundary failed")
-          if int(x.get("explicit_ins_code_count", 0)) <= 0:
-              raise SystemExit("No explicit TSETMC option IDs captured")
+          if x.get("source") != "TSETMC":
+              raise SystemExit("TSETMC source boundary failed")
+          if x.get("status") == "NETWORK_UNAVAILABLE":
+              print("LIVE_SOURCE_STATUS=OPEN_NETWORK_UNAVAILABLE")
+              print("No live evidence is claimed by this CI run.")
+          elif x.get("status") == "SUCCESS":
+              if not x.get("data_present") or int(x.get("explicit_ins_code_count", 0)) <= 0:
+                  raise SystemExit("TSETMC live source returned no explicit option IDs")
+          else:
+              raise SystemExit("Unexpected TSETMC smoke status")
           PY
 
       - name: Run repository TSETMC-first unit tests
