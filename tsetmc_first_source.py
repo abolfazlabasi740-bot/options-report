@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Any
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.0"
+ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.1"
+CACHE_PATH = Path("output/tsetmc_first/latest_snapshot.json")
 FIELD_NAMES = [
     "نماد","قیمت اعمال","قیمت سهم پایه","اختلاف تا اعمال","تاریخ سررسید",
     "روزهای تقویمی","روزهای معاملاتی","موقعیت های باز","حجم معاملات","ارزش معاملات",
@@ -49,10 +50,47 @@ def _source_market_timestamp(qdata: dict[str, Any]) -> str | None:
         ).isoformat()
     except (TypeError, ValueError):
         return None
+def _load_last_known_snapshot() -> dict[str, Any] | None:
+    try:
+        path = CACHE_PATH
+        if not path.exists():
+            return None
+        cached = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(cached, dict) or cached.get("source_of_truth") != "TSETMC":
+            return None
+        cached["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+        cached["live_refresh_status"] = "UNAVAILABLE"
+        cached["cache_path"] = str(path)
+        return cached
+    except (OSError, ValueError, TypeError):
+        return None
+
+def _persist_snapshot(snapshot: dict[str, Any]) -> None:
+    try:
+        CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        CACHE_PATH.write_text(
+            json.dumps(snapshot, ensure_ascii=False, indent=2, allow_nan=False),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
 def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
-    mw=adapter.option_market_watch_instrument_records(flow=flow)
+    try:
+        mw=adapter.option_market_watch_instrument_records(flow=flow)
+    except Exception as exc:
+        cached = _load_last_known_snapshot()
+        if cached is not None:
+            cached["fallback_reason"] = type(exc).__name__
+            return cached
+        raise
     instruments=mw.get("records",[])
+    if not instruments:
+        cached = _load_last_known_snapshot()
+        if cached is not None:
+            cached["fallback_reason"] = "TSETMC_MARKET_WATCH_EMPTY"
+            return cached
     if symbol_prefix:
         prefix = str(symbol_prefix).strip()
         instruments = [item for item in instruments if str(item.get("symbol") or "").startswith(prefix)]
@@ -138,10 +176,14 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
                               "retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments)},
               "quote_evidence":quote_evidence,"orderbook_evidence":orderbook_evidence,
               "underlying_evidence":underlying_evidence}
-    return {"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC",
-            "external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),
-            "rows":rows,"evidence":evidence,
-            "snapshot_sha256":_hash_json({"rows":rows,"evidence":evidence})}
+    snapshot = {"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC",
+                "external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),
+                "rows":rows,"evidence":evidence,
+                "snapshot_sha256":_hash_json({"rows":rows,"evidence":evidence}),
+                "data_mode":"LIVE_TSETMC_REFRESH",
+                "live_refresh_status":"SUCCESS"}
+    _persist_snapshot(snapshot)
+    return snapshot
 def write_snapshot(snapshot:dict[str,Any], output:str|Path)->Path:
     path=Path(output); path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(snapshot,ensure_ascii=False,indent=2,allow_nan=False),encoding="utf-8")
