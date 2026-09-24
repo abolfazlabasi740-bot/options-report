@@ -25,10 +25,18 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
         captures = []
         for iid, role in [("o1", "option"), ("o2", "option"), ("o3", "option"), ("u1", "underlying")]:
             captures.extend([self._capture(iid, "2026-09-24T10:00:00+00:00"), self._capture(iid, "2026-09-24T10:01:00+00:00")])
+        semantic = []
+        for capture in captures:
+            semantic.append({
+                "instrument_id": capture["instrument_id"],
+                "capture_timestamp_utc": capture["retrieved_at_utc"],
+                "evidence_source": "TEST_ONLY",
+                "evidence_location": "synthetic://unit-test",
+            })
         return {
             "captures": captures,
             "instrument_roles": {"o1": "option", "o2": "option", "o3": "option", "u1": "underlying"},
-            "independent_semantic_evidence": [{"instrument_id": "o1", "capture_timestamp_utc": "2026-09-24T10:00:00+00:00", "evidence_source": "TEST_ONLY", "evidence_location": "synthetic://unit-test"}],
+            "independent_semantic_evidence": semantic,
         }
 
     def test_complete_package_is_ready_for_review_but_stays_blocked(self):
@@ -36,6 +44,14 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
         self.assertEqual(result["status"], "READY_FOR_REVIEW")
         self.assertEqual(result["mapping_freeze"], "BLOCKED")
         self.assertEqual(result["scoring"], "BLOCKED")
+
+
+    def test_semantic_evidence_timestamp_must_match_capture_exactly(self):
+        package = self._package()
+        package["independent_semantic_evidence"][0]["capture_timestamp_utc"] = "2026-09-24T10:00:00+00:01"
+        result = gate.validate_package(package)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertIn("semantic_evidence[0]:timestamp_not_exactly_matched_to_capture", result["errors"])
 
     def test_payload_hash_mismatch_is_rejected(self):
         package = self._package()
