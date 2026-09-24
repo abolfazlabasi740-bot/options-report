@@ -5,6 +5,7 @@ import pandas as pd
 from scripts.reconcile_combined_tsetmc_identity import reconcile
 
 
+@unittest.skip("ARCHIVED: OptionSchool24 reconciliation is no longer part of the TSETMC-only active architecture")
 class TestCombinedIdentity(unittest.TestCase):
     def _write(self, p, rows, mw_rows, search_evidence):
         wb = p / "x.xlsx"
