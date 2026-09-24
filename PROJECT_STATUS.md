@@ -1502,3 +1502,8 @@ The reconciliation runner was hardened to preserve row-level evidence for partia
 No production scoring, ranking, eligibility, TSETMC activation or Bale behavior was changed. GitHub status lookup for the two new commits currently returns no associated status checks; CI PASS is therefore not claimed.
 
 G7-4 is materially advanced: identity is proven for 369 rows by exact unique source-field equality. G7-4 is not fully closed because 109 rows remain unmatched and the full 38-field reconciliation has not yet been completed. The next evidence step is to analyze the 109 unmatched symbols against the TSETMC snapshot and then reconcile the proven raw fields row-by-row without inventing formulas or tolerances.
+
+
+### G7-4 lifecycle evidence correction — 2026-09-24
+
+The Termux result previously showing 109/109 unmatched OptionSchool symbols as `EXPIRED_BEFORE_SNAPSHOT` has been invalidated. Audit found that the lifecycle analyzer interpreted Jalali OptionSchool expiry strings such as `1405/09/29` as Gregorian years. The analyzer is now corrected to parse explicit 13xx/14xx Jalali dates, with regression coverage. Correction commits: `a02bec0457901b727a0dcbe1be2b7fe3b213f176`, `976bc54b5c22de6ffff99361e961940cd183a5db`; test commit: `7a248860d628f65698da67d5e992bbf68e653a46`. No production path changed. A fresh Termux rerun against the same workbook and TSETMC snapshot is required before any lifecycle conclusion is recorded.
