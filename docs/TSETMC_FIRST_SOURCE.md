@@ -31,3 +31,9 @@ Six-Block scoring, ranking and trading signals remain disabled until the TSETMC 
 The TSETMC-compatible implementation inspected during this gate documents the MarketWatch price columns and the BestLimits raw schema, including the eight BestLimits columns and the heven last-trade time field. These external references are technical evidence only and are not runtime data sources.
 
 The active application remains dependent on its own TSETMC adapter and its captured raw evidence.
+
+## Expiry and open-interest gate
+
+Expiry date and the source-reported remaining-day field are retained only when supplied explicitly by the TSETMC option market-watch payload. The current layer does not convert calendar days to trading days and does not infer a trading calendar.
+
+Open interest is not currently mapped into the canonical dataset because no explicit, verified TSETMC field mapping has been frozen in the active adapter. Consequently the Open Interest feature remains unavailable rather than estimated.
