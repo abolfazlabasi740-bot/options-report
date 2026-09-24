@@ -27,8 +27,19 @@ class TestReconcile(unittest.TestCase):
                 "lVal18AFC_C":"ضهرم7050","strikePrice":20000}]}}),encoding="utf-8")
             out=reconcile(wb,js)
             self.assertEqual(out["exact_id_matches"],1)
+            self.assertTrue(out["exact_id_match_complete"])
             self.assertEqual(out["identity_method"],"EXACT_ID_MATCH")
             self.assertEqual(out["field_reconciliation"],"IDENTITY_READY_FOR_FIELD_COMPARISON")
+
+    def test_partial_exact_id_does_not_promote(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d); wb=p/"x.xlsx"; js=p/"t.json"
+            pd.DataFrame([{"نماد":"ضهرم7050","کد نماد":123},{"نماد":"ضهرم7060","کد نماد":999}]).to_excel(wb,index=False)
+            js.write_text(json.dumps({"data":{"instrumentOptMarketWatch":[{"insCode_C":123,"lVal18AFC_C":"ضهرم7050"}]}}),encoding="utf-8")
+            out=reconcile(wb,js)
+            self.assertEqual(out["exact_id_matches"],1)
+            self.assertFalse(out["exact_id_match_complete"])
+            self.assertEqual(out["identity_method"],"NO_SAFE_IDENTITY_MATCH")
 
     def test_unique_symbol_identity_enables_next_stage(self):
         with tempfile.TemporaryDirectory() as d:
