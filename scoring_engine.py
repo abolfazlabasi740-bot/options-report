@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Canonical V4.1.1 scoring engine.
+"""Transitional V4.1.1 scoring engine — NOT production-enabled.
 
-Rules implemented by the active V4.1 scoring/reporting path:
-- Optionschool24 is the primary source.
+Governance:
+- The active production source of truth is TSETMC.
+- OptionSchool24 is archival/legacy evidence only and must not feed production scoring.
+- This module retains historical scoring mathematics for controlled validation.
+- Production scoring remains blocked until the TSETMC semantic Evidence Gate is passed.
 - Missing data is never converted to an artificial zero/neutral score.
 - Missing factor weight is redistributed only inside its own block.
 - Robust percentile normalization is applied across the valid population.
@@ -41,6 +44,24 @@ NUMERIC_COLUMNS = [
     "شکاف قیمتی", "دلتا", "تتا", "گاما", "وگا", "رو",
     "بیشترین قیمت", "کمترین قیمت",
 ]
+
+
+def production_scoring_gate(source_of_truth=None, semantic_mapping_status="OPEN", scoring_status="BLOCKED"):
+    """Fail-closed production gate; historical scoring cannot bypass TSETMC evidence."""
+    failures = []
+    if source_of_truth != "TSETMC":
+        failures.append("SOURCE_OF_TRUTH_NOT_TSETMC")
+    if semantic_mapping_status != "VERIFIED":
+        failures.append("TSETMC_SEMANTIC_MAPPING_NOT_VERIFIED")
+    if scoring_status != "UNBLOCKED":
+        failures.append("SCORING_EVIDENCE_GATE_BLOCKED")
+    return {
+        "status": "READY" if not failures else "BLOCKED",
+        "source_of_truth": source_of_truth,
+        "semantic_mapping_status": semantic_mapping_status,
+        "scoring_status": scoring_status,
+        "failures": failures,
+    }
 
 
 def normalize_text(value):
