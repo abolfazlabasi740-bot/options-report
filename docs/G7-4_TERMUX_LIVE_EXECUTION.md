@@ -70,3 +70,19 @@ G7-3 requires real source timestamp evidence plus an approved freshness policy.
 G7-4 requires retained exact option identity and explicit underlying identity/quote evidence with source endpoint, retrieval time and payload hash.
 
 No production behavior changes are made by this evidence collection.
+
+
+## OptionSchool explicit-identity readiness check — 2026-09-24
+
+Before any exact cross-source promotion, the deployed runtime can now verify whether the actual OptionSchool24 workbook contains a populated accepted explicit TSETMC option-ID field, without inferring identity from the symbol.
+
+Command:
+
+    python3 scripts/verify_optionschool_identity_readiness.py data/<actual_optionschool_workbook>.xlsx
+
+The check records the workbook SHA-256, row/column counts, accepted ID aliases present, populated ID counts, and an explicit NO_EXPLICIT_OPTION_ID / EXPLICIT_ID_AVAILABLE state. It does not perform symbol-based matching and does not activate TSETMC.
+
+Implementation commit: f8b017c306990443f9e71423b4bec8b6e6c404e3
+Test commit: 975e251d73c2b5fdeae4ba3dc70640d2d4a7e7e0
+
+If the result is NO_EXPLICIT_OPTION_ID, G7-4 remains blocked at the source boundary; no synthetic ID may be created from symbol, strike, expiry or CALL/PUT prefix.
