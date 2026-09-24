@@ -326,3 +326,18 @@ An evidence-only readiness utility now checks the actual OptionSchool24 workbook
 - Current GitHub workflow/status lookup returns no associated runs/statuses for these commits; therefore no CI success is claimed for this new control.
 
 Acceptance remains unchanged: G7-4 cannot close until the deployed OptionSchool24 runtime produces a real source row carrying an accepted explicit option ID and the exact option→underlying evidence path is validated end-to-end. Symbol/prefix/strike/expiry inference remains prohibited.
+
+
+## G7-4 Identity Key Clarification — 2026-09-24
+
+The active OptionSchool24 schema does not expose the numeric TSETMC `insCode`, but `نماد` is an explicit source field and is the unique option name used by the source. TSETMC Option Market-Watch returns the same option symbol in `lVal18AFC_P` / `lVal18AFC_C`, together with explicit `insCode_P` / `insCode_C` and `uaInsCode`.
+
+The evidence-only reconciliation rule is therefore deterministic exact symbol matching, not inference: both source snapshots must prove symbol uniqueness, the symbol must match exactly, and TSETMC's numeric option/underlying IDs are retained as authoritative metadata. Duplicate or missing symbols are blocked. Prefix, strike, expiry and CALL/PUT are never used to manufacture identity.
+
+- Runner update: `76457fc860ffea36264b63046a08781057dc7cb6`.
+- Regression coverage: `913526d95eb68008ee2b5a9c9635932809e6eb2d`.
+- New identity state: `EXPLICIT_SYMBOL_MATCH`.
+- Existing numeric-ID state remains `EXACT_ID_MATCH`.
+- Production scoring/ranking/eligibility/Bale behavior is unchanged.
+
+G7-4 is not closed by this code change alone. Closure still requires a real retained TSETMC snapshot reconciled with the actual OptionSchool workbook, with row-level field evidence and the explicit underlying linkage preserved.
