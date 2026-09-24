@@ -41,17 +41,16 @@ The raw sibling file preserves the returned payload. No symbol, prefix, strike, 
 
 ## G7-4 promotion rule
 
-An explicit option instrument ID is only the first identity requirement.
+OptionSchool24 does not expose the numeric TSETMC instrument ID. Its explicit `نماد` field is the option's source identity key. Therefore the accepted cross-source path is:
 
-The accepted path is:
-
-`explicit option ID`
-→ exact TSETMC instrument evidence
-→ explicit `underlying_id`
+`OptionSchool نماد`
+→ exact unique TSETMC `lVal18AFC_P/C`
+→ TSETMC `insCode_P/C`
+→ explicit `uaInsCode`
 → exact underlying quote
 → normalized mapping evidence
 
-Symbol-only matches remain `SYMBOL_ONLY_CANDIDATE` and are never promoted.
+Symbol matching is accepted only when the OptionSchool symbol set is unique, the TSETMC option-symbol set is unique, and every required OptionSchool symbol has exactly one TSETMC match. Prefix, strike, expiry and CALL/PUT are not used to manufacture identity.
 
 ## G7-3 timestamp rule
 
@@ -72,17 +71,13 @@ G7-4 requires retained exact option identity and explicit underlying identity/qu
 No production behavior changes are made by this evidence collection.
 
 
-## OptionSchool explicit-identity readiness check — 2026-09-24
+## OptionSchool identity reconciliation — 2026-09-24
 
-Before any exact cross-source promotion, the deployed runtime can now verify whether the actual OptionSchool24 workbook contains a populated accepted explicit TSETMC option-ID field, without inferring identity from the symbol.
+The deployed workbook has no numeric TSETMC option ID, but it does contain the explicit unique option symbol. The evidence-only reconciliation runner now supports `EXPLICIT_SYMBOL_MATCH` after uniqueness validation.
 
-Command:
+Runner: `scripts/reconcile_tsetmc_optionschool_38.py`
+Implementation commit: `76457fc860ffea36264b63046a08781057dc7cb6`
+Completeness hardening: `f8c20da772117c621dcad201b69b079ebfff80d8`
+Regression tests: `907f62679d9b4eec93c97c8aebc5edf464944fe3`
 
-    python3 scripts/verify_optionschool_identity_readiness.py data/<actual_optionschool_workbook>.xlsx
-
-The check records the workbook SHA-256, row/column counts, accepted ID aliases present, populated ID counts, and an explicit NO_EXPLICIT_OPTION_ID / EXPLICIT_ID_AVAILABLE state. It does not perform symbol-based matching and does not activate TSETMC.
-
-Implementation commit: f8b017c306990443f9e71423b4bec8b6e6c404e3
-Test commit: 975e251d73c2b5fdeae4ba3dc70640d2d4a7e7e0
-
-If the result is NO_EXPLICIT_OPTION_ID, G7-4 remains blocked at the source boundary; no synthetic ID may be created from symbol, strike, expiry or CALL/PUT prefix.
+The older numeric-ID readiness utility remains available as an optional check, but `NO_EXPLICIT_OPTION_ID` is no longer a blocker when exact unique symbol mapping is available.
