@@ -29,14 +29,7 @@ jobs:
           test -s output/g7_tsetmc/option_market_watch.json
           test -s output/g7_tsetmc/option_market_watch.raw.json
           if [ "$rc" -ne 0 ]; then
-            python - <<'PY'
-import json
-from pathlib import Path
-x=json.loads(Path("output/g7_tsetmc/option_market_watch.json").read_text(encoding="utf-8"))
-if x.get("status") != "NETWORK_UNAVAILABLE":
-    raise SystemExit("TSETMC smoke failed with unexpected status")
-print("SMOKE_EXIT_ALLOWED=NETWORK_UNAVAILABLE")
-PY
+            python -c 'import json; from pathlib import Path; x=json.loads(Path("output/g7_tsetmc/option_market_watch.json").read_text(encoding="utf-8")); assert x.get("status") == "NETWORK_UNAVAILABLE", "TSETMC smoke failed with unexpected status"; print("SMOKE_EXIT_ALLOWED=NETWORK_UNAVAILABLE")'
           fi
 
       - name: Validate TSETMC identity boundary
