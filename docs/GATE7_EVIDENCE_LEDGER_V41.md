@@ -312,3 +312,17 @@ The explicit-identity preservation fix at commit `e4700a7776ae99abaa0658aed9077a
 The fix preserves the explicitly returned TSETMC `underlying_symbol` field in mapping records and closes the regression failure found in the canonical exact-promotion test. This is CI evidence only; it does not constitute Termux deployment evidence and does not close G7-4 end-to-end because the active OptionSchool24 production workbook still does not retain an accepted explicit TSETMC option instrument ID.
 
 Current boundary: exact TSETMC identifiers are proven in the live Option Market-Watch source, and the repository mapping/canonical layers preserve them correctly. End-to-end OptionSchool24-to-TSETMC exact promotion on the deployed runtime still requires a real OptionSchool source row carrying an accepted explicit option ID. Symbol/prefix/strike/expiry inference remains prohibited.
+
+
+## G7-4 OptionSchool Explicit-Identity Readiness Control — 2026-09-24
+
+An evidence-only readiness utility now checks the actual OptionSchool24 workbook for a populated accepted explicit TSETMC option-ID field before any cross-source promotion.
+
+- Implementation: `f8b017c306990443f9e71423b4bec8b6e6c404e3`.
+- Test: `975e251d73c2b5fdeae4ba3dc70640d2d4a7e7e0`.
+- Runtime documentation: `ae35c1bdfa9aca2d3d047c4c653c24e5b24c5808`.
+- Accepted aliases: `insCode`, `InsCode`, `instrument_id`, `InstrumentID`, `کد نماد`, `کد معاملاتی`.
+- The utility distinguishes `NO_EXPLICIT_OPTION_ID` from `EXPLICIT_ID_AVAILABLE`, records the workbook SHA-256 and populated counts, and keeps identity inference disabled.
+- Current GitHub workflow/status lookup returns no associated runs/statuses for these commits; therefore no CI success is claimed for this new control.
+
+Acceptance remains unchanged: G7-4 cannot close until the deployed OptionSchool24 runtime produces a real source row carrying an accepted explicit option ID and the exact option→underlying evidence path is validated end-to-end. Symbol/prefix/strike/expiry inference remains prohibited.
