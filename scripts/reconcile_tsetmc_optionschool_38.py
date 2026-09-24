@@ -63,6 +63,7 @@ def reconcile(workbook,tsetmc):
 
     t_ids={r["instrument_id"] for r in trecs}
     exact_id_matches=[x for x in ids if x in t_ids]
+    exact_id_complete=bool(ids) and len(exact_id_matches)==len(ids) and len(ids)==len(set(ids))
 
     os_symbols=normalized_symbols(df[SYMBOL_COLUMN].tolist()) if SYMBOL_COLUMN in df.columns else []
     t_symbols=[r["symbol"] for r in trecs]
@@ -75,7 +76,7 @@ def reconcile(workbook,tsetmc):
     symbol_ambiguous=sum(1 for s in os_symbols if len(t_by_symbol.get(s,[]))>1)
     symbol_not_found=sum(1 for s in os_symbols if s not in t_by_symbol)
 
-    if exact_id_matches:
+    if exact_id_complete:
         identity_method="EXACT_ID_MATCH"
         field_reconciliation="IDENTITY_READY_FOR_FIELD_COMPARISON"
     elif os_symbols and os_unique and t_unique and symbol_matches == len(os_symbols):
@@ -95,6 +96,7 @@ def reconcile(workbook,tsetmc):
       "tsetmc_record_count":len(trecs),
       "exact_id_matches":len(exact_id_matches),
       "exact_id_match_rate":(len(exact_id_matches)/len(ids)) if ids else None,
+      "exact_id_match_complete":exact_id_complete,
       "optionschool_symbol_column":SYMBOL_COLUMN if SYMBOL_COLUMN in df.columns else None,
       "optionschool_symbol_count":len(os_symbols),
       "optionschool_symbol_unique":os_unique,
