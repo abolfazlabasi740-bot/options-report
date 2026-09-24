@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 from datetime import datetime, timezone
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -76,6 +77,38 @@ def parse_snapshot_time(value):
     return dt
 
 
+
+def jalali_to_gregorian(jy, jm, jd):
+    """Convert a Jalali date to Gregorian using an integer-only algorithm."""
+    jy += 1595
+    days = -355668 + (365 * jy) + ((jy // 33) * 8) + (((jy % 33) + 3) // 4)
+    days += jd + (31 * (jm - 1) if jm <= 7 else (30 * (jm - 1) + 6))
+
+    gy = 400 * (days // 146097)
+    days %= 146097
+    if days > 36524:
+        days -= 1
+        gy += 100 * (days // 36524)
+        days %= 36524
+        if days >= 365:
+            days += 1
+    gy += 4 * (days // 1461)
+    days %= 1461
+    if days > 365:
+        gy += (days - 1) // 365
+        days = (days - 1) % 365
+    gd = days + 1
+
+    leap = gy % 4 == 0 and (gy % 100 != 0 or gy % 400 == 0)
+    month_days = [31, 29 if leap else 28, 31, 30, 31, 30,
+                  31, 31, 30, 31, 30, 31]
+    gm = 1
+    while gm <= 12 and gd > month_days[gm - 1]:
+        gd -= month_days[gm - 1]
+        gm += 1
+    return gy, gm, gd
+
+
 def parse_expiry(value):
     if pd.isna(value):
         return None
@@ -85,14 +118,27 @@ def parse_expiry(value):
     if not text:
         return None
 
-    # Gregorian/ISO forms supported without guessing the calendar.
+    # OptionSchool expiry values are commonly Jalali (e.g. 1405/09/29).
+    # Detect the explicit 13xx/14xx Persian year before trying Gregorian forms.
+    m = re.fullmatch(r"(13\\d{2}|14\\d{2})[/-](\\d{1,2})[/-](\\d{1,2})", text)
+    if m:
+        jy, jm, jd = map(int, m.groups())
+        if not (1 <= jm <= 12 and 1 <= jd <= 31):
+            return None
+        try:
+            gy, gm, gd = jalali_to_gregorian(jy, jm, jd)
+            return datetime(gy, gm, gd, tzinfo=timezone.utc)
+        except ValueError:
+            return None
+
+    # Gregorian/ISO forms supported only when the year is explicitly Gregorian.
     for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"):
         try:
             return datetime.strptime(text, fmt).replace(tzinfo=timezone.utc)
         except ValueError:
             pass
 
-    # Excel may expose a real datetime-like string.
+    # Excel may expose a real Gregorian datetime-like value.
     try:
         dt = pd.to_datetime(text, errors="raise")
         if hasattr(dt, "to_pydatetime"):
