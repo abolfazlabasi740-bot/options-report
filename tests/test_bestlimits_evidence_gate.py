@@ -32,6 +32,8 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
                 "capture_timestamp_utc": capture["retrieved_at_utc"],
                 "evidence_source": "TEST_ONLY",
                 "evidence_location": "synthetic://unit-test",
+                "evidence_type": "TSETMC_WEB_BOARD_OBSERVATION",
+                "matched_fields": ["pd", "po", "qd", "qo", "zd", "zo"],
             })
         return {
             "captures": captures,
@@ -52,6 +54,20 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
         result = gate.validate_package(package)
         self.assertEqual(result["status"], "INCOMPLETE")
         self.assertIn("semantic_evidence[0]:timestamp_outside_2s_capture_window", result["errors"])
+
+    def test_missing_semantic_field_coverage_is_rejected(self):
+        package = self._package()
+        package["independent_semantic_evidence"][0]["matched_fields"] = ["pd", "po"]
+        result = gate.validate_package(package)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertIn("semantic_evidence[0]:matched_fields_must_cover_pd_po_qd_qo_zd_zo", result["errors"])
+
+    def test_overlapping_instrument_roles_are_rejected(self):
+        package = self._package()
+        package["instrument_roles"]["o1"] = "underlying"
+        result = gate.validate_package(package)
+        self.assertEqual(result["status"], "INCOMPLETE")
+        self.assertIn("instrument_role_overlap_option_underlying", result["errors"])
 
     def test_payload_hash_mismatch_is_rejected(self):
         package = self._package()
