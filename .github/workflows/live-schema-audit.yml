@@ -6,55 +6,54 @@ on:
   workflow_dispatch:
 
 jobs:
-  audit-live-source:
+  audit-live-tsetmc-source:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
-      - name: Audit live OptionSchool24 schema
-        run: python live_schema_audit.py --output output/live_schema_audit.json
-      - name: Print live schema metadata
-        run: cat output/live_schema_audit.json
-      - name: Run full V4.1 report on fresh live source
-        run: python report_engine.py
-      - name: Print Gate 3 report evidence
+
+      - name: Capture live TSETMC Option Market-Watch evidence
+        run: |
+          python tsetmc_live_smoke.py --option-market-watch --flow 1
+          test -s output/g7_tsetmc/option_market_watch.json
+          test -s output/g7_tsetmc/option_market_watch.raw.json
+
+      - name: Validate TSETMC identity boundary
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          audit=json.loads(Path("output/latest_audit.json").read_text(encoding="utf-8"))
-          shadow=json.loads(Path("output/latest_opportunity_shadow.json").read_text(encoding="utf-8"))
-          replay=json.loads(Path("output/latest_replay_verification.json").read_text(encoding="utf-8"))
-          print("GATE3_AUDIT_STATUS =", audit.get("audit_integrity", {}).get("status"))
-          print("SOURCE_FILE =", audit.get("source_file"))
-          print("SOURCE_SHA256 =", audit.get("source_sha256"))
-          print("SELECTED_COUNT =", audit.get("selected_count"))
-          print("ELIGIBILITY =", audit.get("eligibility_summary"))
-          print("OPPORTUNITY_SHADOW_STATUS =", shadow.get("status"))
-          print("OPPORTUNITY_SHADOW_SUMMARY =", shadow.get("summary"))
-          print("REPLAY =", replay)
-          print("TSETMC_EVIDENCE =", audit.get("tsetmc_evidence"))
+          p=Path("output/g7_tsetmc/option_market_watch.json")
+          x=json.loads(p.read_text(encoding="utf-8"))
+          print("STATUS =", x.get("status"))
+          print("SOURCE =", x.get("source"))
+          print("ENDPOINT =", x.get("endpoint"))
+          print("RETRIEVED_AT =", x.get("retrieved_at"))
+          print("SNAPSHOT_SHA256 =", x.get("snapshot_sha256"))
+          print("EXPLICIT_INS_CODE_COUNT =", x.get("explicit_ins_code_count"))
+          print("DATA_PRESENT =", x.get("data_present"))
+          if x.get("status") != "SUCCESS" or x.get("source") != "TSETMC" or not x.get("data_present"):
+              raise SystemExit("TSETMC live source boundary failed")
+          if int(x.get("explicit_ins_code_count", 0)) <= 0:
+              raise SystemExit("No explicit TSETMC option IDs captured")
           PY
-      - name: Upload Gate 3 report evidence
+
+      - name: Run repository TSETMC-first unit tests
+        run: python -m unittest tests.test_tsetmc_first_source -v
+
+      - name: Publish TSETMC evidence
         uses: actions/upload-artifact@v4
         with:
-          name: gate3-live-report-evidence
+          name: tsetmc-live-source-evidence
           path: |
-            output/latest_report.txt
-            output/latest_audit.json
-            output/latest_opportunity_shadow.json
-            output/latest_replay_verification.json
-            output/latest_historical_diff.json
-          if-no-files-found: error
-      - name: Upload schema metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: live-schema-audit
-          path: output/live_schema_audit.json
+            output/g7_tsetmc/option_market_watch.json
+            output/g7_tsetmc/option_market_watch.raw.json
           if-no-files-found: error
