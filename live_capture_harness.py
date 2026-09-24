@@ -70,6 +70,7 @@ def capture(instrument_id: str, base_url: str, timeout: float) -> dict:
         "retrieved_at_utc": retrieved_at,
         "http_status": http_status,
         "payload_sha256": sha256_json(payload),
+        "raw_payload": payload,
         "level_count": len(raw_levels),
         "raw_levels": raw_levels,
         "semantic_mapping_status": "OPEN",
