@@ -28,6 +28,10 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["آخرین قیمت"],1500); self.assertEqual(r["canonical"]["قیمت سهم پایه"],21000)
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
         self.assertIsNone(r["canonical"]["روزهای تقویمی"]); self.assertEqual(r["raw_remaining_days"],28)
+    def test_invalid_max_instruments_is_rejected(self):
+        with self.assertRaises(ValueError):
+            build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=0)
+
     def test_no_guess_when_quote_fails(self):
         class Broken(FakeAdapter):
             def quote(self, ins_code):
