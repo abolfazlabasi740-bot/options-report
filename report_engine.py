@@ -557,7 +557,8 @@ def save_report(work, source):
 def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
     """TSETMC-only validation report. No scoring/ranking is applied until field evidence gate closes."""
     from tsetmc_first_source import build_tsetmc_snapshot
-    snapshot = build_tsetmc_snapshot(flow=flow)
+    limit = TOP_COUNT if top_count is None else int(top_count)
+    snapshot = build_tsetmc_snapshot(flow=flow, max_instruments=max(limit, 1))
     rows = []
     prefix = normalize_text(symbol_prefix) if symbol_prefix else None
     for item in snapshot.get("rows", []):
