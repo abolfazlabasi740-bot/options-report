@@ -19,13 +19,13 @@ FindChart is not an active data, reconciliation, identity, scoring or signal sou
 ## BestLimits evidence gate
 The candidate semantic mapping of `zo/zd/pd/po/qd/qo` is independently corroborated by third-party references, but it is not frozen as a production adapter contract.
 
-The isolated capture design is implemented in `live_capture_harness.py`. It captures raw TSETMC BestLimits evidence without importing the project adapter or scoring path.
+The isolated capture design is implemented in `live_capture_harness.py`. The new `live_bestlimits_evidence_runner.py` builds a TSETMC-only evidence package by discovering explicit option/underlying IDs and capturing BestLimits twice per selected instrument.
 
 Current status:
 - semantic mapping: INDEPENDENTLY_CORROBORATED / LIVE_VALIDATION_PENDING
 - production mapping freeze: BLOCKED
 - BestLimits-derived scoring input: BLOCKED
-- live market capture: NOT CLAIMED
+- live market capture: NOT CLAIMED until the runner is actually executed
 - evidence package validator: IMPLEMENTED
 - payload SHA integrity check: IMPLEMENTED
 - structured independent-evidence reference check: IMPLEMENTED
@@ -40,7 +40,7 @@ Structural invariants such as `po >= pd` and non-negative quantities/counts are 
 Six-Block scoring and production ranking remain OFF while the TSETMC field-evidence gate is open. Missing evidence is represented as «داده موجود نیست».
 
 ## Next controlled gates
-1. Execute isolated live BestLimits captures against explicitly identified instruments.
+1. Execute `live_bestlimits_evidence_runner.py` against the live TSETMC endpoint.
 2. Preserve complete raw payload, extracted raw levels, endpoint, instrument ID, UTC capture times and SHA-256 for each capture.
 3. Pair every captured observation with an independently established semantic-evidence reference within the current governance correlation window of 2 seconds; this threshold is a controlled validation parameter, not proof of semantic correctness, and must be revalidated against live capture latency.
 4. Run regression across normal, one-sided and zero-depth observations where actually observed.
@@ -56,12 +56,11 @@ No Buy/Sell signal is emitted during this evidence-only phase.
 ## Runtime verification
 Repository inspection alone is not runtime evidence. Termux execution, source freshness and Bale delivery must be reverified on the deployed commit after cutover changes.
 
-The repository now contains a mocked regression test for the capture harness, but no live-market capture artifact is being represented as completed by repository changes alone.
-
+The repository contains regression tests for the capture harness, but no live-market capture artifact is represented as completed by repository changes alone.
 
 ## Latest controlled change
-The active report boundary has been hardened so an off-market snapshot is explicitly labeled OFFMARKET, and a single source observation is never presented as proof of live market movement. The report and audit artifact now persist the market-state evidence and explicitly keep the live-movement claim unasserted.
+Added a fail-closed TSETMC-only live evidence runner. It performs explicit identity discovery, two time-separated BestLimits captures per selected option/underlying, preserves raw evidence and hashes, and runs the evidence validator. It does not interpret BestLimits fields and cannot unlock scoring.
 
-Latest implementation commit: 7b54fec9f2c6d590c992580f7ffb58eb27703e11.
+Latest implementation commit: ed3ec65a0d3df9e762882526b3853d9b2b36bdef.
 
-The next blocking gate remains live BestLimits evidence. No scoring or ranking has been re-enabled by this change.
+The blocking gate remains live BestLimits evidence. No scoring or ranking has been re-enabled by this change.
