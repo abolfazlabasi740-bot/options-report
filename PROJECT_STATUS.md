@@ -16,18 +16,37 @@ Historical OptionSchool24 files and prior reconciliation artifacts remain archiv
 ## Benchmark boundary
 FindChart is not an active data, reconciliation, identity, scoring or signal source. Its permitted role is limited to UX/distribution reference. The formal boundary is documented in `docs/FINDCHART_BENCHMARK_ASSESSMENT_V41.md`.
 
+## BestLimits evidence gate
+The candidate semantic mapping of `zo/zd/pd/po/qd/qo` is independently corroborated by third-party references, but it is not frozen as a production adapter contract.
+
+The isolated capture design is implemented in `live_capture_harness.py`. It captures raw TSETMC BestLimits evidence without importing the project adapter or scoring path.
+
+Current status:
+- semantic mapping: INDEPENDENTLY_CORROBORATED / LIVE_VALIDATION_PENDING
+- production mapping freeze: BLOCKED
+- BestLimits-derived scoring input: BLOCKED
+- live market capture: NOT CLAIMED
+
+Structural invariants such as `po >= pd` and non-negative quantities/counts are rejection tests only; they cannot independently prove field identity.
+
 ## Current scoring state
 Six-Block scoring and production ranking remain OFF while the TSETMC field-evidence gate is open. Missing evidence is represented as «داده موجود نیست».
 
 ## Next controlled gates
-1. Verify exact BestLimits mappings.
-2. Verify contract specification and open-interest evidence.
-3. Freeze calendar/trading-day, intrinsic, breakeven, leverage and model conventions.
-4. Derive model fields only from supported TSETMC inputs.
-5. Re-enable Six-Block scoring only after the evidence gate passes.
-6. Reconnect Opportunity, Replay, Audit and Bale to the TSETMC-only canonical dataset.
+1. Execute isolated live BestLimits captures against explicitly identified instruments.
+2. Preserve endpoint, instrument ID, UTC capture times, raw levels and SHA-256 for each capture.
+3. Pair raw captures with independently established same-time semantic evidence.
+4. Run regression across normal, one-sided and zero-depth observations where actually observed.
+5. Freeze `BestLimitsAdapter` only after the evidence chain passes review.
+6. Verify contract specification and open-interest evidence.
+7. Freeze calendar/trading-day, intrinsic, breakeven, leverage and model conventions.
+8. Derive model fields only from supported TSETMC inputs.
+9. Re-enable Six-Block scoring only after all required evidence gates pass.
+10. Reconnect Opportunity, Replay, Audit and Bale to the TSETMC-only canonical dataset.
 
 No Buy/Sell signal is emitted during this evidence-only phase.
 
 ## Runtime verification
 Repository inspection alone is not runtime evidence. Termux execution, source freshness and Bale delivery must be reverified on the deployed commit after cutover changes.
+
+The repository now contains a mocked regression test for the capture harness, but no live-market capture artifact is being represented as completed by repository changes alone.
