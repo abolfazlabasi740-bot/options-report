@@ -23,7 +23,7 @@ class FakeAdapter:
         return {"source":"TSETMC","endpoint":f"book/{ins_code}","snapshot_sha256":"bh","retrieved_at":"t3","data":[]}
 class TsetmcFirstSourceTests(unittest.TestCase):
     def test_tsetmc_is_only_source(self):
-        s=build_tsetmc_snapshot(adapter=FakeAdapter()); self.assertEqual(s["source_of_truth"],"TSETMC")
+        s=build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=1); self.assertEqual(s["source_of_truth"],"TSETMC")
         self.assertIsNone(s["external_comparison_source"]); self.assertEqual(s["row_count"],1)
         r=s["rows"][0]
         self.assertEqual(r["identity"]["instrument_id"],"OPT1"); self.assertEqual(r["identity"]["contract_type"],"CALL")
@@ -45,6 +45,6 @@ class TsetmcFirstSourceTests(unittest.TestCase):
             def quote(self, ins_code):
                 if ins_code=="OPT1": raise RuntimeError("blocked")
                 return super().quote(ins_code)
-        s=build_tsetmc_snapshot(adapter=Broken()); r=s["rows"][0]
+        s=build_tsetmc_snapshot(adapter=Broken(), symbol_prefix="ضTEST"); r=s["rows"][0]
         self.assertIsNone(r["canonical"]["آخرین قیمت"]); self.assertIsNone(r["canonical"]["قیمت پایانی"])
 if __name__=="__main__": unittest.main()
