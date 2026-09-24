@@ -381,3 +381,8 @@ The first Termux lifecycle summary for `output/g7_tsetmc/unmatched_symbols_v2.js
 The analyzer has now been hardened to explicitly parse 13xx/14xx Jalali expiry values before Gregorian forms, and a regression test was added for `1405/09/29` against the retained TSETMC snapshot time `2026-09-23T17:17:58.479447+00:00`. The corrected implementation is committed in `a02bec0457901b727a0dcbe1be2b7fe3b213f176` and the regex correction in `976bc54b5c22de6ffff99361e961940cd183a5db`; the regression test is in `7a248860d628f65698da67d5e992bbf68e653a46`. No production scoring, ranking, eligibility, TSETMC activation, or Bale behavior was changed.
 
 **Required next evidence:** rerun the corrected analyzer on the same retained workbook/snapshot and replace the invalid lifecycle result with the new exact status counts. Until that rerun is evidenced, G7-4 lifecycle analysis remains open.
+
+
+## G7-4 corrected lifecycle evidence — 2026-09-24
+
+Real Termux rerun using the corrected Jalali expiry parser produced 109 unmatched symbols, all classified `NOT_EXPIRED_BEFORE_SNAPSHOT`; `EXPIRED_BEFORE_SNAPSHOT=0`; `NOT_PROVABLE_FROM_CURRENT_EVIDENCE=0`. Snapshot time: `2026-09-23T17:17:58.479447+00:00`. This establishes that expiry-before-snapshot does not explain the 109 unmatched symbols. It does not establish active/tradable status or the reason for TSETMC snapshot absence. Next evidence boundary is exact-symbol TSETMC `InstrumentSearch` for the 109 symbols using the new evidence-only runner `scripts/investigate_unmatched_tsetmc_search.py` (commit `2277859469c2d2a84d5892cd4828f18d6595a012`) with exact-only matching. No production path changed.
