@@ -26,6 +26,10 @@ Current status:
 - production mapping freeze: BLOCKED
 - BestLimits-derived scoring input: BLOCKED
 - live market capture: NOT CLAIMED
+- evidence package validator: IMPLEMENTED
+- payload SHA integrity check: IMPLEMENTED
+- structured independent-evidence reference check: IMPLEMENTED
+- validator regression tests: PRESENT (execution not claimed)
 
 Structural invariants such as `po >= pd` and non-negative quantities/counts are rejection tests only; they cannot independently prove field identity.
 
@@ -34,8 +38,8 @@ Six-Block scoring and production ranking remain OFF while the TSETMC field-evide
 
 ## Next controlled gates
 1. Execute isolated live BestLimits captures against explicitly identified instruments.
-2. Preserve endpoint, instrument ID, UTC capture times, raw levels and SHA-256 for each capture.
-3. Pair raw captures with independently established same-time semantic evidence.
+2. Preserve complete raw payload, extracted raw levels, endpoint, instrument ID, UTC capture times and SHA-256 for each capture.
+3. Pair each capture with a structured independently established same-time semantic evidence reference.
 4. Run regression across normal, one-sided and zero-depth observations where actually observed.
 5. Freeze `BestLimitsAdapter` only after the evidence chain passes review.
 6. Verify contract specification and open-interest evidence.
