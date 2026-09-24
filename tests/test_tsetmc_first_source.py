@@ -30,6 +30,8 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["نماد"],"ضTEST"); self.assertEqual(r["canonical"]["قیمت اعمال"],20000)
         self.assertEqual(r["canonical"]["آخرین قیمت"],1500); self.assertEqual(r["canonical"]["قیمت سهم پایه"],21000)
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
+        self.assertEqual(r["canonical"]["روزهای تقویمی"],28)
+        self.assertEqual(r["expiry_evidence"]["source_field"],"endDate/remainedDay")
         self.assertEqual(r["source_market_timestamp"],"2026-09-24T10:15:30")
         self.assertEqual(r["source_market_timestamp_status"],"AVAILABLE")
         self.assertEqual(r["orderbook_level_count"], 0)
