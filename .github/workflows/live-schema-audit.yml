@@ -23,7 +23,7 @@ jobs:
       - name: Capture live TSETMC Option Market-Watch evidence
         run: |
           set +e
-          python tsetmc_live_smoke.py --option-market-watch --flow 1 --allow-network-unavailable
+          python tsetmc_live_smoke.py --option-market-watch --flow 1 --allow-network-unavailable --timeout 8 --retries 0
           rc=$?
           set -e
           test -s output/g7_tsetmc/option_market_watch.json
