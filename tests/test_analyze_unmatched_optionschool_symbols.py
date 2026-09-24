@@ -22,9 +22,6 @@ class TestUnmatched(unittest.TestCase):
             self.assertFalse(data["unmatched"][0]["closed_or_expired_proven"])
             self.assertEqual(data["unmatched"][0]["classification"],"NOT_IN_CURRENT_TSETMC_SNAPSHOT")
 
-if __name__=="__main__": unittest.main()
-
-
     def test_expiry_is_promoted_only_with_explicit_snapshot_time(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)
@@ -46,3 +43,5 @@ if __name__=="__main__": unittest.main()
             self.assertTrue(data["unmatched"][0]["closed_or_expired_proven"])
             self.assertEqual(data["unmatched"][1]["classification"],"NOT_IN_CURRENT_TSETMC_SNAPSHOT")
             self.assertFalse(data["unmatched"][1]["closed_or_expired_proven"])
+
+if __name__=="__main__": unittest.main()
