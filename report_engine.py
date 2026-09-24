@@ -553,18 +553,96 @@ def save_report(work, source):
 
     return report
 
+
+def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
+    """TSETMC-only validation report. No scoring/ranking is applied until field evidence gate closes."""
+    from tsetmc_first_source import build_tsetmc_snapshot
+    snapshot = build_tsetmc_snapshot(flow=flow)
+    rows = []
+    prefix = normalize_text(symbol_prefix) if symbol_prefix else None
+    for item in snapshot.get("rows", []):
+        canonical = item.get("canonical", {})
+        symbol = normalize_text(canonical.get("نماد")) if canonical.get("نماد") else ""
+        if prefix and not symbol.startswith(prefix):
+            continue
+        rows.append(item)
+
+    def number(value):
+        if value in (None, ""):
+            return "داده موجود نیست"
+        try:
+            return f"{float(value):,.2f}".replace(".00", "")
+        except (TypeError, ValueError):
+            return str(value)
+
+    limit = TOP_COUNT if top_count is None else int(top_count)
+    rows = rows[:max(limit, 1)]
+    lines = [
+        "📊 گزارش اولیه بازار اختیار معامله — TSETMC-ONLY",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📥 منبع حقیقت: TSETMC",
+        f"📌 تعداد رکوردهای Market-Watch: {snapshot.get('evidence', {}).get('market_watch', {}).get('record_count', 0)}",
+        f"📌 تعداد قراردادهای قابل استخراج: {snapshot.get('row_count', 0)}",
+        f"⏱ زمان دریافت: {snapshot.get('evidence', {}).get('market_watch', {}).get('retrieved_at', 'داده موجود نیست')}",
+        f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
+        "⚠️ امتیازدهی شش‌بلوک و رتبه‌بندی تولیدی تا تکمیل شواهد ۳۸ فیلد فعال نشده است.",
+        "⚠️ فیلدهای اثبات‌نشده عمداً «داده موجود نیست» باقی می‌مانند.",
+        "━━━━━━━━━━━━━━━━━━━━",
+    ]
+    for idx, item in enumerate(rows, 1):
+        canonical = item.get("canonical", {})
+        identity = item.get("identity", {})
+        lines.extend([
+            f"🔹 {idx}. {canonical.get('نماد') or 'داده موجود نیست'}",
+            f"نوع: {identity.get('contract_type') or 'داده موجود نیست'} | ID: {identity.get('instrument_id') or 'داده موجود نیست'}",
+            f"پایه: {canonical.get('قیمت سهم پایه') if canonical.get('قیمت سهم پایه') is not None else 'داده موجود نیست'}",
+            f"اعمال: {number(canonical.get('قیمت اعمال'))} | آخرین: {number(canonical.get('آخرین قیمت'))}",
+            f"پایانی: {number(canonical.get('قیمت پایانی'))} | حجم: {number(canonical.get('حجم معاملات'))}",
+            f"ارزش: {number(canonical.get('ارزش معاملات'))} | اندازه قرارداد: {number(canonical.get('اندازه قرارداد'))}",
+            f"سررسید: {canonical.get('تاریخ سررسید') or 'داده موجود نیست'}",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ])
+    return "\n".join(lines), snapshot
+
+
+def save_tsetmc_report(report, snapshot):
+    output = ROOT / "output" / "tsetmc_first"
+    output.mkdir(parents=True, exist_ok=True)
+    report_path = output / "latest_report.txt"
+    snapshot_path = output / "latest_snapshot.json"
+    audit_path = output / "latest_source_audit.json"
+    report_path.write_text(report, encoding="utf-8")
+    snapshot_path.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    audit = {
+        "status": "PASS" if snapshot.get("status") == "SUCCESS" else "FAIL",
+        "source_of_truth": snapshot.get("source_of_truth"),
+        "external_comparison_source": snapshot.get("external_comparison_source"),
+        "snapshot_sha256": snapshot.get("snapshot_sha256"),
+        "row_count": snapshot.get("row_count"),
+        "generated_at": snapshot.get("generated_at"),
+        "market_watch": snapshot.get("evidence", {}).get("market_watch", {}),
+        "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
+        "ranking_status": "OFF",
+    }
+    audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    return report_path
+
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate V4.1.1 report without sending to Bale")
     parser.add_argument("--input", type=Path, help="Use an existing workbook; otherwise download")
     parser.add_argument("--symbol", help="Symbol prefix; filtered before Top-N")
     parser.add_argument("--top", type=int, default=None)
     args = parser.parse_args()
-    source = args.input if args.input is not None else download_optionschool()
-    work = build_report(source, top_count=args.top, symbol_prefix=args.symbol)
-    report = save_report(work, source)
-
+    if args.input is not None:
+        raise RuntimeError("OptionSchool24 workbook input is retired from the active runtime; use TSETMC-only source.")
+    report, snapshot = build_tsetmc_report(top_count=args.top, symbol_prefix=args.symbol, flow=1)
+    report_path = save_tsetmc_report(report, snapshot)
     print(report)
-    print("\nREPORT_FILE =", ROOT / "output" / "latest_report.txt")
+    print("\nREPORT_FILE =", report_path)
+    print("SOURCE_OF_TRUTH = TSETMC")
+    print("SCORING_STATUS = OFF_FIELD_EVIDENCE_GATE_OPEN")
 
 
 if __name__ == "__main__":
