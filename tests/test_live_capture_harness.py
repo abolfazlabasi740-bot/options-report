@@ -31,6 +31,8 @@ class LiveCaptureHarnessTests(unittest.TestCase):
         self.assertEqual(result["instrument_id"], "123")
         self.assertEqual(result["level_count"], 1)
         self.assertEqual(result["raw_levels"], payload["bestLimits"])
+        self.assertEqual(result["raw_payload"], payload)
+        self.assertEqual(result["payload_sha256"], harness.sha256_json(payload))
         self.assertEqual(result["semantic_mapping_status"], "OPEN")
         self.assertEqual(result["scoring_status"], "BLOCKED")
         self.assertEqual(len(result["payload_sha256"]), 64)
