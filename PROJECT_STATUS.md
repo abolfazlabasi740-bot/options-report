@@ -1413,3 +1413,13 @@ The adapter now exposes a normalized evidence-only record layer for the explicit
 The failed intermediate runs 35902257333 and 35902257321 are not treated as evidence against the corrected head because they executed commit 1c55d73a4b646c7deb1c61271049cbb5b9b59771, before the obsolete duplicate test was removed.
 
 G7-4 remains OPEN: the normalized records preserve exact identifiers returned by TSETMC, but the OptionSchool production source still does not provide an explicit TSETMC option ID for an end-to-end exact mapping. No inference is permitted.
+
+
+## G7-4 Exact Identity CI Verification — 2026-09-24
+
+Commit `e4700a7776ae99abaa0658aed9077a18ee53c5df` passed the repository validation boundary:
+- regression-tests: run `35904888387` — success
+- gate7-control: run `35904888382` — success
+- live-schema-audit: run `35904888379` — success
+
+The corrected mapping now preserves explicit TSETMC `underlying_symbol` metadata through the mapping layer. G7-4 remains OPEN because repository CI does not substitute for deployed Termux evidence and the active OptionSchool24 production workbook still lacks an accepted explicit TSETMC option instrument ID. No symbol/prefix/strike/expiry inference is permitted.
