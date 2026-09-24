@@ -34,6 +34,21 @@ def _quote_values(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(data,dict): return data
     if isinstance(data,list) and data and isinstance(data[0],dict): return data[0]
     return {}
+
+def _source_market_timestamp(qdata: dict[str, Any]) -> str | None:
+    """Use only TSETMC's explicit dEven/hEven observation fields."""
+    try:
+        d_even = int(qdata.get("dEven"))
+        h_even = int(qdata.get("hEven"))
+        hh = h_even // 10000
+        mm = (h_even // 100) % 100
+        ss = h_even % 100
+        return datetime.strptime(
+            f"{d_even:08d} {hh:02d}:{mm:02d}:{ss:02d}",
+            "%Y%m%d %H:%M:%S",
+        ).isoformat()
+    except (TypeError, ValueError):
+        return None
 def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
     mw=adapter.option_market_watch_instrument_records(flow=flow)
@@ -85,6 +100,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
             "کمترین قیمت":_as_number(_first(qdata,"priceMin","pMin")),
             "بیشترین قیمت":_as_number(_first(qdata,"priceMax","pMax")),
         })
+        source_market_timestamp = _source_market_timestamp(qdata)
         rows.append({
             "canonical":row,
             "identity":{
@@ -96,6 +112,8 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
             },
             "raw_market_watch":instrument,
             "raw_remaining_days":instrument.get("remaining_days"),
+            "source_market_timestamp":source_market_timestamp,
+            "source_market_timestamp_status":"AVAILABLE" if source_market_timestamp else "UNAVAILABLE",
             "quote":quote,"order_book":orderbook,"instrument_info":info,
             "quote_status":quote_status,"orderbook_status":orderbook_status,"instrument_info_status":info_status,
         })
