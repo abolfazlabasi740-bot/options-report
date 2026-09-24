@@ -1,3 +1,70 @@
+# CURRENT VERIFIED STATUS — TSETMC-ONLY CUTOVER
+
+Updated: 2026-09-24
+
+This section supersedes older historical sections below. The active architecture is now TSETMC-only.
+
+## Active source boundary
+
+- Source of truth: TSETMC.
+- OptionSchool24 is ARCHIVAL ONLY and is not an active runtime source, reconciliation gate, scoring input, or report input.
+- Active runtime entry points are TSETMC-only through `report_engine.py` and `bale_listener.py`.
+- Six-Block scoring/ranking remains OFF in the TSETMC-first report path until the required TSETMC fields and economic-policy controls are explicitly verified.
+- Unknown values remain `داده موجود نیست`; no OptionSchool value is copied into TSETMC fields.
+
+## Verified repository state
+
+Current main commit: `e511cc839eb319d2a13dd20e4c71a2b1dcd3fe25`
+
+Key cutover commits:
+- TSETMC-only report runtime: `e5e3d1d84f8614e94d18dcadd358c4bf65835b2a`
+- Active Top-N bounded TSETMC enrichment: `4b85db8128d57ca20a35dec7e588b89458a60344`
+- TSETMC-only live audit workflow: `c11a0f29fb4310450eeba25e72a9a9551f23dccb`
+- Network-unavailable evidence handling: `c2ac51971040f3a8682869966a7e5e686b1a8974`
+- CI distinction between live evidence and network unavailability: `e511cc839eb319d2a13dd20e4c71a2b1dcd3fe25`
+
+## Latest CI evidence
+
+Run `36027664270` — Regression: SUCCESS.
+
+Run `36027664690` — Gate7 control: SUCCESS.
+
+Run `36027664565` — TSETMC live-source audit: FAILURE because the runner could not reach
+`https://cdn.tsetmc.com/api/Instrument/GetInstrumentOptionMarketWatch/1` and timed out.
+The run was triggered before commit `e511cc8...` was active in the workflow, so its smoke command did not yet include `--allow-network-unavailable`.
+
+Therefore:
+- Regression = VERIFIED.
+- Gate7 control = VERIFIED.
+- Live TSETMC evidence from this CI run = NOT VERIFIED.
+- This is a network-availability limitation, not evidence that the TSETMC payload is invalid.
+- The last independently captured real TSETMC evidence remains the Termux capture recorded in project history, with explicit option/underlying IDs. It must not be confused with the failed GitHub live audit.
+
+## Current TSETMC-first canonical fields
+
+The active source layer currently populates only explicitly observed/verified fields, including:
+- symbol
+- strike
+- underlying price when underlying quote returns an explicit price field
+- expiry
+- contract size when explicitly returned by TSETMC InstrumentInfo
+- volume
+- trade value
+- last price
+- closing price
+- low/high
+
+Open fields remain unresolved rather than fabricated, including open interest, IV/HV, collateral and Greeks. BestLimits raw evidence is retained but row-level canonical mapping is not promoted until the exact TSETMC response fields are verified.
+
+## Next execution gate
+
+1. Run the new live-schema workflow from commit `e511cc...` so that a TSETMC network timeout is recorded as `OPEN_NETWORK_UNAVAILABLE` rather than a false live failure.
+2. When network access is available, capture and hash one real Option Market-Watch payload plus raw BestLimits/InstrumentInfo/ClosingPriceInfo evidence for an explicit option ID.
+3. Promote only field mappings directly supported by that raw evidence.
+4. Keep scoring OFF until the field/economic-policy gates are closed.
+5. Only after the TSETMC evidence gate is sufficiently closed, re-open controlled scoring/Opportunity work.
+
+
 # OptimusAI V4.1 LIVE
 
 ## Corrective revision — V4.1.1 (2026-09-19)
