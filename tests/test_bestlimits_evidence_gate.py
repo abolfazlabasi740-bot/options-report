@@ -64,7 +64,7 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
 
     def test_overlapping_instrument_roles_are_rejected(self):
         package = self._package()
-        package["instrument_roles"]["o1"] = "underlying"
+        package["instrument_roles"]["o1"] = ["option", "underlying"]
         result = gate.validate_package(package)
         self.assertEqual(result["status"], "INCOMPLETE")
         self.assertIn("instrument_role_overlap_option_underlying", result["errors"])
