@@ -11,7 +11,7 @@ from pathlib import Path
 
 REQUIRED_FIELDS = {
     "source", "instrument_id", "endpoint", "capture_started_at_utc",
-    "retrieved_at_utc", "payload_sha256", "level_count", "raw_levels",
+    "retrieved_at_utc", "payload_sha256", "raw_payload", "level_count", "raw_levels",
 }
 
 def sha256_json(value):
@@ -30,6 +30,12 @@ def validate_capture(item):
         errors.append("missing_instrument_id")
     if not str(item.get("endpoint", "")).strip():
         errors.append("missing_endpoint")
+    raw_payload = item.get("raw_payload")
+    if not isinstance(raw_payload, dict):
+        errors.append("raw_payload_not_object")
+    else:
+        if sha256_json(raw_payload) != item.get("payload_sha256"):
+            errors.append("payload_sha256_mismatch")
     raw = item.get("raw_levels")
     if not isinstance(raw, list):
         errors.append("raw_levels_not_list")
