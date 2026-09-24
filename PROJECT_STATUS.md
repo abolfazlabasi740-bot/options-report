@@ -64,3 +64,16 @@ Added a fail-closed TSETMC-only live evidence runner. It performs explicit ident
 Latest implementation commit: ed3ec65a0d3df9e762882526b3853d9b2b36bdef.
 
 The blocking gate remains live BestLimits evidence. No scoring or ranking has been re-enabled by this change.
+
+## Reporting continuity after market close
+The reporting layer is now explicitly independent from the current session being open.
+
+- LIVE_TSETMC_REFRESH means the current run obtained a non-empty TSETMC Market-Watch refresh.
+- LAST_KNOWN_TSETMC_SNAPSHOT means the current run could not obtain a usable refresh and used the latest valid TSETMC snapshot already persisted by the source engine.
+- Cached reporting never claims live movement; live_movement_claim remains NOT_CLAIMED.
+- The report and audit now expose data_mode, live_refresh_status, fallback_reason, basis_source_market_timestamp and last_known_snapshot.
+- Live and cached paths apply the same symbol filter and row limit at the report boundary.
+
+This makes the reporting service operational outside market hours without introducing a second data source or fabricating current values.
+
+Latest reporting-continuity commit: 6954932ff655f7d6aa37445a77a03e7ff275b3c0.
