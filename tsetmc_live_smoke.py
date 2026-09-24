@@ -53,9 +53,11 @@ def main() -> None:
     parser.add_argument("--flow", type=int, default=0)
     parser.add_argument("--option-market-watch", action="store_true")
     parser.add_argument("--allow-network-unavailable", action="store_true")
+    parser.add_argument("--timeout", type=float, default=8.0)
+    parser.add_argument("--retries", type=int, default=0)
     args = parser.parse_args()
 
-    adapter = TSETMCAdapter()
+    adapter = TSETMCAdapter(timeout=args.timeout, retries=args.retries)
     try:
         if args.option_market_watch:
             result = adapter.option_market_watch(flow=args.flow)
