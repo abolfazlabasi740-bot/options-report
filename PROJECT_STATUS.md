@@ -13,6 +13,9 @@ TSETMC Option Market-Watch is the active universe and identity boundary. Explici
 
 Historical OptionSchool24 files and prior reconciliation artifacts remain archival evidence only. They are not consumed by the active source engine and are not used to fill missing TSETMC fields.
 
+## Benchmark boundary
+FindChart is not an active data, reconciliation, identity, scoring or signal source. Its permitted role is limited to UX/distribution reference. The formal boundary is documented in `docs/FINDCHART_BENCHMARK_ASSESSMENT_V41.md`.
+
 ## Current scoring state
 Six-Block scoring and production ranking remain OFF while the TSETMC field-evidence gate is open. Missing evidence is represented as «داده موجود نیست».
 
