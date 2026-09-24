@@ -72,6 +72,9 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
             orderbook=adapter.order_book(str(option_id)); orderbook_status="SUCCESS"
         except Exception as exc:
             orderbook={"status":"FAILED","error_type":type(exc).__name__}; orderbook_status="FAILED"
+        orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
+        if not isinstance(orderbook_data, list):
+            orderbook_data = []
         try:
             info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
         except Exception as exc:
@@ -115,14 +118,17 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
             "source_market_timestamp":source_market_timestamp,
             "source_market_timestamp_status":"AVAILABLE" if source_market_timestamp else "UNAVAILABLE",
             "quote":quote,"order_book":orderbook,"instrument_info":info,
+            "orderbook_raw_levels":orderbook_data,
             "quote_status":quote_status,"orderbook_status":orderbook_status,"instrument_info_status":info_status,
+            "orderbook_level_count":len(orderbook_data),
         })
         quote_evidence.append({"instrument_id":option_id,"status":quote_status,"source":quote.get("source"),
                                "endpoint":quote.get("endpoint"),"snapshot_sha256":quote.get("snapshot_sha256"),
                                "retrieved_at":quote.get("retrieved_at")})
         orderbook_evidence.append({"instrument_id":option_id,"status":orderbook_status,"source":orderbook.get("source"),
                                    "endpoint":orderbook.get("endpoint"),"snapshot_sha256":orderbook.get("snapshot_sha256"),
-                                   "retrieved_at":orderbook.get("retrieved_at")})
+                                   "retrieved_at":orderbook.get("retrieved_at"),
+                                   "level_count":len(orderbook_data)})
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
               "market_watch":{"endpoint":mw.get("endpoint"),"snapshot_sha256":mw.get("snapshot_sha256"),
