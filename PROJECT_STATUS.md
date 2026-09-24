@@ -1470,3 +1470,35 @@ Implementation commit: `76457fc860ffea36264b63046a08781057dc7cb6`.
 Regression coverage commit: `913526d95eb68008ee2b5a9c9635932809e6eb2d`.
 
 The reconciliation runner now reports `EXPLICIT_SYMBOL_MATCH` separately from `EXACT_ID_MATCH`. Production scoring/ranking/eligibility/Bale behavior remains unchanged. G7-4 therefore moves from "blocked solely by missing OptionSchool ID" to "ready for real-source unique-symbol reconciliation"; it is not yet closed until a real retained TSETMC snapshot is reconciled against the actual OptionSchool workbook and the row-level field evidence is captured.
+
+
+## G7-4 Real Termux Unique-Symbol Reconciliation — 2026-09-24
+
+A real Termux reconciliation was executed against OptionSchool24 workbook `data/optionschool_20260922_174818_730899.xlsx` and the retained TSETMC Option Market-Watch raw response.
+
+Evidence:
+- OptionSchool workbook SHA-256: `78ef5ffe945138748076ee81694e8b1d0319dd5d79d8e50ff99c238934931693`
+- OptionSchool rows: 478
+- OptionSchool columns: 38
+- TSETMC normalized instrument records: 1,082
+- OptionSchool explicit numeric TSETMC ID: none
+- OptionSchool `نماد` uniqueness: true
+- TSETMC option-symbol uniqueness: true
+- Exact unique symbol matches: 369 / 478
+- Unmatched OptionSchool symbols: 109
+- Ambiguous symbol matches: 0
+- Unique-symbol match rate: 0.7719665271966527
+- No identity inference was used.
+
+The previous reconciliation result was correctly conservative because it required complete coverage before returning `EXPLICIT_SYMBOL_MATCH`. The evidence nevertheless proves that 369 OptionSchool rows have an exact unique source-symbol match to TSETMC and can be mapped deterministically to explicit TSETMC `insCode_P/C` and `uaInsCode` metadata. The remaining 109 rows are not promoted.
+
+The reconciliation runner was hardened to preserve row-level evidence for partial unique-symbol coverage:
+- Implementation commit: `a79e2d9424ef57538910e9d6962b47da173f1bf1`
+- Regression-test commit: `e8d18d5aa597d2b719681b20ee4b574b051abc53`
+- New state: `PARTIAL_EXPLICIT_SYMBOL_MATCH`
+- New field state: `PARTIAL_IDENTITY_READY_UNMATCHED_ROWS_BLOCKED`
+- Row-level mappings now retain OptionSchool row, exact symbol, TSETMC option instrument ID, contract type, underlying ID/symbol, strike and expiry metadata.
+
+No production scoring, ranking, eligibility, TSETMC activation or Bale behavior was changed. GitHub status lookup for the two new commits currently returns no associated status checks; CI PASS is therefore not claimed.
+
+G7-4 is materially advanced: identity is proven for 369 rows by exact unique source-field equality. G7-4 is not fully closed because 109 rows remain unmatched and the full 38-field reconciliation has not yet been completed. The next evidence step is to analyze the 109 unmatched symbols against the TSETMC snapshot and then reconcile the proven raw fields row-by-row without inventing formulas or tolerances.
