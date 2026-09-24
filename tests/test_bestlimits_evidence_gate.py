@@ -48,7 +48,7 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
         self.assertEqual(result["scoring"], "BLOCKED")
 
 
-    def test_semantic_evidence_timestamp_must_match_capture_exactly(self):
+    def test_semantic_evidence_timestamp_must_be_within_2s_of_capture(self):
         package = self._package()
         package["independent_semantic_evidence"][0]["capture_timestamp_utc"] = "2026-09-24T10:00:03+00:00"
         result = gate.validate_package(package)
