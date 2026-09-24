@@ -22,9 +22,22 @@ jobs:
 
       - name: Capture live TSETMC Option Market-Watch evidence
         run: |
+          set +e
           python tsetmc_live_smoke.py --option-market-watch --flow 1 --allow-network-unavailable
+          rc=$?
+          set -e
           test -s output/g7_tsetmc/option_market_watch.json
           test -s output/g7_tsetmc/option_market_watch.raw.json
+          if [ "$rc" -ne 0 ]; then
+            python - <<'PY'
+            import json
+            from pathlib import Path
+            x=json.loads(Path("output/g7_tsetmc/option_market_watch.json").read_text(encoding="utf-8"))
+            if x.get("status") != "NETWORK_UNAVAILABLE":
+                raise SystemExit("TSETMC smoke failed with unexpected status")
+            print("SMOKE_EXIT_ALLOWED=NETWORK_UNAVAILABLE")
+            PY
+          fi
 
       - name: Validate TSETMC identity boundary
         run: |
