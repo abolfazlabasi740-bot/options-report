@@ -31,18 +31,20 @@ A code commit without workflow evidence is not a test PASS claim.
 
 Status: CURRENT CODE VERIFIED — regression run 35734232609 (run 349) on code commit 12265117de44da096f9caa854ef51704b57334d4 completed SUCCESS.
 
-## Gate 3 — Real OptionSchool24 Input
+## Gate 3 — TSETMC-Only Active Source
 
 Required:
-- fresh workbook captured
-- source SHA-256 recorded
-- schema captured
-- row/eligibility counts recorded
-- Report Engine completes without fabricated values
+- TSETMC is the only active market-data source.
+- OptionSchool24 is historical/archive evidence only and is not a runtime fallback or reconciliation source.
+- explicit option instrument ID and explicit underlying ID.
+- source endpoint and retrieval timestamp.
+- payload/raw evidence integrity.
+- missing data is represented as «داده موجود نیست».
 
-Status: CURRENT CODE VERIFIED — live run 35734232621 (run 85) on code commit 12265117de44da096f9caa854ef51704b57334d4 completed SUCCESS. Source: optionschool_20260922_170353_475195.xlsx; source SHA-256 4dcfcdfce5d602b6620006c33e731a018cd55ca2ae610d2ecb85b32dccaf7939; selected_count=15; Audit PASS; Opportunity Shadow SUCCESS; Replay MATCH with baseline/first/second hash equality; TSETMC disabled.
+Status: **ACTIVE ARCHITECTURE — RUNTIME EVIDENCE CONTINUOUSLY REQUIRED.** No OptionSchool-derived data is permitted to unlock production scoring.
 
 ## Gate 4 — TSETMC Evidence
+
 
 Required only when TSETMC enrichment is enabled:
 - explicit option instrument ID
@@ -54,7 +56,7 @@ Required only when TSETMC enrichment is enabled:
 
 Symbol inference is prohibited.
 
-Status: architecture ready; live evidence pending. Current live OptionSchool24 data does not expose the explicit option instrument ID required by the integration, so TSETMC enrichment remains disabled by design.
+Status: **OPEN — LIVE VALIDATION PENDING.** Repository CI has verified the TSETMC source boundary and generated a live-source artifact, but the latest artifact is explicitly allowed to report NETWORK_UNAVAILABLE; therefore it is not claimed as live market evidence. BestLimits semantic mapping remains independently corroborated but not frozen.
 
 ## Gate 5 — Shadow Intelligence
 
@@ -79,16 +81,15 @@ Required:
 - report timestamp/source identity preserved
 - successful delivery log
 
-Status: **CLOSED — DEPLOYED TERMUX VERIFIED.**
+Status: **HISTORICAL EVIDENCE — CURRENT DEPLOYMENT REVERIFICATION PENDING.**
 
-Physical runtime evidence supplied from the deployed Termux execution:
-- `bale_delivery_status=SUCCESS`
-- `bale_chunks=2`
-- Bale receipts: `message_id=1143`, `chat_id=770429773`; `message_id=1144`, `chat_id=770429773`
-- `secrets_recorded=false`
-- final launcher result: `TERMUX_GATE6_OK COMMIT=e73168b5d3496fa14d388cddb5aa3ecd5e5278fc`
+The recorded Gate 6 evidence proves a prior deployed Termux → Bale delivery path, including:
+- bale_delivery_status=SUCCESS
+- bale_chunks=2
+- non-secret Bale receipts
+- TERMUX_GATE6_OK on commit e73168b5...
 
-The deployed runtime therefore demonstrated real Bale delivery with non-secret receipts to the configured private chat. No token is recorded in this document.
+That evidence is retained as historical deployment evidence. It is not treated as proof that the current TSETMC-only commit is deployed and delivering.
 
 ## Gate 7 — Cutover
 
@@ -100,16 +101,26 @@ Until then:
 - no Buy/Sell signal is emitted
 - no ranking is modified by historical memory or Red-Team evidence
 
-Status: **NOT YET CLOSED.** Gate 4 remains pending because exact option instrument identity is not present in the current live OptionSchool24 source. Economic/financial validation of opportunity quality and market-data freshness validation also remain independent requirements.
+Status: **NOT YET CLOSED.** Current blockers are:
+- live TSETMC market evidence on the deployed runtime;
+- time-locked BestLimits evidence package;
+- semantic mapping review and Adapter Contract freeze;
+- market-data freshness validation;
+- economic/financial validation of opportunity quality;
+- current deployed Termux → Bale evidence on the same TSETMC-only commit.
+
+Six-Block production scoring remains OFF until these gates close.
 
 ## Current Assessment
 
 Gate 6 is now operationally closed based on actual deployed Termux execution and real Bale receipts. This does not by itself constitute full V4.1 production cutover.
 
 The remaining work is focused on:
-1. exact TSETMC option identity and live evidence integration;
-2. market-data timestamp/freshness validation;
-3. economic/financial validation of Opportunity Intelligence;
-4. final production validation of the Six-Block ranking and V4.1 overlay on live data.
+1. live TSETMC capture on explicitly identified option instruments;
+2. BestLimits time-locked evidence package and semantic review;
+3. market-data timestamp/freshness validation;
+4. economic/financial validation of Opportunity Intelligence;
+5. current Termux deployment and Bale delivery verification on the same TSETMC-only commit;
+6. only then final production validation of Six-Block ranking and V4.1 overlay on live data.
 
 The Six-Block model is not being redesigned as part of the Gate 6 remediation.
