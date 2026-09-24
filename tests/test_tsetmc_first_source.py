@@ -3,7 +3,10 @@ from tsetmc_first_source import build_tsetmc_snapshot
 class FakeAdapter:
     def option_market_watch_instrument_records(self, flow=1):
         return {"source":"TSETMC","endpoint":"mw","snapshot_sha256":"mwhash","retrieved_at":"t",
-                "records":[{"instrument_id":"OPT1","contract_type":"CALL","underlying_id":"UA1",
+                "records":[{"instrument_id":"OTHER","contract_type":"CALL","underlying_id":"UA1",
+                "underlying_symbol":"BASE","symbol":"ضOTHER","strike":19000,"end_date":"20261021",
+                "remaining_days":28,"identity_source_field":"insCode_C"},
+                {"instrument_id":"OPT1","contract_type":"CALL","underlying_id":"UA1",
                 "underlying_symbol":"BASE","symbol":"ضTEST","strike":20000,"end_date":"20261021",
                 "remaining_days":28,"identity_source_field":"insCode_C"}]}
     def quote(self, ins_code):
@@ -28,6 +31,11 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["آخرین قیمت"],1500); self.assertEqual(r["canonical"]["قیمت سهم پایه"],21000)
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
         self.assertIsNone(r["canonical"]["روزهای تقویمی"]); self.assertEqual(r["raw_remaining_days"],28)
+    def test_symbol_filter_applies_before_enrichment_bound(self):
+        s=build_tsetmc_snapshot(adapter=FakeAdapter(), symbol_prefix="ضTEST", max_instruments=1)
+        self.assertEqual(s["row_count"],1)
+        self.assertEqual(s["rows"][0]["canonical"]["نماد"],"ضTEST")
+
     def test_invalid_max_instruments_is_rejected(self):
         with self.assertRaises(ValueError):
             build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=0)
