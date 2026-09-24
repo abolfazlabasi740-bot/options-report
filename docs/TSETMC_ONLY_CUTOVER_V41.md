@@ -37,3 +37,8 @@ The old reconciliation loop is no longer on the critical path. The 109 unmatched
 ## 2026-09-24 control update
 
 The active TSETMC report path now applies an optional symbol-prefix filter to the TSETMC Market-Watch universe before the bounded per-instrument enrichment limit. This prevents a symbol-scoped request from accidentally inspecting only the first N market-watch records. No ranking is implied; scoring remains OFF.
+
+
+## Regression correction — 2026-09-24
+
+The first symbol-filter control exposed two test-fixture issues: the baseline fixture now contains two Market-Watch rows and the bounded test must explicitly limit it; the quote-failure test must select the intended symbol before enrichment. Both were corrected. CI also exposed that `tsetmc_live_smoke.py --allow-network-unavailable` intentionally writes `NETWORK_UNAVAILABLE` but exits non-zero; the live-schema workflow now explicitly permits that exit only when the resulting artifact status is exactly `NETWORK_UNAVAILABLE`. Any other failure remains blocking.
