@@ -249,6 +249,12 @@ class TSETMCAdapter:
                         "ask_quantity": raw.get("qTitMeOf_P"),
                         "notional_value": raw.get("notionalValue_P"),
                     },
+                    "underlying_market_watch_fields": {
+                        "last_price": raw.get("pDrCotVal_UA"),
+                        "close_price": raw.get("pClosing_UA"),
+                        "previous_price": raw.get("priceYesterday_UA"),
+                    },
+                    "contract_size": raw.get("contractSize"),
                 })
             if record.get("option_call_id"):
                 instruments.append({
@@ -272,6 +278,12 @@ class TSETMCAdapter:
                         "ask_quantity": raw.get("qTitMeOf_C"),
                         "notional_value": raw.get("notionalValue_C"),
                     },
+                    "underlying_market_watch_fields": {
+                        "last_price": raw.get("pDrCotVal_UA"),
+                        "close_price": raw.get("pClosing_UA"),
+                        "previous_price": raw.get("priceYesterday_UA"),
+                    },
+                    "contract_size": raw.get("contractSize"),
                 })
         return {
             **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
