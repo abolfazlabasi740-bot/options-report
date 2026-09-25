@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.1"
+ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.2"
 CACHE_PATH = Path("output/tsetmc_first/latest_snapshot.json")
 FIELD_NAMES = [
     "نماد","قیمت اعمال","قیمت سهم پایه","اختلاف تا اعمال","تاریخ سررسید",
@@ -120,10 +120,10 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         delta_status = "UNAVAILABLE"
         quote_retrieved_at = None
         orderbook_retrieved_at = None
-        # Capture the Quote and its paired BestLimits evidence as a tight
-        # per-instrument observation. If transport latency exceeds the
-        # contractual 2-second window, retry the pair rather than silently
-        # promoting stale evidence.
+        # Quote is canonical evidence. BestLimits is auxiliary/quarantined
+        # evidence and must never cause repeated network waits. Retry the pair
+        # only when both calls succeeded but their evidence timestamps exceed
+        # the 2-second binding window.
         for _attempt in range(2):
             try:
                 quote = adapter.quote(str(option_id))
@@ -153,6 +153,8 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             except (TypeError, ValueError):
                 delta_seconds = None
                 delta_status = "UNAVAILABLE"
+            if orderbook_status != "SUCCESS" or quote_status != "SUCCESS":
+                break
             if delta_status == "WITHIN_2_SECONDS":
                 break
         orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
