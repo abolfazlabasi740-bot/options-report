@@ -1,15 +1,27 @@
 import unittest
 from tsetmc_first_source import build_tsetmc_snapshot
 class FakeAdapter:
+    quote_calls = 0
     def option_market_watch_instrument_records(self, flow=1):
         return {"source":"TSETMC","endpoint":"mw","snapshot_sha256":"mwhash","retrieved_at":"t",
                 "records":[{"instrument_id":"OTHER","contract_type":"CALL","underlying_id":"UA1",
                 "underlying_symbol":"BASE","symbol":"ضOTHER","strike":19000,"end_date":"20261021",
-                "remaining_days":28,"identity_source_field":"insCode_C"},
+                "remaining_days":28,"identity_source_field":"insCode_C",
+                "contract_size":1000,
+                "market_watch_fields":{"last_price":1500,"close_price":1400,"volume":100,
+                "trade_value":150000,"open_interest":10,"bid_price":1400,"ask_price":1500,
+                "bid_quantity":1,"ask_quantity":2},
+                "underlying_market_watch_fields":{"last_price":21000,"close_price":20500}},
                 {"instrument_id":"OPT1","contract_type":"CALL","underlying_id":"UA1",
                 "underlying_symbol":"BASE","symbol":"ضTEST","strike":20000,"end_date":"20261021",
-                "remaining_days":28,"identity_source_field":"insCode_C"}]}
+                "remaining_days":28,"identity_source_field":"insCode_C",
+                "contract_size":1000,
+                "market_watch_fields":{"last_price":1500,"close_price":1400,"volume":100,
+                "trade_value":150000,"open_interest":10,"bid_price":1400,"ask_price":1500,
+                "bid_quantity":1,"ask_quantity":2},
+                "underlying_market_watch_fields":{"last_price":21000,"close_price":20500}}]}
     def quote(self, ins_code):
+        self.quote_calls += 1
         if ins_code=="OPT1":
             return {"source":"TSETMC","endpoint":"quote/OPT1","snapshot_sha256":"qh1","retrieved_at":"t1",
                     "data":{"pDrCotVal":1500,"pClosing":1400,"qTotTran5J":100,"qTotCap":150000,
@@ -106,11 +118,17 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=0)
 
-    def test_no_guess_when_quote_fails(self):
-        class Broken(FakeAdapter):
-            def quote(self, ins_code):
-                if ins_code=="OPT1": raise RuntimeError("blocked")
-                return super().quote(ins_code)
-        s=build_tsetmc_snapshot(adapter=Broken(), symbol_prefix="ضTEST"); r=s["rows"][0]
-        self.assertIsNone(r["canonical"]["آخرین قیمت"]); self.assertIsNone(r["canonical"]["قیمت پایانی"])
+    def test_market_watch_is_canonical_and_quote_is_not_called(self):
+        adapter = FakeAdapter()
+        s=build_tsetmc_snapshot(adapter=adapter, symbol_prefix="ضTEST")
+        r=s["rows"][0]
+        self.assertEqual(adapter.quote_calls, 0)
+        self.assertEqual(r["quote_status"], "SUCCESS")
+        self.assertEqual(r["canonical"]["آخرین قیمت"], 1500)
+        self.assertEqual(r["canonical"]["قیمت پایانی"], 1400)
+        self.assertEqual(r["canonical"]["قیمت سهم پایه"], 21000)
+        self.assertEqual(r["canonical"]["حجم معاملات"], 100)
+        self.assertEqual(r["canonical"]["ارزش معاملات"], 150000)
+        self.assertEqual(r["canonical"]["موقعیت های باز"], 10)
+        self.assertEqual(r["canonical"]["اندازه قرارداد"], 1000)
 if __name__=="__main__": unittest.main()
