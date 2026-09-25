@@ -181,10 +181,11 @@ def save_tsetmc_report(report, snapshot):
 
     # Detailed TSETMC artifacts remain namespaced; Gate6 consumes these
     # canonical root-level production artifacts.
-    root = ROOT / "output"
-    root.mkdir(parents=True, exist_ok=True)
-    canonical_report_path = root / "latest_report.txt"
-    canonical_audit_path = root / "latest_audit.json"
+    root = ROOT
+    output = root / "output"
+    output.mkdir(parents=True, exist_ok=True)
+    canonical_report_path = output / "latest_report.txt"
+    canonical_audit_path = output / "latest_audit.json"
 
     report_path.write_text(report, encoding="utf-8")
     canonical_report_path.write_text(report, encoding="utf-8")
