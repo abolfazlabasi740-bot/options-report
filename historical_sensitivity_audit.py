@@ -179,21 +179,73 @@ def run_snapshot(snapshot: dict[str, Any], top_n: int = 15) -> dict[str, Any]:
     return result
 
 
+def _observation_identity(item: dict[str, Any]) -> tuple[str | None, str | None]:
+    return (
+        str(item.get("snapshot_id")) if item.get("snapshot_id") not in (None, "") else None,
+        str(item.get("retrieved_at")) if item.get("retrieved_at") not in (None, "") else None,
+    )
+
+
 def pair_stability(results: Iterable[dict[str, Any]]) -> dict[str, Any]:
     items = list(results)
     pairs = []
+    rejected = []
     for previous, current in zip(items, items[1:]):
+        previous_id, previous_time = _observation_identity(previous)
+        current_id, current_time = _observation_identity(current)
+
+        if not previous_id or not current_id:
+            rejected.append({
+                "previous_snapshot": previous_id,
+                "current_snapshot": current_id,
+                "status": "REJECTED_MISSING_SNAPSHOT_ID",
+            })
+            continue
+
+        if previous_id == current_id:
+            rejected.append({
+                "previous_snapshot": previous_id,
+                "current_snapshot": current_id,
+                "status": "REJECTED_DUPLICATE_SNAPSHOT",
+            })
+            continue
+
+        if not previous_time or not current_time:
+            rejected.append({
+                "previous_snapshot": previous_id,
+                "current_snapshot": current_id,
+                "status": "REJECTED_MISSING_RETRIEVAL_TIME",
+            })
+            continue
+
+        if previous_time == current_time:
+            rejected.append({
+                "previous_snapshot": previous_id,
+                "current_snapshot": current_id,
+                "status": "REJECTED_DUPLICATE_RETRIEVAL_TIME",
+            })
+            continue
+
         a = previous.get("analysis", {}).get("baseline", {}).get("top_n", [])
         b = current.get("analysis", {}).get("baseline", {}).get("top_n", [])
         overlap = len(set(a) & set(b))
         pairs.append({
-            "previous_snapshot": previous.get("snapshot_id"),
-            "current_snapshot": current.get("snapshot_id"),
+            "previous_snapshot": previous_id,
+            "current_snapshot": current_id,
+            "previous_retrieved_at": previous_time,
+            "current_retrieved_at": current_time,
+            "status": "INDEPENDENT_OBSERVATIONS",
             "top_n": previous.get("top_n"),
             "top_n_overlap_count": overlap,
             "top_n_overlap_pct": round(overlap / max(1, min(len(a), len(b))) * 100.0, 4),
         })
-    return {"pair_count": len(pairs), "pairs": pairs}
+    return {
+        "pair_count": len(pairs),
+        "rejected_pair_count": len(rejected),
+        "pairs": pairs,
+        "rejected_pairs": rejected,
+        "historical_closure_eligible": bool(pairs),
+    }
 
 
 if __name__ == "__main__":
