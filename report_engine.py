@@ -108,6 +108,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
             row for row in rows
             if str(row.get("canonical", {}).get("نماد") or "").startswith(prefix)
         ]
+    # Preserve the complete TSETMC evidence universe separately. The report
+    # display limit must never destroy the evidence needed for audit/analysis.
+    snapshot["universe_rows"] = list(rows)
     snapshot["universe_row_count"] = len(rows)
     ranking = build_evidence_ranking(rows)
     snapshot["ranking"] = ranking
@@ -229,6 +232,7 @@ def save_tsetmc_report(report, snapshot):
     output.mkdir(parents=True, exist_ok=True)
     report_path = output / "latest_report.txt"
     snapshot_path = output / "latest_snapshot.json"
+    universe_snapshot_path = output / "latest_universe_snapshot.json"
     audit_path = output / "latest_source_audit.json"
 
     # Detailed TSETMC artifacts remain namespaced; Gate6 consumes these
@@ -241,8 +245,19 @@ def save_tsetmc_report(report, snapshot):
 
     report_path.write_text(report, encoding="utf-8")
     canonical_report_path.write_text(report, encoding="utf-8")
+    # latest_snapshot.json is the report snapshot (top-N), while
+    # latest_universe_snapshot.json is the complete TSETMC evidence universe.
+    report_snapshot = dict(snapshot)
+    report_snapshot.pop("universe_rows", None)
     snapshot_path.write_text(
-        json.dumps(snapshot, ensure_ascii=False, indent=2, allow_nan=False),
+        json.dumps(report_snapshot, ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
+    universe_snapshot = dict(snapshot)
+    universe_snapshot["rows"] = universe_snapshot.pop("universe_rows", [])
+    universe_snapshot["row_count"] = len(universe_snapshot["rows"])
+    universe_snapshot_path.write_text(
+        json.dumps(universe_snapshot, ensure_ascii=False, indent=2, allow_nan=False),
         encoding="utf-8",
     )
 
