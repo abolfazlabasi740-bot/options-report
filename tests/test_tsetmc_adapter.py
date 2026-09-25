@@ -37,6 +37,21 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertIn("/ClosingPrice/GetClosingPriceInfo/123", calls[0][0])
 
+    def test_bestlimits_fails_fast_with_auxiliary_timeout(self):
+        seen = []
+
+        def opener(request, timeout):
+            seen.append(timeout)
+            raise TimeoutError("simulated BestLimits timeout")
+
+        with self.assertRaises(TSETMCError):
+            TSETMCAdapter(
+                base_url="https://example.test/api", retries=2, timeout=8.0, opener=opener
+            ).order_book("123")
+
+        self.assertEqual(seen, [3.0])
+
+
     def test_symbol_is_encoded(self):
         seen = []
 
