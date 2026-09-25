@@ -49,9 +49,16 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
     oi = _num(canonical.get("موقعیت های باز"))
     bid_price = _num(canonical.get("قیمت بهترین تقاضا"))
     ask_price = _num(canonical.get("قیمت بهترین عرضه"))
+    # A zero bid or ask is a missing/unquoted side in this evidence
+    # contract, not a literal executable quote. Therefore a spread is
+    # comparable only when both quoted prices are strictly positive.
     spread = None
     spread_pct_mid = None
-    if bid_price is not None and ask_price is not None:
+    quoted_two_sided_prices = (
+        bid_price is not None and bid_price > 0
+        and ask_price is not None and ask_price > 0
+    )
+    if quoted_two_sided_prices:
         spread = ask_price - bid_price
         mid = (ask_price + bid_price) / 2.0
         if mid > 0:
