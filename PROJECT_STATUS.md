@@ -1,79 +1,67 @@
 # OptimusAI V4.1.1 — Project Status
 
 ## Active runtime
-The active report path is TSETMC-only.
 
-- `report_engine.py` reads no workbook and has no OptionSchool24 runtime dependency.
-- `tsetmc_first_source.py` is the canonical source builder.
-- `tsetmc_adapter.py` is the TSETMC evidence boundary.
-- `bale_listener.py` distributes the TSETMC report; Bale is not an analysis engine.
+مسیر فعال گزارش‌دهی TSETMC-only است.
 
-## Source-of-truth rule
-TSETMC Option Market-Watch is the active universe and identity boundary. Explicit TSETMC instrument IDs are required. No symbol-prefix inference is promoted to identity.
+- report_engine.py از Workbook استفاده نمی‌کند.
+- tsetmc_first_source.py منبع Canonical است.
+- tsetmc_adapter.py مرز Evidence منبع TSETMC است.
+- Bale فقط Distribution Layer است.
 
-Historical OptionSchool24 files and prior reconciliation artifacts remain archival evidence only. They are not consumed by the active source engine and are not used to fill missing TSETMC fields.
+## Source of Truth
 
-## Benchmark boundary
-FindChart is not an active data, reconciliation, identity, scoring or signal source. Its permitted role is limited to UX/distribution reference. The formal boundary is documented in `docs/FINDCHART_BENCHMARK_ASSESSMENT_V41.md`.
+TSETMC Option Market-Watch منبع فعال Universe و Identity است.
+
+OptionSchool24 و reconciliationهای قدیمی در Runtime فعال مصرف نمی‌شوند و برای تکمیل فیلدهای مفقود TSETMC نیز استفاده نمی‌شوند.
+
+## Identity rule
+
+شناسه قرارداد اختیار و شناسه دارایی پایه باید صریحاً از TSETMC دریافت شوند.
+
+Symbol-prefix inference مجاز نیست.
+
+## Reporting continuity
+
+گزارش‌دهی خارج از ساعت بازار نیز امکان‌پذیر است:
+
+- LIVE_TSETMC_REFRESH یعنی Refresh معتبر TSETMC در اجرای جاری دریافت شده است.
+- LAST_KNOWN_TSETMC_SNAPSHOT یعنی Refresh جاری قابل استفاده نبوده و آخرین Snapshot معتبر TSETMC استفاده شده است.
+- مسیر Cached هرگز حرکت زنده بازار را ادعا نمی‌کند.
+- live_movement_claim باید NOT_CLAIMED باشد.
+- report و audit باید data_mode، live_refresh_status، fallback_reason، basis_source_market_timestamp و Snapshot hash را حفظ کنند.
+
+این مسیر هیچ منبع ثانویه‌ای برای تکمیل داده اضافه نمی‌کند.
 
 ## BestLimits evidence gate
-The candidate semantic mapping of `zo/zd/pd/po/qd/qo` is independently corroborated by third-party references, but it is not frozen as a production adapter contract.
 
-The isolated capture design is implemented in `live_capture_harness.py`. The new `live_bestlimits_evidence_runner.py` builds a TSETMC-only evidence package by discovering explicit option/underlying IDs and capturing BestLimits twice per selected instrument.
+Runner و Validator برای Capture واقعی، حفظ payload خام، hash، زمان و شناسه صریح در Repository وجود دارند.
 
-Current status:
-- semantic mapping: INDEPENDENTLY_CORROBORATED / LIVE_VALIDATION_PENDING
-- production mapping freeze: BLOCKED
-- BestLimits-derived scoring input: BLOCKED
-- live market capture: NOT CLAIMED until the runner is actually executed
-- evidence package validator: IMPLEMENTED
-- payload SHA integrity check: IMPLEMENTED
-- structured independent-evidence reference check: IMPLEMENTED
-- semantic evidence type + six-field coverage check: IMPLEMENTED
-- option/underlying role-overlap rejection: IMPLEMENTED
-- deterministic capture/evidence time-window check: IMPLEMENTED
-- validator regression tests: PRESENT (execution not claimed)
+اما وجود Runner یا تست‌های آن به‌تنهایی Live Evidence ایجاد نمی‌کند.
 
-Structural invariants such as `po >= pd` and non-negative quantities/counts are rejection tests only; they cannot independently prove field identity.
+تا زمانی که Capture واقعی و semantic mapping با Evidence مستقل تأیید و Adapter Contract freeze نشده باشد، BestLimits-derived scoring input مسدود است.
 
-## Current scoring state
-Six-Block scoring and production ranking remain OFF while the TSETMC field-evidence gate is open. Missing evidence is represented as «داده موجود نیست».
+## Scoring state
 
-## Next controlled gates
-1. Execute `live_bestlimits_evidence_runner.py` against the live TSETMC endpoint.
-2. Preserve complete raw payload, extracted raw levels, endpoint, instrument ID, UTC capture times and SHA-256 for each capture.
-3. Pair every captured observation with an independently established semantic-evidence reference within the current governance correlation window of 2 seconds; this threshold is a controlled validation parameter, not proof of semantic correctness, and must be revalidated against live capture latency.
-4. Run regression across normal, one-sided and zero-depth observations where actually observed.
-5. Freeze `BestLimitsAdapter` only after the evidence chain passes review.
-6. Verify contract specification and open-interest evidence.
-7. Freeze calendar/trading-day, intrinsic, breakeven, leverage and model conventions.
-8. Derive model fields only from supported TSETMC inputs.
-9. Re-enable Six-Block scoring only after all required evidence gates pass.
-10. Reconnect Opportunity, Replay, Audit and Bale to the TSETMC-only canonical dataset.
+Six-Block scoring و production ranking تا بسته‌شدن Evidence Gateهای لازم فعال نیستند.
 
-No Buy/Sell signal is emitted during this evidence-only phase.
+فیلد فاقد Evidence مستقیم باید «داده موجود نیست» باقی بماند.
 
 ## Runtime verification
-Repository inspection alone is not runtime evidence. Termux execution, source freshness and Bale delivery must be reverified on the deployed commit after cutover changes.
 
-The repository contains regression tests for the capture harness, but no live-market capture artifact is represented as completed by repository changes alone.
+Repository inspection جایگزین Runtime Evidence نیست.
 
-## Latest controlled change
-Added a fail-closed TSETMC-only live evidence runner. It performs explicit identity discovery, two time-separated BestLimits captures per selected option/underlying, preserves raw evidence and hashes, and runs the evidence validator. It does not interpret BestLimits fields and cannot unlock scoring.
+Termux، Source freshness و Bale delivery باید روی Commit مستقر و فعال مجدداً تأیید شوند.
 
-Latest implementation commit: ed3ec65a0d3df9e762882526b3853d9b2b36bdef.
+## Immediate controlled path
 
-The blocking gate remains live BestLimits evidence. No scoring or ranking has been re-enabled by this change.
+- Capture واقعی TSETMC و BestLimits؛
+- حفظ raw payload و hash؛
+- تأیید semantic mapping؛
+- freeze کردن Adapter Contract؛
+- تأیید freshness؛
+- تأیید contract specification و open-interest evidence؛
+- تکمیل conventions موردنیاز محاسباتی فقط بر اساس Source Evidence؛
+- سپس بازبینی مجدد Scoring، Ranking، Audit و Bale روی Dataset Canonical TSETMC.
 
-## Reporting continuity after market close
-The reporting layer is now explicitly independent from the current session being open.
-
-- LIVE_TSETMC_REFRESH means the current run obtained a non-empty TSETMC Market-Watch refresh.
-- LAST_KNOWN_TSETMC_SNAPSHOT means the current run could not obtain a usable refresh and used the latest valid TSETMC snapshot already persisted by the source engine.
-- Cached reporting never claims live movement; live_movement_claim remains NOT_CLAIMED.
-- The report and audit now expose data_mode, live_refresh_status, fallback_reason, basis_source_market_timestamp and last_known_snapshot.
-- Live and cached paths apply the same symbol filter and row limit at the report boundary.
-
-This makes the reporting service operational outside market hours without introducing a second data source or fabricating current values.
-
-Latest reporting-continuity commit: 6954932ff655f7d6aa37445a77a03e7ff275b3c0.
+No Buy/Sell signal is emitted during this evidence-only phase.
