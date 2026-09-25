@@ -33,6 +33,8 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         result = build_evidence_ranking(rows)
         self.assertEqual(result["mode"], "TSETMC_EVIDENCE_RANKING")
         self.assertEqual(result["source_of_truth"], "TSETMC")
+        self.assertEqual(result["ranking_scope"], "OPPORTUNITY_CANDIDATES")
+        self.assertEqual(result["ranking_scope_row_count"], 3)
         self.assertNotEqual(result["status"], "NO_RANKABLE_EVIDENCE")
         self.assertTrue(all(x["score"] is not None for x in result["ranking_rows"]))
 
