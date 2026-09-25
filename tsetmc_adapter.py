@@ -275,12 +275,25 @@ class TSETMCAdapter:
                     "error_type": type(exc).__name__,
                 })
 
+        import hashlib
+        import json
+        aggregate = {
+            "flows": normalized_flows,
+            "flow_evidence": flow_evidence,
+        }
+        aggregate_sha256 = hashlib.sha256(
+            json.dumps(aggregate, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        successful = [x for x in flow_evidence if x.get("status") == "SUCCESS"]
         return {
             "source": "TSETMC",
             "flows": normalized_flows,
             "records": all_instruments,
             "record_count": len(all_instruments),
             "flow_evidence": flow_evidence,
+            "endpoint": "Instrument/GetInstrumentOptionMarketWatch/{flow}",
+            "snapshot_sha256": aggregate_sha256,
+            "retrieved_at": successful[-1].get("retrieved_at") if successful else None,
         }
 
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
