@@ -18,7 +18,7 @@ from zoneinfo import ZoneInfo
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_scoring_engine import build_evidence_ranking
-from tsetmc_eligibility import OPPORTUNITY_CANDIDATE, classify_universe
+from tsetmc_eligibility import (\n    OPPORTUNITY_CANDIDATE,\n    build_opportunity_candidates,\n    classify_universe,\n)
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -158,7 +158,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
         f"📌 تعداد Flowهای بررسی‌شده: {len(mw.get('flows') or [])}",
         f"📌 تعداد قراردادهای واجد وضعیت OPPORTUNITY_CANDIDATE: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)}",
         f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
-        f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",
+        f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",\n        f"📌 وضعیت Opportunity Engine: {opportunity.get('status')} | نسخه: {opportunity.get('engine_version')} | کاندیداها: {opportunity.get('candidate_count', 0)}",
         f"📌 INSUFFICIENT_ACTIVITY_EVIDENCE: {eligibility.get('counts', {}).get('INSUFFICIENT_ACTIVITY_EVIDENCE', 0)} | RANKABLE: {eligibility.get('counts', {}).get('RANKABLE', 0)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
@@ -262,7 +262,7 @@ def save_tsetmc_report(report, snapshot):
         "scoring_status": "TSETMC_EVIDENCE_RANKING",
         "ranking_status": "TSETMC_EVIDENCE_RANKING",
         "ranking": snapshot.get("ranking", {}),
-        "eligibility": snapshot.get("eligibility", {}),
+        "eligibility": snapshot.get("eligibility", {}),\n        "opportunity": snapshot.get("opportunity", {}),
         "live_movement_claim": "NOT_CLAIMED",
         "report_sha256": report_sha256,
     }
