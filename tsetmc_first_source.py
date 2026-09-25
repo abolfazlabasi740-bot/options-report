@@ -166,16 +166,34 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
         quote_evidence.append({"instrument_id":option_id,"status":quote_status,"source":quote.get("source"),
                                "endpoint":quote.get("endpoint"),"snapshot_sha256":quote.get("snapshot_sha256"),
                                "retrieved_at":quote.get("retrieved_at")})
-        orderbook_evidence.append({"instrument_id":option_id,"status":orderbook_status,"source":orderbook.get("source"),
-                                   "endpoint":orderbook.get("endpoint"),"snapshot_sha256":orderbook.get("snapshot_sha256"),
-                                   "retrieved_at":orderbook.get("retrieved_at"),
-                                   "level_count":len(orderbook_data)})
+        orderbook_evidence.append({
+            "instrument_id": option_id,
+            "status": orderbook_status,
+            "source": orderbook.get("source"),
+            "endpoint": orderbook.get("endpoint"),
+            "snapshot_sha256": orderbook.get("snapshot_sha256"),
+            "retrieved_at": orderbook.get("retrieved_at"),
+            "level_count": len(orderbook_data),
+            "market_watch_snapshot_sha256": mw.get("snapshot_sha256"),
+            "identity_source_field": instrument.get("identity_source_field"),
+            "source_market_timestamp": source_market_timestamp,
+        })
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
               "market_watch":{"endpoint":mw.get("endpoint"),"snapshot_sha256":mw.get("snapshot_sha256"),
                               "retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments)},
               "quote_evidence":quote_evidence,"orderbook_evidence":orderbook_evidence,
-              "underlying_evidence":underlying_evidence}
+              "underlying_evidence":underlying_evidence,
+              "best_limits_contract":{
+                  "status":"RAW_ONLY_QUARANTINED",
+                  "source":"TSETMC",
+                  "endpoint":"BestLimits/{instrument_id}",
+                  "identity_binding":"instrument_id",
+                  "market_watch_binding":"market_watch_snapshot_sha256",
+                  "source_timestamp_binding":"source_market_timestamp",
+                  "delta_seconds_limit":2.0,
+                  "consumption_status":"NOT_CONSUMED_BY_SCORING_OR_RANKING",
+              }}
     snapshot = {"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC",
                 "external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),
                 "rows":rows,"evidence":evidence,
