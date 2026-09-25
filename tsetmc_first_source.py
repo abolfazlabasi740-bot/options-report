@@ -113,6 +113,32 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
         orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
         if not isinstance(orderbook_data, list):
             orderbook_data = []
+        delta_seconds = None
+        delta_status = "UNAVAILABLE"
+        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
+        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
+        try:
+            if quote_retrieved_at and orderbook_retrieved_at:
+                qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
+                bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
+                delta_seconds = round(abs((bt - qt).total_seconds()), 6)
+                delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
+        except (TypeError, ValueError):
+            delta_seconds = None
+            delta_status = "UNAVAILABLE"
+        delta_seconds = None
+        delta_status = "UNAVAILABLE"
+        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
+        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
+        try:
+            if quote_retrieved_at and orderbook_retrieved_at:
+                qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
+                bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
+                delta_seconds = round(abs((bt - qt).total_seconds()), 6)
+                delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
+        except (TypeError, ValueError):
+            delta_seconds = None
+            delta_status = "UNAVAILABLE"
         try:
             info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
         except Exception as exc:
@@ -177,6 +203,9 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
             "market_watch_snapshot_sha256": mw.get("snapshot_sha256"),
             "identity_source_field": instrument.get("identity_source_field"),
             "source_market_timestamp": source_market_timestamp,
+            "quote_retrieved_at": quote_retrieved_at,
+            "delta_seconds": delta_seconds,
+            "delta_status": delta_status,
         })
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
