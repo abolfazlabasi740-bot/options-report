@@ -83,7 +83,7 @@ def _market_state(snapshot):
     }
 
 
-def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
+def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     limit = TOP_COUNT if top_count is None else int(top_count)
     if isinstance(limit, bool) or limit <= 0:
         raise ValueError("تعداد قراردادها باید عدد صحیح مثبت باشد")
@@ -249,7 +249,7 @@ def main():
     )
     parser.add_argument("--symbol", help="Exact TSETMC symbol prefix filter")
     parser.add_argument("--top", type=int, default=None)
-    parser.add_argument("--flow", type=int, default=1)
+    parser.add_argument("--flow", type=int, default=None)
     args = parser.parse_args()
 
     report, snapshot = build_tsetmc_report(
