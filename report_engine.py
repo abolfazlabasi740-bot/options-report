@@ -208,6 +208,10 @@ def save_tsetmc_report(report, snapshot):
         "basis_source_market_timestamp": snapshot.get("market_state", {}).get("latest_source_market_timestamp"),
         "last_known_snapshot": snapshot.get("data_mode") == "LAST_KNOWN_TSETMC_SNAPSHOT",
         "market_watch": snapshot.get("evidence", {}).get("market_watch", {}),
+        "best_limits_evidence": {
+            "contract": snapshot.get("evidence", {}).get("best_limits_contract", {}),
+            "rows": snapshot.get("evidence", {}).get("orderbook_evidence", []),
+        },
         "market_state": snapshot.get("market_state", {}),
         "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
         "ranking_status": "OFF",
