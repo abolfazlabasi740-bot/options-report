@@ -115,12 +115,19 @@ def _derived(row):
     }
 
 
-def build_evidence_ranking(rows):
+def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None):
+    """Build ranking; optional ablations are audit-only and default to production behavior."""
     rows = list(rows or [])
+    disabled_factors = {str(x) for x in (disabled_factors or [])}
+    disabled_blocks = {str(x) for x in (disabled_blocks or [])}
     derived = [_derived(r) for r in rows]
     scores = {b: {} for b in BLOCK_WEIGHTS}
     for block, factors in FACTOR_WEIGHTS.items():
+        if block in disabled_blocks:
+            continue
         for factor, weight in factors.items():
+            if factor in disabled_factors:
+                continue
             vals = [d.get(factor) for d in derived]
             higher = factor in {"trade_value", "volume", "time_value", "leverage"}
             # Lower distance/range is treated as better, matching the historical
@@ -132,9 +139,14 @@ def build_evidence_ranking(rows):
     for i, d in enumerate(derived):
         bs = {}
         for block, factors in FACTOR_WEIGHTS.items():
+            if block in disabled_blocks:
+                bs[block] = None
+                continue
             numerator = 0.0
             available_weight = 0.0
             for factor, weight in factors.items():
+                if factor in disabled_factors:
+                    continue
                 s = scores[block][factor][i]
                 if s is not None:
                     numerator += s * weight
