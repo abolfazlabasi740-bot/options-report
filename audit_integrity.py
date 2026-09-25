@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-ENGINE_VERSION = "AUDIT-INTEGRITY-1.2"
+ENGINE_VERSION = "AUDIT-INTEGRITY-1.3"
 
 
 def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
