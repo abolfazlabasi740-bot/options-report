@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -37,7 +38,10 @@ class ReportEngineTsetmcContractTests(unittest.TestCase):
             self.assertEqual(audit["data_mode"], "LAST_KNOWN_TSETMC_SNAPSHOT")
             self.assertEqual(audit["live_movement_claim"], "NOT_CLAIMED")
             self.assertEqual(audit["audit_integrity"]["status"], "PASS")
-            self.assertEqual(audit["report_sha256"], "b" * 64) if False else None
+            self.assertEqual(
+                audit["report_sha256"],
+                hashlib.sha256(b"REPORT\n").hexdigest(),
+            )
 
 
 if __name__ == "__main__":
