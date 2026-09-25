@@ -121,7 +121,12 @@ class TSETMCAdapter:
         return self._unwrap(r, "instrumentSearch")
 
     def instrument_info(self, ins_code: str) -> dict[str, Any]:
-        r = self._request(f"Instrument/GetInstrumentInfo/{quote(str(ins_code), safe='')}")
+        # Auxiliary endpoint; diagnostics must also remain bounded.
+        r = self._request(
+            f"Instrument/GetInstrumentInfo/{quote(str(ins_code), safe='')}",
+            timeout=min(self.timeout, 3.0),
+            retries=0,
+        )
         return self._unwrap(r, "instrumentInfo")
 
     def instrument_identity(self, ins_code: str) -> dict[str, Any]:
@@ -129,7 +134,14 @@ class TSETMCAdapter:
         return self._unwrap(r, "instrumentIdentity")
 
     def quote(self, ins_code: str) -> dict[str, Any]:
-        r = self._request(f"ClosingPrice/GetClosingPriceInfo/{quote(str(ins_code), safe='')}")
+        # Quote is canonical live evidence. On constrained Termux/network
+        # routes, bound the wait and disable retries for the per-instrument
+        # request; the snapshot layer remains fail-closed.
+        r = self._request(
+            f"ClosingPrice/GetClosingPriceInfo/{quote(str(ins_code), safe='')}",
+            timeout=min(self.timeout, 3.0),
+            retries=0,
+        )
         return self._unwrap(r, "closingPriceInfo")
 
     def order_book(self, ins_code: str) -> dict[str, Any]:
