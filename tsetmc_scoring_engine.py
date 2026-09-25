@@ -187,6 +187,8 @@ def build_evidence_ranking(rows):
         "unsupported_blocks": [b for b in BLOCK_WEIGHTS if b not in supported_blocks],
         "supported_weight_total": total_supported_weight,
         "ranking_rows": ranked,
+        "ranking_scope": "OPPORTUNITY_CANDIDATES",
+        "ranking_scope_row_count": len(rows),
         "rules": {
             "missing_data": "UNAVAILABLE_NOT_ZERO",
             "external_source": "FORBIDDEN",
