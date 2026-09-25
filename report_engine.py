@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
+from tsetmc_scoring_engine import build_evidence_ranking
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -104,6 +105,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
     rows = rows[:limit]
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
+    ranking = build_evidence_ranking(rows)
+    snapshot["ranking"] = ranking
 
     market_state = _market_state(snapshot)
     snapshot["market_state"] = market_state
@@ -134,7 +137,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
         f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
-        "⚠️ امتیازدهی شش‌بلوک و رتبه‌بندی تولیدی تا تکمیل Evidence Gate فعال نیست.",
+        f"📊 وضعیت امتیازدهی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
+        "⚠️ این رتبه‌بندی فقط از شواهد TSETMC و مشتقات ریاضی همان داده‌ها استفاده می‌کند؛ داده مفقود صفر یا حدس نمی‌شود.",
         "⚠️ هر فیلد فاقد شواهد مستقیم TSETMC عمداً «داده موجود نیست» باقی می‌ماند.",
     ]
 
@@ -153,6 +157,15 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
             "ℹ️ timestamp مشاهده‌شده یکتا است؛ حرکت لحظه‌ای بازار اثبات نشده و گزارش live-moving محسوب نمی‌شود."
         )
 
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("🏆 رتبه‌بندی شواهد TSETMC")
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:10]
+    if rankable:
+        for x in rankable:
+            lines.append(f"#{x["rank"]} {x.get("symbol") or "داده موجود نیست"} | امتیاز {x["score"]:.2f} | بلوک‌های معتبر: {",".join(x.get("supported_blocks", []))}")
+    else:
+        lines.append("داده کافی برای رتبه‌بندی وجود ندارد.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
     for idx, item in enumerate(rows, 1):
@@ -214,8 +227,9 @@ def save_tsetmc_report(report, snapshot):
             "rows": snapshot.get("evidence", {}).get("orderbook_evidence", []),
         },
         "market_state": snapshot.get("market_state", {}),
-        "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
-        "ranking_status": "OFF",
+        "scoring_status": "TSETMC_EVIDENCE_RANKING",
+        "ranking_status": "TSETMC_EVIDENCE_RANKING",
+        "ranking": snapshot.get("ranking", {}),
         "live_movement_claim": "NOT_CLAIMED",
         "report_sha256": report_sha256,
     }
@@ -251,7 +265,8 @@ def main():
     print("EXTERNAL_COMPARISON_SOURCE = NONE")
     print("DATA_MODE =", snapshot.get("data_mode"))
     print("LIVE_REFRESH_STATUS =", snapshot.get("live_refresh_status"))
-    print("SCORING_STATUS = OFF_FIELD_EVIDENCE_GATE_OPEN")
+    print("SCORING_STATUS =", snapshot.get("ranking", {}).get("mode"))
+    print("RANKING_STATUS =", snapshot.get("ranking", {}).get("status"))
     print("LIVE_MOVEMENT_CLAIM = NOT_CLAIMED")
 
 
