@@ -20,7 +20,35 @@ class ReportEngineTsetmcContractTests(unittest.TestCase):
             "live_refresh_status": "UNAVAILABLE",
             "fallback_reason": "NETWORK_UNAVAILABLE",
             "market_state": {"latest_source_market_timestamp": "2026-09-24T12:29:00+03:30"},
-            "evidence": {"market_watch": {"record_count": 1}},
+            "evidence": {
+                "market_watch": {
+                    "endpoint": "https://example.invalid/market-watch",
+                    "snapshot_sha256": "b" * 64,
+                    "retrieved_at": "2026-09-25T10:00:00+03:30",
+                    "record_count": 1,
+                },
+                "best_limits_contract": {
+                    "status": "RAW_ONLY_QUARANTINED",
+                    "source": "TSETMC",
+                    "endpoint": "BestLimits/{instrument_id}",
+                    "identity_binding": "instrument_id",
+                    "market_watch_binding": "market_watch_snapshot_sha256",
+                    "source_timestamp_binding": "source_market_timestamp",
+                    "delta_seconds_limit": 2.0,
+                    "consumption_status": "NOT_CONSUMED_BY_SCORING_OR_RANKING",
+                },
+                "orderbook_evidence": [{
+                    "instrument_id": "I1",
+                    "status": "SUCCESS",
+                    "source": "TSETMC",
+                    "endpoint": "https://example.invalid/BestLimits/I1",
+                    "snapshot_sha256": "c" * 64,
+                    "retrieved_at": "2026-09-25T10:00:01+03:30",
+                    "market_watch_snapshot_sha256": "b" * 64,
+                    "delta_seconds": 1.0,
+                    "delta_status": "WITHIN_2_SECONDS",
+                }],
+            },
         }
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
