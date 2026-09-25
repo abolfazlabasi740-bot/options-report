@@ -202,6 +202,20 @@ class TSETMCAdapter:
                     "begin_date": item.get("beginDate"),
                     "end_date": item.get("endDate"),
                     "remaining_days": item.get("remainedDay"),
+                    "contract_size": item.get("contractSize"),
+                    "market_watch_fields": {
+                        "last_price_P": item.get("pDrCotVal_P"),
+                        "last_price_C": item.get("pDrCotVal_C"),
+                        "close_price_P": item.get("pClosing_P"),
+                        "close_price_C": item.get("pClosing_C"),
+                        "previous_price_P": item.get("priceYesterday_P"),
+                        "previous_price_C": item.get("priceYesterday_C"),
+                    },
+                    "underlying_market_watch_fields": {
+                        "last_price": item.get("pDrCotVal_UA"),
+                        "close_price": item.get("pClosing_UA"),
+                        "previous_price": item.get("priceYesterday_UA"),
+                    },
                     "raw_market_watch": item,
                 })
         return {
