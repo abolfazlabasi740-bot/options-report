@@ -14,13 +14,15 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
     # The retired OptionSchool/shadow requirements must not block them.
     if audit.get("source_of_truth") == "TSETMC" and audit.get("data_mode"):
         required = [
-            "source_of_truth", "data_mode", "live_refresh_status",
+            "audit_version", "source_of_truth", "data_mode", "live_refresh_status",
             "snapshot_sha256", "row_count", "generated_at",
             "live_movement_claim", "scoring_status", "ranking_status",
             "market_watch", "market_state", "report_sha256",
         ]
         missing = [key for key in required if key not in audit]
         failures = []
+        if audit.get("audit_version") != ENGINE_VERSION:
+            failures.append("AUDIT_VERSION_INVALID")
         if audit.get("data_mode") not in {"LIVE_TSETMC_REFRESH", "LAST_KNOWN_TSETMC_SNAPSHOT"}:
             failures.append("TSETMC_DATA_MODE_INVALID")
         if audit.get("live_movement_claim") != "NOT_CLAIMED":
@@ -51,6 +53,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             "missing_fields": missing,
             "failures": failures,
             "checks": {
+                "audit_version": audit.get("audit_version") == ENGINE_VERSION,
                 "source_of_truth": audit.get("source_of_truth") == "TSETMC",
                 "data_mode": audit.get("data_mode") in {"LIVE_TSETMC_REFRESH", "LAST_KNOWN_TSETMC_SNAPSHOT"},
                 "snapshot_hash_present": bool(audit.get("snapshot_sha256")),
