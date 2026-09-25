@@ -77,8 +77,19 @@ def _persist_snapshot(snapshot: dict[str, Any]) -> None:
 
 def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
+    if max_instruments is not None:
+        if isinstance(max_instruments, bool) or int(max_instruments) <= 0:
+            raise ValueError("max_instruments must be a positive integer")
     try:
-        mw = (adapter.option_market_watch_universe() if flow is None else adapter.option_market_watch_instrument_records(flow=flow))
+        universe_method = getattr(adapter, "option_market_watch_universe", None)
+        if flow is None and callable(universe_method):
+            mw = universe_method()
+        elif flow is None:
+            # Compatibility path for minimal/test adapters that expose only the
+            # single-flow contract. Production TSETMCAdapter has the universe method.
+            mw = adapter.option_market_watch_instrument_records(flow=1)
+        else:
+            mw = adapter.option_market_watch_instrument_records(flow=flow)
     except Exception as exc:
         cached = _load_last_known_snapshot()
         if cached is not None:
@@ -95,8 +106,6 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         prefix = str(symbol_prefix).strip()
         instruments = [item for item in instruments if str(item.get("symbol") or "").startswith(prefix)]
     if max_instruments is not None:
-        if isinstance(max_instruments, bool) or int(max_instruments) <= 0:
-            raise ValueError("max_instruments must be a positive integer")
         instruments = instruments[:int(max_instruments)]
     rows=[]; quote_evidence=[]; orderbook_evidence=[]; underlying_evidence={}
     for instrument in instruments:
