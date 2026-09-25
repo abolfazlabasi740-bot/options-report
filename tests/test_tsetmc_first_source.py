@@ -101,7 +101,8 @@ class TsetmcFirstSourceTests(unittest.TestCase):
             finally:
                 if cache_path.exists():
                     cache_path.unlink()
-\n    def test_invalid_max_instruments_is_rejected(self):
+
+    def test_invalid_max_instruments_is_rejected(self):
         with self.assertRaises(ValueError):
             build_tsetmc_snapshot(adapter=FakeAdapter(), max_instruments=0)
 
