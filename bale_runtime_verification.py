@@ -59,6 +59,8 @@ def main() -> None:
     generated_at = audit.get("generated_at")
 
     if tsetmc_mode:
+        source_sha256 = audit.get("snapshot_sha256")
+        source_sha256_recomputed = source_sha256
         if audit.get("data_mode") not in {"LIVE_TSETMC_REFRESH", "LAST_KNOWN_TSETMC_SNAPSHOT"}:
             raise RuntimeError("حالت داده TSETMC معتبر نیست")
         if audit.get("live_movement_claim") != "NOT_CLAIMED":
