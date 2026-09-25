@@ -9,11 +9,13 @@ live movement. Scoring/ranking remain fail-closed behind the evidence gate.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 
 ROOT = Path(__file__).resolve().parent
@@ -177,12 +179,21 @@ def save_tsetmc_report(report, snapshot):
     snapshot_path = output / "latest_snapshot.json"
     audit_path = output / "latest_source_audit.json"
 
+    # Detailed TSETMC artifacts remain namespaced; Gate6 consumes these
+    # canonical root-level production artifacts.
+    root = ROOT / "output"
+    root.mkdir(parents=True, exist_ok=True)
+    canonical_report_path = root / "latest_report.txt"
+    canonical_audit_path = root / "latest_audit.json"
+
     report_path.write_text(report, encoding="utf-8")
+    canonical_report_path.write_text(report, encoding="utf-8")
     snapshot_path.write_text(
         json.dumps(snapshot, ensure_ascii=False, indent=2, allow_nan=False),
         encoding="utf-8",
     )
 
+    report_sha256 = hashlib.sha256(report.encode("utf-8")).hexdigest()
     audit = {
         "status": "PASS" if snapshot.get("status") == "SUCCESS" else "FAIL",
         "source_of_truth": snapshot.get("source_of_truth"),
@@ -200,12 +211,16 @@ def save_tsetmc_report(report, snapshot):
         "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
         "ranking_status": "OFF",
         "live_movement_claim": "NOT_CLAIMED",
+        "report_sha256": report_sha256,
     }
-    audit_path.write_text(
-        json.dumps(audit, ensure_ascii=False, indent=2, allow_nan=False),
-        encoding="utf-8",
-    )
-    return report_path
+    integrity = verify_audit(audit)
+    audit["audit_integrity"] = integrity
+    if integrity.get("status") != "PASS":
+        audit["status"] = "FAIL"
+    audit_json = json.dumps(audit, ensure_ascii=False, indent=2, allow_nan=False)
+    audit_path.write_text(audit_json, encoding="utf-8")
+    canonical_audit_path.write_text(audit_json, encoding="utf-8")
+    return canonical_report_path
 
 
 def main():
