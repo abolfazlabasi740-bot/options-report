@@ -80,11 +80,16 @@ class TsetmcEligibilityTests(unittest.TestCase):
         zero = row(volume=1, trades=1, bid=10, ask=10)
         negative = row(volume=1, trades=1, bid=12, ask=10)
         unavailable = row(volume=1, trades=1, bid=None, ask=None)
+        one_sided = row(volume=1, trades=1, bid=12, ask=0)
+        zero_both = row(volume=1, trades=1, bid=0, ask=0)
 
         self.assertEqual(classify_eligibility(positive)["activity"]["spread_status"], "POSITIVE")
         self.assertEqual(classify_eligibility(zero)["activity"]["spread_status"], "ZERO")
         self.assertEqual(classify_eligibility(negative)["activity"]["spread_status"], "NEGATIVE")
         self.assertEqual(classify_eligibility(unavailable)["activity"]["spread_status"], "UNAVAILABLE")
+        self.assertEqual(classify_eligibility(one_sided)["activity"]["spread_status"], "UNAVAILABLE")
+        self.assertIsNone(classify_eligibility(one_sided)["activity"]["spread"])
+        self.assertEqual(classify_eligibility(zero_both)["activity"]["spread_status"], "UNAVAILABLE")
 
     def test_oi_and_spread_status_do_not_change_candidate_gate(self):
         positive = row(volume=1, trades=1, bid=10, ask=12)
@@ -102,9 +107,10 @@ class TsetmcEligibilityTests(unittest.TestCase):
         zero["canonical"]["موقعیت های باز"] = 0
         negative = row(volume=1, trades=1, bid=12, ask=10)
         unavailable = row(volume=1, trades=1, bid=None, ask=None)
+        one_sided = row(volume=1, trades=1, bid=12, ask=0)
 
-        result = classify_universe([positive, zero, negative, unavailable])
-        self.assertEqual(result["rows_evaluated"], 4)
+        result = classify_universe([positive, zero, negative, unavailable, one_sided])
+        self.assertEqual(result["rows_evaluated"], 5)
         self.assertEqual(result["counts"][OPPORTUNITY_CANDIDATE], 4)
         items = result["items"]
         self.assertEqual(sum(
@@ -127,7 +133,7 @@ class TsetmcEligibilityTests(unittest.TestCase):
         ), 1)
         self.assertEqual(sum(
             item["activity"]["spread_status"] == "UNAVAILABLE" for item in items
-        ), 1)
+        ), 2)
 
     def test_no_trade_semantics_are_generated(self):
         result = classify_eligibility(row(volume=10, trades=1))
