@@ -222,6 +222,67 @@ class TSETMCAdapter:
             "raw_data": result.get("raw_data"),
         }
 
+
+    def option_market_watch_universe(self, flows: tuple[int, ...] = (0, 1, 2, 4)) -> dict[str, Any]:
+        """Discover the option universe across validated TSETMC flow values.
+
+        Identity is always taken from explicit insCode_P/insCode_C fields.
+        Results are de-duplicated by instrument_id; no symbol-prefix inference
+        is used. Every attempted flow remains in the returned evidence.
+        """
+        normalized_flows = []
+        for flow in flows:
+            value = int(flow)
+            if value < 0:
+                raise ValueError("flow must be non-negative")
+            if value not in normalized_flows:
+                normalized_flows.append(value)
+
+        all_instruments = []
+        flow_evidence = []
+        seen: set[str] = set()
+
+        for flow in normalized_flows:
+            try:
+                result = self.option_market_watch_instrument_records(flow=flow)
+                records = result.get("records", [])
+                accepted = 0
+                duplicates = 0
+                for record in records:
+                    instrument_id = record.get("instrument_id")
+                    if not instrument_id:
+                        continue
+                    if str(instrument_id) in seen:
+                        duplicates += 1
+                        continue
+                    seen.add(str(instrument_id))
+                    all_instruments.append(record)
+                    accepted += 1
+                flow_evidence.append({
+                    "flow": flow,
+                    "status": "SUCCESS",
+                    "endpoint": result.get("endpoint"),
+                    "snapshot_sha256": result.get("snapshot_sha256"),
+                    "retrieved_at": result.get("retrieved_at"),
+                    "raw_record_count": len(records),
+                    "accepted_unique_instruments": accepted,
+                    "duplicate_instruments": duplicates,
+                })
+            except Exception as exc:
+                flow_evidence.append({
+                    "flow": flow,
+                    "status": "FAILED",
+                    "error_type": type(exc).__name__,
+                })
+
+        return {
+            "source": "TSETMC",
+            "flows": normalized_flows,
+            "records": all_instruments,
+            "record_count": len(all_instruments),
+            "flow_evidence": flow_evidence,
+        }
+
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
         if int(flow) < 0:
             raise ValueError("flow must be non-negative")
