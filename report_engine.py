@@ -112,22 +112,30 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     # display limit must never destroy the evidence needed for audit/analysis.
     snapshot["universe_rows"] = list(rows)
     snapshot["universe_row_count"] = len(rows)
-    ranking = build_evidence_ranking(rows)
-    snapshot["ranking"] = ranking
+
+    # Eligibility is the gate before ranking. Ranking percentiles must be
+    # calculated only within the auditable opportunity-candidate universe;
+    # otherwise inactive/non-candidate rows distort the comparative ranking.
     eligibility = classify_universe(rows)
     snapshot["eligibility"] = eligibility
-    opportunity = build_opportunity_candidates(rows, ranking, eligibility)
-    snapshot["opportunity"] = opportunity
-
     candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
-    ranked_order = {
-        item.get("instrument_id"): item.get("rank")
-        for item in ranking.get("ranking_rows", [])
-    }
     candidate_rows = [
         row for row in rows
         if (row.get("identity") or {}).get("instrument_id") in candidate_ids
     ]
+
+    ranking = build_evidence_ranking(candidate_rows)
+    ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES"
+    ranking["ranking_scope_row_count"] = len(candidate_rows)
+    snapshot["ranking"] = ranking
+
+    opportunity = build_opportunity_candidates(rows, ranking, eligibility)
+    snapshot["opportunity"] = opportunity
+
+    ranked_order = {
+        item.get("instrument_id"): item.get("rank")
+        for item in ranking.get("ranking_rows", [])
+    }
     candidate_rows.sort(
         key=lambda row: (
             ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
