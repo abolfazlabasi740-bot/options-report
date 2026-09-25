@@ -2,212 +2,146 @@
 
 ## هدف
 
-این ممیزی برای تفکیک «آنچه در کد اجرا می‌شود» از «آنچه از نظر اقتصادی باید قبل از نهایی‌سازی سیاست امتیازدهی تأیید شود» انجام شده است.
+این ممیزی فقط وضعیت واقعی موتور امتیازدهی فعال TSETMC را ثبت می‌کند و مواردی را که هنوز از نظر اقتصادی نیازمند اعتبارسنجی هستند از منطق اجرایی تفکیک می‌کند. این سند هیچ وزن، آستانه یا فرمول Production را تغییر نمی‌دهد.
 
-این سند هیچ وزن، آستانه، جهت امتیازدهی یا فرمول فعال را تغییر نمی‌دهد. موارد زیر صرفاً وضعیت فعلی، ریسک سیاستی و آزمون لازم برای اعتبارسنجی اقتصادی را ثبت می‌کند.
+## وضعیت اجرایی تأییدشده
 
-## وضعیت اجرایی فعلی
-
-- موتور مرجع فعال در مسیر TSETMC-only: `tsetmc_scoring_engine.py`
-- `scoring_engine.py` موتور تاریخی/Legacy است و نباید به‌عنوان منبع سیاست امتیازدهی Runtime تفسیر شود.
-- نسخه معماری فعال: TSETMC Evidence Ranking
-- Six-Block weights:
+- موتور فعال: `tsetmc_scoring_engine.py`
+- `scoring_engine.py` فقط Legacy/Historical است و منبع Runtime نیست.
+- منبع داده Ranking: فقط canonical TSETMC و مشتقات قطعی همان داده‌ها.
+- Ranking scope: `OPPORTUNITY_CANDIDATES`
+- وزن بلوک‌ها:
   - Liquidity = 20
   - Valuation = 25
   - Payoff = 18
   - Time = 15
   - Greeks = 12
   - Market = 10
-- Missing factor فقط داخل همان Block بازتوزیع می‌شود.
-- Block کاملاً فاقد داده، امتیاز صفر تلقی نمی‌شود و برای FinalScore مانع ایجاد می‌کند.
-- Contract Type از نام نماد استنتاج نمی‌شود.
-- Moneyness تا زمان وجود Contract Type صریح، غایب است و وزن آن در Payoff بازتوزیع می‌شود.
-- Status در Market هنوز نگاشت عددی تأییدشده ندارد و وزن آن بین عوامل موجود همان Block بازتوزیع می‌شود.
-- Risk thresholds رسمی در دسترس نیست؛ RiskPenalty فعلاً صفر و وضعیت آن صریحاً KNOWN_GAP_THRESHOLDS_NOT_AVAILABLE است.
-- Overlay فعال FinalScore را با ExecutionPenalty، DecayPenalty و DataConfidence تعدیل می‌کند.
-- MIN_LEVERAGE در مسیر تولیدی gate فعال است و مقدار مشاهده‌شده فعلی 3.5 است؛ منشأ تأیید این مقدار باید جداگانه بسته شود.
+- Greeks در موتور فعال فعلاً unavailable است.
+- IV، Open Interest، Risk-Free Rate و Buy/Sell Signal در Ranking فعال استفاده نمی‌شوند.
+- Missing data به صفر تبدیل نمی‌شود.
+- بازتوزیع داده مفقود فقط داخل همان Block انجام می‌شود.
+- Block کاملاً فاقد عامل معتبر برای یک ردیف، برای همان ردیف unavailable می‌ماند و Final Score روی Blockهای دارای شواهد نرمال می‌شود.
+- Contract Type فقط از فیلد صریح identity استفاده می‌شود و از نام نماد استنتاج نمی‌شود.
 
-## ممیزی عامل‌به‌عامل
+## عوامل فعال
 
-### 1. Liquidity
-
-عوامل:
+### Liquidity
 - Trade Value: بیشتر بهتر
 - Volume: بیشتر بهتر
-- Open Interest: در موتور فعال TSETMC استفاده نمی‌شود
-- Spread: در موتور فعال TSETMC در Ranking استفاده نمی‌شود
-- Depth: در موتور فعال TSETMC در Ranking استفاده نمی‌شود
 
-ارزیابی:
-- Trade Value، Volume، Open Interest و Depth عمدتاً شاخص‌های ظرفیت/قابلیت معامله هستند، نه به‌تنهایی شاخص فرصت اقتصادی.
-- Spread شاخص مستقیم‌تری از هزینه اجرای معامله است.
-- Spread در BaseScore حضور دارد و دوباره در ExecutionPenalty استفاده می‌شود. بنابراین exposure تکراری واقعی وجود دارد.
-
-نتیجه ممیزی:
-- منطق اجرایی فعلی قابل بازتولید است.
-- تکرار Spread باید در پروتکل اقتصادی صریحاً توجیه شود: یک‌بار به‌عنوان کیفیت نقدشوندگی و بار دوم به‌عنوان جریمه قابلیت اجرا.
-- تا قبل از تأیید این سیاست، مقدار یا وزن تغییر نکند.
-
-### 2. Valuation
-
-عوامل:
+### Valuation
 - Time Value: بیشتر بهتر
-- Black-Scholes Difference: در موتور فعال TSETMC محاسبه نمی‌شود
-- IV: در موتور فعال TSETMC محاسبه نمی‌شود
-- IV/HV: در موتور فعال TSETMC محاسبه نمی‌شود
 
-نکته کلیدی:
-- IV به‌صورت مستقل «بیشتر بهتر» امتیاز می‌گیرد، در حالی که IV/HV «کمتر بهتر» است.
-- این دو جهت می‌توانند در بعضی مقاطع یک قرارداد را همزمان تقویت و تضعیف کنند.
-- از نظر اقتصادی، IV بالا ذاتاً فرصت یا مزیت نیست؛ ارزش آن به قرارداد، قیمت‌گذاری، ریسک، نقدشوندگی و مقایسه با نوسان تاریخی وابسته است.
-- Black-Scholes Difference نیز فقط در صورت معتبر بودن ورودی‌های مدل و فرضیات آن، معیار قابل اتکای mispricing است.
+### Payoff
+- Breakeven Distance: کمتر بهتر
+- Leverage: بیشتر بهتر
+- Moneyness: کمتر بهتر
 
-نتیجه ممیزی:
-- جهت‌های فعلی «سیاست‌های اجرایی موجود» هستند، نه نتیجه تأیید اقتصادی مستقل.
-- قبل از نهایی‌سازی باید با یک آزمون تاریخی out-of-sample بررسی شود که این جهت‌ها واقعاً با تعریف فرصت موردنظر پروژه هم‌راستا هستند.
-
-### 3. Payoff
-
-عوامل:
-- Breakeven Distance: فاصله کمتر بهتر
-- Leverage: بیشتر بهتر، با clip و percentile
-- Moneyness: فعلاً غایب
-
-نکته کلیدی:
-- Breakeven Distance یک معیار payoff-oriented است، ولی بدون Contract Type صریح، تفسیر اقتصادی آن می‌تواند برای Call و Put متفاوت باشد.
-- Leverage هم gate است و هم در رتبه‌بندی اثر دارد. این «double arithmetic» نیست، اما یک قرارداد ابتدا با leverage پایین حذف می‌شود و سپس leverage قراردادهای باقی‌مانده امتیاز می‌گیرد.
-- Moneyness عمداً تا زمان دسترسی به نوع قرارداد فعال نشده است.
-
-نتیجه ممیزی:
-- عدم استنتاج Contract Type تصمیم حفاظتی صحیح برای جلوگیری از inference است.
-- منشأ و هدف MIN_LEVERAGE=3.5 باید ثبت و تأیید شود.
-- جهت و وزن Leverage باید با تعریف «فرصت» پروژه، نه صرفاً جذابیت اهرم، اعتبارسنجی شود.
-
-### 4. Time
-
-عوامل:
+### Time
 - Calendar Days: کمتر بهتر
-- Trading Days: در موتور فعال TSETMC استفاده نمی‌شود
-- Theta absolute: در موتور فعال TSETMC محاسبه نمی‌شود
 
-نکته کلیدی:
-- Time-to-expiry هم در Block Time وارد می‌شود و هم از طریق DecayPenalty در Overlay اثر می‌گذارد.
-- RemainingDays > 0 نیز gate تولیدی است.
-- بنابراین سه نقش متفاوت وجود دارد: eligibility gate، ranking factor و risk/decay overlay.
-
-نتیجه ممیزی:
-- این سه نقش می‌توانند از نظر طراحی قابل دفاع باشند، اما باید در پروتکل روشن شود که چرا اثر زمان در سه لایه تکرار می‌شود.
-- Theta با absolute value جهت قرارداد را حذف می‌کند؛ این انتخاب نیازمند validation اقتصادی است.
-
-### 5. Greeks
-
-عوامل:
-- Greeks در موتور فعال TSETMC محاسبه نمی‌شوند؛ بنابراین این Block فعلاً unavailable است.
-
-نکته کلیدی:
-- magnitude-only بودن Greeks عمداً جهت قرارداد را وارد نمی‌کند.
-- برای Opportunity Intelligence، «بیشتر بودن قدرمطلق» لزوماً به معنی فرصت بهتر نیست.
-- بدون Contract Type و بدون تعریف صریح strategy/objective، تفسیر Delta/Vega/Rho و حتی Gamma می‌تواند policy-dependent باشد.
-
-نتیجه ممیزی:
-- فعلاً این بخش را نباید با حدس اقتصادی اصلاح کرد.
-- نیاز به تعریف رسمی هدف امتیازدهی و validation روی معاملات/سناریوهای تاریخی دارد.
-
-### 6. Market
-
-عوامل:
-- Last vs Close: انحراف مطلق کمتر بهتر
+### Market
+- Last vs Close: کمتر بهتر
 - Intraday Range: کمتر بهتر
-- Status: نگاشت عددی فعال نیست
 
-نکته کلیدی:
-- هر دو عامل فعال Market در نسخه فعلی بیشتر «ثبات قیمت» را پاداش می‌دهند تا «فرصت حرکت».
-- بنابراین اگر هدف پروژه Opportunity Detection باشد، جهت فعلی باید جداگانه validation شود.
-- Status عمداً بدون نگاشت عددی مانده است و این محدودیت نباید با حدس پر شود.
+### عوامل غیرفعال
+- Greeks
+- IV / IV-HV
+- Black-Scholes Difference
+- Open Interest
+- Spread
+- Bid/Ask Depth
+- Trading Days
+- Theta
 
-نتیجه ممیزی:
-- Market block از نظر فنی deterministic است، ولی از نظر اقتصادی هنوز policy-validated نیست.
+این موارد در موتور فعال فعلی وارد امتیاز Ranking نمی‌شوند و نباید به‌عنوان عامل فعال گزارش شوند.
 
-## Overlay
+## ممیزی اقتصادی عامل‌ها
 
-در مسیر فعال `tsetmc_scoring_engine.py`، Base Ranking با Overlayهای `ExecutionPenalty` و `DecayPenalty` مدل قدیمی یکی نیست. بنابراین پارامترهای Overlay زیر را نباید به‌عنوان پارامتر فعال TSETMC Evidence Ranking تلقی کرد.
+### 1. Trade Value و Volume
 
-### ExecutionPenalty
+این دو عامل شواهد فعالیت معاملاتی هستند، نه به‌تنهایی شواهد سودآوری یا mispricing. جهت «بیشتر بهتر» از نظر فنی deterministic است، اما اعتبار آن به‌عنوان Opportunity Factor هنوز با داده تاریخی واقعی تأیید نشده است.
 
-فرمول مشاهده‌شده:
-- Spread <= reference: بدون جریمه افزایشی
-- reference=12
-- scaling denominator=28
-- intermediate cap=0.35
-- missing spread penalty=0.10
-- final cap=0.45
+### 2. Time Value
 
-این اعداد در حال حاضر «Observed Active Parameters» هستند و provenance تأییدشده اقتصادی برای آن‌ها در repository بسته نشده است.
+فرمول فعال بر اساس نوع قرارداد صریح، قیمت پایه، قیمت اعمال و آخرین قیمت محاسبه می‌شود و مقدار منفی به صفر تبدیل نمی‌شود؛ مقدار منفی از نظر اقتصادی به‌عنوان Time Value پذیرفته نمی‌شود.
 
-### DecayPenalty
+مسئله باز: آیا «Time Value بیشتر» در تعریف فرصت پروژه باید در همه رژیم‌های بازار و برای هر دو نوع قرارداد امتیاز مثبت داشته باشد؟ این باید با replay تاریخی واقعی آزمون شود.
 
-آستانه‌های مشاهده‌شده:
-- RemainingDays <= 2 → 0.30
-- RemainingDays <= 5 → 0.18
-- RemainingDays <= 10 → 0.08
-- بیشتر از آن → 0
+### 3. Breakeven Distance
 
-این مقادیر باید با یک مرجع مصوب یا baseline تاریخی قابل بازتولید مستند شوند.
+فاصله سر‌به‌سر از قیمت پایه به‌صورت نرمال‌شده محاسبه می‌شود. جهت فعلی «فاصله کمتر بهتر» است.
 
-### Confidence
+مسئله باز: این معیار باید در Call و Put و در استراتژی هدف پروژه به‌صورت جداگانه validation شود؛ صرفاً deterministic بودن فرمول برای اثبات مطلوبیت اقتصادی کافی نیست.
 
-DataConfidence فعلی عمدتاً روی چند فیلد critical، IV، HV و Breakeven حساس است و «امتیاز کامل کیفیت داده» نیست.
+### 4. Leverage
 
-نتیجه:
-- نباید FinalScore را به‌عنوان یک confidence کامل درباره همه عوامل تفسیر کرد.
-- اگر قرار است Confidence معنای جامع داشته باشد، باید دامنه آن بازطراحی و سپس validation شود؛ فعلاً تغییر نکند.
+موتور فعال مقدار اهرم را از `S / P` مشتق می‌کند، مشروط به مثبت بودن آخرین قیمت.
 
-## Double Exposure Register
+این مهم‌ترین مورد نیازمند ممیزی اقتصادی مستقل است، زیرا نسبت قیمت پایه به قیمت اختیار فقط زمانی معنای اقتصادی موردنظر پروژه را دارد که واحد قیمت‌ها، اندازه قرارداد و تعریف leverage در داده TSETMC دقیقاً هم‌خوان باشند.
 
-| مورد | لایه اول | لایه دوم | وضعیت |
-|---|---|---|---|
-| Spread | Liquidity | ExecutionPenalty | نیازمند توجیه اقتصادی |
-| Time-to-expiry | Time block | DecayPenalty | نیازمند توجیه اقتصادی |
-| RemainingDays | Eligibility gate | Time/Decay | gate + ranking + overlay |
-| Leverage | Eligibility gate | Payoff score | gate + ranking |
+بنابراین فعلاً:
+- فرمول تغییر نمی‌کند.
+- وزن تغییر نمی‌کند.
+- هیچ threshold جدیدی اضافه نمی‌شود.
+- اعتبار اقتصادی آن با داده تاریخی و نمونه‌های واقعی بررسی می‌شود.
 
-هیچ‌کدام در این ممیزی حذف یا تعدیل نشده است.
+### 5. Calendar Days
 
-## اولویت اعتبارسنجی اقتصادی
+جهت فعلی «کمتر بهتر» است.
 
-قبل از هر تغییر عددی، validation باید حداقل این چهار سؤال را پاسخ دهد:
+این جهت لزوماً معادل «ریسک کمتر» یا «فرصت بیشتر» نیست و می‌تواند به هدف استراتژی وابسته باشد. بنابراین قبل از تغییر، با Historical Sensitivity/Ablation آزمون می‌شود.
 
-1. آیا افزایش FinalScore در داده‌های تاریخی با تعریف واقعی «فرصت» پروژه هم‌جهت است؟
-2. آیا عوامل با هم اطلاعات تکراری ایجاد می‌کنند و وزن مؤثر برخی متغیرها بیش از وزن اسمی آن‌ها می‌شود؟
-3. آیا جهت هر عامل در Call و Put یکسان قابل دفاع است یا به Contract Type نیاز دارد؟
-4. آیا Overlay واقعاً کیفیت اجرا/ریسک را بهبود می‌دهد یا صرفاً همان اطلاعات BaseScore را دوباره جریمه می‌کند؟
+### 6. Last vs Close و Intraday Range
 
-## تست‌های لازم بدون تغییر Production Policy
+هر دو عامل فعال فعلی به‌صورت «کمتر بهتر» امتیاز می‌گیرند.
 
-تا زمان تصویب اقتصادی، تست‌های بعدی باید فقط این موارد را بررسی کنند:
+در نتیجه موتور فعلی بیشتر ثبات/فاصله کمتر را پاداش می‌دهد و هنوز ثابت نشده که این سیاست با Opportunity Detection موردنظر پروژه هم‌جهت است.
 
-- deterministic بودن امتیاز برای ورودی یکسان
-- حفظ مجموع وزن هر Block
-- بازتوزیع فقط داخل همان Block
-- عدم تبدیل missing به صفر
-- عدم inference نوع قرارداد
-- حفظ gateهای RemainingDays و MIN_LEVERAGE
-- ثبت provenance همه پارامترهای Overlay
-- ثبت اثر مستقل BaseScore و Overlay
-- مقایسه ranking قبل/بعد از حذف هر عامل برای سنجش sensitivity
-- replay روی داده تاریخی واقعی و بدون داده مصنوعی
+## Double-Exposure / Policy Audit
 
-## وضعیت نهایی ممیزی
+در موتور فعال فعلی، Overlayهای ExecutionPenalty و DecayPenalty در `tsetmc_scoring_engine.py` وجود ندارند و نباید به‌عنوان بخشی از Production TSETMC Evidence Ranking گزارش شوند.
 
-- Active technical implementation: `tsetmc_scoring_engine.py` VERIFIED FOR CURRENT TSETMC CODE PATH
+مواردی که همچنان باید بررسی شوند:
+- اثر هم‌زمان چند عامل مرتبط با قیمت و payoff
+- هم‌بستگی Trade Value و Volume
+- هم‌بستگی Breakeven Distance و Moneyness
+- اثر مشترک Calendar Days با سایر عوامل
+- اینکه نرمال‌سازی percentile باعث غلبه یک خانواده اطلاعاتی بر وزن اسمی Blockها نشود.
+
+## Timestamp و وضعیت بازار
+
+در اجرای واقعی اخیر:
+- TSETMC refresh موفق بوده است.
+- بازار OFFMARKET بوده است.
+- timestamp صریح بازار از رکوردهای دریافت‌شده استخراج نشده است.
+- زمان retrieval موجود است و نباید به‌عنوان source market timestamp جایگزین شود.
+- `LIVE_MOVEMENT_CLAIM = NOT_CLAIMED` صحیح است.
+
+## Historical Sensitivity / Ablation Audit
+
+مرحله بعدی، بدون تغییر Production Output:
+
+1. Replay روی Snapshotهای واقعی TSETMC.
+2. محاسبه Ranking فعلی به‌عنوان baseline.
+3. حذف یک عامل در هر بار.
+4. حذف یک Block در هر بار.
+5. اندازه‌گیری جابه‌جایی Top-N و Spearman/Rank correlation در صورت کفایت داده.
+6. بررسی پایداری Top-N در چند snapshot.
+7. بررسی جداگانه Call و Put.
+8. بررسی هم‌بستگی عوامل.
+9. ثبت همه نتایج با SHA و timestamp.
+10. عدم اعمال نتیجه به Production تا زمان تأیید سیاست اقتصادی.
+
+## وضعیت نهایی
+
+- Technical implementation: VERIFIED AGAINST ACTIVE CODE PATH
+- Production scoring constants: UNCHANGED
 - Economic policy validation: OPEN
-- Overlay parameter provenance: OPEN
-- Contract identity for TSETMC: PENDING
-- No scoring constants changed by this audit.
-- No ranking or Bale output logic changed by this audit.
-
-## تصمیم اجرایی
-
-تا بسته‌شدن validation اقتصادی و provenance، Production Scoring تغییر عددی نمی‌کند.
-
-مرحله بعدی پروژه باید «Historical Sensitivity / Ablation Audit» باشد: با داده واقعی موجود، اثر هر عامل و هر Block بر رتبه‌بندی و پایداری Top-N اندازه‌گیری شود، بدون اینکه خروجی Production تغییر کند.
+- Leverage semantic validation: OPEN
+- Time-direction validation: OPEN
+- Market-direction validation: OPEN
+- Historical sensitivity/ablation: NEXT
+- Source timestamp availability: OPEN
+- No buy/sell signal is generated by this ranking layer.
