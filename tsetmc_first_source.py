@@ -169,10 +169,19 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
         if not isinstance(orderbook_data, list):
             orderbook_data = []
-        try:
-            info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
-        except Exception as exc:
-            info={"status":"FAILED","error_type":type(exc).__name__}; idata={}; info_status="FAILED"
+        # InstrumentInfo is auxiliary enrichment. Keep it out of the default
+        # live path because the TSETMC endpoint can stall at TCP connect on
+        # constrained Termux/network routes, just like BestLimits.
+        instrument_info_enabled = str(__import__("os").getenv("TSETMC_ENABLE_INSTRUMENT_INFO", "")).strip().lower() in {"1", "true", "yes"}
+        if instrument_info_enabled:
+            try:
+                info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
+            except Exception as exc:
+                info={"status":"FAILED","error_type":type(exc).__name__}; idata={}; info_status="FAILED"
+        else:
+            info={"status":"NOT_REQUESTED","reason":"AUXILIARY_INSTRUMENT_INFO_DISABLED_BY_DEFAULT","source":"TSETMC","endpoint":"Instrument/GetInstrumentInfo/{instrument_id}"}
+            idata={}
+            info_status="NOT_REQUESTED"
         if underlying_id and str(underlying_id) not in underlying_evidence:
             try:
                 uq=adapter.quote(str(underlying_id))
