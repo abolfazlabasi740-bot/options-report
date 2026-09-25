@@ -123,7 +123,7 @@ class TsetmcEligibilityTests(unittest.TestCase):
         ), 1)
         self.assertEqual(sum(
             item["activity"]["oi_status"] == "UNAVAILABLE" for item in items
-        ), 2)
+        ), 3)
         self.assertEqual(sum(
             item["activity"]["spread_status"] == "POSITIVE" for item in items
         ), 1)
