@@ -75,10 +75,10 @@ def _persist_snapshot(snapshot: dict[str, Any]) -> None:
     except OSError:
         pass
 
-def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
+def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
     try:
-        mw=adapter.option_market_watch_instrument_records(flow=flow)
+        mw = (adapter.option_market_watch_universe() if flow is None else adapter.option_market_watch_instrument_records(flow=flow))
     except Exception as exc:
         cached = _load_last_known_snapshot()
         if cached is not None:
@@ -220,7 +220,8 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
               "market_watch":{"endpoint":mw.get("endpoint"),"snapshot_sha256":mw.get("snapshot_sha256"),
-                              "retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments)},
+                              "retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments),
+                              "flows":mw.get("flows"),"flow_evidence":mw.get("flow_evidence")},
               "quote_evidence":quote_evidence,"orderbook_evidence":orderbook_evidence,
               "underlying_evidence":underlying_evidence,
               "best_limits_contract":{
@@ -231,7 +232,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
                   "market_watch_binding":"market_watch_snapshot_sha256",
                   "source_timestamp_binding":"source_market_timestamp",
                   "delta_seconds_limit":2.0,
-                  "consumption_status":"NOT_CONSUMED_BY_SCORING_OR_RANKING",
+                  "consumption_status":"NOT_CONSUMED_BY_SCORING_OR_RANKING_FEATURES",
               }}
     snapshot = {"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC",
                 "external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),
