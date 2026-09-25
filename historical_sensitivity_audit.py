@@ -1,82 +1,200 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Evidence-only sensitivity/ablation audit for the active TSETMC V4.1 scorer.
+
+This module never calls the legacy scoring_engine.py and never changes the
+production report path. It consumes real saved TSETMC snapshots and reuses the
+active tsetmc_scoring_engine with explicit audit-only ablations.
+"""
 from __future__ import annotations
-from typing import Any
-import hashlib, json
-import pandas as pd
-from scoring_engine import shadow_score_dataframe, score_v4_overlay
 
-BLOCKS = {
-    "Liquidity": ("BlockScore_Liquidity", 20.0),
-    "Valuation": ("BlockScore_Valuation", 25.0),
-    "Payoff": ("BlockScore_Payoff", 18.0),
-    "Time": ("BlockScore_Time", 15.0),
-    "Greeks": ("BlockScore_Greeks", 12.0),
-    "Market": ("BlockScore_Market", 10.0),
-}
+import hashlib
+import json
+from typing import Any, Iterable
 
-def _ranked(df: pd.DataFrame, score_col: str) -> pd.DataFrame:
-    out = df.copy()
-    out["_score"] = pd.to_numeric(out[score_col], errors="coerce")
-    out = out[out["_score"].notna()].copy()
-    out = out.sort_values(["_score", "ارزش معاملات", "حجم معاملات", "نماد"],
-                          ascending=[False, False, False, True], kind="mergesort")
-    out["_rank"] = range(1, len(out) + 1)
-    return out
+from tsetmc_scoring_engine import BLOCK_WEIGHTS, FACTOR_WEIGHTS, build_evidence_ranking
 
-def _sha(payload: Any) -> str:
-    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True,
+ENGINE_VERSION = "G7-2-TSETMC-SENSITIVITY-1.0"
+
+
+def _sha(value: Any) -> str:
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":"), default=str).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
 
-def run_sensitivity(df: pd.DataFrame, top_n: int = 15) -> dict[str, Any]:
-    if top_n < 1:
-        raise ValueError("top_n must be positive")
-    scored = shadow_score_dataframe(df)
-    base = _ranked(scored, "FinalScore")
-    if base.empty:
-        raise ValueError("no valid shadow scores for sensitivity audit")
-    base_top = base.head(top_n)
-    base_symbols = list(base_top["نماد"].astype(str))
-    rows = []
-    for name, (column, weight) in BLOCKS.items():
-        variant = scored.copy()
-        remaining_weight = 100.0 - weight
-        variant["_AblatedBase"] = (
-            (pd.to_numeric(variant["BaseScore"], errors="coerce") -
-             pd.to_numeric(variant[column], errors="coerce"))
-            * 100.0 / remaining_weight
-        )
-        # Reuse the canonical production overlay implementation. Only BaseScore is
-        # replaced with the ablated value; execution/decay/confidence mechanics
-        # therefore cannot drift between production and this evidence-only audit.
-        variant["BaseScore"] = variant["_AblatedBase"]
-        variant = score_v4_overlay(variant)
-        variant["AuditScore"] = variant["FinalScore"]
-        ranked = _ranked(variant, "AuditScore")
-        top = ranked.head(top_n)
-        symbols = list(top["نماد"].astype(str))
-        base_rank = base.set_index("نماد")["_rank"].to_dict()
-        new_rank = ranked.set_index("نماد")["_rank"].to_dict()
-        common = set(base_rank) & set(new_rank)
-        deltas = [abs(float(base.loc[base["نماد"] == s, "_score"].iloc[0]) -
-                      float(ranked.loc[ranked["نماد"] == s, "_score"].iloc[0])) for s in common]
-        rows.append({
-            "block": name, "block_weight": weight, "top_n": top_n,
-            "top_n_overlap": len(set(base_symbols) & set(symbols)),
-            "top_n_overlap_pct": round(len(set(base_symbols) & set(symbols)) / min(top_n, len(base_top)) * 100.0, 4),
-            "rank_changes_common_universe": sum(base_rank[s] != new_rank[s] for s in common),
-            "max_score_delta": round(max(deltas), 6) if deltas else 0.0,
-            "mean_score_delta": round(sum(deltas)/len(deltas), 6) if deltas else 0.0,
-            "ablated_top_symbols": symbols,
-        })
-    evidence = {
-        "audit":"G7-2_HISTORICAL_SENSITIVITY_ABLATION", "status":"EVIDENCE_ONLY",
-        "production_mutation":False, "engine":"V4.1.1","overlay_source":"scoring_engine.score_v4_overlay",
-        "input_row_count":int(len(df)), "scored_row_count":int(len(scored)),
-        "top_n":top_n, "baseline_top_symbols":base_symbols, "blocks":rows,
+
+def _id(row: dict[str, Any]) -> str | None:
+    value = (row.get("identity") or {}).get("instrument_id")
+    return str(value) if value not in (None, "") else None
+
+
+def _symbol(row: dict[str, Any]) -> str:
+    return str((row.get("canonical") or {}).get("نماد") or "داده موجود نیست")
+
+
+def _rank_map(ranking: dict[str, Any]) -> dict[str, int]:
+    return {
+        str(x["instrument_id"]): int(x["rank"])
+        for x in ranking.get("ranking_rows", [])
+        if x.get("instrument_id") not in (None, "") and x.get("rank") is not None
     }
-    evidence["evidence_hash"] = _sha(evidence)
-    return evidence
+
+
+def _top_ids(ranking: dict[str, Any], top_n: int) -> list[str]:
+    return [
+        str(x["instrument_id"])
+        for x in ranking.get("ranking_rows", [])[:top_n]
+        if x.get("instrument_id") not in (None, "")
+    ]
+
+
+def _spearman(base: dict[str, int], variant: dict[str, int]) -> float | None:
+    common = sorted(set(base) & set(variant))
+    if len(common) < 2:
+        return None
+    n = len(common)
+    d2 = sum((base[k] - variant[k]) ** 2 for k in common)
+    return round(1.0 - (6.0 * d2) / (n * (n * n - 1)), 8)
+
+
+def _comparison(base: dict[str, Any], variant: dict[str, Any], top_n: int) -> dict[str, Any]:
+    base_ids = _top_ids(base, top_n)
+    variant_ids = _top_ids(variant, top_n)
+    base_rank = _rank_map(base)
+    variant_rank = _rank_map(variant)
+    common = set(base_rank) & set(variant_rank)
+    return {
+        "top_n": top_n,
+        "base_top_n": base_ids,
+        "variant_top_n": variant_ids,
+        "top_n_overlap_count": len(set(base_ids) & set(variant_ids)),
+        "top_n_overlap_pct": round(
+            len(set(base_ids) & set(variant_ids)) / max(1, min(top_n, len(base_ids))) * 100.0, 4
+        ),
+        "common_ranked_count": len(common),
+        "rank_changes_common": sum(base_rank[k] != variant_rank[k] for k in common),
+        "spearman_rank_correlation": _spearman(base_rank, variant_rank),
+    }
+
+
+def _candidate_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    if snapshot.get("source_of_truth") != "TSETMC":
+        raise ValueError("SOURCE_OF_TRUTH_MUST_BE_TSETMC")
+    if not snapshot.get("snapshot_sha256"):
+        raise ValueError("SNAPSHOT_SHA256_REQUIRED")
+    rows = snapshot.get("rows")
+    if not isinstance(rows, list):
+        rows = snapshot.get("records")
+    if not isinstance(rows, list):
+        raise ValueError("TSETMC_ROWS_REQUIRED")
+    eligibility = snapshot.get("eligibility") or {}
+    ids = {str(x) for x in (eligibility.get("candidate_instrument_ids") or [])}
+    if not ids:
+        raise ValueError("OPPORTUNITY_CANDIDATE_IDS_REQUIRED")
+    selected = [r for r in rows if _id(r) in ids]
+    if not selected:
+        raise ValueError("NO_OPPORTUNITY_CANDIDATE_ROWS")
+    return selected
+
+
+def _audit_one(rows: list[dict[str, Any]], top_n: int) -> dict[str, Any]:
+    baseline = build_evidence_ranking(rows)
+    blocks = []
+    for block in BLOCK_WEIGHTS:
+        variant = build_evidence_ranking(rows, disabled_blocks={block})
+        blocks.append({
+            "type": "BLOCK_ABLATION",
+            "name": block,
+            "weight": BLOCK_WEIGHTS[block],
+            "comparison": _comparison(baseline, variant, top_n),
+        })
+
+    factors = []
+    for block, factor_map in FACTOR_WEIGHTS.items():
+        for factor in factor_map:
+            variant = build_evidence_ranking(rows, disabled_factors={factor})
+            factors.append({
+                "type": "FACTOR_ABLATION",
+                "block": block,
+                "name": factor,
+                "weight": factor_map[factor],
+                "comparison": _comparison(baseline, variant, top_n),
+            })
+
+    by_type = {}
+    for contract_type in ("CALL", "PUT"):
+        subset = [
+            r for r in rows
+            if str((r.get("identity") or {}).get("contract_type") or "").upper() == contract_type
+        ]
+        if subset:
+            by_type[contract_type] = _audit_one_without_split(subset, top_n)
+
+    return {
+        "baseline": {
+            "status": baseline.get("status"),
+            "ranking_scope": baseline.get("ranking_scope"),
+            "ranking_scope_row_count": baseline.get("ranking_scope_row_count"),
+            "top_n": _top_ids(baseline, top_n),
+        },
+        "block_ablations": blocks,
+        "factor_ablations": factors,
+        "by_contract_type": by_type,
+    }
+
+
+def _audit_one_without_split(rows: list[dict[str, Any]], top_n: int) -> dict[str, Any]:
+    baseline = build_evidence_ranking(rows)
+    block_results = []
+    for block in BLOCK_WEIGHTS:
+        variant = build_evidence_ranking(rows, disabled_blocks={block})
+        block_results.append({
+            "name": block,
+            "comparison": _comparison(baseline, variant, top_n),
+        })
+    return {
+        "row_count": len(rows),
+        "baseline_top_n": _top_ids(baseline, top_n),
+        "block_ablations": block_results,
+    }
+
+
+def run_snapshot(snapshot: dict[str, Any], top_n: int = 15) -> dict[str, Any]:
+    if top_n < 1:
+        raise ValueError("TOP_N_MUST_BE_POSITIVE")
+    rows = _candidate_rows(snapshot)
+    result = {
+        "engine_version": ENGINE_VERSION,
+        "audit": "G7-2_HISTORICAL_SENSITIVITY_ABLATION",
+        "status": "EVIDENCE_ONLY",
+        "production_mutation": False,
+        "source_of_truth": "TSETMC",
+        "snapshot_id": snapshot.get("snapshot_sha256"),
+        "retrieved_at": snapshot.get("generated_at") or snapshot.get("retrieved_at"),
+        "row_count": len(rows),
+        "top_n": top_n,
+        "analysis": _audit_one(rows, top_n),
+    }
+    result["evidence_hash"] = _sha(result)
+    return result
+
+
+def pair_stability(results: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    items = list(results)
+    pairs = []
+    for previous, current in zip(items, items[1:]):
+        a = previous.get("analysis", {}).get("baseline", {}).get("top_n", [])
+        b = current.get("analysis", {}).get("baseline", {}).get("top_n", [])
+        overlap = len(set(a) & set(b))
+        pairs.append({
+            "previous_snapshot": previous.get("snapshot_id"),
+            "current_snapshot": current.get("snapshot_id"),
+            "top_n": previous.get("top_n"),
+            "top_n_overlap_count": overlap,
+            "top_n_overlap_pct": round(overlap / max(1, min(len(a), len(b))) * 100.0, 4),
+        })
+    return {"pair_count": len(pairs), "pairs": pairs}
+
 
 if __name__ == "__main__":
-    raise SystemExit("Import run_sensitivity() from an external historical dataset runner.")
+    raise SystemExit("Use historical_dataset_runner.py with real saved TSETMC snapshots.")
