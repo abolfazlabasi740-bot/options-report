@@ -93,7 +93,10 @@ def main() -> None:
         raise RuntimeError("Bale delivery verification is not SUCCESS")
     if bale.get("report_sha256") != sha256_file(REPORT):
         raise RuntimeError("Report SHA-256 mismatch")
-    if bale.get("source_sha256") != audit.get("source_sha256"):
+    if audit.get("source_of_truth") == "TSETMC":
+        if bale.get("source_sha256") != audit.get("snapshot_sha256"):
+            raise RuntimeError("TSETMC Snapshot SHA-256 mismatch between Audit and Bale evidence")
+    elif bale.get("source_sha256") != audit.get("source_sha256"):
         raise RuntimeError("Source SHA-256 mismatch between Audit and Bale evidence")
     if not bale.get("receipts"):
         raise RuntimeError("Bale receipts are missing")
