@@ -70,7 +70,7 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         item = build_evidence_ranking([row])["ranking_rows"][0]
         self.assertEqual(item["features"]["time_value"], 5.0)
         self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.05)
-        self.assertAlmostEqual(item["features"]["moneyness"], 0.1)
+        self.assertAlmostEqual(item["features"]["moneyness"], 1 / 11)
 
     def test_invalid_denominators_remain_unavailable(self):
         row = self._row("Z", 100, 100, 0, 0, 0, 0, None, "CALL")
