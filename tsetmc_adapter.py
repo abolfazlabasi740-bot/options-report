@@ -202,6 +202,7 @@ class TSETMCAdapter:
                     "begin_date": item.get("beginDate"),
                     "end_date": item.get("endDate"),
                     "remaining_days": item.get("remainedDay"),
+                    "raw_market_watch": item,
                 })
         return {
             **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
@@ -223,6 +224,9 @@ class TSETMCAdapter:
                 "end_date": record.get("end_date"),
                 "remaining_days": record.get("remaining_days"),
             }
+            raw = record.get("raw_market_watch")
+            if not isinstance(raw, dict):
+                raw = {}
             if record.get("option_put_id"):
                 instruments.append({
                     **common,
@@ -230,6 +234,21 @@ class TSETMCAdapter:
                     "symbol": record.get("put_symbol"),
                     "contract_type": "PUT",
                     "identity_source_field": "insCode_P",
+                    "market_watch_fields": {
+                        "last_price": raw.get("pDrCotVal_P"),
+                        "close_price": raw.get("pClosing_P"),
+                        "previous_price": raw.get("priceYesterday_P"),
+                        "volume": raw.get("qTotTran5J_P"),
+                        "trade_count": raw.get("zTotTran_P"),
+                        "trade_value": raw.get("qTotCap_P"),
+                        "open_interest": raw.get("oP_P"),
+                        "previous_open_interest": raw.get("yesterdayOP_P"),
+                        "bid_price": raw.get("pMeDem_P"),
+                        "ask_price": raw.get("pMeOf_P"),
+                        "bid_quantity": raw.get("qTitMeDem_P"),
+                        "ask_quantity": raw.get("qTitMeOf_P"),
+                        "notional_value": raw.get("notionalValue_P"),
+                    },
                 })
             if record.get("option_call_id"):
                 instruments.append({
@@ -238,6 +257,21 @@ class TSETMCAdapter:
                     "symbol": record.get("call_symbol"),
                     "contract_type": "CALL",
                     "identity_source_field": "insCode_C",
+                    "market_watch_fields": {
+                        "last_price": raw.get("pDrCotVal_C"),
+                        "close_price": raw.get("pClosing_C"),
+                        "previous_price": raw.get("priceYesterday_C"),
+                        "volume": raw.get("qTotTran5J_C"),
+                        "trade_count": raw.get("zTotTran_C"),
+                        "trade_value": raw.get("qTotCap_C"),
+                        "open_interest": raw.get("oP_C"),
+                        "previous_open_interest": raw.get("yesterdayOP_C"),
+                        "bid_price": raw.get("pMeDem_C"),
+                        "ask_price": raw.get("pMeOf_C"),
+                        "bid_quantity": raw.get("qTitMeDem_C"),
+                        "ask_quantity": raw.get("qTitMeOf_C"),
+                        "notional_value": raw.get("notionalValue_C"),
+                    },
                 })
         return {
             **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
