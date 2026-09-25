@@ -84,6 +84,11 @@ def main() -> None:
         raise RuntimeError("Runtime Git SHA does not match deployed repository HEAD")
     if (audit.get("audit_integrity") or {}).get("status") != "PASS":
         raise RuntimeError("latest_audit.json is not PASS")
+    if audit.get("source_of_truth") == "TSETMC":
+        if audit.get("data_mode") not in {"LIVE_TSETMC_REFRESH", "LAST_KNOWN_TSETMC_SNAPSHOT"}:
+            raise RuntimeError("TSETMC data mode is invalid")
+        if audit.get("live_movement_claim") != "NOT_CLAIMED":
+            raise RuntimeError("TSETMC live movement claim must remain NOT_CLAIMED")
     if bale.get("status") != "SUCCESS":
         raise RuntimeError("Bale delivery verification is not SUCCESS")
     if bale.get("report_sha256") != sha256_file(REPORT):
