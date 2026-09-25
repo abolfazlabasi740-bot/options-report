@@ -226,4 +226,3 @@ def build_opportunity_candidates(
             "external_source": "FORBIDDEN",
         },
     }
-\n
