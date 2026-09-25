@@ -17,7 +17,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             "audit_version", "source_of_truth", "data_mode", "live_refresh_status",
             "snapshot_sha256", "row_count", "generated_at",
             "live_movement_claim", "scoring_status", "ranking_status",
-            "market_watch", "market_state", "report_sha256",
+            "market_watch", "best_limits_evidence", "market_state", "report_sha256",
         ]
         missing = [key for key in required if key not in audit]
         failures = []
@@ -41,6 +41,46 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             mw = audit["market_watch"]
             if not mw.get("endpoint") or not mw.get("snapshot_sha256") or not mw.get("retrieved_at"):
                 failures.append("MARKET_WATCH_EVIDENCE_INCOMPLETE")
+        best = audit.get("best_limits_evidence")
+        if not isinstance(best, dict):
+            failures.append("BEST_LIMITS_EVIDENCE_INVALID")
+        else:
+            contract = best.get("contract") or {}
+            rows = best.get("rows")
+            if contract.get("status") != "RAW_ONLY_QUARANTINED":
+                failures.append("BEST_LIMITS_MUST_REMAIN_QUARANTINED")
+            if contract.get("source") != "TSETMC":
+                failures.append("BEST_LIMITS_SOURCE_INVALID")
+            if contract.get("identity_binding") != "instrument_id":
+                failures.append("BEST_LIMITS_IDENTITY_BINDING_INVALID")
+            if contract.get("market_watch_binding") != "market_watch_snapshot_sha256":
+                failures.append("BEST_LIMITS_MARKET_WATCH_BINDING_INVALID")
+            if contract.get("source_timestamp_binding") != "source_market_timestamp":
+                failures.append("BEST_LIMITS_TIMESTAMP_BINDING_INVALID")
+            if contract.get("delta_seconds_limit") != 2.0:
+                failures.append("BEST_LIMITS_DELTA_LIMIT_INVALID")
+            if contract.get("consumption_status") != "NOT_CONSUMED_BY_SCORING_OR_RANKING":
+                failures.append("BEST_LIMITS_CONSUMPTION_INVALID")
+            if not isinstance(rows, list):
+                failures.append("BEST_LIMITS_ROWS_INVALID")
+            else:
+                mw_hash = (audit.get("market_watch") or {}).get("snapshot_sha256")
+                seen = set()
+                for item in rows:
+                    if not isinstance(item, dict):
+                        failures.append("BEST_LIMITS_ROW_INVALID")
+                        continue
+                    iid = item.get("instrument_id")
+                    if not iid or iid in seen:
+                        failures.append("BEST_LIMITS_IDENTITY_DUPLICATE_OR_MISSING")
+                    seen.add(iid)
+                    for key in ("endpoint", "snapshot_sha256", "retrieved_at", "market_watch_snapshot_sha256"):
+                        if not item.get(key):
+                            failures.append("BEST_LIMITS_EVIDENCE_INCOMPLETE")
+                    if item.get("market_watch_snapshot_sha256") != mw_hash:
+                        failures.append("BEST_LIMITS_MARKET_WATCH_BINDING_MISMATCH")
+                    if item.get("status") != "SUCCESS":
+                        failures.append("BEST_LIMITS_REQUEST_FAILED")
         if not isinstance(audit.get("market_state"), dict):
             failures.append("MARKET_STATE_EVIDENCE_INVALID")
         if not audit.get("report_sha256"):
@@ -64,6 +104,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                 "market_watch_evidence": isinstance(audit.get("market_watch"), dict) and all(
                     audit["market_watch"].get(k) for k in ("endpoint", "snapshot_sha256", "retrieved_at")
                 ) if isinstance(audit.get("market_watch"), dict) else False,
+                "best_limits_evidence": isinstance(audit.get("best_limits_evidence"), dict),
                 "market_state_evidence": isinstance(audit.get("market_state"), dict),
                 "report_hash_present": bool(audit.get("report_sha256")),
             },
