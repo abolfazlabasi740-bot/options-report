@@ -163,7 +163,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=1):
     rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:10]
     if rankable:
         for x in rankable:
-            lines.append(f"#{x["rank"]} {x.get("symbol") or "داده موجود نیست"} | امتیاز {x["score"]:.2f} | بلوک‌های معتبر: {",".join(x.get("supported_blocks", []))}")
+            lines.append(f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز {x['score']:.2f} | بلوک‌های معتبر: {','.join(x.get('supported_blocks', []))}")
     else:
         lines.append("داده کافی برای رتبه‌بندی وجود ندارد.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
