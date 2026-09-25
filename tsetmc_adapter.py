@@ -60,9 +60,15 @@ class TSETMCAdapter:
             url,
             headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
         )
+        request_timeout = self.timeout if timeout is None else float(timeout)
+        request_retries = self.retries if retries is None else int(retries)
+        if request_timeout <= 0:
+            raise ValueError("timeout must be positive")
+        if request_retries < 0:
+            raise ValueError("retries must be non-negative")
         last_error: Exception | None = None
 
-        for attempt in range(self.retries + 1):
+        for attempt in range(request_retries + 1):
             try:
                 with self.opener(request, timeout=request_timeout) as response:
                     status = getattr(response, "status", 200)
@@ -127,7 +133,13 @@ class TSETMCAdapter:
         return self._unwrap(r, "closingPriceInfo")
 
     def order_book(self, ins_code: str) -> dict[str, Any]:
-        r = self._request(f"BestLimits/{quote(str(ins_code), safe='')}")
+        # BestLimits is auxiliary evidence and must never stall the complete
+        # option universe. Fail fast; canonical quote/identity remains usable.
+        r = self._request(
+            f"BestLimits/{quote(str(ins_code), safe='')}",
+            timeout=min(self.timeout, 3.0),
+            retries=0,
+        )
         return self._unwrap(r, "bestLimits")
 
     def client_type(self, ins_code: str) -> dict[str, Any]:
