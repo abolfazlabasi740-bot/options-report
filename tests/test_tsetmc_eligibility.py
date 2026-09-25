@@ -10,7 +10,7 @@ from tsetmc_eligibility import (
 )
 
 
-def row(volume=None, trades=None, bid=None, ask=None):
+def row(volume=None, trades=None, bid=None, ask=None, bid_price=None, ask_price=None):
     return {
         "canonical": {
             "نماد": "TEST",
@@ -18,6 +18,8 @@ def row(volume=None, trades=None, bid=None, ask=None):
             "تعداد معاملات": trades,
             "حجم بهترین تقاضا": bid,
             "حجم بهترین عرضه": ask,
+            "قیمت بهترین تقاضا": bid_price,
+            "قیمت بهترین عرضه": ask_price,
         },
         "identity": {"instrument_id": "ID1", "contract_type": "CALL"},
     }
@@ -76,12 +78,12 @@ class TsetmcEligibilityTests(unittest.TestCase):
         self.assertEqual(classify_eligibility(unavailable)["activity"]["oi_status"], "UNAVAILABLE")
 
     def test_spread_status_classifies_positive_zero_negative_and_unavailable(self):
-        positive = row(volume=1, trades=1, bid=10, ask=12)
-        zero = row(volume=1, trades=1, bid=10, ask=10)
-        negative = row(volume=1, trades=1, bid=12, ask=10)
-        unavailable = row(volume=1, trades=1, bid=None, ask=None)
-        one_sided = row(volume=1, trades=1, bid=12, ask=0)
-        zero_both = row(volume=1, trades=1, bid=0, ask=0)
+        positive = row(volume=1, trades=1, bid=10, ask=12, bid_price=10, ask_price=12)
+        zero = row(volume=1, trades=1, bid=10, ask=10, bid_price=10, ask_price=10)
+        negative = row(volume=1, trades=1, bid=12, ask=10, bid_price=12, ask_price=10)
+        unavailable = row(volume=1, trades=1, bid=None, ask=None, bid_price=None, ask_price=None)
+        one_sided = row(volume=1, trades=1, bid=12, ask=0, bid_price=12, ask_price=0)
+        zero_both = row(volume=1, trades=1, bid=0, ask=0, bid_price=0, ask_price=0)
 
         self.assertEqual(classify_eligibility(positive)["activity"]["spread_status"], "POSITIVE")
         self.assertEqual(classify_eligibility(zero)["activity"]["spread_status"], "ZERO")
@@ -101,17 +103,17 @@ class TsetmcEligibilityTests(unittest.TestCase):
             self.assertFalse(result["buy_sell_signal"])
 
     def test_universe_exposes_oi_and_spread_status_counts(self):
-        positive = row(volume=1, trades=1, bid=10, ask=12)
+        positive = row(volume=1, trades=1, bid=10, ask=12, bid_price=10, ask_price=12)
         positive["canonical"]["موقعیت های باز"] = 5
-        zero = row(volume=1, trades=1, bid=10, ask=10)
+        zero = row(volume=1, trades=1, bid=10, ask=10, bid_price=10, ask_price=10)
         zero["canonical"]["موقعیت های باز"] = 0
-        negative = row(volume=1, trades=1, bid=12, ask=10)
-        unavailable = row(volume=1, trades=1, bid=None, ask=None)
-        one_sided = row(volume=1, trades=1, bid=12, ask=0)
+        negative = row(volume=1, trades=1, bid=12, ask=10, bid_price=12, ask_price=10)
+        unavailable = row(volume=1, trades=1, bid=None, ask=None, bid_price=None, ask_price=None)
+        one_sided = row(volume=1, trades=1, bid=12, ask=0, bid_price=12, ask_price=0)
 
         result = classify_universe([positive, zero, negative, unavailable, one_sided])
         self.assertEqual(result["rows_evaluated"], 5)
-        self.assertEqual(result["counts"][OPPORTUNITY_CANDIDATE], 4)
+        self.assertEqual(result["counts"][OPPORTUNITY_CANDIDATE], 5)
         items = result["items"]
         self.assertEqual(sum(
             item["activity"]["oi_status"] == "POSITIVE" for item in items
