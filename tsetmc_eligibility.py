@@ -143,3 +143,87 @@ def classify_universe(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
             "buy_sell_signal": "NOT_GENERATED",
         },
     }
+
+def build_opportunity_candidates(
+    rows: list[dict[str, Any]] | None,
+    ranking: dict[str, Any] | None,
+    eligibility: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build deterministic TSETMC-native opportunity cases from eligible rows.
+
+    This layer does not create a new profitability score or a trading signal.
+    It joins explicit activity eligibility with the already-computed evidence
+    ranking and exposes only auditable observed/derived features.
+    """
+    rows = list(rows or [])
+    ranking = ranking or {}
+    eligibility = eligibility or {}
+    candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
+    ranking_by_id = {
+        item.get("instrument_id"): item
+        for item in ranking.get("ranking_rows", [])
+        if item.get("instrument_id") is not None
+    }
+
+    cases = []
+    for row in rows:
+        identity = row.get("identity") or {}
+        instrument_id = identity.get("instrument_id")
+        if instrument_id not in candidate_ids:
+            continue
+
+        canonical = row.get("canonical") or {}
+        activity = classify_eligibility(row)["activity"]
+        ranked = ranking_by_id.get(instrument_id, {})
+        features = ranked.get("features") or {}
+
+        evidence = {
+            "activity": activity,
+            "ranking_score": ranked.get("score"),
+            "ranking_rank": ranked.get("rank"),
+            "supported_blocks": ranked.get("supported_blocks", []),
+            "features": features,
+        }
+
+        blockers = []
+        if ranked.get("score") is None:
+            blockers.append("NO_RANKING_SCORE")
+        if not ranked.get("supported_blocks"):
+            blockers.append("NO_SUPPORTED_SCORING_BLOCK")
+        if features.get("contract_type") not in {"CALL", "PUT"}:
+            blockers.append("EXPLICIT_CONTRACT_TYPE_UNAVAILABLE")
+
+        cases.append({
+            "instrument_id": instrument_id,
+            "symbol": canonical.get("نماد"),
+            "contract_type": identity.get("contract_type"),
+            "status": "EVIDENCE_BACKED_CANDIDATE" if not blockers else "CANDIDATE_WITH_BLOCKERS",
+            "rank": ranked.get("rank"),
+            "score": ranked.get("score"),
+            "evidence": evidence,
+            "blockers": blockers,
+            "buy_sell_signal": False,
+        })
+
+    cases.sort(key=lambda x: (
+        x.get("rank") is None,
+        x.get("rank") if x.get("rank") is not None else 10**9,
+        str(x.get("instrument_id") or ""),
+    ))
+
+    return {
+        "status": "SUCCESS",
+        "engine_version": "TSETMC-OPPORTUNITY-1.0",
+        "source_of_truth": "TSETMC",
+        "rows_evaluated": len(rows),
+        "candidate_count": len(cases),
+        "cases": cases,
+        "rules": {
+            "selection_basis": "OPPORTUNITY_CANDIDATE_PLUS_TSETMC_EVIDENCE_RANKING",
+            "new_profitability_threshold": False,
+            "buy_sell_signal": "NOT_GENERATED",
+            "missing_data": "UNAVAILABLE_NOT_ZERO",
+            "external_source": "FORBIDDEN",
+        },
+    }
+\n
