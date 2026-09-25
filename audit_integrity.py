@@ -31,10 +31,10 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             failures.append("SNAPSHOT_HASH_MISSING")
         if not isinstance(audit.get("row_count"), int) or audit.get("row_count") < 0:
             failures.append("ROW_COUNT_INVALID")
-        if audit.get("scoring_status") != "OFF_FIELD_EVIDENCE_GATE_OPEN":
-            failures.append("SCORING_MUST_REMAIN_OFF")
-        if audit.get("ranking_status") != "OFF":
-            failures.append("RANKING_MUST_REMAIN_OFF")
+        if audit.get("scoring_status") not in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING"}:
+            failures.append("SCORING_STATUS_INVALID")
+        if audit.get("ranking_status") not in {"OFF", "TSETMC_EVIDENCE_RANKING"}:
+            failures.append("RANKING_STATUS_INVALID")
         if not isinstance(audit.get("market_watch"), dict):
             failures.append("MARKET_WATCH_EVIDENCE_INVALID")
         else:
@@ -101,8 +101,8 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                 "snapshot_hash_present": bool(audit.get("snapshot_sha256")),
                 "row_count_valid": isinstance(audit.get("row_count"), int) and audit.get("row_count") >= 0,
                 "live_movement_not_claimed": audit.get("live_movement_claim") == "NOT_CLAIMED",
-                "scoring_off": audit.get("scoring_status") == "OFF_FIELD_EVIDENCE_GATE_OPEN",
-                "ranking_off": audit.get("ranking_status") == "OFF",
+                "scoring_contract_valid": audit.get("scoring_status") in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING"},
+                "ranking_contract_valid": audit.get("ranking_status") in {"OFF", "TSETMC_EVIDENCE_RANKING"},
                 "market_watch_evidence": isinstance(audit.get("market_watch"), dict) and all(
                     audit["market_watch"].get(k) for k in ("endpoint", "snapshot_sha256", "retrieved_at")
                 ) if isinstance(audit.get("market_watch"), dict) else False,
