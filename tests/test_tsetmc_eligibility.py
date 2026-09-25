@@ -64,6 +64,71 @@ class TsetmcEligibilityTests(unittest.TestCase):
         )
         self.assertFalse(result["arbitrary_thresholds"])
 
+    def test_oi_status_classifies_positive_zero_and_unavailable(self):
+        positive = row(volume=1, trades=1)
+        positive["canonical"]["موقعیت های باز"] = 12
+        zero = row(volume=1, trades=1)
+        zero["canonical"]["موقعیت های باز"] = 0
+        unavailable = row(volume=1, trades=1)
+
+        self.assertEqual(classify_eligibility(positive)["activity"]["oi_status"], "POSITIVE")
+        self.assertEqual(classify_eligibility(zero)["activity"]["oi_status"], "ZERO")
+        self.assertEqual(classify_eligibility(unavailable)["activity"]["oi_status"], "UNAVAILABLE")
+
+    def test_spread_status_classifies_positive_zero_negative_and_unavailable(self):
+        positive = row(volume=1, trades=1, bid=10, ask=12)
+        zero = row(volume=1, trades=1, bid=10, ask=10)
+        negative = row(volume=1, trades=1, bid=12, ask=10)
+        unavailable = row(volume=1, trades=1, bid=None, ask=None)
+
+        self.assertEqual(classify_eligibility(positive)["activity"]["spread_status"], "POSITIVE")
+        self.assertEqual(classify_eligibility(zero)["activity"]["spread_status"], "ZERO")
+        self.assertEqual(classify_eligibility(negative)["activity"]["spread_status"], "NEGATIVE")
+        self.assertEqual(classify_eligibility(unavailable)["activity"]["spread_status"], "UNAVAILABLE")
+
+    def test_oi_and_spread_status_do_not_change_candidate_gate(self):
+        positive = row(volume=1, trades=1, bid=10, ask=12)
+        inverted = row(volume=1, trades=1, bid=12, ask=10)
+        for candidate in (positive, inverted):
+            result = classify_eligibility(candidate)
+            self.assertEqual(result["state"], OPPORTUNITY_CANDIDATE)
+            self.assertTrue(result["opportunity_eligible"])
+            self.assertFalse(result["buy_sell_signal"])
+
+    def test_universe_exposes_oi_and_spread_status_counts(self):
+        positive = row(volume=1, trades=1, bid=10, ask=12)
+        positive["canonical"]["موقعیت های باز"] = 5
+        zero = row(volume=1, trades=1, bid=10, ask=10)
+        zero["canonical"]["موقعیت های باز"] = 0
+        negative = row(volume=1, trades=1, bid=12, ask=10)
+        unavailable = row(volume=1, trades=1, bid=None, ask=None)
+
+        result = classify_universe([positive, zero, negative, unavailable])
+        self.assertEqual(result["rows_evaluated"], 4)
+        self.assertEqual(result["counts"][OPPORTUNITY_CANDIDATE], 4)
+        items = result["items"]
+        self.assertEqual(sum(
+            item["activity"]["oi_status"] == "POSITIVE" for item in items
+        ), 1)
+        self.assertEqual(sum(
+            item["activity"]["oi_status"] == "ZERO" for item in items
+        ), 1)
+        self.assertEqual(sum(
+            item["activity"]["oi_status"] == "UNAVAILABLE" for item in items
+        ), 2)
+        self.assertEqual(sum(
+            item["activity"]["spread_status"] == "POSITIVE" for item in items
+        ), 1)
+        self.assertEqual(sum(
+            item["activity"]["spread_status"] == "ZERO" for item in items
+        ), 1)
+        self.assertEqual(sum(
+            item["activity"]["spread_status"] == "NEGATIVE" for item in items
+        ), 1)
+        self.assertEqual(sum(
+            item["activity"]["spread_status"] == "UNAVAILABLE" for item in items
+        ), 1)
+
     def test_no_trade_semantics_are_generated(self):
         result = classify_eligibility(row(volume=10, trades=1))
         self.assertFalse(result["buy_sell_signal"])
