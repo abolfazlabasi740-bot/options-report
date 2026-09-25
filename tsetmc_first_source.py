@@ -120,27 +120,40 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         delta_status = "UNAVAILABLE"
         quote_retrieved_at = None
         orderbook_retrieved_at = None
-        # Quote is canonical evidence. BestLimits is auxiliary/quarantined
-        # evidence and must never cause repeated network waits. Retry the pair
-        # only when both calls succeeded but their evidence timestamps exceed
-        # the 2-second binding window.
-        for _attempt in range(2):
-            try:
-                quote = adapter.quote(str(option_id))
-                qdata = _quote_values(quote)
-                quote_status = "SUCCESS"
-            except Exception as exc:
-                quote = {"status": "FAILED", "error_type": type(exc).__name__}
-                qdata = {}
-                quote_status = "FAILED"
+        # Quote is canonical evidence. BestLimits is auxiliary/quarantined.
+        # Live production does not request BestLimits by default because this
+        # endpoint can stall inside urllib before the socket timeout is honored
+        # on some Termux/network combinations. This must never block the
+        # TSETMC option universe. It can be explicitly enabled for diagnostics.
+        best_limits_enabled = str(__import__("os").getenv("TSETMC_ENABLE_BEST_LIMITS", "")).strip().lower() in {"1", "true", "yes"}
+        try:
+            quote = adapter.quote(str(option_id))
+            qdata = _quote_values(quote)
+            quote_status = "SUCCESS"
+        except Exception as exc:
+            quote = {"status": "FAILED", "error_type": type(exc).__name__}
+            qdata = {}
+            quote_status = "FAILED"
+
+        if best_limits_enabled:
             try:
                 orderbook = adapter.order_book(str(option_id))
                 orderbook_status = "SUCCESS"
             except Exception as exc:
                 orderbook = {"status": "FAILED", "error_type": type(exc).__name__}
                 orderbook_status = "FAILED"
-            quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
-            orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
+        else:
+            orderbook = {
+                "status": "NOT_REQUESTED",
+                "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+                "source": "TSETMC",
+                "endpoint": "BestLimits/{instrument_id}",
+            }
+            orderbook_status = "NOT_REQUESTED"
+
+        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
+        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
+        if quote_status == "SUCCESS" and orderbook_status == "SUCCESS":
             try:
                 if quote_retrieved_at and orderbook_retrieved_at:
                     qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
@@ -153,10 +166,6 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             except (TypeError, ValueError):
                 delta_seconds = None
                 delta_status = "UNAVAILABLE"
-            if orderbook_status != "SUCCESS" or quote_status != "SUCCESS":
-                break
-            if delta_status == "WITHIN_2_SECONDS":
-                break
         orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
         if not isinstance(orderbook_data, list):
             orderbook_data = []
