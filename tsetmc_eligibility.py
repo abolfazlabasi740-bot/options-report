@@ -57,6 +57,22 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         if mid > 0:
             spread_pct_mid = spread / mid
 
+    if oi is None:
+        oi_status = "UNAVAILABLE"
+    elif oi == 0:
+        oi_status = "ZERO"
+    else:
+        oi_status = "POSITIVE"
+
+    if spread is None:
+        spread_status = "UNAVAILABLE"
+    elif spread > 0:
+        spread_status = "POSITIVE"
+    elif spread == 0:
+        spread_status = "ZERO"
+    else:
+        spread_status = "NEGATIVE"
+
     # raw Market-Watch is retained as evidence, but canonical fields are
     # preferred. The adapter currently stores normalized market fields inside
     # the instrument record only; tolerate either representation.
@@ -90,6 +106,8 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         "ask_price": ask_price,
         "spread": spread,
         "spread_pct_mid": spread_pct_mid,
+        "spread_status": spread_status,
+        "oi_status": oi_status,
         "traded": traded,
         "two_sided_depth": two_sided_depth,
         "activity_basis": activity_basis,
