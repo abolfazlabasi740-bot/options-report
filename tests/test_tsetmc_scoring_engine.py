@@ -61,7 +61,7 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         self.assertEqual(item["features"]["time_value"], 5.0)
         self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.05)
         self.assertAlmostEqual(item["features"]["leverage"], 100 / 15)
-        self.assertAlmostEqual(item["features"]["moneyness"], 0.1)
+        self.assertAlmostEqual(item["features"]["moneyness"], 1 / 9)
         self.assertAlmostEqual(item["features"]["last_vs_close"], 1 / 14)
         self.assertAlmostEqual(item["features"]["intraday_range"], 1.5 / 15)
 
@@ -69,7 +69,7 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         row = self._row("P1", 100, 110, 15, 15, 100, 1000, 20, "PUT")
         item = build_evidence_ranking([row])["ranking_rows"][0]
         self.assertEqual(item["features"]["time_value"], 5.0)
-        self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.10)
+        self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.05)
         self.assertAlmostEqual(item["features"]["moneyness"], 0.1)
 
     def test_invalid_denominators_remain_unavailable(self):
