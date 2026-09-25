@@ -113,6 +113,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     snapshot["ranking"] = ranking
     eligibility = classify_universe(rows)
     snapshot["eligibility"] = eligibility
+    opportunity = build_opportunity_candidates(rows, ranking, eligibility)
+    snapshot["opportunity"] = opportunity
 
     candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
     ranked_order = {
