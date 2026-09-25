@@ -1,6 +1,6 @@
 import unittest
 
-from historical_sensitivity_audit import run_snapshot
+from historical_sensitivity_audit import pair_stability, run_snapshot
 
 
 def _row(i, contract_type="CALL"):
@@ -35,6 +35,33 @@ def _snapshot():
 
 
 class HistoricalSensitivityTests(unittest.TestCase):
+    def test_duplicate_observations_are_rejected(self):
+        a = run_snapshot(_snapshot(), top_n=5)
+        b = run_snapshot(_snapshot(), top_n=5)
+        stability = pair_stability([a, b])
+        self.assertEqual(stability["pair_count"], 0)
+        self.assertEqual(stability["rejected_pair_count"], 1)
+        self.assertEqual(
+            stability["rejected_pairs"][0]["status"],
+            "REJECTED_DUPLICATE_SNAPSHOT",
+        )
+        self.assertFalse(stability["historical_closure_eligible"])
+
+    def test_independent_observations_are_eligible(self):
+        a = run_snapshot(_snapshot(), top_n=5)
+        second = _snapshot()
+        second["snapshot_sha256"] = "b" * 64
+        second["generated_at"] = "2026-09-25T19:20:00+00:00"
+        b = run_snapshot(second, top_n=5)
+        stability = pair_stability([a, b])
+        self.assertEqual(stability["pair_count"], 1)
+        self.assertEqual(stability["rejected_pair_count"], 0)
+        self.assertTrue(stability["historical_closure_eligible"])
+        self.assertEqual(
+            stability["pairs"][0]["status"],
+            "INDEPENDENT_OBSERVATIONS",
+        )
+
     def test_sensitivity_is_deterministic_and_evidence_only(self):
         a = run_snapshot(_snapshot(), top_n=5)
         b = run_snapshot(_snapshot(), top_n=5)
