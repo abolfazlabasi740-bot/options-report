@@ -15,8 +15,8 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
                 "حجم معاملات": volume,
                 "ارزش معاملات": value,
                 "روزهای تقویمی": days,
-                "بیشترین قیمت": P * 1.05,
-                "کمترین قیمت": P * 0.95,
+                "بیشترین قیمت": (P * 1.05) if P is not None else None,
+                "کمترین قیمت": (P * 0.95) if P is not None else None,
             },
             "identity": {
                 "instrument_id": symbol,
