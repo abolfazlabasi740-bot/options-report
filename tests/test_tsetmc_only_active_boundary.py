@@ -84,9 +84,9 @@ class TestTsetmcOnlyActiveBoundary(unittest.TestCase):
 
     def test_active_report_path_is_canonical_root_report(self):
         source = self._source("report_engine.py")
-        self.assertIn('root / "output"', source)
-        self.assertIn('root / "latest_report.txt"', source)
-        self.assertIn('root / "latest_audit.json"', source)
+        self.assertIn('output = root / "output"', source)
+        self.assertIn('canonical_report_path = output / "latest_report.txt"', source)
+        self.assertIn('canonical_audit_path = output / "latest_audit.json"', source)
 
     def test_bale_verifier_does_not_regenerate_analysis(self):
         source = self._source("bale_runtime_verification.py")
