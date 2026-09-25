@@ -61,6 +61,15 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         and ask_qty is not None and ask_qty > 0
     )
 
+    if traded and two_sided_depth:
+        activity_basis = "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH"
+    elif traded:
+        activity_basis = "TRADED_ACTIVITY"
+    elif two_sided_depth:
+        activity_basis = "TWO_SIDED_DEPTH"
+    else:
+        activity_basis = "NO_ACTIVITY_EVIDENCE"
+
     return {
         "volume": volume,
         "trade_count": trade_count,
@@ -68,6 +77,7 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         "ask_quantity": ask_qty,
         "traded": traded,
         "two_sided_depth": two_sided_depth,
+        "activity_basis": activity_basis,
         "volume_evidence": "TSETMC:حجم معاملات" if volume is not None else None,
         "trade_count_evidence": "TSETMC:تعداد معاملات" if trade_count is not None else None,
         "depth_evidence": (
@@ -123,6 +133,24 @@ def classify_universe(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
             x["state"] == OPPORTUNITY_CANDIDATE for x in items
         ),
     }
+    activity_basis_counts = {
+        "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH": sum(
+            x["activity"].get("activity_basis") == "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH"
+            for x in items
+        ),
+        "TRADED_ACTIVITY": sum(
+            x["activity"].get("activity_basis") == "TRADED_ACTIVITY"
+            for x in items
+        ),
+        "TWO_SIDED_DEPTH": sum(
+            x["activity"].get("activity_basis") == "TWO_SIDED_DEPTH"
+            for x in items
+        ),
+        "NO_ACTIVITY_EVIDENCE": sum(
+            x["activity"].get("activity_basis") == "NO_ACTIVITY_EVIDENCE"
+            for x in items
+        ),
+    }
     return {
         "status": "PASS",
         "source_of_truth": "TSETMC",
@@ -130,6 +158,7 @@ def classify_universe(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
         "arbitrary_thresholds": False,
         "rows_evaluated": len(items),
         "counts": counts,
+        "activity_basis_counts": activity_basis_counts,
         "candidate_instrument_ids": [
             x["instrument_id"] for x in items
             if x["state"] == OPPORTUNITY_CANDIDATE
