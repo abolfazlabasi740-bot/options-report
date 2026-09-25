@@ -89,6 +89,8 @@ def main() -> None:
             raise RuntimeError("TSETMC data mode is invalid")
         if audit.get("live_movement_claim") != "NOT_CLAIMED":
             raise RuntimeError("TSETMC live movement claim must remain NOT_CLAIMED")
+        if not audit.get("snapshot_sha256"):
+            raise RuntimeError("TSETMC Snapshot SHA-256 is missing")
     if bale.get("status") != "SUCCESS":
         raise RuntimeError("Bale delivery verification is not SUCCESS")
     if bale.get("report_sha256") != sha256_file(REPORT):
@@ -103,12 +105,19 @@ def main() -> None:
 
     evidence = {
         "status": "PASS",
-        "engine_version": "GATE6-RUNTIME-SHADOW-1.0",
+        "engine_version": "GATE6-RUNTIME-SHADOW-1.1",
         "generated_at_utc": started,
         "report_file": REPORT.name,
         "report_sha256": sha256_file(REPORT),
         "source_file": audit.get("source_file"),
-        "source_sha256": audit.get("source_sha256"),
+        "source_sha256": (
+            audit.get("snapshot_sha256")
+            if audit.get("source_of_truth") == "TSETMC"
+            else audit.get("source_sha256")
+        ),
+        "source_of_truth": audit.get("source_of_truth"),
+        "data_mode": audit.get("data_mode"),
+        "live_movement_claim": audit.get("live_movement_claim"),
         "audit_integrity": (audit.get("audit_integrity") or {}).get("status"),
         "runtime_git_sha": runtime_git_sha,
         "bale_delivery_status": bale.get("status"),
