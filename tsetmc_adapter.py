@@ -204,6 +204,22 @@ class TSETMCAdapter:
                     "remaining_days": item.get("remainedDay"),
                     "contract_size": item.get("contractSize"),
                     "market_watch_fields": {
+                        # Pair-level record has no single option side. Keep the
+                        # legacy normalized keys explicitly unavailable rather
+                        # than silently choosing PUT or CALL.
+                        "last_price": None,
+                        "close_price": None,
+                        "previous_price": None,
+                        "volume": None,
+                        "trade_count": None,
+                        "trade_value": None,
+                        "open_interest": None,
+                        "previous_open_interest": None,
+                        "bid_price": None,
+                        "ask_price": None,
+                        "bid_quantity": None,
+                        "ask_quantity": None,
+                        "notional_value": None,
                         "last_price_P": item.get("pDrCotVal_P"),
                         "last_price_C": item.get("pDrCotVal_C"),
                         "close_price_P": item.get("pClosing_P"),
