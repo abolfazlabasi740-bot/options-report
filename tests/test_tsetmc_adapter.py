@@ -159,6 +159,9 @@ class TSETMCAdapterTests(unittest.TestCase):
         self.assertEqual(result["records"][0]["underlying_id"], "UA789")
         self.assertEqual(result["records"][0]["strike"], 20000)
         self.assertEqual(result["records"][0]["end_date"], "20261021")
+        self.assertEqual(result["records"][0]["market_watch_fields"]["last_price"], None)
+        self.assertIn("underlying_market_watch_fields", result["records"][0])
+        self.assertEqual(result["records"][0]["contract_size"], None)
 
     def test_option_market_watch_instrument_records_expand_explicit_ids(self):
         def opener(request, timeout):
