@@ -16,7 +16,8 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
         required = [
             "source_of_truth", "data_mode", "live_refresh_status",
             "snapshot_sha256", "row_count", "generated_at",
-            "live_movement_claim",
+            "live_movement_claim", "scoring_status", "ranking_status",
+            "market_watch", "market_state", "report_sha256",
         ]
         missing = [key for key in required if key not in audit]
         failures = []
@@ -28,6 +29,20 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             failures.append("SNAPSHOT_HASH_MISSING")
         if not isinstance(audit.get("row_count"), int) or audit.get("row_count") < 0:
             failures.append("ROW_COUNT_INVALID")
+        if audit.get("scoring_status") != "OFF_FIELD_EVIDENCE_GATE_OPEN":
+            failures.append("SCORING_MUST_REMAIN_OFF")
+        if audit.get("ranking_status") != "OFF":
+            failures.append("RANKING_MUST_REMAIN_OFF")
+        if not isinstance(audit.get("market_watch"), dict):
+            failures.append("MARKET_WATCH_EVIDENCE_INVALID")
+        else:
+            mw = audit["market_watch"]
+            if not mw.get("endpoint") or not mw.get("snapshot_sha256") or not mw.get("retrieved_at"):
+                failures.append("MARKET_WATCH_EVIDENCE_INCOMPLETE")
+        if not isinstance(audit.get("market_state"), dict):
+            failures.append("MARKET_STATE_EVIDENCE_INVALID")
+        if not audit.get("report_sha256"):
+            failures.append("REPORT_HASH_MISSING")
         status = "PASS" if not missing and not failures else "FAIL"
         return {
             "status": status,
@@ -41,6 +56,13 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                 "snapshot_hash_present": bool(audit.get("snapshot_sha256")),
                 "row_count_valid": isinstance(audit.get("row_count"), int) and audit.get("row_count") >= 0,
                 "live_movement_not_claimed": audit.get("live_movement_claim") == "NOT_CLAIMED",
+                "scoring_off": audit.get("scoring_status") == "OFF_FIELD_EVIDENCE_GATE_OPEN",
+                "ranking_off": audit.get("ranking_status") == "OFF",
+                "market_watch_evidence": isinstance(audit.get("market_watch"), dict) and all(
+                    audit["market_watch"].get(k) for k in ("endpoint", "snapshot_sha256", "retrieved_at")
+                ) if isinstance(audit.get("market_watch"), dict) else False,
+                "market_state_evidence": isinstance(audit.get("market_state"), dict),
+                "report_hash_present": bool(audit.get("report_sha256")),
             },
         }
 
