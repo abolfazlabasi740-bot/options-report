@@ -55,5 +55,66 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         self.assertEqual(result["rules"]["greeks"], "NOT_COMPUTED")
 
 
+    def test_call_feature_derivations_are_deterministic(self):
+        row = self._row("C1", 100, 90, 15, 14, 100, 1000, 20, "CALL")
+        item = build_evidence_ranking([row])["ranking_rows"][0]
+        self.assertEqual(item["features"]["time_value"], 5.0)
+        self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.05)
+        self.assertAlmostEqual(item["features"]["leverage"], 100 / 15)
+        self.assertAlmostEqual(item["features"]["moneyness"], 0.1)
+        self.assertAlmostEqual(item["features"]["last_vs_close"], 1 / 14)
+        self.assertAlmostEqual(item["features"]["intraday_range"], 1.5 / 15)
+
+    def test_put_feature_derivations_are_deterministic(self):
+        row = self._row("P1", 100, 110, 15, 15, 100, 1000, 20, "PUT")
+        item = build_evidence_ranking([row])["ranking_rows"][0]
+        self.assertEqual(item["features"]["time_value"], 5.0)
+        self.assertAlmostEqual(item["features"]["breakeven_distance"], 0.10)
+        self.assertAlmostEqual(item["features"]["moneyness"], 0.1)
+
+    def test_invalid_denominators_remain_unavailable(self):
+        row = self._row("Z", 100, 100, 0, 0, 0, 0, None, "CALL")
+        item = build_evidence_ranking([row])["ranking_rows"][0]
+        self.assertIsNone(item["features"]["leverage"])
+        self.assertIsNone(item["features"]["last_vs_close"])
+        self.assertIsNone(item["features"]["intraday_range"])
+        self.assertIsNone(item["features"]["calendar_days"])
+
+    def test_missing_high_low_keeps_intraday_range_unavailable(self):
+        row = self._row("R", 100, 100, 10, 10, 100, 1000, 20)
+        row["canonical"]["بیشترین قیمت"] = None
+        row["canonical"]["کمترین قیمت"] = None
+        item = build_evidence_ranking([row])["ranking_rows"][0]
+        self.assertIsNone(item["features"]["intraday_range"])
+
+    def test_time_value_is_never_negative(self):
+        row = self._row("TV", 100, 80, 10, 10, 100, 1000, 20, "CALL")
+        item = build_evidence_ranking([row])["ranking_rows"][0]
+        self.assertEqual(item["features"]["time_value"], 0.0)
+
+    def test_percentile_direction_is_deterministic(self):
+        rows = [
+            self._row("LOW", 100, 100, 10, 10, 10, 100, 20),
+            self._row("HIGH", 100, 100, 20, 20, 100, 1000, 20),
+        ]
+        result = build_evidence_ranking(rows)
+        by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
+        self.assertGreater(by_id["HIGH"]["features"]["trade_value"], by_id["LOW"]["features"]["trade_value"])
+        self.assertGreater(by_id["HIGH"]["score"], by_id["LOW"]["score"])
+
+    def test_unavailable_factor_removes_only_its_block_for_that_row(self):
+        rows = [
+            self._row("A", 100, 100, 10, 10, 100, 1000, 20),
+            self._row("B", 100, 100, None, None, 100, 1000, 20),
+        ]
+        result = build_evidence_ranking(rows)
+        a = next(x for x in result["ranking_rows"] if x["instrument_id"] == "A")
+        b = next(x for x in result["ranking_rows"] if x["instrument_id"] == "B")
+        self.assertIsNone(b["features"]["time_value"])
+        self.assertIsNone(b["block_scores"]["VALUATION"])
+        self.assertIn("VALUATION", a["supported_blocks"])
+        self.assertNotIn("VALUATION", b["supported_blocks"])
+
+
 if __name__ == "__main__":
     unittest.main()
