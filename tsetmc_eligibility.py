@@ -46,6 +46,16 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         if "حجم بهترین عرضه" in canonical
         else market.get("ask_quantity")
     )
+    oi = _num(canonical.get("موقعیت های باز"))
+    bid_price = _num(canonical.get("قیمت بهترین تقاضا"))
+    ask_price = _num(canonical.get("قیمت بهترین عرضه"))
+    spread = None
+    spread_pct_mid = None
+    if bid_price is not None and ask_price is not None:
+        spread = ask_price - bid_price
+        mid = (ask_price + bid_price) / 2.0
+        if mid > 0:
+            spread_pct_mid = spread / mid
 
     # raw Market-Watch is retained as evidence, but canonical fields are
     # preferred. The adapter currently stores normalized market fields inside
@@ -75,6 +85,11 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
         "trade_count": trade_count,
         "bid_quantity": bid_qty,
         "ask_quantity": ask_qty,
+        "open_interest": oi,
+        "bid_price": bid_price,
+        "ask_price": ask_price,
+        "spread": spread,
+        "spread_pct_mid": spread_pct_mid,
         "traded": traded,
         "two_sided_depth": two_sided_depth,
         "activity_basis": activity_basis,
