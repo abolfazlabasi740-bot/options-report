@@ -177,7 +177,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
         f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
         f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",
         f"📌 وضعیت Opportunity Engine: {opportunity.get('status')} | نسخه: {opportunity.get('engine_version')} | کاندیداها: {opportunity.get('candidate_count', 0)}",
-        f"📌 Eligibility-RANKABLE: {eligibility.get('counts', {}).get('RANKABLE', 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('score') is not None)}",
+        f"📌 Opportunity-Candidate: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('score') is not None)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
         f"📊 وضعیت امتیازدهی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
@@ -204,7 +204,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     lines.append("🧭 Eligibility / Opportunity Candidate Gate")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("INSUFFICIENT_ACTIVITY_EVIDENCE = عدم وجود شواهد فعالیت کافی")
-    lines.append("Eligibility-RANKABLE = وضعیت میانی Gate فعالیت؛ این شمارش مستقل از Ranking Engine است.")
+    lines.append("Opportunity-Candidate = تعداد قراردادهایی که شواهد فعالیت صریح یا عمق دوطرفه TSETMC دارند.")
     lines.append("Ranking-Evidence-Rows = تعداد ردیف‌هایی که Ranking Engine برای آن‌ها امتیاز معتبر ساخته است.")
     lines.append("OPPORTUNITY_CANDIDATE = شواهد فعالیت صریح یا عمق دوطرفه TSETMC")
     lines.append("⚠️ Candidate به معنی سیگنال خرید/فروش یا احتمال سود نیست.")
