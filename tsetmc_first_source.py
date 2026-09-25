@@ -102,43 +102,53 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int=1, ma
     for instrument in instruments:
         option_id=instrument.get("instrument_id"); underlying_id=instrument.get("underlying_id")
         if not option_id: continue
-        try:
-            quote=adapter.quote(str(option_id)); qdata=_quote_values(quote); quote_status="SUCCESS"
-        except Exception as exc:
-            quote={"status":"FAILED","error_type":type(exc).__name__}; qdata={}; quote_status="FAILED"
-        try:
-            orderbook=adapter.order_book(str(option_id)); orderbook_status="SUCCESS"
-        except Exception as exc:
-            orderbook={"status":"FAILED","error_type":type(exc).__name__}; orderbook_status="FAILED"
+        quote = {"status": "FAILED", "error_type": "UNAVAILABLE"}
+        orderbook = {"status": "FAILED", "error_type": "UNAVAILABLE"}
+        qdata = {}
+        quote_status = "FAILED"
+        orderbook_status = "FAILED"
+        delta_seconds = None
+        delta_status = "UNAVAILABLE"
+        quote_retrieved_at = None
+        orderbook_retrieved_at = None
+        # Capture the Quote and its paired BestLimits evidence as a tight
+        # per-instrument observation. If transport latency exceeds the
+        # contractual 2-second window, retry the pair rather than silently
+        # promoting stale evidence.
+        for _attempt in range(2):
+            try:
+                quote = adapter.quote(str(option_id))
+                qdata = _quote_values(quote)
+                quote_status = "SUCCESS"
+            except Exception as exc:
+                quote = {"status": "FAILED", "error_type": type(exc).__name__}
+                qdata = {}
+                quote_status = "FAILED"
+            try:
+                orderbook = adapter.order_book(str(option_id))
+                orderbook_status = "SUCCESS"
+            except Exception as exc:
+                orderbook = {"status": "FAILED", "error_type": type(exc).__name__}
+                orderbook_status = "FAILED"
+            quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
+            orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
+            try:
+                if quote_retrieved_at and orderbook_retrieved_at:
+                    qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
+                    bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
+                    delta_seconds = round(abs((bt - qt).total_seconds()), 6)
+                    delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
+                else:
+                    delta_seconds = None
+                    delta_status = "UNAVAILABLE"
+            except (TypeError, ValueError):
+                delta_seconds = None
+                delta_status = "UNAVAILABLE"
+            if delta_status == "WITHIN_2_SECONDS":
+                break
         orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
         if not isinstance(orderbook_data, list):
             orderbook_data = []
-        delta_seconds = None
-        delta_status = "UNAVAILABLE"
-        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
-        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
-        try:
-            if quote_retrieved_at and orderbook_retrieved_at:
-                qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
-                bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
-                delta_seconds = round(abs((bt - qt).total_seconds()), 6)
-                delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
-        except (TypeError, ValueError):
-            delta_seconds = None
-            delta_status = "UNAVAILABLE"
-        delta_seconds = None
-        delta_status = "UNAVAILABLE"
-        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
-        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
-        try:
-            if quote_retrieved_at and orderbook_retrieved_at:
-                qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
-                bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
-                delta_seconds = round(abs((bt - qt).total_seconds()), 6)
-                delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
-        except (TypeError, ValueError):
-            delta_seconds = None
-            delta_status = "UNAVAILABLE"
         try:
             info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
         except Exception as exc:
