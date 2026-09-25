@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_scoring_engine import build_evidence_ranking
+from tsetmc_eligibility import OPPORTUNITY_CANDIDATE, classify_universe
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
@@ -106,7 +107,25 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     snapshot["universe_row_count"] = len(rows)
     ranking = build_evidence_ranking(rows)
     snapshot["ranking"] = ranking
-    rows = rows[:limit]
+    eligibility = classify_universe(rows)
+    snapshot["eligibility"] = eligibility
+
+    candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
+    ranked_order = {
+        item.get("instrument_id"): item.get("rank")
+        for item in ranking.get("ranking_rows", [])
+    }
+    candidate_rows = [
+        row for row in rows
+        if (row.get("identity") or {}).get("instrument_id") in candidate_ids
+    ]
+    candidate_rows.sort(
+        key=lambda row: (
+            ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
+            ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
+        )
+    )
+    rows = candidate_rows[:limit]
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
@@ -137,7 +156,10 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
         f"📌 آخرین timestamp صریح منبع: {basis_timestamp}",
         f"📌 تعداد رکوردهای کشف‌شده TSETMC: {snapshot.get('universe_row_count', snapshot.get('row_count', 0))}",
         f"📌 تعداد Flowهای بررسی‌شده: {len(mw.get('flows') or [])}",
+        f"📌 تعداد قراردادهای واجد وضعیت OPPORTUNITY_CANDIDATE: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)}",
         f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
+        f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",
+        f"📌 INSUFFICIENT_ACTIVITY_EVIDENCE: {eligibility.get('counts', {}).get('INSUFFICIENT_ACTIVITY_EVIDENCE', 0)} | RANKABLE: {eligibility.get('counts', {}).get('RANKABLE', 0)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
         f"📊 وضعیت امتیازدهی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
@@ -160,6 +182,13 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
             "ℹ️ timestamp مشاهده‌شده یکتا است؛ حرکت لحظه‌ای بازار اثبات نشده و گزارش live-moving محسوب نمی‌شود."
         )
 
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("🧭 Eligibility / Opportunity Candidate Gate")
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("INSUFFICIENT_ACTIVITY_EVIDENCE = عدم وجود شواهد فعالیت کافی")
+    lines.append("RANKABLE = قابل رتبه‌بندی بر اساس شواهد فرمولی")
+    lines.append("OPPORTUNITY_CANDIDATE = شواهد فعالیت صریح یا عمق دوطرفه TSETMC")
+    lines.append("⚠️ Candidate به معنی سیگنال خرید/فروش یا احتمال سود نیست.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("🏆 رتبه‌بندی شواهد TSETMC")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
@@ -233,6 +262,7 @@ def save_tsetmc_report(report, snapshot):
         "scoring_status": "TSETMC_EVIDENCE_RANKING",
         "ranking_status": "TSETMC_EVIDENCE_RANKING",
         "ranking": snapshot.get("ranking", {}),
+        "eligibility": snapshot.get("eligibility", {}),
         "live_movement_claim": "NOT_CLAIMED",
         "report_sha256": report_sha256,
     }
