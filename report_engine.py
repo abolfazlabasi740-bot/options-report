@@ -90,11 +90,12 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
 
     snapshot = build_tsetmc_snapshot(
         flow=flow,
-        max_instruments=limit,
+        max_instruments=None,
         symbol_prefix=symbol_prefix,
     )
-    # Cache fallback returns the previously persisted universe; apply the
-    # caller's limit/filter here as well so live and cached paths are identical.
+    # Discovery must cover the full TSETMC option universe. The report display
+    # limit is applied only after ranking so the ranking is not truncated by
+    # discovery order.
     rows = list(snapshot.get("rows", []))
     if symbol_prefix:
         prefix = str(symbol_prefix).strip()
@@ -102,11 +103,12 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
             row for row in rows
             if str(row.get("canonical", {}).get("نماد") or "").startswith(prefix)
         ]
+    snapshot["universe_row_count"] = len(rows)
+    ranking = build_evidence_ranking(rows)
+    snapshot["ranking"] = ranking
     rows = rows[:limit]
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
-    ranking = build_evidence_ranking(rows)
-    snapshot["ranking"] = ranking
 
     market_state = _market_state(snapshot)
     snapshot["market_state"] = market_state
