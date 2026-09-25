@@ -195,6 +195,7 @@ def save_tsetmc_report(report, snapshot):
 
     report_sha256 = hashlib.sha256(report.encode("utf-8")).hexdigest()
     audit = {
+        "audit_version": "AUDIT-INTEGRITY-1.3",
         "status": "PASS" if snapshot.get("status") == "SUCCESS" else "FAIL",
         "source_of_truth": snapshot.get("source_of_truth"),
         "external_comparison_source": None,
