@@ -1,146 +1,84 @@
 # OptimusAI V4.1 — Gate 7 Execution Control
 
-Date: 2026-09-22
-
 ## Purpose
 
-This document freezes the current production scoring path and converts Gate 7 from an open-ended architecture task into an evidence checklist.
+این سند مرز کنترل‌شده انتشار را تعریف می‌کند. هیچ تغییر عددی، وزن‌دهی، Threshold یا Signal Policy صرفاً با این سند ایجاد نمی‌شود.
 
-No Six-Block weights, V4 Overlay constants, eligibility thresholds, ranking logic, TSETMC activation, Signal policy, or Bale delivery logic are changed by this document.
+## Active production boundary
 
-## Current operational product
+Source of Truth فعال: TSETMC.
 
-The operational reporter path is:
+OptionSchool24 در Runtime فعال نیست و فقط به‌عنوان آرشیو/شاهد تاریخی نگهداری می‌شود.
 
-OptionSchool24
-→ Validation / Schema Audit
-→ Six-Block Scoring
-→ Ranking / Top-N
-→ Report
-→ Audit
-→ Bale Distribution
+تا بسته‌شدن Evidence Gateهای لازم:
+- Six-Block scoring فعال نمی‌شود؛
+- Ranking و Top-N تولیدی فعال نمی‌شود؛
+- Bale فقط Distribution Layer است؛
+- Opportunity Intelligence در حالت Shadow/Controlled باقی می‌ماند؛
+- TSETMC identity فقط با شناسه صریح منبع پذیرفته می‌شود؛
+- symbol-prefix inference ممنوع است؛
+- synthetic market, IV, rate, dividend, parity یا identity ممنوع است؛
+- Buy/Sell signal تولیدی فعال نمی‌شود.
 
-Opportunity, Chain, Relative-Value, Case Explanation, Replay and TSETMC-related components remain controlled sidecars unless their relevant Gate is closed.
+## Evidence classes
 
-## Gate 7 required evidence classes
+Evidence باید بین این طبقات تفکیک شود:
 
-Gate 7 must keep the following evidence classes separate:
+- Repository / code evidence
+- CI / regression evidence
+- Real-source evidence
+- Deployed-runtime evidence
+- Distribution evidence
+- Economic / historical validation evidence
 
-1. Repository / code evidence.
-2. CI / regression evidence.
-3. Real-source evidence.
-4. Deployed-runtime evidence.
-5. Distribution evidence.
-6. Economic / historical validation evidence.
+هیچ طبقه‌ای جای طبقه دیگر را نمی‌گیرد.
 
-A successful code run or Bale delivery cannot substitute for economic validation.
+## Controlled work sequence
 
-## Frozen production boundary
+### Parameter provenance
 
-Until Gate 7 is closed:
+منشأ پارامترهای فعال باید مستند و قابل بازتولید باشد. مقدار جایگزین حدسی ممنوع است.
 
-- Six-Block scoring is frozen.
-- Ranking / Top-N is frozen.
-- Bale is distribution-only.
-- Opportunity Intelligence remains Shadow/non-blocking.
-- TSETMC exact identity remains disabled unless explicit identity evidence is captured.
-- No CALL/PUT inference from symbol prefixes.
-- No synthetic market, IV, rate, dividend, parity or identity values.
-- No production Buy/Sell signal is enabled.
+### Historical sensitivity
 
-## Gate 7 work sequence
+مدل منجمد باید روی داده تاریخی واقعی ارزیابی شود، بدون تغییر پارامترهای تولیدی. فایل منبع، hash و نتیجه اجرای تکرارشونده باید قابل ردیابی باشد.
 
-### G7-1 — Parameter provenance
+### Market freshness
 
-Resolve the open provenance item for the active V4 Overlay constants.
+زمان بازار باید از زمان دریافت جدا نگهداری شود. وضعیت stale یا unknown باید صریح باشد.
 
-Acceptance:
-- authoritative protocol, approved project decision, or reproducible historical baseline for each numeric family;
-- no guessed replacement values;
-- regression comparison retained.
+### Exact TSETMC identity
 
-### G7-2 — Historical sensitivity / ablation
+شناسه قرارداد اختیار و شناسه دارایی پایه باید مستقیماً از پاسخ منبع استخراج شوند. Symbol inference مجاز نیست.
 
-Run the frozen scoring model against a real historical dataset and measure sensitivity of rankings to the existing blocks/overlay without changing production parameters.
+### BestLimits
 
-Acceptance:
-- source files and SHA-256 recorded;
-- deterministic reruns;
-- block/overlay sensitivity tables;
-- no outcome claim beyond the observed historical sample.
+Capture واقعی، payload کامل، endpoint، زمان‌های دریافت، hash و شواهد مستقل semantic باید قبل از freeze شدن Adapter Contract ثبت شوند.
 
-### G7-3 — Market timestamp / freshness
+### Economic validation
 
-Establish an explicit market-time field or authoritative source timestamp for live market data.
+Opportunity Intelligence باید با نمونه‌های واقعی/تاریخی ارزیابی شود. اجرای فنی به‌تنهایی مجوز Promotion نیست.
 
-Acceptance:
-- source timestamp field or authoritative endpoint timestamp;
-- download time kept separate from market time;
-- stale/unknown state explicitly represented.
+### Final release review
 
-### G7-4 — Exact TSETMC option identity
+پس از تکمیل Evidenceهای لازم، Audit باید linkage بین Source، Snapshot، Report، Runtime و Distribution را بررسی کند و سپس مرز Production تعیین شود.
 
-Capture explicit option instrument identity and underlying identity from a real source response.
+## Current state
 
-Acceptance:
-- exact option identifier;
-- exact underlying identifier;
-- endpoint/source;
-- retrieval time;
-- payload hash;
-- normalized mapping;
-- no symbol-prefix inference.
+Regression و کنترل‌های Repository در مسیر کنترل‌شده قرار دارند.
 
-### G7-5 — Economic validation of Opportunity Intelligence
+TSETMC-only architecture در کد فعال است.
 
-Evaluate Shadow opportunity cases against historical/observed evidence.
+Live TSETMC evidence هنوز باید روی Runtime واقعی تأیید شود.
 
-Acceptance:
-- case definitions frozen before evaluation;
-- independent evidence separated from derived evidence;
-- false-positive / unresolved cases retained;
-- no Shadow case promoted merely because it executes technically.
+BestLimits live evidence و semantic mapping هنوز Production Freeze نشده‌اند.
 
-### G7-6 — Final Gate 7 decision
+Economic validation هنوز باز است.
 
-Only after G7-1 through G7-5 are evidenced:
-
-- Orchestrator reviews all mandatory gates.
-- Audit verifies evidence linkage.
-- Governance records the production boundary decision.
-- Signal/Strategy activation remains separately policy-controlled.
-
-## Current status
-
-Gate 2: VERIFIED.
-
-Gate 3: VERIFIED.
-
-Gate 4: PENDING.
-
-Gate 5: technical Shadow/Replay/Audit verification present; economic validation remains open.
-
-Gate 6: CLOSED with real Bale delivery evidence.
-
-Gate 7: NOT CLOSED.
-
-Scoring parameter provenance: OPEN.
-
-Market-time freshness: UNVERIFIED where the source lacks a market timestamp.
-
-Exact TSETMC identity: PENDING.
-
-Economic Opportunity validation: OPEN.
-
-## Evidence already recorded for the operational path
-
-The current project record contains live OptionSchool24 runs with Audit PASS, Opportunity Shadow execution and Replay MATCH, plus real Termux/Bale delivery evidence.
-
-The latest recorded live-run evidence includes source workbook identity/SHA, selected Top-N output, replay hashes and audit status. This evidence supports the operational reporter path; it does not by itself close Gate 7.
+Current Termux → Bale evidence باید روی همان TSETMC-only Commit مجدداً تأیید شود.
 
 ## Release rule
 
-No component may self-promote from Shadow/Architecture to Production.
+Gate closure با Evidence انجام می‌شود، نه با وجود فایل یا موفقیت یک اجرای قدیمی.
 
-Gate closure requires evidence, not code existence.
-
+هیچ Component مجاز به Self-Promotion از Shadow/Controlled به Production نیست.
