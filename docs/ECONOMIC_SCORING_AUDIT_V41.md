@@ -8,8 +8,9 @@
 
 ## وضعیت اجرایی فعلی
 
-- موتور مرجع: `scoring_engine.py`
-- نسخه موتور: V4.1.1
+- موتور مرجع فعال در مسیر TSETMC-only: `tsetmc_scoring_engine.py`
+- `scoring_engine.py` موتور تاریخی/Legacy است و نباید به‌عنوان منبع سیاست امتیازدهی Runtime تفسیر شود.
+- نسخه معماری فعال: TSETMC Evidence Ranking
 - Six-Block weights:
   - Liquidity = 20
   - Valuation = 25
@@ -33,9 +34,9 @@
 عوامل:
 - Trade Value: بیشتر بهتر
 - Volume: بیشتر بهتر
-- Open Interest: بیشتر بهتر
-- Spread: کمتر بهتر
-- Depth: بیشتر بهتر
+- Open Interest: در موتور فعال TSETMC استفاده نمی‌شود
+- Spread: در موتور فعال TSETMC در Ranking استفاده نمی‌شود
+- Depth: در موتور فعال TSETMC در Ranking استفاده نمی‌شود
 
 ارزیابی:
 - Trade Value، Volume، Open Interest و Depth عمدتاً شاخص‌های ظرفیت/قابلیت معامله هستند، نه به‌تنهایی شاخص فرصت اقتصادی.
@@ -50,10 +51,10 @@
 ### 2. Valuation
 
 عوامل:
-- Black-Scholes Difference: اختلاف کمتر بهتر
-- IV: بیشتر بهتر
-- IV/HV: کمتر بهتر
 - Time Value: بیشتر بهتر
+- Black-Scholes Difference: در موتور فعال TSETMC محاسبه نمی‌شود
+- IV: در موتور فعال TSETMC محاسبه نمی‌شود
+- IV/HV: در موتور فعال TSETMC محاسبه نمی‌شود
 
 نکته کلیدی:
 - IV به‌صورت مستقل «بیشتر بهتر» امتیاز می‌گیرد، در حالی که IV/HV «کمتر بهتر» است.
@@ -85,9 +86,9 @@
 ### 4. Time
 
 عوامل:
-- Trading Days: کمتر بهتر
 - Calendar Days: کمتر بهتر
-- Theta absolute: کمتر بهتر
+- Trading Days: در موتور فعال TSETMC استفاده نمی‌شود
+- Theta absolute: در موتور فعال TSETMC محاسبه نمی‌شود
 
 نکته کلیدی:
 - Time-to-expiry هم در Block Time وارد می‌شود و هم از طریق DecayPenalty در Overlay اثر می‌گذارد.
@@ -101,10 +102,7 @@
 ### 5. Greeks
 
 عوامل:
-- |Delta| بیشتر بهتر
-- |Gamma| بیشتر بهتر
-- |Vega| بیشتر بهتر
-- |Rho| بیشتر بهتر
+- Greeks در موتور فعال TSETMC محاسبه نمی‌شوند؛ بنابراین این Block فعلاً unavailable است.
 
 نکته کلیدی:
 - magnitude-only بودن Greeks عمداً جهت قرارداد را وارد نمی‌کند.
@@ -131,6 +129,8 @@
 - Market block از نظر فنی deterministic است، ولی از نظر اقتصادی هنوز policy-validated نیست.
 
 ## Overlay
+
+در مسیر فعال `tsetmc_scoring_engine.py`، Base Ranking با Overlayهای `ExecutionPenalty` و `DecayPenalty` مدل قدیمی یکی نیست. بنابراین پارامترهای Overlay زیر را نباید به‌عنوان پارامتر فعال TSETMC Evidence Ranking تلقی کرد.
 
 ### ExecutionPenalty
 
@@ -199,7 +199,7 @@ DataConfidence فعلی عمدتاً روی چند فیلد critical، IV، HV �
 
 ## وضعیت نهایی ممیزی
 
-- Technical implementation: VERIFIED FOR CURRENT CODE PATH
+- Active technical implementation: `tsetmc_scoring_engine.py` VERIFIED FOR CURRENT TSETMC CODE PATH
 - Economic policy validation: OPEN
 - Overlay parameter provenance: OPEN
 - Contract identity for TSETMC: PENDING
