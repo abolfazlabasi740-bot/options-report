@@ -43,7 +43,7 @@ class TSETMCAdapter:
     def __init__(
         self,
         base_url: str | None = None,
-        timeout: float = 20.0,
+        timeout: float = 8.0,
         retries: int = 2,
         sleep_fn: Callable[[float], None] = time.sleep,
         opener: Callable[..., Any] | None = None,
@@ -54,7 +54,7 @@ class TSETMCAdapter:
         self.sleep_fn = sleep_fn
         self.opener = opener or urllib.request.urlopen
 
-    def _request(self, path: str) -> TSETMCResponse:
+    def _request(self, path: str, *, timeout: float | None = None, retries: int | None = None) -> TSETMCResponse:
         url = f"{self.base_url}/{path.lstrip('/')}"
         request = urllib.request.Request(
             url,
@@ -64,7 +64,7 @@ class TSETMCAdapter:
 
         for attempt in range(self.retries + 1):
             try:
-                with self.opener(request, timeout=self.timeout) as response:
+                with self.opener(request, timeout=request_timeout) as response:
                     status = getattr(response, "status", 200)
                     body = response.read()
                 if status in RETRYABLE_STATUS:
@@ -89,7 +89,7 @@ class TSETMCAdapter:
                 )
             except Exception as exc:
                 last_error = exc
-                if attempt >= self.retries:
+                if attempt >= request_retries:
                     break
                 self.sleep_fn(0.5 * (attempt + 1))
 
