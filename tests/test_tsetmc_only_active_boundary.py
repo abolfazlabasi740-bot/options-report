@@ -33,6 +33,12 @@ class TestTsetmcOnlyActiveBoundary(unittest.TestCase):
     def _source(self, name: str) -> str:
         return (ROOT / name).read_text(encoding="utf-8")
 
+    def test_audit_integrity_contract_version_is_enforced(self):
+        source = self._source("audit_integrity.py")
+        self.assertIn('ENGINE_VERSION = "AUDIT-INTEGRITY-1.3"', source)
+        self.assertIn('"audit_version"', source)
+        self.assertIn('audit.get("audit_version") != ENGINE_VERSION', source)
+
     def test_active_files_exist(self):
         for name in ACTIVE_FILES:
             self.assertTrue((ROOT / name).is_file(), name)
