@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.2"
+ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.3-MARKETWATCH-CANONICAL"
 CACHE_PATH = Path("output/tsetmc_first/latest_snapshot.json")
 FIELD_NAMES = [
     "نماد","قیمت اعمال","قیمت سهم پایه","اختلاف تا اعمال","تاریخ سررسید",
@@ -108,106 +108,98 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
     if max_instruments is not None:
         instruments = instruments[:int(max_instruments)]
     rows=[]; quote_evidence=[]; orderbook_evidence=[]; underlying_evidence={}
+    # The live TSETMC Market-Watch payload already carries option and
+    # underlying quote/activity fields. It is the canonical runtime evidence.
+    # Do not fan out into ClosingPrice/GetClosingPriceInfo per instrument.
     for instrument in instruments:
-        option_id=instrument.get("instrument_id"); underlying_id=instrument.get("underlying_id")
-        if not option_id: continue
-        quote = {"status": "FAILED", "error_type": "UNAVAILABLE"}
-        orderbook = {"status": "FAILED", "error_type": "UNAVAILABLE"}
-        qdata = {}
-        quote_status = "FAILED"
-        orderbook_status = "FAILED"
-        delta_seconds = None
-        delta_status = "UNAVAILABLE"
-        quote_retrieved_at = None
-        orderbook_retrieved_at = None
-        # Quote is canonical evidence. BestLimits is auxiliary/quarantined.
-        # Live production does not request BestLimits by default because this
-        # endpoint can stall inside urllib before the socket timeout is honored
-        # on some Termux/network combinations. This must never block the
-        # TSETMC option universe. It can be explicitly enabled for diagnostics.
-        best_limits_enabled = str(__import__("os").getenv("TSETMC_ENABLE_BEST_LIMITS", "")).strip().lower() in {"1", "true", "yes"}
-        try:
-            quote = adapter.quote(str(option_id))
-            qdata = _quote_values(quote)
-            quote_status = "SUCCESS"
-        except Exception as exc:
-            quote = {"status": "FAILED", "error_type": type(exc).__name__}
-            qdata = {}
-            quote_status = "FAILED"
+        option_id=instrument.get("instrument_id")
+        underlying_id=instrument.get("underlying_id")
+        if not option_id:
+            continue
 
-        if best_limits_enabled:
-            try:
-                orderbook = adapter.order_book(str(option_id))
-                orderbook_status = "SUCCESS"
-            except Exception as exc:
-                orderbook = {"status": "FAILED", "error_type": type(exc).__name__}
-                orderbook_status = "FAILED"
-        else:
-            orderbook = {
-                "status": "NOT_REQUESTED",
-                "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        market_fields = instrument.get("market_watch_fields")
+        if not isinstance(market_fields, dict):
+            market_fields = {}
+
+        underlying_fields = instrument.get("underlying_market_watch_fields")
+        if not isinstance(underlying_fields, dict):
+            underlying_fields = {}
+
+        quote = {
+            "status": "DERIVED_FROM_MARKET_WATCH",
+            "source": "TSETMC",
+            "endpoint": mw.get("endpoint"),
+            "snapshot_sha256": mw.get("snapshot_sha256"),
+            "retrieved_at": mw.get("retrieved_at"),
+            "data": market_fields,
+        }
+        quote_status = "SUCCESS" if market_fields else "INSUFFICIENT"
+        quote_retrieved_at = mw.get("retrieved_at")
+
+        orderbook = {
+            "status": "NOT_REQUESTED",
+            "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+            "source": "TSETMC",
+            "endpoint": "BestLimits/{instrument_id}",
+        }
+        orderbook_status = "NOT_REQUESTED"
+        orderbook_data = []
+
+        info = {
+            "status": "DERIVED_FROM_MARKET_WATCH",
+            "source": "TSETMC",
+            "endpoint": mw.get("endpoint"),
+            "snapshot_sha256": mw.get("snapshot_sha256"),
+            "retrieved_at": mw.get("retrieved_at"),
+            "data": {
+                "contractSize": instrument.get("contract_size"),
+            },
+        }
+        info_status = "SUCCESS" if instrument.get("contract_size") not in (None, "") else "INSUFFICIENT"
+
+        underlying_evidence[str(underlying_id)] = {
+            "status": "DERIVED_FROM_MARKET_WATCH" if underlying_fields else "INSUFFICIENT",
+            "source": "TSETMC",
+            "endpoint": mw.get("endpoint"),
+            "snapshot_sha256": mw.get("snapshot_sha256"),
+            "retrieved_at": mw.get("retrieved_at"),
+            "quote": {
+                "status": "DERIVED_FROM_MARKET_WATCH",
                 "source": "TSETMC",
-                "endpoint": "BestLimits/{instrument_id}",
-            }
-            orderbook_status = "NOT_REQUESTED"
+                "endpoint": mw.get("endpoint"),
+                "snapshot_sha256": mw.get("snapshot_sha256"),
+                "retrieved_at": mw.get("retrieved_at"),
+                "data": underlying_fields,
+            },
+        }
 
-        quote_retrieved_at = quote.get("retrieved_at") if isinstance(quote, dict) else None
-        orderbook_retrieved_at = orderbook.get("retrieved_at") if isinstance(orderbook, dict) else None
-        if quote_status == "SUCCESS" and orderbook_status == "SUCCESS":
-            try:
-                if quote_retrieved_at and orderbook_retrieved_at:
-                    qt = datetime.fromisoformat(str(quote_retrieved_at).replace("Z", "+00:00"))
-                    bt = datetime.fromisoformat(str(orderbook_retrieved_at).replace("Z", "+00:00"))
-                    delta_seconds = round(abs((bt - qt).total_seconds()), 6)
-                    delta_status = "WITHIN_2_SECONDS" if delta_seconds <= 2.0 else "OVER_2_SECONDS"
-                else:
-                    delta_seconds = None
-                    delta_status = "UNAVAILABLE"
-            except (TypeError, ValueError):
-                delta_seconds = None
-                delta_status = "UNAVAILABLE"
-        orderbook_data = orderbook.get("data") if isinstance(orderbook, dict) else None
-        if not isinstance(orderbook_data, list):
-            orderbook_data = []
-        # InstrumentInfo is auxiliary enrichment. Keep it out of the default
-        # live path because the TSETMC endpoint can stall at TCP connect on
-        # constrained Termux/network routes, just like BestLimits.
-        instrument_info_enabled = str(__import__("os").getenv("TSETMC_ENABLE_INSTRUMENT_INFO", "")).strip().lower() in {"1", "true", "yes"}
-        if instrument_info_enabled:
-            try:
-                info=adapter.instrument_info(str(option_id)); idata=_quote_values(info); info_status="SUCCESS"
-            except Exception as exc:
-                info={"status":"FAILED","error_type":type(exc).__name__}; idata={}; info_status="FAILED"
-        else:
-            info={"status":"NOT_REQUESTED","reason":"AUXILIARY_INSTRUMENT_INFO_DISABLED_BY_DEFAULT","source":"TSETMC","endpoint":"Instrument/GetInstrumentInfo/{instrument_id}"}
-            idata={}
-            info_status="NOT_REQUESTED"
-        if underlying_id and str(underlying_id) not in underlying_evidence:
-            try:
-                uq=adapter.quote(str(underlying_id))
-                underlying_evidence[str(underlying_id)]={"status":"SUCCESS","quote":uq}
-            except Exception as exc:
-                underlying_evidence[str(underlying_id)]={"status":"FAILED","error_type":type(exc).__name__}
-        ue=underlying_evidence.get(str(underlying_id),{})
-        udata=_quote_values(ue.get("quote",{})) if ue.get("status")=="SUCCESS" else {}
         strike=_as_number(instrument.get("strike"))
         row={field:None for field in FIELD_NAMES}
-        contract_size=_as_number(_first(idata,"contractSize","contract_size"))
         row.update({
             "نماد":instrument.get("symbol"),
-            "اندازه قرارداد":contract_size,
+            "اندازه قرارداد":_as_number(instrument.get("contract_size")),
             "قیمت اعمال":strike,
-            "قیمت سهم پایه":_as_number(_first(udata,"pDrCotVal","pl")),
+            "قیمت سهم پایه":_as_number(_first(underlying_fields,"last_price")),
             "تاریخ سررسید":instrument.get("end_date"),
             "روزهای تقویمی":_as_number(instrument.get("remaining_days")),
-            "حجم معاملات":_as_number(_first(qdata,"qTotTran5J","zTotTran")),
-            "ارزش معاملات":_as_number(_first(qdata,"qTotCap")),
-            "آخرین قیمت":_as_number(_first(qdata,"pDrCotVal","pl")),
-            "قیمت پایانی":_as_number(_first(qdata,"pClosing","pc")),
-            "کمترین قیمت":_as_number(_first(qdata,"priceMin","pMin")),
-            "بیشترین قیمت":_as_number(_first(qdata,"priceMax","pMax")),
+            "موقعیت های باز":_as_number(_first(market_fields,"open_interest")),
+            "حجم معاملات":_as_number(_first(market_fields,"volume")),
+            "ارزش معاملات":_as_number(_first(market_fields,"trade_value")),
+            "آخرین قیمت":_as_number(_first(market_fields,"last_price")),
+            "قیمت پایانی":_as_number(_first(market_fields,"close_price")),
+            "کمترین قیمت":_as_number(_first(market_fields,"low_price")),
+            "بیشترین قیمت":_as_number(_first(market_fields,"high_price")),
+            "حجم بهترین تقاضا":_as_number(_first(market_fields,"bid_quantity")),
+            "قیمت بهترین تقاضا":_as_number(_first(market_fields,"bid_price")),
+            "حجم بهترین عرضه":_as_number(_first(market_fields,"ask_quantity")),
+            "قیمت بهترین عرضه":_as_number(_first(market_fields,"ask_price")),
         })
-        source_market_timestamp = _source_market_timestamp(qdata)
+
+        # Market-Watch currently exposes no independently proven dEven/hEven
+        # observation timestamp in this canonical option payload. Do not
+        # substitute retrieval time and do not invent a market timestamp.
+        source_market_timestamp = None
+
         rows.append({
             "canonical":row,
             "identity":{
@@ -219,32 +211,44 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             },
             "raw_market_watch":instrument,
             "raw_remaining_days":instrument.get("remaining_days"),
-            "expiry_evidence":{"end_date":instrument.get("end_date"),"remaining_days":instrument.get("remaining_days"),
-                               "source":"TSETMC","source_field":"endDate/remainedDay"},
+            "expiry_evidence":{
+                "end_date":instrument.get("end_date"),
+                "remaining_days":instrument.get("remaining_days"),
+                "source":"TSETMC",
+                "source_field":"endDate/remainedDay",
+            },
             "source_market_timestamp":source_market_timestamp,
-            "source_market_timestamp_status":"AVAILABLE" if source_market_timestamp else "UNAVAILABLE",
-            "quote":quote,"order_book":orderbook,"instrument_info":info,
+            "source_market_timestamp_status":"UNAVAILABLE",
+            "quote":quote,
+            "order_book":orderbook,
+            "instrument_info":info,
             "orderbook_raw_levels":orderbook_data,
-            "quote_status":quote_status,"orderbook_status":orderbook_status,"instrument_info_status":info_status,
-            "orderbook_level_count":len(orderbook_data),
+            "quote_status":quote_status,
+            "orderbook_status":orderbook_status,
+            "instrument_info_status":info_status,
+            "orderbook_level_count":0,
         })
-        quote_evidence.append({"instrument_id":option_id,"status":quote_status,"source":quote.get("source"),
-                               "endpoint":quote.get("endpoint"),"snapshot_sha256":quote.get("snapshot_sha256"),
-                               "retrieved_at":quote.get("retrieved_at")})
+        quote_evidence.append({
+            "instrument_id":option_id,
+            "status":quote_status,
+            "source":"TSETMC",
+            "endpoint":mw.get("endpoint"),
+            "snapshot_sha256":mw.get("snapshot_sha256"),
+            "retrieved_at":mw.get("retrieved_at"),
+            "evidence_mode":"MARKET_WATCH_CANONICAL",
+        })
         orderbook_evidence.append({
-            "instrument_id": option_id,
-            "status": orderbook_status,
-            "source": orderbook.get("source"),
-            "endpoint": orderbook.get("endpoint"),
-            "snapshot_sha256": orderbook.get("snapshot_sha256"),
-            "retrieved_at": orderbook.get("retrieved_at"),
-            "level_count": len(orderbook_data),
-            "market_watch_snapshot_sha256": mw.get("snapshot_sha256"),
-            "identity_source_field": instrument.get("identity_source_field"),
-            "source_market_timestamp": source_market_timestamp,
-            "quote_retrieved_at": quote_retrieved_at,
-            "delta_seconds": delta_seconds,
-            "delta_status": delta_status,
+            "instrument_id":option_id,
+            "status":"NOT_REQUESTED",
+            "source":"TSETMC",
+            "endpoint":"BestLimits/{instrument_id}",
+            "level_count":0,
+            "market_watch_snapshot_sha256":mw.get("snapshot_sha256"),
+            "identity_source_field":instrument.get("identity_source_field"),
+            "source_market_timestamp":None,
+            "quote_retrieved_at":quote_retrieved_at,
+            "delta_seconds":None,
+            "delta_status":"NOT_APPLICABLE_MARKET_WATCH_CANONICAL",
         })
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
