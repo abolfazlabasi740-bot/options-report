@@ -237,6 +237,10 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             "retrieved_at":mw.get("retrieved_at"),
             "evidence_mode":"MARKET_WATCH_CANONICAL",
         })
+        # BestLimits remains quarantined from the canonical Market-Watch path.
+        # Keep the delta contract explicit for audit/static guards without
+        # pretending that a BestLimits observation was collected.
+        delta_status = "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
         orderbook_evidence.append({
             "instrument_id":option_id,
             "status":"NOT_REQUESTED",
@@ -248,7 +252,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             "source_market_timestamp":None,
             "quote_retrieved_at":quote_retrieved_at,
             "delta_seconds":None,
-            "delta_status":"NOT_APPLICABLE_MARKET_WATCH_CANONICAL",
+            "delta_status": delta_status,
         })
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
