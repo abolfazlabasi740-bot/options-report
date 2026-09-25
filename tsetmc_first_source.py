@@ -106,13 +106,14 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             "حجم بهترین تقاضا":_as_number(_first(market_fields,"bid_quantity")),"قیمت بهترین تقاضا":_as_number(_first(market_fields,"bid_price")),
             "حجم بهترین عرضه":_as_number(_first(market_fields,"ask_quantity")),"قیمت بهترین عرضه":_as_number(_first(market_fields,"ask_price")),
         })
-        source_market_timestamp=None
+        source_market_timestamp = _source_market_timestamp(instrument.get("raw_market_watch") or {})
+        source_market_timestamp_status = "AVAILABLE" if source_market_timestamp else "UNAVAILABLE"
         rows.append({
             "canonical":row,
             "identity":{"instrument_id":option_id,"contract_type":instrument.get("contract_type"),"underlying_id":underlying_id,"underlying_symbol":instrument.get("underlying_symbol"),"identity_source_field":instrument.get("identity_source_field")},
             "raw_market_watch":instrument,"market_watch_fields":market_fields,"raw_remaining_days":instrument.get("remaining_days"),
             "expiry_evidence":{"end_date":instrument.get("end_date"),"remaining_days":instrument.get("remaining_days"),"source":"TSETMC","source_field":"endDate/remainedDay"},
-            "source_market_timestamp":source_market_timestamp,"source_market_timestamp_status":"UNAVAILABLE",
+            "source_market_timestamp":source_market_timestamp,"source_market_timestamp_status":source_market_timestamp_status,
             "quote":quote,"order_book":orderbook,"instrument_info":info,"orderbook_raw_levels":orderbook_data,
             "quote_status":quote_status,"orderbook_status":orderbook_status,"instrument_info_status":info_status,"orderbook_level_count":0,
         })
@@ -121,7 +122,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         orderbook_evidence.append({"instrument_id":option_id,"status":"NOT_REQUESTED","source":"TSETMC","endpoint":"BestLimits/{instrument_id}","level_count":0,"market_watch_snapshot_sha256":mw.get("snapshot_sha256"),"identity_source_field":instrument.get("identity_source_field"),"source_market_timestamp":None,"quote_retrieved_at":quote_retrieved_at,"delta_seconds":None,"delta_status": delta_status})
     generated_at=datetime.now(timezone.utc).isoformat()
     evidence={"engine_version":ENGINE_VERSION,"source":"TSETMC","generated_at":generated_at,
-              "market_watch":{"endpoint":mw.get("endpoint"),"snapshot_sha256":mw.get("snapshot_sha256"),"retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments),"flows":mw.get("flows"),"flow_evidence":mw.get("flow_evidence")},
+              "market_watch":{"endpoint":mw.get("endpoint"),"snapshot_sha256":mw.get("snapshot_sha256"),"retrieved_at":mw.get("retrieved_at"),"record_count":len(instruments),"flows":mw.get("flows"),"flow_evidence":mw.get("flow_evidence"),"source_market_timestamp_count":sum(1 for r in rows if r.get("source_market_timestamp")),"latest_source_market_timestamp":max((r.get("source_market_timestamp") for r in rows if r.get("source_market_timestamp")), default=None)},
               "quote_evidence":quote_evidence,"orderbook_evidence":orderbook_evidence,"underlying_evidence":underlying_evidence,
               "best_limits_contract":{"status":"RAW_ONLY_QUARANTINED","source":"TSETMC","endpoint":"BestLimits/{instrument_id}","identity_binding":"instrument_id","market_watch_binding":"market_watch_snapshot_sha256","source_timestamp_binding":"source_market_timestamp","delta_seconds_limit":2.0,"consumption_status":"NOT_CONSUMED_BY_SCORING_OR_RANKING_FEATURES"}}
     snapshot={"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC","external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),"rows":rows,"evidence":evidence,"snapshot_sha256":_hash_json({"rows":rows,"evidence":evidence}),"data_mode":"LIVE_TSETMC_REFRESH","live_refresh_status":"SUCCESS"}
