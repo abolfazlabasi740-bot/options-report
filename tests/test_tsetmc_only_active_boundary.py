@@ -39,6 +39,21 @@ class TestTsetmcOnlyActiveBoundary(unittest.TestCase):
         self.assertIn('"audit_version"', source)
         self.assertIn('audit.get("audit_version") != ENGINE_VERSION', source)
 
+    def test_best_limits_evidence_contract_is_present(self):
+        source = self._source("tsetmc_first_source.py")
+        self.assertIn('"best_limits_contract"', source)
+        self.assertIn('"RAW_ONLY_QUARANTINED"', source)
+        self.assertIn('"market_watch_snapshot_sha256"', source)
+        self.assertIn('"source_market_timestamp"', source)
+        self.assertIn('"delta_seconds_limit":2.0', source)
+        self.assertIn('"delta_status": delta_status', source)
+
+    def test_audit_requires_best_limits_evidence(self):
+        source = self._source("audit_integrity.py")
+        self.assertIn('"best_limits_evidence"', source)
+        self.assertIn('BEST_LIMITS_DELTA_NOT_WITHIN_2_SECONDS', source)
+        self.assertIn('BEST_LIMITS_MUST_REMAIN_QUARANTINED', source)
+
     def test_active_files_exist(self):
         for name in ACTIVE_FILES:
             self.assertTrue((ROOT / name).is_file(), name)
