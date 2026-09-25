@@ -81,6 +81,8 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                         failures.append("BEST_LIMITS_MARKET_WATCH_BINDING_MISMATCH")
                     if item.get("status") != "SUCCESS":
                         failures.append("BEST_LIMITS_REQUEST_FAILED")
+                    if item.get("delta_status") != "WITHIN_2_SECONDS" or not isinstance(item.get("delta_seconds"), (int, float)):
+                        failures.append("BEST_LIMITS_DELTA_NOT_WITHIN_2_SECONDS")
         if not isinstance(audit.get("market_state"), dict):
             failures.append("MARKET_STATE_EVIDENCE_INVALID")
         if not audit.get("report_sha256"):
