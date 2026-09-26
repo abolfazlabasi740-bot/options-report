@@ -141,10 +141,21 @@ def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None)
                 continue
             vals = [d.get(factor) for d in derived]
             if factor == "leverage":
-                # Rank leverage on a compressed scale. This preserves the
-                # monotonic preference for efficiency while preventing a tiny
-                # premium from overwhelming the entire PAYOFF block.
-                vals = [math.log1p(v) if v is not None and v >= 0 else None for v in vals]
+                # Compress and cap the heavy tail before percentile ranking.
+                # A monotonic log transform alone would not change percentile
+                # ranks, so the cap is derived from the current evidence set
+                # (95th percentile) rather than from a guessed market constant.
+                log_vals = [math.log1p(v) if v is not None and v >= 0 else None for v in vals]
+                valid_log = sorted(v for v in log_vals if v is not None)
+                if valid_log:
+                    position = 0.95 * (len(valid_log) - 1)
+                    lo = int(math.floor(position))
+                    hi = int(math.ceil(position))
+                    fraction = position - lo
+                    cap = valid_log[lo] + (valid_log[hi] - valid_log[lo]) * fraction
+                    vals = [min(v, cap) if v is not None else None for v in log_vals]
+                else:
+                    vals = log_vals
                 higher = True
             else:
                 higher = factor in {"trade_value", "volume"}
