@@ -9,6 +9,7 @@ class FakeAdapter:
                 "remaining_days":28,"identity_source_field":"insCode_C",
                 "contract_size":1000,
                 "source_market_fields":{"dEven":20260924,"hEven":101530},
+                "source_market_fields":{"dEven":20260924,"hEven":101530},
                 "market_watch_fields":{"last_price":1500,"close_price":1400,"volume":100,
                 "trade_value":150000,"open_interest":10,"bid_price":1400,"ask_price":1500,
                 "bid_quantity":1,"ask_quantity":2},
