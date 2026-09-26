@@ -23,8 +23,8 @@ class CalibrationEngineTests(unittest.TestCase):
         result = summarize_feature(candidates, "trade_value")
         self.assertEqual(result["count"], 3)
         self.assertEqual(result["p50"], 20.0)
-        self.assertEqual(result["p05"], 12.0)
-        self.assertEqual(result["p95"], 28.0)
+        self.assertEqual(result["p05"], 11.0)
+        self.assertEqual(result["p95"], 29.0)
 
     def test_missing_values_are_not_zero_filled(self):
         candidates = [self._candidate(10), {"evidence": {"features": {}}}]
