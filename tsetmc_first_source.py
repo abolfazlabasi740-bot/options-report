@@ -35,12 +35,26 @@ def _quote_values(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(data,dict): return data
     if isinstance(data,list) and data and isinstance(data[0],dict): return data[0]
     return {}
-def _source_market_timestamp(qdata: dict[str, Any]) -> str | None:
-    try:
-        d_even=int(qdata.get("dEven")); h_even=int(qdata.get("hEven"))
-        hh=h_even//10000; mm=(h_even//100)%100; ss=h_even%100
-        return datetime.strptime(f"{d_even:08d} {hh:02d}:{mm:02d}:{ss:02d}","%Y%m%d %H:%M:%S").isoformat()
-    except (TypeError, ValueError): return None
+def _source_market_timestamp(*sources: dict[str, Any]) -> str | None:
+    # Use only explicit TSETMC observation fields; never substitute adapter
+    # retrieval time. MarketWatch may expose these at different nesting levels.
+    for source in sources:
+        if not isinstance(source, dict):
+            continue
+        d_even = _first(source, "dEven", "date")
+        h_even = _first(source, "hEven", "time", "serverTime")
+        try:
+            d_even = int(d_even)
+            h_even = int(h_even)
+            hh, mm, ss = h_even // 10000, (h_even // 100) % 100, h_even % 100
+            if 0 <= hh <= 23 and 0 <= mm <= 59 and 0 <= ss <= 59:
+                return datetime.strptime(
+                    f"{d_even:08d} {hh:02d}:{mm:02d}:{ss:02d}",
+                    "%Y%m%d %H:%M:%S",
+                ).isoformat()
+        except (TypeError, ValueError):
+            continue
+    return None
 def _load_last_known_snapshot() -> dict[str, Any] | None:
     try:
         path=CACHE_PATH
@@ -106,7 +120,11 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             "حجم بهترین تقاضا":_as_number(_first(market_fields,"bid_quantity")),"قیمت بهترین تقاضا":_as_number(_first(market_fields,"bid_price")),
             "حجم بهترین عرضه":_as_number(_first(market_fields,"ask_quantity")),"قیمت بهترین عرضه":_as_number(_first(market_fields,"ask_price")),
         })
-        source_market_timestamp = _source_market_timestamp(instrument.get("raw_market_watch") or {})
+        source_market_timestamp = _source_market_timestamp(
+            instrument.get("source_market_fields") or {},
+            instrument.get("raw_market_watch") or {},
+            market_fields,
+        )
         source_market_timestamp_status = "AVAILABLE" if source_market_timestamp else "UNAVAILABLE"
         rows.append({
             "canonical":row,
