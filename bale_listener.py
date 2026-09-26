@@ -111,20 +111,20 @@ def generate_report(command):
     if command in ("گزارش", "همه", "کل"):
         report, snapshot = build_tsetmc_report(
             top_count=15,
-            flow=1,
+            flow=None,
             report_mode="RANKED",
         )
     elif command in ("فعالیت", "معاملات", "تاپ"):
         report, snapshot = build_tsetmc_report(
             top_count=15,
-            flow=1,
+            flow=None,
             report_mode="TRADING_ACTIVITY",
         )
     else:
         report, snapshot = build_tsetmc_report(
             top_count=5,
             underlying_symbol=command,
-            flow=1,
+            flow=None,
             report_mode="RANKED",
         )
 
