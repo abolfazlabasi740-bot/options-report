@@ -8,60 +8,113 @@
 - tsetmc_first_source.py منبع Canonical است.
 - tsetmc_adapter.py مرز Evidence منبع TSETMC است.
 - Bale فقط Distribution Layer است.
+- Bale report commands use the full TSETMC option universe (flow=None).
+
+## Current live runtime evidence
+
+آخرین اجرای واقعی Bale گزارش کرده است:
+
+- TSETMC records discovered: 1582
+- flows checked: 4
+- OPPORTUNITY_CANDIDATE: 746
+- Ranking-Evidence-Rows: 746
+- Eligibility: PASS
+- Opportunity Engine: SUCCESS
+- Six-Block Ranking: PASS
+- Data Mode: LIVE_TSETMC_REFRESH
+- Live Refresh: SUCCESS
+- Market/Report session: OFFMARKET
+- latest explicit source timestamp: 2026-09-26T12:29:59
+- Snapshot SHA: 8e97d6f2052f80aed87c302032ec72342cda0056ff2874d4e64415a73b6895cf
+
+The OFFMARKET report is explicitly treated as the latest valid TSETMC source state, not as a live movement claim.
 
 ## Source of Truth
 
-TSETMC Option Market-Watch منبع فعال Universe و Identity است.
+TSETMC Option Market-Watch is the active source for Universe and Identity.
 
-OptionSchool24 و reconciliationهای قدیمی در Runtime فعال مصرف نمی‌شوند و برای تکمیل فیلدهای مفقود TSETMC نیز استفاده نمی‌شوند.
+OptionSchool24 and historical reconciliation paths are not consumed by the active runtime and are not used to fill missing TSETMC fields.
 
 ## Identity rule
 
-شناسه قرارداد اختیار و شناسه دارایی پایه باید صریحاً از TSETMC دریافت شوند.
+Option instrument identity and underlying identity must be explicitly supported by TSETMC evidence.
 
-Symbol-prefix inference مجاز نیست.
+Symbol-prefix inference is prohibited.
 
-## Reporting continuity
+## Ranking state
 
-گزارش‌دهی خارج از ساعت بازار نیز امکان‌پذیر است:
+Six-Block Evidence Ranking is active in the current deployed runtime.
 
-- LIVE_TSETMC_REFRESH یعنی Refresh معتبر TSETMC در اجرای جاری دریافت شده است.
-- LAST_KNOWN_TSETMC_SNAPSHOT یعنی Refresh جاری قابل استفاده نبوده و آخرین Snapshot معتبر TSETMC استفاده شده است.
-- مسیر Cached هرگز حرکت زنده بازار را ادعا نمی‌کند.
-- live_movement_claim باید NOT_CLAIMED باشد.
-- report و audit باید data_mode، live_refresh_status، fallback_reason، basis_source_market_timestamp و Snapshot hash را حفظ کنند.
+Weights:
 
-این مسیر هیچ منبع ثانویه‌ای برای تکمیل داده اضافه نمی‌کند.
+- LIQUIDITY: 20
+- VALUATION: 25
+- PAYOFF: 18
+- TIME: 15
+- GREEKS: 12
+- MARKET: 10
 
-## BestLimits evidence gate
+Missing evidence remains unavailable and is not converted to zero.
 
-Runner و Validator برای Capture واقعی، حفظ payload خام، hash، زمان و شناسه صریح در Repository وجود دارند.
+Current ranking does not compute IV or Greeks. Open interest is not used by the current ranking contract.
 
-اما وجود Runner یا تست‌های آن به‌تنهایی Live Evidence ایجاد نمی‌کند.
+## Signal state
 
-تا زمانی که Capture واقعی و semantic mapping با Evidence مستقل تأیید و Adapter Contract freeze نشده باشد، BestLimits-derived scoring input مسدود است.
+The final business objective of OptimusAI is BUY/SELL option signals.
 
-## Scoring state
+The Signal Engine V1 production contract is now documented in:
 
-Six-Block scoring و production ranking تا بسته‌شدن Evidence Gateهای لازم فعال نیستند.
+docs/SIGNAL_ENGINE_V1_SPEC.md
 
-فیلد فاقد Evidence مستقیم باید «داده موجود نیست» باقی بماند.
+Current production signal state remains:
 
-## Runtime verification
+buy_sell_signal = NOT_GENERATED
 
-Repository inspection جایگزین Runtime Evidence نیست.
+This is a controlled boundary, not the final project objective.
 
-Termux، Source freshness و Bale delivery باید روی Commit مستقر و فعال مجدداً تأیید شوند.
+BUY/SELL production requires an explicit Strategy policy, Risk policy, Decision Trace, Signal Gate and Gate 7 release evidence.
 
-## Immediate controlled path
+No undocumented score threshold may be used to convert Ranking into BUY or SELL.
 
-- Capture واقعی TSETMC و BestLimits؛
-- حفظ raw payload و hash؛
-- تأیید semantic mapping؛
-- freeze کردن Adapter Contract؛
-- تأیید freshness؛
-- تأیید contract specification و open-interest evidence؛
-- تکمیل conventions موردنیاز محاسباتی فقط بر اساس Source Evidence؛
-- سپس بازبینی مجدد Scoring، Ranking، Audit و Bale روی Dataset Canonical TSETMC.
+BUY and SELL are not mirror labels. Short-option SELL_CALL/SELL_PUT requires an independently approved short-option risk policy.
 
-No Buy/Sell signal is emitted during this evidence-only phase.
+## Signal Engine V1 cutover sequence
+
+1. Implement deterministic Shadow Signal Engine.
+2. Define/version Strategy entry policy.
+3. Define/version Risk policy.
+4. Define expiry, freshness and missing-evidence policies.
+5. Add deterministic regression and replay/golden cases.
+6. Run historical sensitivity/ablation and economic validation.
+7. Close Signal Gate / Gate 7.
+8. Only then enable production BUY/SELL delivery through Bale.
+
+Until Gate 7 is closed, Shadow signal results must not alter the production report or Bale release.
+
+## Audit / Distribution
+
+Repository, CI, runtime and Bale evidence remain separate evidence classes.
+
+Current deployed runtime has demonstrated:
+
+- Audit: PASS
+- Bale report delivery: successful
+- Full TSETMC universe path: 4 flows / 1582 records
+- Six-Block ranking report delivered through Bale
+
+Audit failure remains release-blocking.
+
+## Project control
+
+- Gate 2: VERIFIED
+- Gate 3: VERIFIED
+- Gate 4: PENDING — exact TSETMC option identity / enrichment closure where required
+- Gate 5: technical Shadow/Replay/Audit verification present; economic validation remains open
+- Gate 6: CLOSED — deployed Termux + real Bale evidence
+- Gate 7: NOT CLOSED
+- Signal Engine: SPECIFIED / PENDING IMPLEMENTATION
+- Strategy policy: PENDING
+- Risk policy: PENDING
+- Economic validation: OPEN
+
+No guessed economic parameter is authorized.
