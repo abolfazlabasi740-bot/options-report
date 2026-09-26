@@ -111,7 +111,10 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
             self._row("LOW", 100, 100, 10, 10, 10, 100, 20),
             self._row("HIGH", 100, 100, 20, 20, 100, 1000, 20),
         ]
-        result = build_evidence_ranking(rows)
+        result = build_evidence_ranking(
+            rows,
+            disabled_blocks={"VALUATION", "PAYOFF", "TIME", "GREEKS", "MARKET"},
+        )
         by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
         self.assertGreater(by_id["HIGH"]["features"]["trade_value"], by_id["LOW"]["features"]["trade_value"])
         self.assertGreater(by_id["HIGH"]["score"], by_id["LOW"]["score"])
