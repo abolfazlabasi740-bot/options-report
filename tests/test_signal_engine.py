@@ -60,3 +60,16 @@ class SignalEngineShadowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_versioned_policies_still_do_not_authorize_directional_signal(self):
+        result = evaluate_shadow_candidate(
+            self._candidate(),
+            strategy_policy={"version": "OPTIMUSAI-STRATEGY-V1"},
+            risk_policy={"version": "OPTIMUSAI-RISK-V1"},
+            production_enabled=True,
+        )
+        self.assertEqual(result["state"], "WATCH")
+        self.assertIsNone(result["production_signal"])
+        self.assertEqual(result["buy_sell_signal"], "NOT_GENERATED")
+        self.assertEqual(result["blockers"], [])
+        self.assertIn("NO_PRODUCTION_ACTION_AUTHORIZED", result["reason_codes"])
