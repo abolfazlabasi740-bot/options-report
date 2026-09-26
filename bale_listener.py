@@ -59,6 +59,54 @@ def send_message(chat_id, text):
     print(f"SENT {count}/{count}")
 
 
+def system_status():
+    audit_path = OUTPUT / "latest_audit.json"
+    report_path = OUTPUT / "latest_report.txt"
+
+    if not audit_path.exists():
+        return "⚠️ وضعیت V4.1\n\nAudit موجود نیست؛ هنوز اجرای معتبر گزارش ثبت نشده است."
+
+    try:
+        audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return "⚠️ وضعیت V4.1\n\nفایل Audit قابل خواندن نیست."
+
+    integrity = audit.get("audit_integrity", {})
+    status = integrity.get("status") or audit.get("status") or "UNKNOWN"
+    failures = integrity.get("failures") or []
+    missing = integrity.get("missing_fields") or []
+
+    lines = [
+        "📊 وضعیت OptimusAI V4.1",
+        "",
+        f"Audit: {status}",
+        f"Source: {audit.get('source_of_truth') or 'داده موجود نیست'}",
+        f"Data Mode: {audit.get('data_mode') or 'داده موجود نیست'}",
+        f"Refresh: {audit.get('live_refresh_status') or 'داده موجود نیست'}",
+        f"Scoring: {audit.get('scoring_status') or 'داده موجود نیست'}",
+        f"Ranking: {audit.get('ranking_status') or 'داده موجود نیست'}",
+        f"Snapshot SHA: {audit.get('snapshot_sha256') or 'داده موجود نیست'}",
+        f"Report SHA: {audit.get('report_sha256') or 'داده موجود نیست'}",
+    ]
+
+    if failures:
+        lines.append("Audit Failures: " + ", ".join(str(x) for x in failures))
+    else:
+        lines.append("Audit Failures: 0")
+
+    if missing:
+        lines.append("Audit Missing Fields: " + ", ".join(str(x) for x in missing))
+    else:
+        lines.append("Audit Missing Fields: 0")
+
+    if not report_path.exists():
+        lines.append("Report File: MISSING")
+    else:
+        lines.append("Report File: READY")
+
+    return "\n".join(lines)
+
+
 def generate_report(command):
     if command in ("گزارش", "همه", "کل"):
         report, snapshot = build_tsetmc_report(
@@ -157,12 +205,15 @@ def main():
                 )
 
                 try:
-                    report = generate_report(text)
+                    if text in ("وضعیت", "استاتوس", "status"):
+                        send_message(chat_id, system_status())
+                    else:
+                        report = generate_report(text)
 
-                    send_message(
-                        chat_id,
-                        report,
-                    )
+                        send_message(
+                            chat_id,
+                            report,
+                        )
 
                     print(
                         f"REPORT_OK command={text}"
