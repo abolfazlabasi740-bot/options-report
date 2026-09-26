@@ -294,7 +294,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     else:
         rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:len(rows)]
         if rankable:
-            lines.append("مبنای ترتیب: امتیاز Evidence-based شش بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری 25، Payoff 18، زمان 15، Greeks 12، Market 10.")
+            lines.append("مبنای ترتیب: امتیاز Evidence-based شش بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری نسبی 25، Payoff 18، زمان 15، Greeks 12، Market 10. ارزش‌گذاری در این نسخه فقط «بار پریمیوم نسبت به سهم پایه» است و ارزش منصفانه/IV ادعا نمی‌کند.")
             lines.append("⚠️ بلوک یا عامل فاقد شواهد TSETMC در همان ردیف از امتیاز آن ردیف حذف و وزن بلوک‌های دارای شواهد نرمال می‌شود.")
             for x in rankable:
                 blocks = " | ".join(
