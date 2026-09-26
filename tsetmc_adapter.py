@@ -254,6 +254,7 @@ class TSETMCAdapter:
                 "begin_date": record.get("begin_date"),
                 "end_date": record.get("end_date"),
                 "remaining_days": record.get("remaining_days"),
+                "source_market_fields": record.get("source_market_fields") or {},
             }
             raw = record.get("raw_market_watch")
             if not isinstance(raw, dict):
