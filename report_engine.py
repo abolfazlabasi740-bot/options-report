@@ -19,6 +19,7 @@ from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from tsetmc_scoring_engine import build_evidence_ranking
+from tsetmc_history import archive_universe_snapshot
 from tsetmc_eligibility import (
     OPPORTUNITY_CANDIDATE,
     build_opportunity_candidates,
@@ -437,6 +438,7 @@ def save_tsetmc_report(report, snapshot):
         json.dumps(universe_snapshot, ensure_ascii=False, indent=2, allow_nan=False),
         encoding="utf-8",
     )
+    archive_universe_snapshot(snapshot, ROOT)
 
     report_sha256 = hashlib.sha256(report.encode("utf-8")).hexdigest()
     audit = {
