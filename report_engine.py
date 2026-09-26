@@ -88,7 +88,39 @@ def _market_state(snapshot):
     }
 
 
-def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
+def _trading_rank_rows(rows):
+    """Rank contracts by explicit TSETMC trading activity, not economic score."""
+    def num(value):
+        try:
+            if value in (None, ""):
+                return None
+            value = float(value)
+            return value if value == value and value not in (float("inf"), float("-inf")) else None
+        except (TypeError, ValueError):
+            return None
+
+    ranked = []
+    for row in rows:
+        canonical = row.get("canonical") or {}
+        value = num(canonical.get("ارزش معاملات"))
+        volume = num(canonical.get("حجم معاملات"))
+        count = num(canonical.get("تعداد معاملات"))
+        instrument_id = str((row.get("identity") or {}).get("instrument_id") or "")
+        ranked.append((
+            1 if value is not None else 0,
+            value if value is not None else float("-inf"),
+            1 if volume is not None else 0,
+            volume if volume is not None else float("-inf"),
+            1 if count is not None else 0,
+            count if count is not None else float("-inf"),
+            instrument_id,
+            row,
+        ))
+    ranked.sort(key=lambda item: item[:-1], reverse=True)
+    return [item[-1] for item in ranked]
+
+
+def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol=None, flow=None, report_mode="RANKED"):
     limit = TOP_COUNT if top_count is None else int(top_count)
     if isinstance(limit, bool) or limit <= 0:
         raise ValueError("تعداد قراردادها باید عدد صحیح مثبت باشد")
@@ -108,6 +140,14 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
             row for row in rows
             if str(row.get("canonical", {}).get("نماد") or "").startswith(prefix)
         ]
+    if underlying_symbol:
+        requested = str(underlying_symbol).strip().replace("ي", "ی").replace("ك", "ک")
+        rows = [
+            row for row in rows
+            if str((row.get("identity") or {}).get("underlying_symbol") or "").strip().replace("ي", "ی").replace("ك", "ک") == requested
+        ]
+        if not rows:
+            raise ValueError(f"نماد پایه {requested} در Universe فعلی TSETMC پیدا نشد")
     # Preserve the complete TSETMC evidence universe separately. The report
     # display limit must never destroy the evidence needed for audit/analysis.
     snapshot["universe_rows"] = list(rows)
@@ -136,13 +176,24 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
         item.get("instrument_id"): item.get("rank")
         for item in ranking.get("ranking_rows", [])
     }
-    candidate_rows.sort(
-        key=lambda row: (
-            ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
-            ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
+    if report_mode == "TRADING_ACTIVITY":
+        rows = _trading_rank_rows(rows)[:limit]
+        snapshot["report_mode"] = "TRADING_ACTIVITY"
+        snapshot["report_ranking_basis"] = [
+            "ارزش معاملات (نزولی)",
+            "حجم معاملات (نزولی؛ tie-breaker)",
+            "تعداد معاملات (نزولی؛ tie-breaker)",
+            "شناسه ابزار (برای ترتیب قطعی)",
+        ]
+    else:
+        candidate_rows.sort(
+            key=lambda row: (
+                ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
+                ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
+            )
         )
-    )
-    rows = candidate_rows[:limit]
+        rows = candidate_rows[:limit]
+        snapshot["report_mode"] = "RANKED"
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
@@ -211,12 +262,20 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, flow=None):
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("🏆 رتبه‌بندی شواهد TSETMC")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
-    rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:10]
-    if rankable:
-        for x in rankable:
-            lines.append(f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز {x['score']:.2f} | بلوک‌های معتبر: {','.join(x.get('supported_blocks', []))}")
+    if snapshot.get("report_mode") == "TRADING_ACTIVITY":
+        lines.append("مبنای ترتیب: ارزش معاملات، سپس حجم معاملات و تعداد معاملات؛ بدون استفاده از امتیاز اقتصادی.")
+        for idx, item in enumerate(rows, 1):
+            canonical = item.get("canonical") or {}
+            lines.append(
+                f"#{idx} {canonical.get('نماد') or 'داده موجود نیست'} | ارزش {number(canonical.get('ارزش معاملات'))} | حجم {number(canonical.get('حجم معاملات'))} | تعداد معاملات {number(canonical.get('تعداد معاملات'))}"
+            )
     else:
-        lines.append("داده کافی برای رتبه‌بندی وجود ندارد.")
+        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:10]
+        if rankable:
+            for x in rankable:
+                lines.append(f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز {x['score']:.2f} | بلوک‌های معتبر: {','.join(x.get('supported_blocks', []))}")
+        else:
+            lines.append("داده کافی برای رتبه‌بندی وجود ندارد.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
     for idx, item in enumerate(rows, 1):
@@ -312,15 +371,19 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate the active V4.1.1 report from TSETMC only."
     )
-    parser.add_argument("--symbol", help="Exact TSETMC symbol prefix filter")
+    parser.add_argument("--symbol", help="Exact TSETMC option symbol prefix filter")
+    parser.add_argument("--underlying", help="Exact TSETMC underlying symbol filter")
     parser.add_argument("--top", type=int, default=None)
     parser.add_argument("--flow", type=int, default=None)
+    parser.add_argument("--trading-top", action="store_true", help="Rank by explicit TSETMC trading activity")
     args = parser.parse_args()
 
     report, snapshot = build_tsetmc_report(
         top_count=args.top,
         symbol_prefix=args.symbol,
+        underlying_symbol=args.underlying,
         flow=args.flow,
+        report_mode="TRADING_ACTIVITY" if args.trading_top else "RANKED",
     )
     report_path = save_tsetmc_report(report, snapshot)
 
