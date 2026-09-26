@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 
-ENGINE_VERSION = "OBSERVED-OUTCOME-1.0"
+ENGINE_VERSION = "OBSERVED-OUTCOME-1.1"
 SOURCE_OF_TRUTH = "TSETMC"
 
 
@@ -30,12 +30,19 @@ def _timestamp(value: Any) -> datetime | None:
         return None
 
 
-def _row_timestamp(row: dict[str, Any], snapshot: dict[str, Any]) -> str | None:
-    value = row.get("source_market_timestamp")
+def _snapshot_observation_time(snapshot: dict[str, Any]) -> str | None:
+    value = snapshot.get("observation_retrieved_at")
     if isinstance(value, str) and value.strip():
         return value
     value = snapshot.get("generated_at")
     return value if isinstance(value, str) and value.strip() else None
+
+
+def _row_timestamp(row: dict[str, Any], snapshot: dict[str, Any]) -> str | None:
+    value = row.get("source_market_timestamp")
+    if isinstance(value, str) and value.strip():
+        return value
+    return _snapshot_observation_time(snapshot)
 
 
 def _identity_id(row: dict[str, Any]) -> str | None:
@@ -88,7 +95,12 @@ def _load_archives(root: Path) -> list[dict[str, Any]]:
         if not payload.get("snapshot_sha256") or not isinstance(payload.get("rows"), list):
             continue
         snapshots.append(payload)
-    snapshots.sort(key=lambda x: (_timestamp(x.get("generated_at")) or datetime.min, str(x.get("snapshot_sha256"))))
+    snapshots.sort(
+        key=lambda x: (
+            _timestamp(_snapshot_observation_time(x)) or datetime.min,
+            str(x.get("snapshot_sha256")),
+        )
+    )
     return snapshots
 
 
@@ -108,8 +120,8 @@ def build_observed_outcomes(root: Path) -> dict[str, Any]:
             if (observed := _observed_row(row, forward_snapshot)) is not None
         }
 
-        entry_time = _timestamp(entry_snapshot.get("generated_at"))
-        forward_time = _timestamp(forward_snapshot.get("generated_at"))
+        entry_time = _timestamp(_snapshot_observation_time(entry_snapshot))
+        forward_time = _timestamp(_snapshot_observation_time(forward_snapshot))
         elapsed_days = (
             (forward_time - entry_time).total_seconds() / 86400.0
             if entry_time is not None and forward_time is not None
@@ -130,8 +142,10 @@ def build_observed_outcomes(root: Path) -> dict[str, Any]:
                 "underlying_symbol": entry["underlying_symbol"],
                 "entry_snapshot_sha256": entry_snapshot["snapshot_sha256"],
                 "forward_snapshot_sha256": forward_snapshot["snapshot_sha256"],
-                "entry_source_market_timestamp": entry["source_market_timestamp"],
-                "forward_source_market_timestamp": forward["source_market_timestamp"],
+                "entry_observation_time": _snapshot_observation_time(entry_snapshot),
+                "forward_observation_time": _snapshot_observation_time(forward_snapshot),
+                "entry_source_market_timestamp": entry["source_market_timestamp"] if entry.get("source_market_timestamp") != _snapshot_observation_time(entry_snapshot) else None,
+                "forward_source_market_timestamp": forward["source_market_timestamp"] if forward.get("source_market_timestamp") != _snapshot_observation_time(forward_snapshot) else None,
                 "entry_last": entry["option_last"],
                 "forward_last": forward["option_last"],
                 "option_change": option_change,
@@ -158,6 +172,8 @@ def build_observed_outcomes(root: Path) -> dict[str, Any]:
         "transitions": transitions,
         "rules": {
             "matching": "EXACT_INSTRUMENT_ID_ONLY",
+            "observation_time": "MARKET_WATCH_RETRIEVED_AT_OR_GENERATED_AT",
+            "source_market_timestamp": "EXPLICIT_TSETMC_ONLY",
             "outcome_type": "OBSERVED_STATE_CHANGE",
             "signal_generation": "FORBIDDEN",
             "labels": "NOT_INFERRED",
