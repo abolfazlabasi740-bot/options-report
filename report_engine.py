@@ -153,30 +153,31 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     snapshot["universe_rows"] = list(rows)
     snapshot["universe_row_count"] = len(rows)
 
-    # Eligibility is the gate before ranking. Ranking percentiles must be
-    # calculated only within the auditable opportunity-candidate universe;
-    # otherwise inactive/non-candidate rows distort the comparative ranking.
-    eligibility = classify_universe(rows)
-    snapshot["eligibility"] = eligibility
-    candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
-    candidate_rows = [
-        row for row in rows
-        if (row.get("identity") or {}).get("instrument_id") in candidate_ids
-    ]
-
-    ranking = build_evidence_ranking(candidate_rows)
-    ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES"
-    ranking["ranking_scope_row_count"] = len(candidate_rows)
-    snapshot["ranking"] = ranking
-
-    opportunity = build_opportunity_candidates(rows, ranking, eligibility)
-    snapshot["opportunity"] = opportunity
-
-    ranked_order = {
-        item.get("instrument_id"): item.get("rank")
-        for item in ranking.get("ranking_rows", [])
-    }
+    # TRADING_ACTIVITY is intentionally independent from the economic
+    # eligibility/ranking/opportunity engines. It must not fail because an
+    # economic scoring layer is unavailable.
     if report_mode == "TRADING_ACTIVITY":
+        eligibility = {
+            "status": "OFF",
+            "rows_evaluated": len(rows),
+            "counts": {OPPORTUNITY_CANDIDATE: 0},
+            "candidate_instrument_ids": [],
+        }
+        ranking = {
+            "mode": "OFF",
+            "status": "OFF",
+            "ranking_scope": "TRADING_ACTIVITY",
+            "ranking_scope_row_count": 0,
+            "ranking_rows": [],
+        }
+        opportunity = {
+            "status": "OFF",
+            "engine_version": "NOT_RUN",
+            "candidate_count": 0,
+        }
+        snapshot["eligibility"] = eligibility
+        snapshot["ranking"] = ranking
+        snapshot["opportunity"] = opportunity
         rows = _trading_rank_rows(rows)[:limit]
         snapshot["report_mode"] = "TRADING_ACTIVITY"
         snapshot["report_ranking_basis"] = [
@@ -186,6 +187,27 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "شناسه ابزار (برای ترتیب قطعی)",
         ]
     else:
+        # Economic ranking remains gated by opportunity-candidate evidence.
+        eligibility = classify_universe(rows)
+        snapshot["eligibility"] = eligibility
+        candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
+        candidate_rows = [
+            row for row in rows
+            if (row.get("identity") or {}).get("instrument_id") in candidate_ids
+        ]
+
+        ranking = build_evidence_ranking(candidate_rows)
+        ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES"
+        ranking["ranking_scope_row_count"] = len(candidate_rows)
+        snapshot["ranking"] = ranking
+
+        opportunity = build_opportunity_candidates(rows, ranking, eligibility)
+        snapshot["opportunity"] = opportunity
+
+        ranked_order = {
+            item.get("instrument_id"): item.get("rank")
+            for item in ranking.get("ranking_rows", [])
+        }
         candidate_rows.sort(
             key=lambda row: (
                 ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
@@ -349,8 +371,8 @@ def save_tsetmc_report(report, snapshot):
             "rows": snapshot.get("evidence", {}).get("orderbook_evidence", []),
         },
         "market_state": snapshot.get("market_state", {}),
-        "scoring_status": "TSETMC_EVIDENCE_RANKING",
-        "ranking_status": "TSETMC_EVIDENCE_RANKING",
+        "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN" if snapshot.get("report_mode") == "TRADING_ACTIVITY" else "TSETMC_EVIDENCE_RANKING",
+        "ranking_status": "OFF" if snapshot.get("report_mode") == "TRADING_ACTIVITY" else "TSETMC_EVIDENCE_RANKING",
         "ranking": snapshot.get("ranking", {}),
         "eligibility": snapshot.get("eligibility", {}),
         "opportunity": snapshot.get("opportunity", {}),
