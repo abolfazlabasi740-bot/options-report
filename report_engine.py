@@ -292,12 +292,20 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 f"#{idx} {canonical.get('نماد') or 'داده موجود نیست'} | ارزش {number(canonical.get('ارزش معاملات'))} | حجم {number(canonical.get('حجم معاملات'))} | تعداد معاملات {number(canonical.get('تعداد معاملات'))}"
             )
     else:
-        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:10]
+        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:len(rows)]
         if rankable:
+            lines.append("مبنای ترتیب: امتیاز Evidence-based شش بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری 25، Payoff 18، زمان 15، Greeks 12، Market 10.")
+            lines.append("⚠️ بلوک یا عامل فاقد شواهد TSETMC در همان ردیف از امتیاز آن ردیف حذف و وزن بلوک‌های دارای شواهد نرمال می‌شود.")
             for x in rankable:
-                lines.append(f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز {x['score']:.2f} | بلوک‌های معتبر: {','.join(x.get('supported_blocks', []))}")
+                blocks = " | ".join(
+                    f"{block}={x['block_scores'].get(block) if x['block_scores'].get(block) is not None else 'داده موجود نیست'}"
+                    for block in ("LIQUIDITY", "VALUATION", "PAYOFF", "TIME", "GREEKS", "MARKET")
+                )
+                lines.append(
+                    f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز کل {x['score']:.2f}/100 | {blocks}"
+                )
         else:
-            lines.append("داده کافی برای رتبه‌بندی وجود ندارد.")
+            lines.append("داده کافی برای رتبه‌بندی شش‌بلوک وجود ندارد.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
     for idx, item in enumerate(rows, 1):
