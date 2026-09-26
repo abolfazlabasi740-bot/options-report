@@ -92,7 +92,21 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         item = build_evidence_ranking([row])["ranking_rows"][0]
         self.assertEqual(item["features"]["time_value"], 0.0)
 
-    def test_valuation_uses_lower_premium_burden(self):\n        rows = [\n            self._row("CHEAP", 100, 100, 10, 10, 100, 1000, 20),\n            self._row("EXPENSIVE", 100, 100, 20, 20, 100, 2000, 20),\n        ]\n        result = build_evidence_ranking(\n            rows,\n            disabled_blocks={"LIQUIDITY", "PAYOFF", "TIME", "GREEKS", "MARKET"},\n        )\n        by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}\n        self.assertAlmostEqual(by_id["CHEAP"]["features"]["time_value_ratio"], 0.10)\n        self.assertAlmostEqual(by_id["EXPENSIVE"]["features"]["time_value_ratio"], 0.20)\n        self.assertGreater(by_id["CHEAP"]["score"], by_id["EXPENSIVE"]["score"])\n\n    def test_percentile_direction_is_deterministic(self):
+    def test_valuation_uses_lower_premium_burden(self):
+        rows = [
+            self._row("CHEAP", 100, 100, 10, 10, 100, 1000, 20),
+            self._row("EXPENSIVE", 100, 100, 20, 20, 100, 2000, 20),
+        ]
+        result = build_evidence_ranking(
+            rows,
+            disabled_blocks={"LIQUIDITY", "PAYOFF", "TIME", "GREEKS", "MARKET"},
+        )
+        by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
+        self.assertAlmostEqual(by_id["CHEAP"]["features"]["time_value_ratio"], 0.10)
+        self.assertAlmostEqual(by_id["EXPENSIVE"]["features"]["time_value_ratio"], 0.20)
+        self.assertGreater(by_id["CHEAP"]["score"], by_id["EXPENSIVE"]["score"])
+
+    def test_percentile_direction_is_deterministic(self):
         rows = [
             self._row("LOW", 100, 100, 10, 10, 10, 100, 20),
             self._row("HIGH", 100, 100, 20, 20, 100, 1000, 20),
