@@ -27,6 +27,50 @@ class AuditIntegrityTests(unittest.TestCase):
             },
         }
 
+
+    def test_tsetmc_disabled_best_limits_are_nonblocking(self):
+        audit = {
+            "audit_version": "AUDIT-INTEGRITY-1.3",
+            "source_of_truth": "TSETMC",
+            "data_mode": "LIVE_TSETMC_REFRESH",
+            "live_refresh_status": "SUCCESS",
+            "snapshot_sha256": "snap",
+            "row_count": 1,
+            "generated_at": "2026-09-26T12:30:00Z",
+            "live_movement_claim": "NOT_CLAIMED",
+            "scoring_status": "TSETMC_EVIDENCE_RANKING",
+            "ranking_status": "TSETMC_EVIDENCE_RANKING",
+            "market_watch": {
+                "endpoint": "Instrument/GetInstrumentOptionMarketWatch/1",
+                "snapshot_sha256": "mw",
+                "retrieved_at": "2026-09-26T12:30:00Z",
+            },
+            "best_limits_evidence": {
+                "contract": {
+                    "status": "RAW_ONLY_QUARANTINED",
+                    "source": "TSETMC",
+                    "identity_binding": "instrument_id",
+                    "market_watch_binding": "market_watch_snapshot_sha256",
+                    "source_timestamp_binding": "source_market_timestamp",
+                    "delta_seconds_limit": 2.0,
+                    "consumption_status": "NOT_CONSUMED_BY_SCORING_OR_RANKING",
+                },
+                "rows": [{
+                    "instrument_id": "I1",
+                    "status": "NOT_REQUESTED",
+                    "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+                    "source": "TSETMC",
+                    "endpoint": "BestLimits/{instrument_id}",
+                }],
+            },
+            "market_state": {},
+            "report_sha256": "report",
+        }
+        result = verify_audit(audit)
+        self.assertEqual(result["status"], "PASS")
+        self.assertNotIn("BEST_LIMITS_REQUEST_FAILED", result["failures"])
+        self.assertNotIn("BEST_LIMITS_DELTA_NOT_WITHIN_2_SECONDS", result["failures"])
+
     def test_valid_audit_passes(self):
         self.assertEqual(verify_audit(self._audit())["status"], "PASS")
 
