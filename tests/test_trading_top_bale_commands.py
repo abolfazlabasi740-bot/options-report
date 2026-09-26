@@ -52,7 +52,7 @@ class TradingTopReportTests(unittest.TestCase):
         builder.assert_called_once_with(
             top_count=5,
             underlying_symbol="وبملت",
-            flow=1,
+            flow=None,
             report_mode="RANKED",
         )
 
@@ -69,7 +69,7 @@ class TradingTopReportTests(unittest.TestCase):
         self.assertEqual(result, "REPORT")
         builder.assert_called_once_with(
             top_count=15,
-            flow=1,
+            flow=None,
             report_mode="RANKED",
         )
 
@@ -86,7 +86,7 @@ class TradingTopReportTests(unittest.TestCase):
         self.assertEqual(result, "REPORT")
         builder.assert_called_once_with(
             top_count=15,
-            flow=1,
+            flow=None,
             report_mode="TRADING_ACTIVITY",
         )
 
