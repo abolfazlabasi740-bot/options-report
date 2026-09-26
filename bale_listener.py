@@ -64,6 +64,12 @@ def generate_report(command):
         report, snapshot = build_tsetmc_report(
             top_count=15,
             flow=1,
+            report_mode="RANKED",
+        )
+    elif command in ("فعالیت", "معاملات", "تاپ"):
+        report, snapshot = build_tsetmc_report(
+            top_count=15,
+            flow=1,
             report_mode="TRADING_ACTIVITY",
         )
     else:
@@ -71,7 +77,7 @@ def generate_report(command):
             top_count=5,
             underlying_symbol=command,
             flow=1,
-            report_mode="TRADING_ACTIVITY",
+            report_mode="RANKED",
         )
 
     save_tsetmc_report(report, snapshot)
@@ -109,8 +115,9 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("گزارش  -> 15 قرارداد برتر معاملاتی کل بازار TSETMC")
-    print("نماد    -> 5 قرارداد برتر معاملاتی بر اساس نماد پایه TSETMC")
+    print("گزارش -> 15 فرصت برتر بر اساس رنکینگ 6 بلوکی TSETMC")
+    print("نماد  -> 5 فرصت برتر همان نماد پایه بر اساس رنکینگ 6 بلوکی")
+    print("فعالیت -> 15 قرارداد برتر از نظر فعالیت معاملاتی")
     print("====================================")
 
     offset = load_offset()
