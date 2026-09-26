@@ -58,9 +58,6 @@ class SignalEngineShadowTests(unittest.TestCase):
         self.assertEqual(a["signal_count"], 1)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
     def test_versioned_policies_still_do_not_authorize_directional_signal(self):
         result = evaluate_shadow_candidate(
             self._candidate(),
@@ -73,3 +70,7 @@ if __name__ == "__main__":
         self.assertEqual(result["buy_sell_signal"], "NOT_GENERATED")
         self.assertEqual(result["blockers"], [])
         self.assertIn("NO_PRODUCTION_ACTION_AUTHORIZED", result["reason_codes"])
+
+
+if __name__ == "__main__":
+    unittest.main()
