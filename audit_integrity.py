@@ -74,6 +74,12 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                     if not iid or iid in seen:
                         failures.append("BEST_LIMITS_IDENTITY_DUPLICATE_OR_MISSING")
                     seen.add(iid)
+                    if item.get("status") == "NOT_REQUESTED":
+                        if item.get("reason") != "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT":
+                            failures.append("BEST_LIMITS_NOT_REQUESTED_REASON_INVALID")
+                        if item.get("source") != "TSETMC" or item.get("endpoint") != "BestLimits/{instrument_id}":
+                            failures.append("BEST_LIMITS_NOT_REQUESTED_METADATA_INVALID")
+                        continue
                     for key in ("endpoint", "snapshot_sha256", "retrieved_at", "market_watch_snapshot_sha256"):
                         if not item.get(key):
                             failures.append("BEST_LIMITS_EVIDENCE_INCOMPLETE")
