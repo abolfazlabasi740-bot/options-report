@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
+from tsetmc_adapter import TSETMCAdapter
 from tsetmc_scoring_engine import build_evidence_ranking
 from tsetmc_eligibility import (
     OPPORTUNITY_CANDIDATE,
@@ -120,6 +121,82 @@ def _trading_rank_rows(rows):
     return [item[-1] for item in ranked]
 
 
+def _attach_canonical_quote_evidence(rows, *, adapter=None):
+    """Attach exact TSETMC ClosingPriceInfo evidence to displayed rows only.
+
+    MarketWatch remains the ranking/value source. ClosingPriceInfo is used only
+    to bind a displayed instrument to an explicit TSETMC observation timestamp
+    and to record quote consistency. Retrieval time is never used as market time.
+    """
+    adapter = adapter or TSETMCAdapter()
+    for row in rows:
+        identity = row.get("identity") or {}
+        instrument_id = identity.get("instrument_id")
+        evidence = {
+            "status": "INSUFFICIENT_DATA",
+            "source": "TSETMC",
+            "endpoint": None,
+            "instrument_id": instrument_id,
+            "source_market_timestamp": None,
+            "source_market_timestamp_status": "UNAVAILABLE",
+            "retrieved_at": None,
+            "last_price": None,
+            "close_price": None,
+            "market_watch_last_price": (row.get("canonical") or {}).get("آخرین قیمت"),
+            "market_watch_close_price": (row.get("canonical") or {}).get("قیمت پایانی"),
+            "quote_consistency": "NOT_EVALUATED",
+        }
+        if not instrument_id:
+            row["canonical_quote_evidence"] = evidence
+            row["source_market_timestamp"] = None
+            row["source_market_timestamp_status"] = "UNAVAILABLE"
+            continue
+        try:
+            quote = adapter.quote(str(instrument_id))
+            data = quote.get("data") or {}
+            evidence.update({
+                "status": "SUCCESS",
+                "endpoint": quote.get("endpoint"),
+                "retrieved_at": quote.get("retrieved_at"),
+                "last_price": data.get("pDrCotVal"),
+                "close_price": data.get("pClosing"),
+            })
+            try:
+                d_even = int(data.get("dEven"))
+                h_even = int(data.get("hEven"))
+                hh, mm, ss = h_even // 10000, (h_even // 100) % 100, h_even % 100
+                if not (0 <= hh <= 23 and 0 <= mm <= 59 and 0 <= ss <= 59):
+                    raise ValueError("invalid hEven")
+                timestamp = datetime.strptime(
+                    f"{d_even:08d} {hh:02d}:{mm:02d}:{ss:02d}",
+                    "%Y%m%d %H:%M:%S",
+                ).isoformat()
+                evidence["source_market_timestamp"] = timestamp
+                evidence["source_market_timestamp_status"] = "AVAILABLE"
+            except (TypeError, ValueError):
+                pass
+
+            mw_last = evidence["market_watch_last_price"]
+            mw_close = evidence["market_watch_close_price"]
+            cq_last = evidence["last_price"]
+            cq_close = evidence["close_price"]
+            if mw_last is not None and cq_last is not None and float(mw_last) == float(cq_last) and mw_close is not None and cq_close is not None and float(mw_close) == float(cq_close):
+                evidence["quote_consistency"] = "MATCH"
+            elif mw_last is not None or mw_close is not None:
+                evidence["quote_consistency"] = "DIFFERS"
+            else:
+                evidence["quote_consistency"] = "NOT_EVALUATED"
+        except Exception as exc:
+            evidence["status"] = "SOURCE_UNAVAILABLE"
+            evidence["error_type"] = type(exc).__name__
+            evidence["error"] = str(exc)
+
+        row["canonical_quote_evidence"] = evidence
+        row["source_market_timestamp"] = evidence["source_market_timestamp"]
+        row["source_market_timestamp_status"] = evidence["source_market_timestamp_status"]
+    return rows
+
+
 def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol=None, flow=None, report_mode="RANKED"):
     limit = TOP_COUNT if top_count is None else int(top_count)
     if isinstance(limit, bool) or limit <= 0:
@@ -216,9 +293,11 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         )
         rows = candidate_rows[:limit]
         snapshot["report_mode"] = "RANKED"
+    _attach_canonical_quote_evidence(rows)
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
+    # Recompute the observation state after canonical quote evidence is attached.
     market_state = _market_state(snapshot)
     snapshot["market_state"] = market_state
 
