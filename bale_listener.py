@@ -61,9 +61,18 @@ def send_message(chat_id, text):
 
 def generate_report(command):
     if command in ("گزارش", "همه", "کل"):
-        report, snapshot = build_tsetmc_report(top_count=15, flow=1)
+        report, snapshot = build_tsetmc_report(
+            top_count=15,
+            flow=1,
+            report_mode="TRADING_ACTIVITY",
+        )
     else:
-        report, snapshot = build_tsetmc_report(top_count=5, symbol_prefix=command, flow=1)
+        report, snapshot = build_tsetmc_report(
+            top_count=5,
+            underlying_symbol=command,
+            flow=1,
+            report_mode="TRADING_ACTIVITY",
+        )
 
     save_tsetmc_report(report, snapshot)
     return report
@@ -100,8 +109,8 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("گزارش  -> 15 قرارداد اول TSETMC برای اعتبارسنجی")
-    print("نماد    -> 5 قرارداد TSETMC همان نماد")
+    print("گزارش  -> 15 قرارداد برتر معاملاتی کل بازار TSETMC")
+    print("نماد    -> 5 قرارداد برتر معاملاتی بر اساس نماد پایه TSETMC")
     print("====================================")
 
     offset = load_offset()
