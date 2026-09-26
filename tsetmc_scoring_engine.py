@@ -28,7 +28,7 @@ BLOCK_WEIGHTS = {
 
 FACTOR_WEIGHTS = {
     "LIQUIDITY": {"trade_value": 7.0, "volume": 5.0},
-    "VALUATION": {"time_value": 5.0},
+    # Valuation is a relative premium-burden proxy, not fair value.\n    # It uses only TSETMC: time value as a fraction of the underlying price;\n    # lower is treated as better. No IV/theoretical value is implied.\n    "VALUATION": {"time_value_ratio": 5.0},
     "PAYOFF": {"breakeven_distance": 10.0, "leverage": 5.0, "moneyness": 3.0},
     "TIME": {"calendar_days": 2.0},
     "GREEKS": {},
@@ -85,11 +85,11 @@ def _derived(row):
         breakeven = K + P if typ == "CALL" else K - P
         if P > 0:
             leverage = S / P
-        moneyness = abs(S - K) / K if K > 0 else None
+        moneyness = abs(S - K) / K if K > 0 else None\n        time_value_ratio = tv / abs(S) if S not in (None, 0) else None
     return {
         "trade_value": _num(c.get("ارزش معاملات")),
         "volume": _num(c.get("حجم معاملات")),
-        "time_value": tv,
+        "time_value": tv,\n        "time_value_ratio": time_value_ratio,
         "breakeven_distance": (
             abs(breakeven - S) / abs(S) if breakeven is not None and S not in (None, 0) else None
         ),
@@ -105,7 +105,7 @@ def _derived(row):
         "contract_type": typ or None,
         "evidence": {
             "contract_type": "TSETMC:contract_type" if typ in {"CALL", "PUT"} else None,
-            "time_value": "derived:TSETMC(S,K,last,contract_type)",
+            "time_value": "derived:TSETMC(S,K,last,contract_type)",\n            "time_value_ratio": "derived:TSETMC(time_value,S)",
             "breakeven_distance": "derived:TSETMC(S,K,last,contract_type)",
             "leverage": "derived:TSETMC(S,last)",
             "moneyness": "derived:TSETMC(S,K,contract_type)",
@@ -129,7 +129,7 @@ def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None)
             if factor in disabled_factors:
                 continue
             vals = [d.get(factor) for d in derived]
-            higher = factor in {"trade_value", "volume", "time_value", "leverage"}
+            higher = factor in {"trade_value", "volume", "leverage"}
             # Lower distance/range/calendar-days is treated as better, matching the
             # established time/opportunity scoring direction.
             scores[block][factor] = _pct_rank(vals, higher=higher)
