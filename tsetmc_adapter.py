@@ -233,6 +233,7 @@ class TSETMCAdapter:
                         "previous_price": item.get("priceYesterday_UA"),
                     },
                     "raw_market_watch": item,
+                    "source_market_fields": {k: item.get(k) for k in ("dEven","hEven","date","time","serverTime") if item.get(k) not in (None, "")},
                 })
         return {
             **{k: result.get(k) for k in ("source", "endpoint", "snapshot_sha256", "retrieved_at")},
