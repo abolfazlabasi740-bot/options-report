@@ -8,6 +8,7 @@ class FakeAdapter:
                 "underlying_symbol":"BASE","symbol":"ضOTHER","strike":19000,"end_date":"20261021",
                 "remaining_days":28,"identity_source_field":"insCode_C",
                 "contract_size":1000,
+                "source_market_fields":{"dEven":20260924,"hEven":101530},
                 "market_watch_fields":{"last_price":1500,"close_price":1400,"volume":100,
                 "trade_value":150000,"open_interest":10,"bid_price":1400,"ask_price":1500,
                 "bid_quantity":1,"ask_quantity":2},
@@ -44,8 +45,8 @@ class TsetmcFirstSourceTests(unittest.TestCase):
         self.assertEqual(r["canonical"]["حجم معاملات"],100); self.assertEqual(r["canonical"]["ارزش معاملات"],150000)
         self.assertEqual(r["canonical"]["روزهای تقویمی"],28)
         self.assertEqual(r["expiry_evidence"]["source_field"],"endDate/remainedDay")
-        self.assertIsNone(r["source_market_timestamp"])
-        self.assertEqual(r["source_market_timestamp_status"],"UNAVAILABLE")
+        self.assertEqual(r["source_market_timestamp"], "2026-09-24T10:15:30")
+        self.assertEqual(r["source_market_timestamp_status"], "AVAILABLE")
         self.assertEqual(r["orderbook_level_count"], 0)
         self.assertEqual(r["orderbook_raw_levels"], [])
         self.assertEqual(r["canonical"]["روزهای تقویمی"],28); self.assertEqual(r["raw_remaining_days"],28)
