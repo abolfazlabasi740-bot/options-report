@@ -42,7 +42,7 @@ class TradingTopReportTests(unittest.TestCase):
         with patch.object(
             bale_listener,
             "build_tsetmc_report",
-            return_value=("REPORT", {"report_mode": "TRADING_ACTIVITY"}),
+            return_value=("REPORT", {"report_mode": "RANKED"}),
         ) as builder, patch.object(
             bale_listener,
             "save_tsetmc_report",
@@ -53,14 +53,14 @@ class TradingTopReportTests(unittest.TestCase):
             top_count=5,
             underlying_symbol="وبملت",
             flow=1,
-            report_mode="TRADING_ACTIVITY",
+            report_mode="RANKED",
         )
 
     def test_bale_generate_report_uses_six_block_ranking_for_report_command(self):
         with patch.object(
             bale_listener,
             "build_tsetmc_report",
-            return_value=("REPORT", {"report_mode": "TRADING_ACTIVITY"}),
+            return_value=("REPORT", {"report_mode": "RANKED"}),
         ) as builder, patch.object(
             bale_listener,
             "save_tsetmc_report",
@@ -72,11 +72,6 @@ class TradingTopReportTests(unittest.TestCase):
             flow=1,
             report_mode="RANKED",
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
-
 
     def test_bale_generate_report_uses_trading_activity_only_for_explicit_activity_command(self):
         with patch.object(
@@ -94,3 +89,7 @@ if __name__ == "__main__":
             flow=1,
             report_mode="TRADING_ACTIVITY",
         )
+
+
+if __name__ == "__main__":
+    unittest.main()
