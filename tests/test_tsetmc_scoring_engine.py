@@ -131,6 +131,28 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
         self.assertGreater(by_id["NEAR"]["score"], by_id["FAR"]["score"])
 
+    def test_leverage_tail_is_capped_from_current_evidence_distribution(self):
+        rows = []
+        for i in range(100):
+            premium = 100.0 / (i + 1)
+            rows.append(self._row(
+                f"L{i}", 100, 100, premium, premium,
+                100, 1000, 20,
+            ))
+        result = build_evidence_ranking(
+            rows,
+            disabled_blocks={"LIQUIDITY", "VALUATION", "TIME", "GREEKS", "MARKET"},
+        )
+        by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
+        top = sorted(
+            (x for x in result["ranking_rows"] if x["features"]["leverage"] is not None),
+            key=lambda x: x["features"]["leverage"],
+            reverse=True,
+        )
+        self.assertGreater(top[0]["features"]["leverage"], top[5]["features"]["leverage"])
+        self.assertEqual(top[0]["block_scores"]["PAYOFF"], top[1]["block_scores"]["PAYOFF"])
+        self.assertEqual(top[0]["block_scores"]["PAYOFF"], top[2]["block_scores"]["PAYOFF"])
+
     def test_unavailable_factor_removes_only_its_block_for_that_row(self):
         rows = [
             self._row("A", 100, 100, 10, 10, 100, 1000, 20),
