@@ -130,8 +130,8 @@ def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None)
                 continue
             vals = [d.get(factor) for d in derived]
             higher = factor in {"trade_value", "volume", "time_value", "leverage"}
-            # Lower distance/range is treated as better, matching the historical
-            # scoring direction for these factors.
+            # Lower distance/range/calendar-days is treated as better, matching the
+            # established time/opportunity scoring direction.
             scores[block][factor] = _pct_rank(vals, higher=higher)
 
     block_scores = []
