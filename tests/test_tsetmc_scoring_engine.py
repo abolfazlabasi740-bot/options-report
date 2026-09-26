@@ -102,6 +102,18 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         self.assertGreater(by_id["HIGH"]["features"]["trade_value"], by_id["LOW"]["features"]["trade_value"])
         self.assertGreater(by_id["HIGH"]["score"], by_id["LOW"]["score"])
 
+    def test_calendar_days_direction_matches_established_time_policy(self):
+        rows = [
+            self._row("NEAR", 100, 100, 10, 10, 100, 1000, 2),
+            self._row("FAR", 100, 100, 10, 10, 100, 1000, 20),
+        ]
+        result = build_evidence_ranking(
+            rows,
+            disabled_blocks={"LIQUIDITY", "VALUATION", "PAYOFF", "GREEKS", "MARKET"},
+        )
+        by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
+        self.assertGreater(by_id["NEAR"]["score"], by_id["FAR"]["score"])
+
     def test_unavailable_factor_removes_only_its_block_for_that_row(self):
         rows = [
             self._row("A", 100, 100, 10, 10, 100, 1000, 20),
