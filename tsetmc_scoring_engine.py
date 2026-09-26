@@ -213,6 +213,7 @@ def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None)
             "external_source": "FORBIDDEN",
             "contract_type": "TSETMC_EXPLICIT_ONLY",
             "iv": "NOT_COMPUTED",
+            "valuation": "RELATIVE_PREMIUM_BURDEN_PROXY_ONLY",
             "greeks": "NOT_COMPUTED",
             "open_interest": "NOT_USED",
             "risk_free_rate": "NOT_USED",
