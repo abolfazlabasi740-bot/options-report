@@ -88,6 +88,10 @@ def _derived(row):
         tv = max(P - intrinsic, 0.0)
         breakeven = K + P if typ == "CALL" else K - P
         if P > 0:
+            # Raw S/P leverage is extremely heavy-tailed. Use log1p(S/P) for
+            # ranking so near-zero premiums do not dominate PAYOFF merely by
+            # producing extreme raw leverage. The reported feature remains the
+            # economically interpretable raw leverage for auditability.
             leverage = S / P
         moneyness = abs(S - K) / K if K > 0 else None
         time_value_ratio = tv / abs(S) if S not in (None, 0) else None
@@ -136,7 +140,14 @@ def build_evidence_ranking(rows, *, disabled_factors=None, disabled_blocks=None)
             if factor in disabled_factors:
                 continue
             vals = [d.get(factor) for d in derived]
-            higher = factor in {"trade_value", "volume", "leverage"}
+            if factor == "leverage":
+                # Rank leverage on a compressed scale. This preserves the
+                # monotonic preference for efficiency while preventing a tiny
+                # premium from overwhelming the entire PAYOFF block.
+                vals = [math.log1p(v) if v is not None and v >= 0 else None for v in vals]
+                higher = True
+            else:
+                higher = factor in {"trade_value", "volume"}
             # Lower distance/range/calendar-days is treated as better, matching the
             # established time/opportunity scoring direction.
             scores[block][factor] = _pct_rank(vals, higher=higher)
