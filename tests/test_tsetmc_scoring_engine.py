@@ -142,6 +142,9 @@ class TsetmcEvidenceRankingTests(unittest.TestCase):
         result = build_evidence_ranking(
             rows,
             disabled_blocks={"LIQUIDITY", "VALUATION", "TIME", "GREEKS", "MARKET"},
+            # Isolate leverage so this regression tests the tail cap itself,
+            # rather than unrelated PAYOFF factors.
+            disabled_factors={"breakeven_distance", "moneyness"},
         )
         by_id = {x["instrument_id"]: x for x in result["ranking_rows"]}
         top = sorted(
