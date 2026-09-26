@@ -121,9 +121,14 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             "حجم بهترین عرضه":_as_number(_first(market_fields,"ask_quantity")),"قیمت بهترین عرضه":_as_number(_first(market_fields,"ask_price")),
         })
         source_market_timestamp = _source_market_timestamp(
+            # Check normalized explicit timestamp data, then raw MarketWatch,
+            # canonical market fields, and finally the full instrument record.
+            # All candidates are explicit TSETMC fields; no retrieval time or
+            # inferred session timestamp is used.
             instrument.get("source_market_fields") or {},
             instrument.get("raw_market_watch") or {},
             market_fields,
+            instrument,
         )
         source_market_timestamp_status = "AVAILABLE" if source_market_timestamp else "UNAVAILABLE"
         rows.append({
