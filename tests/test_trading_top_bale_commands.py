@@ -56,7 +56,7 @@ class TradingTopReportTests(unittest.TestCase):
             report_mode="TRADING_ACTIVITY",
         )
 
-    def test_bale_generate_report_uses_market_top_15_for_report_command(self):
+    def test_bale_generate_report_uses_six_block_ranking_for_report_command(self):
         with patch.object(
             bale_listener,
             "build_tsetmc_report",
@@ -70,9 +70,27 @@ class TradingTopReportTests(unittest.TestCase):
         builder.assert_called_once_with(
             top_count=15,
             flow=1,
-            report_mode="TRADING_ACTIVITY",
+            report_mode="RANKED",
         )
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_bale_generate_report_uses_trading_activity_only_for_explicit_activity_command(self):
+        with patch.object(
+            bale_listener,
+            "build_tsetmc_report",
+            return_value=("REPORT", {"report_mode": "TRADING_ACTIVITY"}),
+        ) as builder, patch.object(
+            bale_listener,
+            "save_tsetmc_report",
+        ):
+            result = bale_listener.generate_report("فعالیت")
+        self.assertEqual(result, "REPORT")
+        builder.assert_called_once_with(
+            top_count=15,
+            flow=1,
+            report_mode="TRADING_ACTIVITY",
+        )
