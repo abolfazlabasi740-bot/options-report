@@ -8,6 +8,12 @@ import bale_listener
 
 
 class BaleListenerStateTests(unittest.TestCase):
+    def test_callback_menu_mapping_is_deterministic(self):
+        self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_ranked_15"], "گزارش")
+        self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_activity_15"], "فعالیت")
+        self.assertEqual(bale_listener.CALLBACK_COMMANDS["system_status"], "وضعیت")
+
+
     def test_successful_update_commits_offset(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
