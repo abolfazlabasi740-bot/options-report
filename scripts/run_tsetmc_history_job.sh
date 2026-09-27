@@ -4,9 +4,17 @@ set -u
 ROOT="$HOME/OptimusAI_V41_LIVE"
 LOG_DIR="$ROOT/output/history"
 LOG_FILE="$LOG_DIR/collector_job.log"
+LOCK_DIR="$LOG_DIR/.collector_job.lock"
 
 mkdir -p "$LOG_DIR"
 cd "$ROOT" || exit 1
+
+# Atomic lock prevents overlapping scheduler invocations while one invocation
+# is aligning to the next Tehran half-hour slot.
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  exit 0
+fi
+trap 'rmdir "$LOCK_DIR" 2>/dev/null || true' EXIT
 
 # Tehran schedule: Saturday-Wednesday, 09:30 through 12:30,
 # exactly on half-hour slots. The job scheduler itself is periodic,
