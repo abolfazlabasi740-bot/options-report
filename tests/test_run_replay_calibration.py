@@ -46,7 +46,7 @@ class ReplayCalibrationRuntimeTests(unittest.TestCase):
             self.assertTrue(output.exists())
             saved = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(saved["observation_count"], 1)
-            self.assertEqual(saved["signal_generation"], saved.get("rules", {}).get("signal_generation")) if "signal_generation" in saved else None
+            self.assertEqual(saved["rules"]["signal_generation"], "FORBIDDEN")
             self.assertEqual(len(result["calibration_sha256"]), 64)
 
 
