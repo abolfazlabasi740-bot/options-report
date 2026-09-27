@@ -45,11 +45,33 @@ def run() -> dict[str, Any]:
     adapter = TSETMCAdapter()
 
     # Raw MarketWatch is diagnostic evidence only; it does not enter scoring.
-    raw = adapter._request("MarketData/GetMarketWatch")
-    candidates = _candidate_records(raw.payload)
+    # The current CDN API requires query parameters; the bare path returns 404.
+    # It exposes instrument-level insCode, so reconciliation uses exact
+    # instrument-id intersection with the validated option universe.
+    market_watch_path = (
+        "ClosingPrice/GetMarketWatch"
+        "?market=0&industrialGroup="
+        "&paperTypes%5B0%5D=1&paperTypes%5B1%5D=2&paperTypes%5B2%5D=3"
+        "&paperTypes%5B3%5D=4&paperTypes%5B4%5D=5&paperTypes%5B5%5D=6"
+        "&paperTypes%5B6%5D=7&paperTypes%5B7%5D=8&paperTypes%5B8%5D=9"
+        "&showTraded=false&withBestLimits=false&hEven=0&RefID=0"
+    )
+    raw = adapter._request(market_watch_path)
 
     flow_result = adapter.option_market_watch_universe()
     flow_evidence = flow_result.get("flow_evidence") or []
+    validated_ids = {
+        str(record.get("instrument_id"))
+        for record in (flow_result.get("records") or [])
+        if record.get("instrument_id") not in (None, "")
+    }
+    raw_data = raw.payload.get("marketwatch", []) if isinstance(raw.payload, dict) else []
+    raw_ids = {
+        str(item.get("insCode"))
+        for item in raw_data
+        if isinstance(item, dict) and item.get("insCode") not in (None, "")
+    }
+    raw_option_intersection = validated_ids & raw_ids
 
     result = {
         "status": "PASS",
@@ -60,7 +82,9 @@ def run() -> dict[str, Any]:
             "snapshot_sha256": raw.sha256,
             "retrieved_at": raw.retrieved_at,
             "top_level_keys": sorted(raw.payload.keys()) if isinstance(raw.payload, dict) else [],
-            "candidate_option_pair_records": len(candidates),
+            "record_count": len(raw_data) if isinstance(raw_data, list) else 0,
+            "instrument_id_count": len(raw_ids),
+            "validated_option_intersection_count": len(raw_option_intersection),
         },
         "validated_option_universe": {
             "flows": flow_result.get("flows"),
@@ -72,6 +96,7 @@ def run() -> dict[str, Any]:
         "interpretation": {
             "1582_is_not_a_configured_limit": True,
             "raw_market_watch_and_option_flow_counts_are_not_assumed_comparable": True,
+            "reconciliation_method": "exact_instrument_id_intersection",
             "production_universe_changed": False,
         },
     }
@@ -85,7 +110,9 @@ if __name__ == "__main__":
     result = run()
     print("STATUS =", result["status"])
     print("ENGINE_VERSION =", result["engine_version"])
-    print("RAW_MARKET_WATCH_CANDIDATE_OPTION_PAIR_RECORDS =", result["raw_market_watch"]["candidate_option_pair_records"])
+    print("RAW_MARKET_WATCH_RECORDS =", result["raw_market_watch"]["record_count"])
+    print("RAW_MARKET_WATCH_INSTRUMENT_IDS =", result["raw_market_watch"]["instrument_id_count"])
+    print("VALIDATED_OPTION_INTERSECTION =", result["raw_market_watch"]["validated_option_intersection_count"])
     print("VALIDATED_OPTION_UNIVERSE_RECORDS =", result["validated_option_universe"]["record_count"])
     for item in result["validated_option_universe"]["flow_evidence"]:
         print(
