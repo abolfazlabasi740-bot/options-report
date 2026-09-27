@@ -35,6 +35,18 @@ class BaleTransportTests(unittest.TestCase):
         with patch("bale_transport.requests.post", return_value=Response()):
             receipts = bale_transport.send_message("TOKEN", "CHAT", "test", return_receipts=True)
         self.assertEqual(receipts, [{"message_id": 123, "chat_id": "CHAT"}])
+    def test_send_message_supports_inline_keyboard(self):
+        class Response:
+            def raise_for_status(self):
+                return None
+            def json(self):
+                return {"ok": True}
+        markup = {"inline_keyboard": [[{"text": "گزارش", "callback_data": "report_ranked_15"}]]}
+        with patch("bale_transport.requests.post", return_value=Response()) as post:
+            bale_transport.send_message("TOKEN", "CHAT", "test", reply_markup=markup)
+        sent = post.call_args.kwargs["data"]["reply_markup"]
+        self.assertIn("report_ranked_15", sent)
+
     def test_send_message_reports_safe_network_error(self):
         with patch("bale_transport.requests.post", side_effect=bale_transport.requests.RequestException("network")):
             with self.assertRaisesRegex(RuntimeError, "NETWORK_ERROR=RequestException"):
