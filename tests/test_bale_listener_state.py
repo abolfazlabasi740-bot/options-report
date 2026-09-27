@@ -8,6 +8,11 @@ import bale_listener
 
 
 class BaleListenerStateTests(unittest.TestCase):
+    def test_reply_menu_mapping_is_deterministic(self):
+        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📊 گزارش ۱۵ فرصت برتر"], "گزارش")
+        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📈 گزارش ۱۵ قرارداد فعال"], "فعالیت")
+        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📋 وضعیت سیستم"], "وضعیت")
+
     def test_callback_menu_mapping_is_deterministic(self):
         self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_ranked_15"], "گزارش")
         self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_activity_15"], "فعالیت")
@@ -27,6 +32,7 @@ class BaleListenerStateTests(unittest.TestCase):
                 patch.object(bale_listener, "get_updates", side_effect=[[update], KeyboardInterrupt]),
                 patch.object(bale_listener, "generate_report", return_value="REPORT"),
                 patch.object(bale_listener, "send_message"),
+                patch.object(bale_listener, "send_report_menu"),
             ):
                 bale_listener.main()
             self.assertEqual(json.loads(state.read_text())["next_offset"], 42)
