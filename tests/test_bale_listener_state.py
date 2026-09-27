@@ -51,6 +51,54 @@ class BaleListenerStateTests(unittest.TestCase):
         self.assertIn("نماد: وبملت", buttons)
         self.assertEqual(captured["markup"]["one_time_keyboard"], False)
 
+    def test_symbol_menu_uses_requested_priority_then_alphabetical_remainder(self):
+        rows = [
+            {"identity": {"underlying_symbol": "زملارد"}},
+            {"identity": {"underlying_symbol": "وبصادر"}},
+            {"identity": {"underlying_symbol": "اهرم"}},
+            {"identity": {"underlying_symbol": "وبملت"}},
+            {"identity": {"underlying_symbol": "فملی"}},
+            {"identity": {"underlying_symbol": "شستا"}},
+            {"identity": {"underlying_symbol": "خودرو"}},
+            {"identity": {"underlying_symbol": "الف"}},
+            {"identity": {"underlying_symbol": "تاصیکو"}},
+            {"identity": {"underlying_symbol": "دزاگرس"}},
+            {"identity": {"underlying_symbol": "دارونو"}},
+            {"identity": {"underlying_symbol": "خبهمن"}},
+            {"identity": {"underlying_symbol": "فزر"}},
+            {"identity": {"underlying_symbol": "خساپا"}},
+            {"identity": {"underlying_symbol": "ذوب"}},
+            {"identity": {"underlying_symbol": "شپنا"}},
+            {"identity": {"underlying_symbol": "وتجارت"}},
+        ]
+
+        with patch.object(
+            bale_listener,
+            "build_tsetmc_snapshot",
+            return_value={"rows": rows},
+        ):
+            symbols = bale_listener._underlying_symbols()
+
+        expected_prefix = [
+            "اهرم",
+            "وبملت",
+            "وتجارت",
+            "وبصادر",
+            "فزر",
+            "تاصیکو",
+            "فملی",
+            "شستا",
+            "خودرو",
+            "خساپا",
+            "ذوب",
+            "شپنا",
+            "خبهمن",
+            "دارونو",
+            "دزاگرس",
+        ]
+        self.assertEqual(symbols[:len(expected_prefix)], expected_prefix)
+        self.assertEqual(symbols[len(expected_prefix):], ["الف", "زملارد"])
+
     def test_symbol_selector_command_is_deterministic(self):
         self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["🔎 انتخاب نماد"], "نمادها")
 
