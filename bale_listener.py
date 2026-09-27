@@ -21,8 +21,8 @@ REPLY_MENU_MARKUP = {
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
         [{"text": "📋 وضعیت سیستم"}],
     ],
-    "resize_keyboard": true,
-    "one_time_keyboard": false,
+    "resize_keyboard": True,
+    "one_time_keyboard": False,
 }
 
 REPLY_MENU_COMMANDS = {
