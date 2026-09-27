@@ -39,7 +39,8 @@ class BaleListenerStateTests(unittest.TestCase):
             bale_listener.send_symbol_menu("123", 0)
 
         self.assertEqual(captured["chat_id"], "123")
-        self.assertIn("خودرو", captured["text"])
+        self.assertIn("تعداد نمادهای دارای اختیار معامله", captured["text"])
+        self.assertIn("صفحه 1 از 1", captured["text"])
         buttons = [
             button["text"]
             for row in captured["markup"]["keyboard"]
