@@ -44,6 +44,7 @@ class BaleListenerStateTests(unittest.TestCase):
                 patch.object(bale_listener, "get_updates", side_effect=[[update], KeyboardInterrupt]),
                 patch.object(bale_listener, "generate_report", side_effect=RuntimeError("failure")),
                 patch.object(bale_listener, "send_message", side_effect=RuntimeError("delivery failure")),
+                patch.object(bale_listener, "send_report_menu"),
             ):
                 bale_listener.main()
             self.assertFalse(state.exists())
