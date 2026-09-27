@@ -35,6 +35,19 @@ class BaleTransportTests(unittest.TestCase):
         with patch("bale_transport.requests.post", return_value=Response()):
             receipts = bale_transport.send_message("TOKEN", "CHAT", "test", return_receipts=True)
         self.assertEqual(receipts, [{"message_id": 123, "chat_id": "CHAT"}])
+    def test_send_message_supports_reply_keyboard(self):
+        class Response:
+            def raise_for_status(self):
+                return None
+            def json(self):
+                return {"ok": True}
+        markup = {"keyboard": [[{"text": "📊 گزارش ۱۵ فرصت برتر"}]], "resize_keyboard": True, "one_time_keyboard": False}
+        with patch("bale_transport.requests.post", return_value=Response()) as post:
+            bale_transport.send_message("TOKEN", "CHAT", "test", reply_markup=markup)
+        sent = post.call_args.kwargs["data"]["reply_markup"]
+        self.assertIn("📊 گزارش ۱۵ فرصت برتر", sent)
+        self.assertIn("resize_keyboard", sent)
+
     def test_send_message_supports_inline_keyboard(self):
         class Response:
             def raise_for_status(self):
