@@ -55,7 +55,12 @@ class TSETMCAdapter:
         self.opener = opener or urllib.request.urlopen
 
     def _request(self, path: str, *, timeout: float | None = None, retries: int | None = None) -> TSETMCResponse:
-        url = f"{self.base_url}/{path.lstrip('/')}"
+        # TSETMC CDN may serve a stale cached MarketWatch payload when the
+        # request URL is identical across observations. Use a per-request
+        # cache-buster so historical collection receives a fresh observation.
+        clean_path = path.lstrip('/')
+        separator = '&' if '?' in clean_path else '?'
+        url = f"{self.base_url}/{clean_path}{separator}__optimusai_ts={time.time_ns()}"
         request = urllib.request.Request(
             url,
             headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
