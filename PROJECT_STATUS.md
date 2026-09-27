@@ -80,14 +80,14 @@ BUY and SELL are not mirror labels. Short-option SELL_CALL/SELL_PUT requires an 
 
 ## Signal Engine V1 cutover sequence
 
-1. Implement deterministic Shadow Signal Engine.
-2. Define/version Strategy entry policy.
-3. Define/version Risk policy.
-4. Define expiry, freshness and missing-evidence policies.
-5. Add deterministic regression and replay/golden cases.
-6. Run historical sensitivity/ablation and economic validation.
-7. Close Signal Gate / Gate 7.
-8. Only then enable production BUY/SELL delivery through Bale.
+1. Implement deterministic Shadow Signal Engine. [DONE]
+2. Define/version Strategy entry policy. [DONE — V1 SHADOW_ONLY]
+3. Define/version Risk policy. [DONE — V1 SHADOW_ONLY]
+4. Build historical TSETMC archive and observed-outcome layer. [DONE]
+5. Build deterministic replay/calibration engine. [DONE]
+6. Collect distinct intraday observations and run replay/sensitivity/economic validation. [ACTIVE]
+7. Close Signal Gate / Gate 7 only after evidence supports a released policy. [PENDING]
+8. Enable production BUY/SELL delivery through Bale only after Gate 7. [PENDING]
 
 Until Gate 7 is closed, Shadow signal results must not alter the production report or Bale release.
 
@@ -112,9 +112,10 @@ Audit failure remains release-blocking.
 - Gate 5: technical Shadow/Replay/Audit verification present; economic validation remains open
 - Gate 6: CLOSED — deployed Termux + real Bale evidence
 - Gate 7: NOT CLOSED
-- Signal Engine: SPECIFIED / PENDING IMPLEMENTATION
-- Strategy policy: PENDING
-- Risk policy: PENDING
-- Economic validation: OPEN
+- Signal Engine: SHADOW IMPLEMENTED / PRODUCTION OFF
+- Strategy policy: V1 SHADOW_ONLY
+- Risk policy: V1 SHADOW_ONLY
+- Historical Replay/Calibration: IMPLEMENTED / EVIDENCE COLLECTION ACTIVE
+- Economic validation: OPEN — requires multiple distinct intraday TSETMC observations
 
 No guessed economic parameter is authorized.
