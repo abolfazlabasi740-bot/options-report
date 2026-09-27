@@ -119,3 +119,12 @@ Audit failure remains release-blocking.
 - Economic validation: OPEN — requires multiple distinct intraday TSETMC observations
 
 No guessed economic parameter is authorized.
+
+## Latest economic validation implementation
+
+- `economic_validation_engine.py` added as `ECONOMIC-VALIDATION-1.0`.
+- Uses chronological walk-forward validation only; thresholds are derived from prior-entry observations and never from future observations.
+- Uses exact instrument identity and observed forward option return only.
+- Transaction costs and slippage remain `NOT_ASSUMED`.
+- Signal generation remains `FORBIDDEN`.
+- Production BUY/SELL remains OFF pending real distinct intraday observations and Gate 7 evidence.
