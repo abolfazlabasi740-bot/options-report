@@ -120,6 +120,19 @@ Audit failure remains release-blocking.
 
 No guessed economic parameter is authorized.
 
+## Baseline observation
+
+برای ادامه جمع‌آوری و Walk-Forward Validation، آخرین Snapshot معتبر TSETMC به‌عنوان Observation-0 / Baseline ثبت شده است.
+
+- Baseline Snapshot SHA: 8c3957451456fe3fdad36e714778292f22447bbad227b31b2996f4c0dc05d840
+- Observation retrieved at: 2026-09-27T13:59:40Z
+- TSETMC rows: 1582
+- MarketWatch snapshot SHA: 718187b3ae7f7d0553768b7fcf360430fedc0016633c382ca1369a2b3be655f3
+- Baseline status: VALID
+- Market-hours status: OFFMARKET
+
+این Snapshot مبنای مقایسه مشاهدات بعدی است و به‌عنوان حرکت لحظه‌ای بازار تفسیر نمی‌شود. مشاهدات بعدی باید با همان منبع TSETMC و شناسه دقیق Instrument نسبت به این Baseline و سپس به‌صورت زنجیره‌ای نسبت به Observation قبلی مقایسه شوند.
+
 ## Latest economic validation implementation
 
 - `economic_validation_engine.py` added as `ECONOMIC-VALIDATION-1.0`.
