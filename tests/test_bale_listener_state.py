@@ -18,6 +18,41 @@ class BaleListenerStateTests(unittest.TestCase):
         self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_activity_15"], "فعالیت")
         self.assertEqual(bale_listener.CALLBACK_COMMANDS["system_status"], "وضعیت")
 
+    def test_symbol_menu_uses_tsetmc_underlyings_and_paginates(self):
+        rows = [
+            {"identity": {"underlying_symbol": "وبملت"}},
+            {"identity": {"underlying_symbol": "خودرو"}},
+            {"identity": {"underlying_symbol": "وبملت"}},
+            {"identity": {"underlying_symbol": "شستا"}},
+        ]
+        captured = {}
+
+        def fake_send(chat_id, text, reply_markup=None):
+            captured["chat_id"] = chat_id
+            captured["text"] = text
+            captured["markup"] = reply_markup
+
+        with (
+            patch.object(bale_listener, "build_tsetmc_snapshot", return_value={"rows": rows}),
+            patch.object(bale_listener, "send_message", side_effect=fake_send),
+        ):
+            bale_listener.send_symbol_menu("123", 0)
+
+        self.assertEqual(captured["chat_id"], "123")
+        self.assertIn("خودرو", captured["text"])
+        buttons = [
+            button["text"]
+            for row in captured["markup"]["keyboard"]
+            for button in row
+        ]
+        self.assertIn("نماد: خودرو", buttons)
+        self.assertIn("نماد: شستا", buttons)
+        self.assertIn("نماد: وبملت", buttons)
+        self.assertEqual(captured["markup"]["one_time_keyboard"], False)
+
+    def test_symbol_selector_command_is_deterministic(self):
+        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["🔎 انتخاب نماد"], "نمادها")
+
 
     def test_successful_update_commits_offset(self):
         with tempfile.TemporaryDirectory() as d:
