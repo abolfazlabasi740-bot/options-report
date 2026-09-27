@@ -37,6 +37,26 @@ SYMBOLS_PER_PAGE = 12
 SYMBOL_PAGE_PREFIX = "نمادها صفحه "
 SYMBOL_SELECT_PREFIX = "نماد: "
 
+# ثابت‌های پرتکرار/موردنظر کاربر در ابتدای فهرست نمادهای پایه.
+# فقط نمادهایی که واقعاً در Universe فعلی TSETMC وجود داشته باشند نمایش داده می‌شوند.
+PREFERRED_UNDERLYINGS = (
+    "اهرم",
+    "وبملت",
+    "وتجارت",
+    "وبصادر",
+    "فزر",
+    "تاصیکو",
+    "فملی",
+    "شستا",
+    "خودرو",
+    "خساپا",
+    "ذوب",
+    "شپنا",
+    "خبهمن",
+    "دارونو",
+    "دزاگرس",
+)
+
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
     "report_activity_15": "فعالیت",
@@ -212,7 +232,13 @@ def _underlying_symbols():
         str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
         for row in snapshot.get("rows", [])
     }
-    return sorted((symbol for symbol in symbols if symbol), key=lambda value: value)
+    available = {symbol for symbol in symbols if symbol}
+    preferred = [symbol for symbol in PREFERRED_UNDERLYINGS if symbol in available]
+    remaining = sorted(
+        available.difference(preferred),
+        key=lambda value: value,
+    )
+    return preferred + remaining
 
 
 def send_symbol_menu(chat_id, page=0):
