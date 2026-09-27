@@ -19,6 +19,7 @@ REPLY_MENU_MARKUP = {
     "keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
+        [{"text": "🔎 انتخاب نماد"}],
         [{"text": "📋 وضعیت سیستم"}],
     ],
     "resize_keyboard": True,
@@ -28,8 +29,13 @@ REPLY_MENU_MARKUP = {
 REPLY_MENU_COMMANDS = {
     "📊 گزارش ۱۵ فرصت برتر": "گزارش",
     "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
+    "🔎 انتخاب نماد": "نمادها",
     "📋 وضعیت سیستم": "وضعیت",
 }
+
+SYMBOLS_PER_PAGE = 12
+SYMBOL_PAGE_PREFIX = "نمادها صفحه "
+SYMBOL_SELECT_PREFIX = "نماد: "
 
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
@@ -38,6 +44,7 @@ CALLBACK_COMMANDS = {
 }
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
+from tsetmc_first_source import build_tsetmc_snapshot
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -198,6 +205,36 @@ def answer_callback_query(callback_query_id):
         raise RuntimeError("Bale answerCallbackQuery rejected")
 
 
+def _underlying_symbols():
+    """Build selectable underlying symbols from the current TSETMC option universe."""
+    snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
+    symbols = {
+        str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
+        for row in snapshot.get("rows", [])
+    }
+    return sorted((symbol for symbol in symbols if symbol), key=lambda value: value)
+
+
+def send_symbol_menu(chat_id, page=0):
+    symbols = _underlying_symbols()
+    total_pages = max(1, (len(symbols) + SYMBOLS_PER_PAGE - 1) // SYMBOLS_PER_PAGE)
+    page = max(0, min(int(page), total_pages - 1))
+    page_symbols = symbols[page * SYMBOLS_PER_PAGE:(page + 1) * SYMBOLS_PER_PAGE]
+    keyboard = []
+    for index in range(0, len(page_symbols), 2):
+        keyboard.append([{"text": f"{SYMBOL_SELECT_PREFIX}{symbol}"} for symbol in page_symbols[index:index + 2]])
+    navigation = []
+    if page > 0:
+        navigation.append({"text": f"{SYMBOL_PAGE_PREFIX}{page}"})
+    if page < total_pages - 1:
+        navigation.append({"text": f"{SYMBOL_PAGE_PREFIX}{page + 2}"})
+    if navigation:
+        keyboard.append(navigation)
+    keyboard.append([{"text": "🏠 منوی اصلی"}])
+    markup = {"keyboard": keyboard, "resize_keyboard": True, "one_time_keyboard": False}
+    send_message(chat_id, f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر آن نماد بر اساس Ranking شش‌بلوک نمایش داده می‌شود:", reply_markup=markup)
+
+
 def send_report_menu(chat_id):
     send_message(
         chat_id,
@@ -301,7 +338,19 @@ def main():
                 )
 
                 try:
-                    if text in ("منو", "menu", "/start", "/menu"):
+                    if text in ("منو", "menu", "/start", "/menu", "🏠 منوی اصلی"):
+                        send_report_menu(chat_id)
+                    elif text == "نمادها":
+                        send_symbol_menu(chat_id, 0)
+                    elif text.startswith(SYMBOL_PAGE_PREFIX):
+                        page_number = int(text[len(SYMBOL_PAGE_PREFIX):].strip()) - 1
+                        send_symbol_menu(chat_id, page_number)
+                    elif text.startswith(SYMBOL_SELECT_PREFIX):
+                        symbol = text[len(SYMBOL_SELECT_PREFIX):].strip()
+                        if not symbol:
+                            raise ValueError("نماد پایه خالی است")
+                        report = generate_report(symbol)
+                        send_message(chat_id, report)
                         send_report_menu(chat_id)
                     elif text in ("وضعیت", "استاتوس", "status"):
                         send_message(chat_id, system_status())
