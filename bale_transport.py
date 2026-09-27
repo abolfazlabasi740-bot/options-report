@@ -1,4 +1,5 @@
 """Shared Bale transport; importing it never sends a message."""
+import json
 import requests
 
 
@@ -24,7 +25,7 @@ def split_message(text, limit=3500):
     return chunks
 
 
-def send_message(token, chat_id, text, return_receipts=False):
+def send_message(token, chat_id, text, return_receipts=False, reply_markup=None):
     if not token or not str(chat_id).strip():
         raise ValueError("BALE_BOT_TOKEN و BALE_CHAT_ID باید تنظیم شوند")
     chunks = split_message(text)
@@ -33,7 +34,7 @@ def send_message(token, chat_id, text, return_receipts=False):
         try:
             response = requests.post(
                 f"https://tapi.bale.ai/bot{token}/sendMessage",
-                data={"chat_id": chat_id, "text": chunk}, timeout=30,
+                data={"chat_id": chat_id, "text": chunk, **({"reply_markup": json.dumps(reply_markup, ensure_ascii=False)} if reply_markup else {})}, timeout=30,
             )
             response.raise_for_status()
             payload = response.json()
