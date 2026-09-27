@@ -7,6 +7,20 @@ import requests
 import json
 from bale_transport import send_message as transport_send
 
+MENU_MARKUP = {
+    "inline_keyboard": [
+        [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
+        [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
+        [{"text": "📋 وضعیت سیستم", "callback_data": "system_status"}],
+    ]
+}
+
+CALLBACK_COMMANDS = {
+    "report_ranked_15": "گزارش",
+    "report_activity_15": "فعالیت",
+    "system_status": "وضعیت",
+}
+
 from report_engine import build_tsetmc_report, save_tsetmc_report
 
 ROOT = Path(__file__).resolve().parent
@@ -54,8 +68,8 @@ def normalize_command(text):
     )
 
 
-def send_message(chat_id, text):
-    count = transport_send(TOKEN, chat_id, text)
+def send_message(chat_id, text, reply_markup=None):
+    count = transport_send(TOKEN, chat_id, text, reply_markup=reply_markup)
     print(f"SENT {count}/{count}")
 
 
@@ -156,6 +170,26 @@ def get_updates(offset=None):
     return data.get("result", [])
 
 
+def answer_callback_query(callback_query_id):
+    r = requests.post(
+        f"{API}/answerCallbackQuery",
+        data={"callback_query_id": callback_query_id},
+        timeout=15,
+    )
+    r.raise_for_status()
+    data = r.json()
+    if not data.get("ok"):
+        raise RuntimeError("Bale answerCallbackQuery rejected")
+
+
+def send_report_menu(chat_id):
+    send_message(
+        chat_id,
+        "📋 منوی گزارش‌های OptimusAI V4.1\n\nگزارش موردنظر را انتخاب کنید:",
+        reply_markup=MENU_MARKUP,
+    )
+
+
 def main():
     if not TOKEN or not CHAT_ID:
         raise RuntimeError("BALE_BOT_TOKEN و BALE_CHAT_ID باید از قبل تنظیم شوند")
@@ -163,10 +197,13 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
+    print("منو -> دکمه‌های شیشه‌ای گزارش‌های از پیش تعریف‌شده")
     print("گزارش -> 15 فرصت برتر بر اساس رنکینگ 6 بلوکی TSETMC")
     print("نماد  -> 5 فرصت برتر همان نماد پایه بر اساس رنکینگ 6 بلوکی")
     print("فعالیت -> 15 قرارداد برتر از نظر فعالیت معاملاتی")
     print("====================================")
+
+    send_report_menu(CHAT_ID)
 
     offset = load_offset()
 
@@ -176,6 +213,47 @@ def main():
 
             for update in updates:
                 next_offset = int(update["update_id"]) + 1
+
+                callback = update.get("callback_query") or {}
+                if callback:
+                    callback_message = callback.get("message") or {}
+                    callback_chat = callback_message.get("chat") or {}
+                    chat_id = callback_chat.get("id")
+
+                    if not chat_id:
+                        save_offset(next_offset)
+                        offset = next_offset
+                        continue
+
+                    if CHAT_ID and str(chat_id) != str(CHAT_ID):
+                        save_offset(next_offset)
+                        offset = next_offset
+                        continue
+
+                    try:
+                        answer_callback_query(callback.get("id"))
+                        command = CALLBACK_COMMANDS.get(
+                            str(callback.get("data") or "").strip()
+                        )
+                        if not command:
+                            raise RuntimeError("UNKNOWN_CALLBACK")
+
+                        if command == "وضعیت":
+                            send_message(chat_id, system_status())
+                        else:
+                            send_message(chat_id, generate_report(command))
+
+                        send_report_menu(chat_id)
+                        print(
+                            f"REPORT_OK callback={callback.get('data')}"
+                        )
+                        save_offset(next_offset)
+                        offset = next_offset
+                    except Exception as e:
+                        print(
+                            f"REPORT_ERROR type={type(e).__name__}"
+                        )
+                    continue
 
                 message = (
                     update.get("message")
@@ -205,15 +283,15 @@ def main():
                 )
 
                 try:
-                    if text in ("وضعیت", "استاتوس", "status"):
+                    if text in ("منو", "menu", "/start", "/menu"):
+                        send_report_menu(chat_id)
+                    elif text in ("وضعیت", "استاتوس", "status"):
                         send_message(chat_id, system_status())
+                        send_report_menu(chat_id)
                     else:
                         report = generate_report(text)
-
-                        send_message(
-                            chat_id,
-                            report,
-                        )
+                        send_message(chat_id, report)
+                        send_report_menu(chat_id)
 
                     print(
                         f"REPORT_OK command={text}"
