@@ -15,6 +15,22 @@ MENU_MARKUP = {
     ]
 }
 
+REPLY_MENU_MARKUP = {
+    "keyboard": [
+        [{"text": "📊 گزارش ۱۵ فرصت برتر"}],
+        [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
+        [{"text": "📋 وضعیت سیستم"}],
+    ],
+    "resize_keyboard": true,
+    "one_time_keyboard": false,
+}
+
+REPLY_MENU_COMMANDS = {
+    "📊 گزارش ۱۵ فرصت برتر": "گزارش",
+    "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
+    "📋 وضعیت سیستم": "وضعیت",
+}
+
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
     "report_activity_15": "فعالیت",
@@ -185,8 +201,8 @@ def answer_callback_query(callback_query_id):
 def send_report_menu(chat_id):
     send_message(
         chat_id,
-        "📋 منوی گزارش‌های OptimusAI V4.1\n\nگزارش موردنظر را انتخاب کنید:",
-        reply_markup=MENU_MARKUP,
+        "📋 منوی گزارش‌های OptimusAI V4.1\n\nاز منوی پایین، گزارش موردنظر را انتخاب کنید:",
+        reply_markup=REPLY_MENU_MARKUP,
     )
 
 
@@ -277,6 +293,8 @@ def main():
                     save_offset(next_offset)
                     offset = next_offset
                     continue
+
+                text = REPLY_MENU_COMMANDS.get(text, text)
 
                 print(
                     f"COMMAND = {text} | CHAT_ID = {chat_id}"
