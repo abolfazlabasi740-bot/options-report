@@ -73,6 +73,11 @@ def _pct(a: float | None, b: float | None) -> float | None:
     return (b - a) / abs(a)
 
 
+def _observation_date(s: Any):
+    t = _time(s)
+    return t.date() if t else None
+
+
 def _direction(x: float | None) -> str:
     if x is None:
         return "داده موجود نیست"
@@ -97,12 +102,24 @@ def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
         }
 
     prev, cur = snaps[-2], snaps[-1]
+    prev_date = _observation_date(prev.get("observation_retrieved_at"))
+    first_seen: dict[str, Any] = {}
+    for snap in snaps:
+        snap_date = _observation_date(snap.get("observation_retrieved_at"))
+        for r in map(_row, snap.get("rows", [])):
+            iid = r["instrument_id"]
+            if iid and iid not in first_seen:
+                first_seen[iid] = snap_date
     previous = {x["instrument_id"]: x for x in map(_row, prev.get("rows", [])) if x["instrument_id"]}
     current = {x["instrument_id"]: x for x in map(_row, cur.get("rows", [])) if x["instrument_id"]}
 
     events = []
     for iid in sorted(set(previous) & set(current)):
         a, b = previous[iid], current[iid]
+        # Ignore the first observed trading day of a contract. New listings
+        # can show artificial percentage spikes caused by the initial price.
+        if first_seen.get(iid) == prev_date:
+            continue
         dp, dv, dval, doi, du = (
             _pct(a["last"], b["last"]),
             _pct(a["volume"], b["volume"]),
@@ -176,6 +193,7 @@ def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
             "no_prediction": True,
             "no_signal_generation": True,
             "missing_values": "NOT_INFERRED",
+            "new_contract_first_observation_day": "EXCLUDED_FROM_BEHAVIOR",
         },
     }
 
