@@ -90,7 +90,46 @@ def _contract_date(v: Any):
             return datetime.strptime(text, fmt).date()
         except ValueError:
             pass
+    # TSETMC beginDate/endDate are commonly Jalali dates (e.g. 14050706).
+    # Convert explicit Jalali dates to Gregorian for comparison with the
+    # snapshot observation date. Never infer a date from symbol or expiry.
+    digits = text.replace("/", "").replace("-", "")
+    if len(digits) == 8 and digits.isdigit():
+        jy, jm, jd = int(digits[:4]), int(digits[4:6]), int(digits[6:8])
+        if 1200 <= jy <= 1600 and 1 <= jm <= 12 and 1 <= jd <= 31:
+            try:
+                gy, gm, gd = _jalali_to_gregorian(jy, jm, jd)
+                return datetime(gy, gm, gd).date()
+            except (TypeError, ValueError):
+                pass
     return None
+
+
+def _jalali_to_gregorian(jy: int, jm: int, jd: int) -> tuple[int, int, int]:
+    # Arithmetic conversion for the explicit TSETMC Jalali calendar date.
+    jy += 1599
+    days = (-355668 + 365 * jy + (jy // 33) * 8 + ((jy % 33 + 3) // 4)
+            + jd + (31 if jm < 7 else 30) * (jm - 1))
+    gy = 400 * (days // 146097)
+    days %= 146097
+    if days > 36524:
+        gy += 100 * ((days - 1) // 36524)
+        days = (days - 1) % 36524
+        if days >= 365:
+            days += 1
+    gy += 4 * (days // 1461)
+    days %= 1461
+    if days > 365:
+        gy += (days - 1) // 365
+        days = (days - 1) % 365
+    gd = days + 1
+    leap = (gy % 4 == 0 and (gy % 100 != 0 or gy % 400 == 0))
+    month_lengths = [31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    gm = 1
+    while gd > month_lengths[gm - 1]:
+        gd -= month_lengths[gm - 1]
+        gm += 1
+    return gy, gm, gd
 
 
 def _direction(x: float | None) -> str:
