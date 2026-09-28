@@ -44,3 +44,17 @@ def test_behavior_delta(tmp_path):
     assert "PRICE_UP_OI_UP" in result["events"][0]["flags"]
     assert "OPTION_UP_UNDERLYING_UP" in result["events"][0]["flags"]
     assert "ضTEST" in format_behavior_report(result)
+
+
+def test_jalali_begin_date_excludes_creation_day(tmp_path):
+    root = tmp_path
+    d = root / "output" / "history" / "tsetmc"
+    d.mkdir(parents=True)
+    _snapshot(d / "a.json", "a", "2026-09-28T09:30:00+00:00", 100, 100, 1000, 100, 1000)
+    payload = json.loads((d / "a.json").read_text(encoding="utf-8"))
+    payload["rows"][0]["identity"]["begin_date"] = "14050706"
+    (d / "a.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    _snapshot(d / "b.json", "b", "2026-09-28T10:00:00+00:00", 410, 6100, 16000, 95, 1021)
+    result = build_behavior_report(root)
+    assert result["transition_count"] == 1
+    assert result["events"] == []
