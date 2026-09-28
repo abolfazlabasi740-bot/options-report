@@ -6,7 +6,7 @@ from typing import Any
 
 from behavior_engine import _pct, _row, _snapshots, analyze_snapshot_pair
 
-ENGINE_VERSION = "TSETMC-HISTORICAL-PATTERN-FORWARD-1.0"
+ENGINE_VERSION = "TSETMC-HISTORICAL-PATTERN-FORWARD-1.1"
 SOURCE_OF_TRUTH = "TSETMC"
 
 
@@ -34,6 +34,30 @@ def _outcome(previous: dict[str, Any], current: dict[str, Any]) -> dict[str, Any
     }
 
 
+def _meaningfully_changed(previous: dict[str, Any], current: dict[str, Any]) -> bool:
+    fields = ("last", "close", "volume", "value", "oi", "underlying_price")
+    return any(previous.get(field) != current.get(field) for field in fields)
+
+
+def _next_meaningful_outcome(
+    snapshots: list[dict[str, Any]],
+    start_index: int,
+    instrument_id: str,
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    base_rows = _rows_by_id(snapshots[start_index])
+    previous = base_rows.get(instrument_id)
+    if previous is None:
+        return None
+
+    for j in range(start_index + 1, len(snapshots)):
+        current = _rows_by_id(snapshots[j]).get(instrument_id)
+        if current is None:
+            continue
+        if _meaningfully_changed(previous, current):
+            return _outcome(previous, current), snapshots[j]
+    return None
+
+
 def build_historical_pattern_forward_report(
     root: Path,
     limit_patterns: int | None = None,
@@ -53,28 +77,31 @@ def build_historical_pattern_forward_report(
     observed = Counter()
     occurrences: dict[str, list[dict[str, Any]]] = defaultdict(list)
 
-    # The final transition has no following snapshot, so it is observed
-    # behavior but cannot be used for forward-outcome validation.
+    # The final transition is observed but has no later snapshot for forward validation.
+    # Forward outcome skips unchanged/repeated snapshots and uses the first meaningful
+    # change for the same instrument after the pattern observation.
     for i in range(1, len(snapshots) - 1):
         pair = analyze_snapshot_pair(snapshots[i - 1], snapshots[i])
         current_rows = _rows_by_id(snapshots[i])
-        next_rows = _rows_by_id(snapshots[i + 1])
 
         for event in pair["events"]:
             sig = _signature(event)
             observed[sig] += 1
             iid = event["instrument_id"]
-            if iid not in current_rows or iid not in next_rows:
+            if iid not in current_rows:
                 continue
 
-            out = _outcome(current_rows[iid], next_rows[iid])
+            forward = _next_meaningful_outcome(snapshots, i, iid)
+            if forward is None:
+                continue
+            out, forward_snapshot = forward
             occurrences[sig].append({
                 "instrument_id": iid,
                 "symbol": event.get("symbol"),
                 "underlying_symbol": event.get("underlying_symbol"),
                 "pattern_observation_from": event.get("observation_from"),
                 "pattern_observation_to": event.get("observation_to"),
-                "forward_observation_to": snapshots[i + 1].get(
+                "forward_observation_to": forward_snapshot.get(
                     "observation_retrieved_at"
                 ),
                 **out,
@@ -130,7 +157,7 @@ def build_historical_pattern_forward_report(
         "rules": {
             "identity": "EXACT_INSTRUMENT_ID_ONLY",
             "pattern_signature": "EXACT_FLAGS_JOINED",
-            "forward_horizon": "NEXT_SNAPSHOT_ONLY",
+            "forward_horizon": "FIRST_MEANINGFUL_CHANGE_AFTER_PATTERN",
             "final_transition": "OBSERVED_BUT_NOT_FORWARD_VALIDATED",
             "missing_values": "NOT_INFERRED",
             "prediction": False,
