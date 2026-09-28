@@ -142,41 +142,19 @@ def _direction(x: float | None) -> str:
     return "بدون تغییر"
 
 
-def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
-    snaps = _snapshots(root)
-    if len(snaps) < 2:
-        return {
-            "status": "INSUFFICIENT_HISTORY",
-            "engine_version": ENGINE_VERSION,
-            "source_of_truth": SOURCE_OF_TRUTH,
-            "snapshot_count": len(snaps),
-            "transition_count": 0,
-            "events": [],
-            "message": "برای تشخیص تغییر رفتار حداقل دو Snapshot معتبر TSETMC لازم است.",
-        }
-
-    prev, cur = snaps[-2], snaps[-1]
-    prev_date = _observation_date(prev.get("observation_retrieved_at"))
-    first_seen: dict[str, Any] = {}
-    for snap in snaps:
-        snap_date = _observation_date(snap.get("observation_retrieved_at"))
-        for r in map(_row, snap.get("rows", [])):
-            iid = r["instrument_id"]
-            if iid and iid not in first_seen:
-                first_seen[iid] = snap_date
-    previous = {x["instrument_id"]: x for x in map(_row, prev.get("rows", [])) if x["instrument_id"]}
-    current = {x["instrument_id"]: x for x in map(_row, cur.get("rows", [])) if x["instrument_id"]}
+def analyze_snapshot_pair(previous: dict[str, Any], current: dict[str, Any], limit: int | None = None) -> dict[str, Any]:
+    prev_date = _observation_date(previous.get("observation_retrieved_at"))
+    previous_rows = {x["instrument_id"]: x for x in map(_row, previous.get("rows", [])) if x["instrument_id"]}
+    current_rows = {x["instrument_id"]: x for x in map(_row, current.get("rows", [])) if x["instrument_id"]}
 
     events = []
-    for iid in sorted(set(previous) & set(current)):
-        a, b = previous[iid], current[iid]
+    for iid in sorted(set(previous_rows) & set(current_rows)):
+        a, b = previous_rows[iid], current_rows[iid]
         # TSETMC's explicit beginDate is authoritative for creation/listing day.
         # Exclude only the transition whose FROM day is the actual begin date.
-        # The contract remains in the archive and is eligible from day 2 onward.
         if a.get("begin_date") == prev_date:
             continue
-        # Do not use first-observed-day as a proxy: our archive may start after
-        # the contract was created.
+
         dp, dv, dval, doi, du = (
             _pct(a["last"], b["last"]),
             _pct(a["volume"], b["volume"]),
@@ -229,22 +207,46 @@ def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
             "underlying_change_pct": du,
             "flags": flags,
             "activity_magnitude": activity,
-            "observation_from": prev.get("observation_retrieved_at"),
-            "observation_to": cur.get("observation_retrieved_at"),
+            "observation_from": previous.get("observation_retrieved_at"),
+            "observation_to": current.get("observation_retrieved_at"),
         })
 
     events.sort(key=lambda x: (len(x["flags"]), x["activity_magnitude"]), reverse=True)
-    events = events[:max(1, int(limit))]
+    if limit is not None:
+        events = events[:max(1, int(limit))]
 
     return {
         "status": "PASS",
+        "transition_count": len(set(previous_rows) & set(current_rows)),
+        "events": events,
+    }
+
+
+def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
+    snaps = _snapshots(root)
+    if len(snaps) < 2:
+        return {
+            "status": "INSUFFICIENT_HISTORY",
+            "engine_version": ENGINE_VERSION,
+            "source_of_truth": SOURCE_OF_TRUTH,
+            "snapshot_count": len(snaps),
+            "transition_count": 0,
+            "events": [],
+            "message": "برای تشخیص تغییر رفتار حداقل دو Snapshot معتبر TSETMC لازم است.",
+        }
+
+    prev, cur = snaps[-2], snaps[-1]
+    pair = analyze_snapshot_pair(prev, cur, limit=limit)
+
+    return {
+        "status": pair["status"],
         "engine_version": ENGINE_VERSION,
         "source_of_truth": SOURCE_OF_TRUTH,
         "snapshot_count": len(snaps),
-        "transition_count": len(set(previous) & set(current)),
+        "transition_count": pair["transition_count"],
         "previous_snapshot_sha256": prev.get("snapshot_sha256"),
         "current_snapshot_sha256": cur.get("snapshot_sha256"),
-        "events": events,
+        "events": pair["events"],
         "rules": {
             "identity": "EXACT_INSTRUMENT_ID_ONLY",
             "no_prediction": True,
