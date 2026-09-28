@@ -65,6 +65,7 @@ CALLBACK_COMMANDS = {
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
 from tsetmc_first_source import build_tsetmc_snapshot
+from behavior_engine import build_behavior_report, format_behavior_report
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -165,6 +166,8 @@ def system_status():
 
 
 def generate_report(command):
+    if command in ("رفتار", "تغییرات", "behavior"):
+        return format_behavior_report(build_behavior_report(ROOT))
     if command in ("گزارش", "همه", "کل"):
         report, snapshot = build_tsetmc_report(
             top_count=15,
@@ -365,6 +368,9 @@ def main():
 
                 try:
                     if text in ("منو", "menu", "/start", "/menu", "🏠 منوی اصلی"):
+                        send_report_menu(chat_id)
+                    elif text in ("رفتار", "تغییرات", "behavior"):
+                        send_message(chat_id, generate_report("رفتار"))
                         send_report_menu(chat_id)
                     elif text == "نمادها":
                         send_symbol_menu(chat_id, 0)
