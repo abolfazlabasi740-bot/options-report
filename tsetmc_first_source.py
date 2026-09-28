@@ -133,7 +133,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         source_market_timestamp_status = "AVAILABLE" if source_market_timestamp else "UNAVAILABLE"
         rows.append({
             "canonical":row,
-            "identity":{"instrument_id":option_id,"contract_type":instrument.get("contract_type"),"underlying_id":underlying_id,"underlying_symbol":instrument.get("underlying_symbol"),"identity_source_field":instrument.get("identity_source_field")},
+            "identity":{"instrument_id":option_id,"contract_type":instrument.get("contract_type"),"underlying_id":underlying_id,"underlying_symbol":instrument.get("underlying_symbol"),"identity_source_field":instrument.get("identity_source_field"),"begin_date":instrument.get("begin_date"),"end_date":instrument.get("end_date")},
             "raw_market_watch":instrument,"market_watch_fields":market_fields,"raw_remaining_days":instrument.get("remaining_days"),
             "expiry_evidence":{"end_date":instrument.get("end_date"),"remaining_days":instrument.get("remaining_days"),"source":"TSETMC","source_field":"endDate/remainedDay"},
             "source_market_timestamp":source_market_timestamp,"source_market_timestamp_status":source_market_timestamp_status,
