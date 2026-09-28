@@ -58,6 +58,8 @@ def _row(r: dict[str, Any]) -> dict[str, Any]:
         "underlying_symbol": i.get("underlying_symbol"),
         "underlying_id": i.get("underlying_id"),
         "contract_type": i.get("contract_type"),
+        "begin_date": _contract_date(i.get("begin_date")),
+        "end_date": _contract_date(i.get("end_date")),
         "last": _num(c.get(FIELDS["last"])),
         "close": _num(c.get(FIELDS["close"])),
         "volume": _num(c.get(FIELDS["volume"])),
@@ -76,6 +78,18 @@ def _pct(a: float | None, b: float | None) -> float | None:
 def _observation_date(s: Any):
     t = _time(s)
     return t.date() if t else None
+
+
+def _contract_date(v: Any):
+    if v in (None, ""):
+        return None
+    text = str(v).strip()
+    for fmt in ("%Y%m%d", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            pass
+    return None
 
 
 def _direction(x: float | None) -> str:
@@ -116,10 +130,13 @@ def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
     events = []
     for iid in sorted(set(previous) & set(current)):
         a, b = previous[iid], current[iid]
-        # Ignore the first observed trading day of a contract. New listings
-        # can show artificial percentage spikes caused by the initial price.
-        if first_seen.get(iid) == prev_date:
+        # TSETMC's explicit beginDate is authoritative for creation/listing day.
+        # Exclude only the transition whose FROM day is the actual begin date.
+        # The contract remains in the archive and is eligible from day 2 onward.
+        if a.get("begin_date") == prev_date:
             continue
+        # Do not use first-observed-day as a proxy: our archive may start after
+        # the contract was created.
         dp, dv, dval, doi, du = (
             _pct(a["last"], b["last"]),
             _pct(a["volume"], b["volume"]),
@@ -193,7 +210,8 @@ def build_behavior_report(root: Path, limit: int = 15) -> dict[str, Any]:
             "no_prediction": True,
             "no_signal_generation": True,
             "missing_values": "NOT_INFERRED",
-            "new_contract_first_observation_day": "EXCLUDED_FROM_BEHAVIOR",
+            "contract_creation_day": "TSETMC_BEGIN_DATE_EXCLUDED_FROM_BEHAVIOR",
+            "first_observed_day_fallback": "NOT_EXCLUDED",
         },
     }
 
