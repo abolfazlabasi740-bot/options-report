@@ -41,16 +41,16 @@ def _meaningfully_changed(previous: dict[str, Any], current: dict[str, Any]) -> 
 
 def _next_meaningful_outcome(
     snapshots: list[dict[str, Any]],
+    rows_cache: list[dict[str, dict[str, Any]]],
     start_index: int,
     instrument_id: str,
 ) -> tuple[dict[str, Any], dict[str, Any]] | None:
-    base_rows = _rows_by_id(snapshots[start_index])
-    previous = base_rows.get(instrument_id)
+    previous = rows_cache[start_index].get(instrument_id)
     if previous is None:
         return None
 
     for j in range(start_index + 1, len(snapshots)):
-        current = _rows_by_id(snapshots[j]).get(instrument_id)
+        current = rows_cache[j].get(instrument_id)
         if current is None:
             continue
         if _meaningfully_changed(previous, current):
@@ -82,7 +82,7 @@ def build_historical_pattern_forward_report(
     # change for the same instrument after the pattern observation.
     for i in range(1, len(snapshots) - 1):
         pair = analyze_snapshot_pair(snapshots[i - 1], snapshots[i])
-        current_rows = _rows_by_id(snapshots[i])
+        current_rows = rows_cache[i]
 
         for event in pair["events"]:
             sig = _signature(event)
@@ -91,7 +91,7 @@ def build_historical_pattern_forward_report(
             if iid not in current_rows:
                 continue
 
-            forward = _next_meaningful_outcome(snapshots, i, iid)
+            forward = _next_meaningful_outcome(snapshots, rows_cache, i, iid)
             if forward is None:
                 continue
             out, forward_snapshot = forward
