@@ -52,14 +52,15 @@ def _snapshots(root: Path) -> list[dict[str, Any]]:
 def _row(r: dict[str, Any]) -> dict[str, Any]:
     c = r.get("canonical") or {}
     i = r.get("identity") or {}
+    raw = r.get("raw_market_watch") or {}
     return {
         "instrument_id": str(i.get("instrument_id") or ""),
         "symbol": c.get("نماد"),
         "underlying_symbol": i.get("underlying_symbol"),
         "underlying_id": i.get("underlying_id"),
         "contract_type": i.get("contract_type"),
-        "begin_date": _contract_date(i.get("begin_date")),
-        "end_date": _contract_date(i.get("end_date")),
+        "begin_date": _contract_date(i.get("begin_date") or raw.get("begin_date") or raw.get("beginDate")),
+        "end_date": _contract_date(i.get("end_date") or raw.get("end_date") or raw.get("endDate")),
         "last": _num(c.get(FIELDS["last"])),
         "close": _num(c.get(FIELDS["close"])),
         "volume": _num(c.get(FIELDS["volume"])),
