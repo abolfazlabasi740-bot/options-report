@@ -76,6 +76,7 @@ def build_historical_pattern_forward_report(
 
     observed = Counter()
     occurrences: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    rows_cache = [_rows_by_id(snapshot) for snapshot in snapshots]
 
     # The final transition is observed but has no later snapshot for forward validation.
     # Forward outcome skips unchanged/repeated snapshots and uses the first meaningful
