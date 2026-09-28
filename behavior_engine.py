@@ -45,7 +45,7 @@ def _snapshots(root: Path) -> list[dict[str, Any]]:
             continue
         if x.get("source_of_truth") == SOURCE_OF_TRUTH and isinstance(x.get("rows"), list):
             out.append(x)
-    out.sort(key=lambda x: _time(x.get("observation_retrieved_at")) or datetime.min)
+    out.sort(key=lambda x: _time(x.get("observation_retrieved_at")).timestamp() if _time(x.get("observation_retrieved_at")) else float("-inf"))
     return out
 
 
