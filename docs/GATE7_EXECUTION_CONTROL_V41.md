@@ -65,13 +65,15 @@ Opportunity Intelligence باید با نمونه‌های واقعی/تاریخ
 
 ## Current state
 
+Gate 7: NOT CLOSED
+
 Regression و کنترل‌های Repository در مسیر کنترل‌شده قرار دارند.
 
 TSETMC-only architecture در کد فعال است.
 
 Live TSETMC evidence هنوز باید روی Runtime واقعی تأیید شود.
 
-BestLimits live evidence و semantic mapping هنوز Production Freeze نشده‌اند.
+BestLimits live evidence is reviewed and the semantic adapter mapping is frozen at contract level; Gate 7 remains NOT CLOSED because canonical scoring and final production release are still blocked.
 
 Economic validation هنوز باز است.
 
