@@ -62,12 +62,11 @@ def market_watch_url(base_url: str) -> str:
     return f"{base_url.rstrip('/')}{MARKET_WATCH_PATH}?{MARKET_WATCH_PARAMS}"
 
 
-def fetch_market_watch_level(
-    instrument_id: str,
+def fetch_market_watch_rows(
     *,
     base_url: str,
     timeout: float,
-) -> tuple[dict, str, str]:
+) -> tuple[list[dict], str, str, str]:
     endpoint = market_watch_url(base_url)
     request = urllib.request.Request(
         endpoint,
@@ -85,16 +84,28 @@ def fetch_market_watch_level(
     retrieved_at = utc_now()
 
     if status < 200 or status >= 300:
-        raise RuntimeError(
-            f"MarketWatch HTTP status {status} for {instrument_id}"
-        )
+        raise RuntimeError(f"MarketWatch HTTP status {status}")
 
     payload = json.loads(body.decode("utf-8", errors="replace"))
     rows = payload.get("marketwatch") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
-        raise RuntimeError(
-            f"MarketWatch marketwatch list missing for {instrument_id}"
-        )
+        raise RuntimeError("MarketWatch marketwatch list missing")
+
+    import hashlib
+    snapshot_sha256 = hashlib.sha256(body).hexdigest()
+    return rows, endpoint, retrieved_at, snapshot_sha256
+
+
+def fetch_market_watch_level(
+    instrument_id: str,
+    *,
+    base_url: str,
+    timeout: float,
+) -> tuple[dict, str, str]:
+    rows, endpoint, retrieved_at, _ = fetch_market_watch_rows(
+        base_url=base_url,
+        timeout=timeout,
+    )
 
     row = next(
         (
@@ -228,6 +239,18 @@ def build_package(
     )
     rows = snapshot.get("rows", [])
 
+    live_market_rows, live_market_endpoint, live_market_retrieved, live_market_sha256 = (
+        fetch_market_watch_rows(
+            base_url=base_url,
+            timeout=timeout,
+        )
+    )
+    live_market_ids = {
+        str(item.get("insCode") or "").strip()
+        for item in live_market_rows
+        if isinstance(item, dict)
+    }
+
     selected = []
     seen = set()
 
@@ -237,6 +260,13 @@ def build_package(
         uid = str(identity.get("underlying_id") or "").strip()
 
         if not iid or not uid or iid in seen:
+            continue
+
+        # The option-universe endpoint and ClosingPrice/GetMarketWatch can
+        # expose different cached universes. For live semantic evidence,
+        # require the selected instrument to exist in the exact MarketWatch
+        # payload that will be used for independent observation.
+        if iid not in live_market_ids:
             continue
 
         seen.add(iid)
@@ -288,6 +318,13 @@ def build_package(
         "source_of_truth": "TSETMC",
         "generated_from_snapshot_sha256": snapshot.get("snapshot_sha256"),
         "instrument_roles": roles,
+        "live_market_watch_selection": {
+            "endpoint": live_market_endpoint,
+            "retrieved_at_utc": live_market_retrieved,
+            "response_sha256": live_market_sha256,
+            "selected_option_instruments": [item[0] for item in selected],
+            "selection_rule": "snapshot_option_identity_must_exist_in_same_live_GetMarketWatch_payload",
+        },
         "captures": captures,
         "independent_semantic_evidence": semantic_evidence,
         "semantic_mapping_status": "OPEN",
