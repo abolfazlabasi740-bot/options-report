@@ -10,7 +10,7 @@
 | Trades | ClosingPriceInfo | zTotTran | No | MAPPED |
 | Volume | ClosingPriceInfo | qTotTran5J | No | MAPPED |
 | Value | ClosingPriceInfo | qTotCap | No | MAPPED |
-| Order book | BestLimits | bestLimits (raw only) | No | SEMANTIC_MAPPING_OPEN |
+| Order book | BestLimits | pMeDem/pMeOf/qTitMeDem/qTitMeOf/zOrdMeDem/zOrdMeOf | No | MAPPED (TSETMC-BESTLIMITS-MAPPING-1.0) |
 | Real buy volume | ClientType | buy_I_Volume | No | MAPPED |
 | Real sell volume | ClientType | sell_I_Volume | No | MAPPED |
 | Real buy count | ClientType | buy_CountI | No | MAPPED |
@@ -29,7 +29,7 @@
 
 ## BestLimits governance note
 
-Semantic mapping of the raw BestLimits fields zo, zd, pd, po, qd, and qo is unverified. Raw capture does not constitute semantic mapping. Proof is required before any field can enter the canonical scoring dataset.
+Semantic mapping of the raw BestLimits fields is now frozen by the reviewed adapter contract. Raw capture does not constitute semantic mapping. Proof is required before any field can enter the canonical scoring dataset.
 
 Required evidence chain:
 
@@ -38,4 +38,4 @@ Required evidence chain:
 3. Validate the interpretation against multiple deterministic regression fixtures, including zero-depth/one-sided-book cases where available.
 4. Freeze the mapping in an explicit adapter contract and test it.
 
-Until this gate closes, BestLimits fields remain quarantined from scoring and no Bid/Ask/quantity/order-count semantic fields may be synthesized from them.
+The mapping freeze does not unlock scoring. BestLimits-derived semantic fields remain blocked from the canonical scoring dataset until the adapter regression gate and subsequent scoring-release gate are explicitly passed.
