@@ -1,0 +1,46 @@
+FILES: 35
+SHEETS: 35
+SENSITIVITY_OK: 35
+UNRESOLVED: 0
+
+BLOCK: Liquidity
+records: 35
+top_n_overlap: min=5.000000 max=9.000000 mean=6.400000
+rank_changes: min=237.000000 max=472.000000 mean=449.142857
+max_score_delta: min=10.260000 max=12.220000 mean=11.132857
+mean_score_delta: min=3.412690 max=4.033709 mean=3.603773
+
+BLOCK: Valuation
+records: 35
+top_n_overlap: min=8.000000 max=13.000000 mean=10.000000
+rank_changes: min=228.000000 max=472.000000 mean=445.285714
+max_score_delta: min=8.130000 max=9.930000 mean=9.042000
+mean_score_delta: min=2.347813 max=2.953458 mean=2.614506
+
+BLOCK: Payoff
+records: 35
+top_n_overlap: min=10.000000 max=13.000000 mean=11.228571
+rank_changes: min=227.000000 max=466.000000 mean=442.485714
+max_score_delta: min=8.140000 max=9.360000 mean=8.500000
+mean_score_delta: min=2.058977 max=2.550192 mean=2.127964
+
+BLOCK: Time
+records: 35
+top_n_overlap: min=8.000000 max=12.000000 mean=11.514286
+rank_changes: min=232.000000 max=468.000000 mean=442.371429
+max_score_delta: min=6.570000 max=9.000000 mean=7.409714
+mean_score_delta: min=1.725427 max=2.273042 mean=1.988990
+
+BLOCK: Greeks
+records: 35
+top_n_overlap: min=11.000000 max=14.000000 mean=13.085714
+rank_changes: min=215.000000 max=461.000000 mean=432.000000
+max_score_delta: min=3.520000 max=4.310000 mean=4.170286
+mean_score_delta: min=1.088222 max=1.216261 mean=1.151357
+
+BLOCK: Market
+records: 35
+top_n_overlap: min=11.000000 max=13.000000 mean=12.600000
+rank_changes: min=229.000000 max=470.000000 mean=443.114286
+max_score_delta: min=5.240000 max=6.430000 mean=6.042000
+mean_score_delta: min=1.709147 max=2.068159 mean=1.755308
