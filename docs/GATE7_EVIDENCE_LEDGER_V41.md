@@ -21,47 +21,50 @@ The active V4 Overlay constants are observed from production code but do not yet
 Required: evidence source for each affected numeric parameter family. No guessed replacement values.
 
 ### G7-2 — Historical sensitivity / ablation
-Status: VERIFIED — EVIDENCE ARTIFACT HASH/PROVENANCE RECONCILED
+Status: CLOSED — REAL TSETMC HISTORICAL EVIDENCE REPLAYED
 
-The evidence-only implementation reuses the canonical V4.1.1 shadow scorer and performs one-block-at-a-time ablation. It does not modify Production FinalScore, eligibility, ranking, report or Bale output.
+G7-2 uses the active `tsetmc_scoring_engine.py` and remains evidence-only.
+No Production FinalScore, eligibility, ranking, report or Bale output is
+modified.
 
-Termux evidence run:
-- Files: 35
-- Sheets: 35
-- Sensitivity OK: 35
-- Unresolved: 0
-- Top-N: 15
-- Source period: historical OptionSchool24 workbooks already present in the project; no new market session is required while the market is closed.
+Real TSETMC historical replay evidence:
 
-Aggregate sensitivity evidence across 35 records:
+- files_processed: 2
+- files_unresolved: 0
+- pair_count: 1
+- rejected_pair_count: 0
+- historical_closure_eligible: `True`
+- top_n: 15
+- production_mutation: `False`
+- source_of_truth: `TSETMC`
 
-| Block | Mean Top-15 overlap | Mean rank changes | Mean max score delta | Mean score delta |
-|---|---:|---:|---:|---:|
-| Liquidity | 6.400000 | 449.142857 | 11.132857 | 3.603773 |
-| Valuation | 10.000000 | 445.285714 | 9.042000 | 2.614506 |
-| Payoff | 11.228571 | 442.485714 | 8.500000 | 2.127964 |
-| Time | 11.514286 | 442.371429 | 7.409714 | 1.988990 |
-| Greeks | 13.085714 | 432.000000 | 4.170286 | 1.151357 |
-| Market | 12.600000 | 443.114286 | 6.042000 | 1.755308 |
+Independent snapshot pair:
 
-Ranges retained from the same run:
+- `eb42c66b5ef0f0545f59dd192ff59fedda1f2a27124a806b181d1afddd40d65f`
+- `3be9bc165e97750f8971936ef569f96517c5c143c5c43a576b87c03f043cc819`
 
-- Liquidity: overlap 5–9; rank changes 237–472; max delta 10.26–12.22; mean delta 3.412690–4.033709.
-- Valuation: overlap 8–13; rank changes 228–472; max delta 8.13–9.93; mean delta 2.347813–2.953458.
-- Payoff: overlap 10–13; rank changes 227–466; max delta 8.14–9.36; mean delta 2.058977–2.550192.
-- Time: overlap 8–12; rank changes 232–468; max delta 6.57–9.00; mean delta 1.725427–2.273042.
-- Greeks: overlap 11–14; rank changes 215–461; max delta 3.52–4.31; mean delta 1.088222–1.216261.
-- Market: overlap 11–13; rank changes 229–470; max delta 5.24–6.43; mean delta 1.709147–2.068159.
+Pair status: `INDEPENDENT_OBSERVATIONS`
+Rejected pairs: `0`
 
-Interpretation boundary: these are sensitivity/ablation measurements only. They do not establish that any block, weight or economic direction is correct, optimal, predictive, or causally important.
+Current evidence artifact:
 
-Closure evidence has now been reconciled with the Termux run. The two generated evidence artifacts have verified SHA-256 values recorded below. The underlying run retained the real historical source files, source SHA-256 values, deterministic sensitivity measurements and unresolved-case accounting.
+`output/g7_2_historical_sensitivity_evidence.json`
 
-Artifact SHA-256:
-- `g7_2_historical_sensitivity_evidence.json`: `702ed0de3a68abd2fc86be51165c29a64c9b02241857abcd1ba95d7059fe02fc`
-- `g7_2_optionschool24_historical_evidence.json`: `d669d721de052c58a7b65b621759fe714fce1743553d99fb14123b4582fa3a5d`
+SHA-256:
 
-The golden Gate 3 fixture is an output-regression baseline only; it is not historical economic validation.
+`8b5f62f9ea943a5b1b7ed1efd91ed1ffd423cdbca3ccb5c7bfa27d56ba2c9b2f`
+
+Top-N overlap between the independent observations was 0/15 (0.0%). This is
+a measured historical sensitivity result, not an execution or evidence
+failure.
+
+The earlier OptionSchool24 G7-2 artifact remains historical audit history only
+and is not the current basis for G7-2 closure.
+
+G7-2 is CLOSED. This closure is evidence-only and does not change production
+scoring, ranking, eligibility, TSETMC activation or Bale behavior.
+
+G7-1, G7-3, G7-4 and G7-5 remain OPEN. G7-6 remains BLOCKED.
 
 ### G7-3 — Market timestamp / freshness
 Status: OPEN — SOURCE TIMESTAMP CAPTURE IMPLEMENTED, LIVE EVIDENCE PENDING
@@ -139,7 +142,7 @@ Code existence, CI success, and Bale delivery are necessary operational evidence
 
 ## Current conclusion
 
-The operational reporter is deployed and verified. G7-2 is VERIFIED/CLOSED with reconciled artifact SHA/provenance evidence. The full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
+The operational reporter is deployed and verified. G7-2 is CLOSED based on the current real TSETMC historical evidence replay. G7-1, G7-3, G7-4 and G7-5 remain open, so the full OptimusAI intelligence cutover remains evidence-gated at Gate 7.
 
 ## Continuation Audit — 2026-09-23
 
@@ -152,7 +155,7 @@ A continuous repository/runtime audit was performed after the G7-5 protocol free
 - `tsetmc_evidence_collector.py` was inspected and confirmed to require an explicit option instrument ID and an explicit `underlying_id`; it does not infer identity from symbol naming.
 - No TSETMC identity, market timestamp, or economic outcome label was fabricated from this limitation.
 - G7-3, G7-4 and G7-5 therefore remain OPEN.
-- G7-2 remains VERIFIED; its artifact hashes are already reconciled above.
+- G7-2 is CLOSED based on the current real TSETMC historical evidence replay; the current evidence artifact SHA is reconciled above.
 - G7-1 remains OPEN because no authoritative provenance record for the active Overlay numeric constants has been found.
 - G7-6 remains BLOCKED by the unresolved evidence gates.
 

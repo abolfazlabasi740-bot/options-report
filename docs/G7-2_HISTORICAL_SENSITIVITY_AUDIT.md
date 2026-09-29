@@ -1,6 +1,6 @@
 # G7-2 Historical Sensitivity / Ablation Audit
 
-Status: IMPLEMENTED AS EVIDENCE-ONLY TOOL — NOT CLOSED.
+Status: CLOSED — REAL TSETMC HISTORICAL EVIDENCE REPLAYED.
 
 ## Active architecture
 
@@ -42,8 +42,44 @@ stability measure.
 - No profitability, predictive, or buy/sell conclusion is produced.
 - No synthetic or test fixture may be represented as historical market evidence.
 
-## Closure requirement
+## Closure evidence
 
-G7-2 remains OPEN until real TSETMC snapshots from more than one observation
-period are available and successfully replayed. A single current snapshot can
-validate the harness, but cannot establish historical stability.
+The historical dataset runner was executed against the retained real TSETMC
+snapshot set.
+
+- files_processed: 2
+- files_unresolved: 0
+- pair_count: 1
+- rejected_pair_count: 0
+- historical_closure_eligible: True
+- top_n: 15
+- production_mutation: False
+- source_of_truth: TSETMC
+
+Independent observations:
+
+- snapshot: `eb42c66b5ef0f0545f59dd192ff59fedda1f2a27124a806b181d1afddd40d65f`
+- snapshot: `3be9bc165e97750f8971936ef569f96517c5c143c5c43a576b87c03f043cc819`
+- pair status: `INDEPENDENT_OBSERVATIONS`
+- rejected pairs: 0
+
+Current evidence artifact:
+
+`output/g7_2_historical_sensitivity_evidence.json`
+
+SHA-256:
+
+`8b5f62f9ea943a5b1b7ed1efd91ed1ffd423cdbca3ccb5c7bfa27d56ba2c9b2f`
+
+The measured Top-N overlap was 0/15 (0.0%). This is retained as a measured
+historical sensitivity result and is not treated as an execution or evidence
+failure.
+
+## Closure decision
+
+G7-2 is CLOSED as an evidence-only historical sensitivity / ablation gate.
+
+This closure does not close G7-1, G7-3, G7-4 or G7-5 and does not unblock G7-6.
+
+No production scoring, ranking, eligibility, TSETMC activation or Bale
+behavior is changed by this closure.
