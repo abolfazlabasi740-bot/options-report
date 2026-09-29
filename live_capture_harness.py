@@ -17,11 +17,14 @@ import hashlib
 import json
 import time
 import urllib.request
+from urllib.error import HTTPError
 from datetime import datetime, timezone
 from pathlib import Path
 
 DEFAULT_BASE_URL = "https://cdn.tsetmc.com/api"
 USER_AGENT = "OptimusAI-V4.1-BestLimits-LiveCapture/1.0"
+RETRYABLE_HTTP_STATUS = {502, 503, 504}
+MAX_TRANSIENT_RETRIES = 2
 
 
 def sha256_json(value) -> str:
@@ -47,9 +50,22 @@ def capture(instrument_id: str, base_url: str, timeout: float) -> dict:
         headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
     )
 
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        http_status = getattr(response, "status", 200)
-        body = response.read()
+    last_error = None
+    retry_count = 0
+    for attempt in range(MAX_TRANSIENT_RETRIES + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                http_status = getattr(response, "status", 200)
+                body = response.read()
+            break
+        except HTTPError as exc:
+            last_error = exc
+            if exc.code not in RETRYABLE_HTTP_STATUS or attempt >= MAX_TRANSIENT_RETRIES:
+                raise
+            retry_count += 1
+            time.sleep(0.75 * (attempt + 1))
+    else:
+        raise RuntimeError(f"BestLimits request failed: {last_error}") from last_error
 
     retrieved_at = utc_now()
     if http_status < 200 or http_status >= 300:
@@ -69,6 +85,7 @@ def capture(instrument_id: str, base_url: str, timeout: float) -> dict:
         "capture_started_at_utc": started_at,
         "retrieved_at_utc": retrieved_at,
         "http_status": http_status,
+        "transient_retry_count": retry_count,
         "payload_sha256": sha256_json(payload),
         "raw_payload": payload,
         "level_count": len(raw_levels),
