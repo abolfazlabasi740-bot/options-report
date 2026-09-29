@@ -4,18 +4,28 @@
 
 This runner is deliberately fail-closed:
 - discovers option/underlying identities from the live TSETMC option Market-Watch;
-- captures BestLimits twice for each selected instrument;
+- captures BestLimits twice for each unique selected instrument;
 - captures independent same-time Market-Watch BestLimits observations;
 - verifies the six candidate field correspondences against both live sources;
 - preserves raw payloads and hashes;
 - never enables scoring or ranking.
+
+RCA-driven design:
+- GetMarketWatch is fetched once per evidence round.
+- All unique BestLimits requests for that round run concurrently.
+- This keeps each direct BestLimits capture close to the same MarketWatch
+  timestamp and avoids the previous sequential >2-second timing failure.
+- Underlying IDs are deduplicated so the same instrument is not captured
+  repeatedly just because multiple options share it.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,7 +35,7 @@ from tsetmc_first_source import build_tsetmc_snapshot
 
 
 MARKET_WATCH_PATH = "/ClosingPrice/GetMarketWatch"
-USER_AGENT = "OptimusAI-V4.1-BestLimits-LiveEvidence/1.0"
+USER_AGENT = "OptimusAI-V4.1-BestLimits-LiveEvidence/1.1"
 
 MARKET_WATCH_PARAMS = (
     "market=0"
@@ -92,40 +102,9 @@ def fetch_market_watch_rows(
         raise RuntimeError("MarketWatch marketwatch list missing")
 
     import hashlib
+
     snapshot_sha256 = hashlib.sha256(body).hexdigest()
     return rows, endpoint, retrieved_at, snapshot_sha256
-
-
-def fetch_market_watch_level(
-    instrument_id: str,
-    *,
-    base_url: str,
-    timeout: float,
-) -> tuple[dict, str, str]:
-    rows, endpoint, retrieved_at, _ = fetch_market_watch_rows(
-        base_url=base_url,
-        timeout=timeout,
-    )
-
-    row = next(
-        (
-            item for item in rows
-            if str(item.get("insCode") or "").strip() == instrument_id
-        ),
-        None,
-    )
-    if row is None:
-        raise RuntimeError(
-            f"MarketWatch instrument {instrument_id} was not found"
-        )
-
-    levels = row.get("blDs")
-    if not isinstance(levels, list) or not levels:
-        raise RuntimeError(
-            f"MarketWatch blDs missing for {instrument_id}"
-        )
-
-    return levels[0], endpoint, retrieved_at
 
 
 def verify_semantic_correspondence(
@@ -166,9 +145,7 @@ def verify_semantic_correspondence(
         "instrument_id": instrument_id,
         "capture_timestamp_utc": bestlimits_capture["retrieved_at_utc"],
         "evidence_source": "TSETMC",
-        "evidence_location": market_watch_url(
-            bestlimits_capture["endpoint"].rsplit("/BestLimits/", 1)[0]
-        ),
+        "evidence_location": "",
         "evidence_type": "TSETMC_WEB_BOARD_OBSERVATION",
         "matched_fields": ["pd", "po", "qd", "qo", "zd", "zo"],
         "marketwatch_retrieved_at_utc": None,
@@ -223,6 +200,63 @@ def capture_with_independent_evidence(
     return bestlimits_capture, evidence
 
 
+def capture_round_in_parallel(
+    instrument_ids: list[str],
+    market_by_id: dict[str, dict],
+    *,
+    market_endpoint: str,
+    market_retrieved: str,
+    base_url: str,
+    timeout: float,
+) -> tuple[list[dict], list[dict]]:
+    missing = [instrument_id for instrument_id in instrument_ids
+               if instrument_id not in market_by_id]
+    if missing:
+        raise RuntimeError(
+            "Live MarketWatch instruments disappeared from round payload: "
+            + ", ".join(missing)
+        )
+
+    missing_levels = [
+        instrument_id
+        for instrument_id in instrument_ids
+        if not isinstance(market_by_id[instrument_id].get("blDs"), list)
+        or not market_by_id[instrument_id].get("blDs")
+    ]
+    if missing_levels:
+        raise RuntimeError(
+            "MarketWatch blDs missing for: " + ", ".join(missing_levels)
+        )
+
+    max_workers = min(4, len(instrument_ids))
+    captures_by_id = {}
+    evidence_by_id = {}
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(
+                capture_with_independent_evidence,
+                instrument_id,
+                market_level=market_by_id[instrument_id]["blDs"][0],
+                market_endpoint=market_endpoint,
+                market_retrieved=market_retrieved,
+                base_url=base_url,
+                timeout=timeout,
+            ): instrument_id
+            for instrument_id in instrument_ids
+        }
+
+        for future in as_completed(futures):
+            instrument_id = futures[future]
+            instrument_capture, instrument_evidence = future.result()
+            captures_by_id[instrument_id] = instrument_capture
+            evidence_by_id[instrument_id] = instrument_evidence
+
+    captures = [captures_by_id[instrument_id] for instrument_id in instrument_ids]
+    evidence = [evidence_by_id[instrument_id] for instrument_id in instrument_ids]
+    return captures, evidence
+
+
 def build_package(
     *,
     option_count: int,
@@ -236,11 +270,14 @@ def build_package(
     )
     rows = snapshot.get("rows", [])
 
-    live_market_rows, live_market_endpoint, live_market_retrieved, live_market_sha256 = (
-        fetch_market_watch_rows(
-            base_url=base_url,
-            timeout=timeout,
-        )
+    (
+        live_market_rows,
+        live_market_endpoint,
+        live_market_retrieved,
+        live_market_sha256,
+    ) = fetch_market_watch_rows(
+        base_url=base_url,
+        timeout=timeout,
     )
     live_market_ids = {
         str(item.get("insCode") or "").strip()
@@ -249,25 +286,25 @@ def build_package(
     }
 
     selected = []
-    seen = set()
+    seen_options = set()
 
     for row in rows:
         identity = row.get("identity", {})
-        iid = str(identity.get("instrument_id") or "").strip()
-        uid = str(identity.get("underlying_id") or "").strip()
+        option_id = str(identity.get("instrument_id") or "").strip()
+        underlying_id = str(identity.get("underlying_id") or "").strip()
 
-        if not iid or not uid or iid in seen:
+        if (
+            not option_id
+            or not underlying_id
+            or option_id in seen_options
+        ):
             continue
 
-        # The option-universe endpoint and ClosingPrice/GetMarketWatch can
-        # expose different cached universes. For live semantic evidence,
-        # require the selected instrument to exist in the exact MarketWatch
-        # payload that will be used for independent observation.
-        if iid not in live_market_ids:
+        if option_id not in live_market_ids:
             continue
 
-        seen.add(iid)
-        selected.append((iid, uid))
+        seen_options.add(option_id)
+        selected.append((option_id, underlying_id))
 
         if len(selected) >= option_count:
             break
@@ -279,21 +316,28 @@ def build_package(
 
     roles = {}
     for option_id, underlying_id in selected:
-        roles[option_id] = ["option"]
-        roles[underlying_id] = ["underlying"]
+        roles.setdefault(option_id, [])
+        if "option" not in roles[option_id]:
+            roles[option_id].append("option")
+        roles.setdefault(underlying_id, [])
+        if "underlying" not in roles[underlying_id]:
+            roles[underlying_id].append("underlying")
+
+    # Preserve first-seen order while deduplicating shared underlyings.
+    instrument_ids = list(roles.keys())
 
     captures = []
     semantic_evidence = []
 
     for round_no in range(2):
-        # Fetch one fresh MarketWatch payload per round. It contains blDs for
-        # the selected option/underlying universe, avoiding repeated full-board
-        # HTTPS requests and reducing Termux/TSETMC handshake failure risk.
-        market_rows, market_endpoint, market_retrieved, market_sha256 = (
-            fetch_market_watch_rows(
-                base_url=base_url,
-                timeout=timeout,
-            )
+        (
+            market_rows,
+            market_endpoint,
+            market_retrieved,
+            market_sha256,
+        ) = fetch_market_watch_rows(
+            base_url=base_url,
+            timeout=timeout,
         )
         market_by_id = {
             str(item.get("insCode") or "").strip(): item
@@ -301,32 +345,16 @@ def build_package(
             if isinstance(item, dict)
         }
 
-        for option_id, underlying_id in selected:
-            for instrument_id in (option_id, underlying_id):
-                row = market_by_id.get(instrument_id)
-                if row is None:
-                    raise RuntimeError(
-                        f"Live MarketWatch instrument {instrument_id} disappeared "
-                        f"from round {round_no + 1} payload"
-                    )
-                levels = row.get("blDs")
-                if not isinstance(levels, list) or not levels:
-                    raise RuntimeError(
-                        f"MarketWatch blDs missing for {instrument_id}"
-                    )
-
-                instrument_capture, instrument_evidence = (
-                    capture_with_independent_evidence(
-                        instrument_id,
-                        market_level=levels[0],
-                        market_endpoint=market_endpoint,
-                        market_retrieved=market_retrieved,
-                        base_url=base_url,
-                        timeout=timeout,
-                    )
-                )
-                captures.append(instrument_capture)
-                semantic_evidence.append(instrument_evidence)
+        round_captures, round_evidence = capture_round_in_parallel(
+            instrument_ids,
+            market_by_id,
+            market_endpoint=market_endpoint,
+            market_retrieved=market_retrieved,
+            base_url=base_url,
+            timeout=timeout,
+        )
+        captures.extend(round_captures)
+        semantic_evidence.extend(round_evidence)
 
         if round_no == 0 and pause_seconds > 0:
             time.sleep(pause_seconds)
@@ -341,7 +369,10 @@ def build_package(
             "retrieved_at_utc": live_market_retrieved,
             "response_sha256": live_market_sha256,
             "selected_option_instruments": [item[0] for item in selected],
-            "selection_rule": "snapshot_option_identity_must_exist_in_same_live_GetMarketWatch_payload",
+            "selection_rule": (
+                "snapshot_option_identity_must_exist_in_same_live_"
+                "GetMarketWatch_payload"
+            ),
         },
         "captures": captures,
         "independent_semantic_evidence": semantic_evidence,
