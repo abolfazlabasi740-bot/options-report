@@ -190,15 +190,12 @@ def verify_semantic_correspondence(
 def capture_with_independent_evidence(
     instrument_id: str,
     *,
+    market_level: dict,
+    market_endpoint: str,
+    market_retrieved: str,
     base_url: str,
     timeout: float,
 ) -> tuple[dict, dict]:
-    market_level, market_endpoint, market_retrieved = fetch_market_watch_level(
-        instrument_id,
-        base_url=base_url,
-        timeout=timeout,
-    )
-
     bestlimits_capture = capture(instrument_id, base_url, timeout)
 
     evidence = verify_semantic_correspondence(
@@ -289,26 +286,47 @@ def build_package(
     semantic_evidence = []
 
     for round_no in range(2):
-        for option_id, underlying_id in selected:
-            option_capture, option_evidence = (
-                capture_with_independent_evidence(
-                    option_id,
-                    base_url=base_url,
-                    timeout=timeout,
-                )
+        # Fetch one fresh MarketWatch payload per round. It contains blDs for
+        # the selected option/underlying universe, avoiding repeated full-board
+        # HTTPS requests and reducing Termux/TSETMC handshake failure risk.
+        market_rows, market_endpoint, market_retrieved, market_sha256 = (
+            fetch_market_watch_rows(
+                base_url=base_url,
+                timeout=timeout,
             )
-            captures.append(option_capture)
-            semantic_evidence.append(option_evidence)
+        )
+        market_by_id = {
+            str(item.get("insCode") or "").strip(): item
+            for item in market_rows
+            if isinstance(item, dict)
+        }
 
-            underlying_capture, underlying_evidence = (
-                capture_with_independent_evidence(
-                    underlying_id,
-                    base_url=base_url,
-                    timeout=timeout,
+        for option_id, underlying_id in selected:
+            for instrument_id in (option_id, underlying_id):
+                row = market_by_id.get(instrument_id)
+                if row is None:
+                    raise RuntimeError(
+                        f"Live MarketWatch instrument {instrument_id} disappeared "
+                        f"from round {round_no + 1} payload"
+                    )
+                levels = row.get("blDs")
+                if not isinstance(levels, list) or not levels:
+                    raise RuntimeError(
+                        f"MarketWatch blDs missing for {instrument_id}"
+                    )
+
+                instrument_capture, instrument_evidence = (
+                    capture_with_independent_evidence(
+                        instrument_id,
+                        market_level=levels[0],
+                        market_endpoint=market_endpoint,
+                        market_retrieved=market_retrieved,
+                        base_url=base_url,
+                        timeout=timeout,
+                    )
                 )
-            )
-            captures.append(underlying_capture)
-            semantic_evidence.append(underlying_evidence)
+                captures.append(instrument_capture)
+                semantic_evidence.append(instrument_evidence)
 
         if round_no == 0 and pause_seconds > 0:
             time.sleep(pause_seconds)
