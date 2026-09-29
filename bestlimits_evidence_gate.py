@@ -133,6 +133,7 @@ def validate_package(package):
                     errors.append(f"semantic_evidence[{idx}]:invalid_timestamp")
             else:
                 errors.append(f"semantic_evidence[{idx}]:cannot_correlate_timestamp")
+        # Every capture timestamp must have independently documented semantic evidence.
         for iid, timestamps in seen.items():
             for raw_ts in timestamps:
                 if not raw_ts:
