@@ -25,6 +25,7 @@ import argparse
 import json
 import time
 import urllib.request
+from urllib.error import HTTPError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,6 +37,8 @@ from tsetmc_first_source import build_tsetmc_snapshot
 
 MARKET_WATCH_PATH = "/ClosingPrice/GetMarketWatch"
 USER_AGENT = "OptimusAI-V4.1-BestLimits-LiveEvidence/1.1"
+RETRYABLE_HTTP_STATUS = {502, 503, 504}
+MAX_TRANSIENT_RETRIES = 2
 
 MARKET_WATCH_PARAMS = (
     "market=0"
@@ -87,9 +90,20 @@ def fetch_market_watch_rows(
         },
     )
 
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        body = response.read()
-        status = getattr(response, "status", 200)
+    last_error = None
+    for attempt in range(MAX_TRANSIENT_RETRIES + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = response.read()
+                status = getattr(response, "status", 200)
+            break
+        except HTTPError as exc:
+            last_error = exc
+            if exc.code not in RETRYABLE_HTTP_STATUS or attempt >= MAX_TRANSIENT_RETRIES:
+                raise
+            time.sleep(0.75 * (attempt + 1))
+    else:
+        raise RuntimeError(f"MarketWatch request failed: {last_error}") from last_error
 
     retrieved_at = utc_now()
 
