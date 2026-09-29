@@ -424,6 +424,7 @@ def main() -> int:
             "run_status": "FAILED_DURING_BESTLIMITS_EVIDENCE",
             "snapshot_persisted": snapshot_path.exists(),
             "snapshot_path": str(snapshot_path),
+            "independent_semantic_evidence": [],
             "error_type": type(exc).__name__,
             "error": str(exc),
             "semantic_mapping_status": "FROZEN",
@@ -462,10 +463,10 @@ def main() -> int:
         "option_instruments": result["option_instruments"],
         "underlying_instruments": result["underlying_instruments"],
         "semantic_evidence_count": len(
-            package["independent_semantic_evidence"]
+            package.get("independent_semantic_evidence", [])
         ),
         "errors": result.get("errors", []),
-        "semantic_mapping_status": "OPEN",
+        "semantic_mapping_status": package.get("semantic_mapping_status", "BLOCKED"),
         "scoring_status": "BLOCKED",
         "output": str(args.output),
     }, ensure_ascii=False))
