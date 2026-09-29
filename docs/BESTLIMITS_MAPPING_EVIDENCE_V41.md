@@ -1,8 +1,8 @@
 # BestLimits Semantic Mapping Evidence — V4.1
 
-Status: SEMANTIC_MAPPING_OPEN
-Production use: BLOCKED
-Last reviewed: 2026-09-24
+Status: SEMANTIC_MAPPING_FROZEN
+Production use: ADAPTER_ONLY / SCORING_BLOCKED
+Last reviewed: 2026-09-29
 
 ## Scope
 
@@ -12,9 +12,9 @@ This document records the evidence state for the six raw BestLimits fields expos
 
 Raw capture is already supported by the TSETMC-first source layer. This document does not authorize semantic translation into Bid/Ask price, quantity, or order-count fields.
 
-## Candidate hypothesis — quarantined
+## Frozen mapping contract
 
-The current engineering hypothesis is:
+The reviewed evidence now freezes the following level-1 semantic contract:
 
 | Raw field | Candidate meaning |
 |---|---|
@@ -25,7 +25,7 @@ The current engineering hypothesis is:
 | `zd` | Bid order count |
 | `zo` | Ask order count |
 
-This table is a TEST HYPOTHESIS ONLY. It is not an adapter contract and must not be used by production scoring.
+This table is now the reviewed adapter contract for TSETMC BestLimits level 1. The contract is implemented in `tsetmc_bestlimits_mapping.py` as mapping version `TSETMC-BESTLIMITS-MAPPING-1.0`. This freeze does not unlock canonical scoring.
 
 ## Evidence currently available
 
@@ -87,10 +87,33 @@ The invariant `AskPrice >= BidPrice` can reject an incorrect candidate mapping, 
 
 Therefore a 100% pass rate on the invariant harness is necessary evidence but is not sufficient evidence for Mapping Freeze.
 
+## Reviewed live evidence — 2026-09-29
+
+The live package `output/bestlimits_live_evidence.json` was reviewed after execution and numeric inspection.
+
+Evidence package SHA-256:
+`072d98da80b2ea68c5ea6c5212296686afdf7ac59f7e31213e392ca089de0b21`
+
+Observed:
+- 8 independent semantic evidence records.
+- 3 option instruments and 1 underlying instrument.
+- Two captures per instrument.
+- All eight observations contain all six required semantic correspondences.
+- All numeric correspondences matched exactly.
+- Evidence timing deltas were 0.721736 to 0.797407 seconds, below the 2-second correlation limit.
+- No gate errors were reported.
+- Raw BestLimits payloads and SHA-256 values were preserved.
+
+The live observations included both normal two-sided and one-sided/zero-depth cases. In particular, zero values on the offer side were preserved as zero and matched exactly; they were not treated as missing or estimated.
+
+An independent technical reference also documents the same TSETMC field semantics at the raw-field level: `pMeDem` as best buy price, `pMeOf` as best sell price, `qTitMeDem` as best buy quantity, `qTitMeOf` as best sell quantity, `zOrdMeDem` as number of orders at the best buy limit, and `zOrdMeOf` as number of orders at the best sell limit. citeturn0search13
+
 ## Current gate decision
 
-BestLimits remains quarantined from canonical scoring.
+Semantic mapping is now frozen at the adapter-contract level.
 
-No production field named Bid Price, Ask Price, Bid Quantity, Ask Quantity, Bid Order Count, or Ask Order Count may be synthesized from `zo/zd/pd/po/qd/qo` until the evidence chain is complete.
+Canonical scoring remains BLOCKED. No scoring weight, ranking rule, signal rule, or trading decision is enabled by this mapping freeze.
+
+The next gate is regression validation of the adapter against the preserved live evidence and the existing test suite. Only after that gate passes can a separate governance decision be made about exposing BestLimits-derived fields to the scoring dataset.
 
 OptionSchool is not a permitted reconciliation source. Historical OptionSchool material is archive/evidence only and cannot close this gate.
