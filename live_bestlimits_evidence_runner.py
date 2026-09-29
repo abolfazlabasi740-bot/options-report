@@ -268,6 +268,14 @@ def build_package(
         flow=1,
         max_instruments=max(option_count * 3, option_count),
     )
+    # Persist the canonical TSETMC snapshot before BestLimits evidence checks.
+    # A later semantic mismatch must never erase the captured snapshot.
+    snapshot_output = Path("output/tsetmc_first/live_market_open_snapshot.json")
+    snapshot_output.parent.mkdir(parents=True, exist_ok=True)
+    snapshot_output.write_text(
+        json.dumps(snapshot, ensure_ascii=False, indent=2, allow_nan=False),
+        encoding="utf-8",
+    )
     rows = snapshot.get("rows", [])
 
     (
@@ -400,14 +408,40 @@ def main() -> int:
     if args.option_count < 3:
         raise ValueError("--option-count must be at least 3")
 
-    package = build_package(
-        option_count=args.option_count,
-        pause_seconds=args.pause_seconds,
-        timeout=args.timeout,
-        base_url=args.base_url,
-    )
-
-    result = validate_package(package)
+    try:
+        package = build_package(
+            option_count=args.option_count,
+            pause_seconds=args.pause_seconds,
+            timeout=args.timeout,
+            base_url=args.base_url,
+        )
+        result = validate_package(package)
+    except Exception as exc:
+        snapshot_path = Path("output/tsetmc_first/live_market_open_snapshot.json")
+        package = {
+            "schema_version": "BESTLIMITS_LIVE_EVIDENCE_PACKAGE_V1",
+            "source_of_truth": "TSETMC",
+            "run_status": "FAILED_DURING_BESTLIMITS_EVIDENCE",
+            "snapshot_persisted": snapshot_path.exists(),
+            "snapshot_path": str(snapshot_path),
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+            "semantic_mapping_status": "FROZEN",
+            "scoring_status": "BLOCKED",
+            "governance": {
+                "optionschool_dependency": False,
+                "production_scoring_enabled": False,
+            },
+        }
+        result = {
+            "status": "INCOMPLETE",
+            "capture_count": 0,
+            "option_instruments": 0,
+            "underlying_instruments": 0,
+            "errors": [f"{type(exc).__name__}:{exc}"],
+            "mapping_freeze": "BLOCKED",
+            "scoring": "BLOCKED",
+        }
     package["gate_result"] = result
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
