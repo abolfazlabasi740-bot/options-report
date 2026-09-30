@@ -146,6 +146,10 @@ def publish(target: Path, manifest: dict) -> str:
         return "PUBLISHED"
 
 
+def publish_latest_evidence() -> int:
+    return main()
+
+
 def main() -> int:
     try:
         target, manifest = build_evidence()
