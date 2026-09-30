@@ -64,6 +64,7 @@ CALLBACK_COMMANDS = {
 }
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
+from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
 
@@ -189,6 +190,10 @@ def generate_report(command):
         )
 
     save_tsetmc_report(report, snapshot)
+    try:
+        publish_latest_evidence()
+    except Exception as exc:
+        print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
     return report
 
 
