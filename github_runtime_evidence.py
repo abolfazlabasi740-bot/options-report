@@ -146,40 +146,41 @@ def publish(target: Path, manifest: dict) -> str:
         return "PUBLISHED"
 
 
-def publish_latest_evidence() -> int:
-    return main()
+def publish_latest_evidence() -> str:
+    target, manifest = build_evidence()
+    try:
+        result = publish(target, manifest)
+    except Exception as exc:
+        QUEUE.mkdir(parents=True, exist_ok=True)
+        marker = QUEUE / f"{manifest['run_id']}.json"
+        marker.write_text(
+            json.dumps(
+                {
+                    "status": "PENDING_RETRY",
+                    "run_id": manifest["run_id"],
+                    "snapshot_sha256": manifest["snapshot_sha256"],
+                    "report_sha256": manifest["report_sha256"],
+                    "error": type(exc).__name__,
+                    "evidence_path": str(target),
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        print("GITHUB_EVIDENCE_STATUS=PENDING_RETRY")
+        print("GITHUB_EVIDENCE_ERROR=", type(exc).__name__)
+        return "PENDING_RETRY"
+
+    print("GITHUB_EVIDENCE_STATUS=", result)
+    print("GITHUB_EVIDENCE_SNAPSHOT_SHA=", manifest["snapshot_sha256"])
+    print("GITHUB_EVIDENCE_REPORT_SHA=", manifest["report_sha256"])
+    return result
 
 
 def main() -> int:
     try:
-        target, manifest = build_evidence()
-        try:
-            result = publish(target, manifest)
-        except Exception as exc:
-            QUEUE.mkdir(parents=True, exist_ok=True)
-            marker = QUEUE / f"{manifest['run_id']}.json"
-            marker.write_text(
-                json.dumps(
-                    {
-                        "status": "PENDING_RETRY",
-                        "run_id": manifest["run_id"],
-                        "snapshot_sha256": manifest["snapshot_sha256"],
-                        "report_sha256": manifest["report_sha256"],
-                        "error": type(exc).__name__,
-                        "evidence_path": str(target),
-                    },
-                    ensure_ascii=False,
-                    indent=2,
-                ),
-                encoding="utf-8",
-            )
-            print("GITHUB_EVIDENCE_STATUS=PENDING_RETRY")
-            print("GITHUB_EVIDENCE_ERROR=", type(exc).__name__)
-            return 0
-
-        print("GITHUB_EVIDENCE_STATUS=", result)
-        print("GITHUB_EVIDENCE_SNAPSHOT_SHA=", manifest["snapshot_sha256"])
-        print("GITHUB_EVIDENCE_REPORT_SHA=", manifest["report_sha256"])
+        publish_latest_evidence()
         return 0
     except Exception as exc:
         print("GITHUB_EVIDENCE_STATUS=LOCAL_CAPTURE_FAILED")
