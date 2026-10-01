@@ -330,7 +330,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
         f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",
         f"📌 وضعیت Opportunity Engine: {opportunity.get('status')} | نسخه: {opportunity.get('engine_version')} | کاندیداها: {opportunity.get('candidate_count', 0)}",
-        f"📌 Opportunity-Candidate: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('score') is not None)}",
+        f"📌 Opportunity-Candidate: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('economic_score') is not None)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
         f"📊 وضعیت امتیازدهی اقتصادی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
@@ -372,7 +372,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 f"#{idx} {canonical.get('نماد') or 'داده موجود نیست'} | ارزش {number(canonical.get('ارزش معاملات'))} | حجم {number(canonical.get('حجم معاملات'))} | تعداد معاملات {number(canonical.get('تعداد معاملات'))}"
             )
     else:
-        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:len(rows)]
+        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("economic_score") is not None][:len(rows)]
         if rankable:
             lines.append("مبنای ترتیب: امتیاز اقتصادی شش‌بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری 25، Payoff 18، زمان 15، Greeks 12، Market 10. امتیاز اقتصادی کارایی نسبی اقتصادی را نشان می‌دهد و بازده مورد انتظار یا احتمال سود را ادعا نمی‌کند.")
             lines.append("⚠️ بلوک یا عامل فاقد شواهد TSETMC در همان ردیف از امتیاز آن ردیف حذف و وزن بلوک‌های دارای شواهد نرمال می‌شود.")
@@ -382,7 +382,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                     for block in ("LIQUIDITY", "VALUATION", "PAYOFF", "TIME", "GREEKS", "MARKET")
                 )
                 lines.append(
-                    f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز کل {x['score']:.2f}/100 | {blocks}"
+                    f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز کل {x['economic_score']:.2f}/100 | {blocks}"
                 )
         else:
             lines.append("داده کافی برای رتبه‌بندی شش‌بلوک وجود ندارد.")
