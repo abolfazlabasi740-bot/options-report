@@ -17,6 +17,7 @@ WORK = Path.home() / ".termux_command_bridge"
 QUEUE = WORK / "queue"
 RESULTS = WORK / "results"
 POLL_SECONDS = int(os.environ.get("BRIDGE_POLL_SECONDS", "20"))
+
 ALLOWED = {"python", "python3", "git", "bash", "sh", "printf", "pwd", "ls"}
 BLOCKED_TOKENS = {
     "rm", "rmdir", "mkfs", "dd", "reboot", "shutdown", "su", "sudo",
@@ -38,7 +39,6 @@ def run(*args, cwd=None, check=True):
 
 
 def ensure_git_auth():
-    """Use the user's existing GitHub CLI authentication for Git HTTPS."""
     gh = shutil.which("gh")
     if not gh:
         raise RuntimeError("GitHub CLI 'gh' is not installed")
@@ -56,26 +56,16 @@ def ensure_git_auth():
 
 
 def ensure_commit_identity(repo_dir):
-    """Set a repository-local identity so the bridge never depends on global Git config."""
-    name = run(
-        "git", "config", "user.name", BRIDGE_GIT_NAME,
-        cwd=repo_dir, check=False
-    )
-    if name.returncode != 0:
-        raise RuntimeError(
-            "setting Git user.name failed: "
-            + (name.stderr.strip() or name.stdout.strip())
-        )
-
-    email = run(
-        "git", "config", "user.email", BRIDGE_GIT_EMAIL,
-        cwd=repo_dir, check=False
-    )
-    if email.returncode != 0:
-        raise RuntimeError(
-            "setting Git user.email failed: "
-            + (email.stderr.strip() or email.stdout.strip())
-        )
+    for key, value in (
+        ("user.name", BRIDGE_GIT_NAME),
+        ("user.email", BRIDGE_GIT_EMAIL),
+    ):
+        result = run("git", "config", key, value, cwd=repo_dir, check=False)
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"setting Git {key} failed: "
+                + (result.stderr.strip() or result.stdout.strip())
+            )
 
 
 def sync_branch(branch, dest):
@@ -141,6 +131,28 @@ def publish_result(result):
         )
 
 
+def remove_queue_item(path):
+    """Remove a consumed command from the remote queue branch."""
+    run("git", "rm", "-f", path.name, cwd=QUEUE)
+    commit = run(
+        "git", "commit", "-m",
+        f"bridge: consume {path.stem}",
+        cwd=QUEUE,
+        check=False,
+    )
+    if commit.returncode != 0:
+        raise RuntimeError(
+            "queue consume commit failed: "
+            + (commit.stderr.strip() or commit.stdout.strip())
+        )
+    push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False)
+    if push.returncode != 0:
+        raise RuntimeError(
+            "queue consume push failed: "
+            + (push.stderr.strip() or push.stdout.strip())
+        )
+
+
 def process_file(path):
     data = json.loads(path.read_text(encoding="utf-8"))
     command_id = str(data["command_id"])
@@ -168,15 +180,12 @@ def process_file(path):
             "git", "rev-parse", "HEAD", cwd=PROJECT
         ).stdout.strip(),
     }
-
     result["result_sha256"] = hashlib.sha256(
-        json.dumps(
-            result, sort_keys=True, ensure_ascii=False
-        ).encode()
+        json.dumps(result, sort_keys=True, ensure_ascii=False).encode()
     ).hexdigest()
 
     publish_result(result)
-    path.unlink()
+    remove_queue_item(path)
 
 
 def main():
@@ -195,10 +204,7 @@ def main():
             for path in sorted(QUEUE.glob("*.json")):
                 try:
                     process_file(path)
-                    print(
-                        f"BRIDGE_COMMAND_DONE={path.stem}",
-                        flush=True,
-                    )
+                    print(f"BRIDGE_COMMAND_DONE={path.stem}", flush=True)
                 except Exception as exc:
                     error_result = {
                         "command_id": path.stem,
@@ -206,12 +212,18 @@ def main():
                         "error": str(exc),
                         "finished_at": datetime.now(timezone.utc).isoformat(),
                     }
-                    publish_result(error_result)
-                    path.unlink(missing_ok=True)
-                    print(
-                        f"BRIDGE_COMMAND_REJECTED={path.stem}",
-                        flush=True,
-                    )
+                    try:
+                        publish_result(error_result)
+                        remove_queue_item(path)
+                        print(
+                            f"BRIDGE_COMMAND_REJECTED={path.stem}",
+                            flush=True,
+                        )
+                    except Exception as publish_exc:
+                        print(
+                            f"BRIDGE_QUEUE_ERROR={path.stem}: {publish_exc}",
+                            flush=True,
+                        )
         except Exception as exc:
             print(f"BRIDGE_LOOP_ERROR: {exc}", flush=True)
 
