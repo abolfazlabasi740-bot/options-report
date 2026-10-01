@@ -1,0 +1,17 @@
+{
+  "command_id": "economic_probe_20261001_v2",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T05:08:21.408306+00:00",
+  "finished_at": "2026-10-01T05:08:21.945698+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print((d:=__import__('json').load(open('output/tsetmc_first/latest_snapshot.json'))).keys())"
+  ],
+  "stdout": "dict_keys(['status', 'engine_version', 'source_of_truth', 'external_comparison_source', 'generated_at', 'row_count', 'rows', 'evidence', 'snapshot_sha256', 'data_mode', 'live_refresh_status', 'universe_row_count', 'eligibility', 'ranking', 'opportunity', 'report_mode', 'market_state'])\n",
+  "stderr": "",
+  "project_head": "c4ac94aca2ee867e539639ed12a6c8e20975304f",
+  "result_sha256": "fd4e881b995329cc58bc0ff9766198b8a92885567b434ef2666ce95a6e67ef7d"
+}
