@@ -1,0 +1,16 @@
+{
+  "command_id": "bridge_publish_20261001_runtime_evidence",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T03:52:50.611112+00:00",
+  "finished_at": "2026-10-01T03:53:06.884071+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "github_runtime_evidence.py"
+  ],
+  "stdout": "GITHUB_EVIDENCE_STATUS= PUBLISHED\nGITHUB_EVIDENCE_SNAPSHOT_SHA= bdbdb9d5530623f292ca9e1eb03e7ccc8abe4eb1eea8ee73a3a04f72fa80c7ea\nGITHUB_EVIDENCE_REPORT_SHA= cfa6467586074cb0dcbd2c278c6134fda255c1e356330afcd12f3ded45c9ade0\n",
+  "stderr": "",
+  "project_head": "29328c58931dd4d684d9db633fc6d76e6519ce79",
+  "result_sha256": "af09646476b0bc58d3c1e625f010cd460f3688bcbcd98edbe0ba7159227c3581"
+}
