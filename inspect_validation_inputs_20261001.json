@@ -1,9 +1,0 @@
-{
-  "command_id": "inspect_validation_inputs_20261001",
-  "argv": [
-    "python",
-    "-c",
-    "import glob,os; p=sorted(glob.glob('output/tsetmc_first/*_universe_snapshot.json')); print('SNAPSHOT_COUNT=',len(p)); [print(os.path.basename(x)) for x in p[-20:]]"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
