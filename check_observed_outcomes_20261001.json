@@ -1,1 +1,0 @@
-{"command_id":"check_observed_outcomes_20261001","argv":["python","-c","from pathlib import Path; import tsetmc_outcome_engine as e; r=e.build_observed_outcomes(Path('.')); print('SNAPSHOT_COUNT=',r['snapshot_count']); print('TRANSITION_COUNT=',r['transition_count']); print('STATUS=',r['status'])"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE"}
