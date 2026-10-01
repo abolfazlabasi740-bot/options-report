@@ -18,7 +18,7 @@ from zoneinfo import ZoneInfo
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
-from tsetmc_scoring_engine import build_evidence_ranking
+from economic_scoring_engine import build_economic_ranking
 from tsetmc_history import archive_universe_snapshot
 from tsetmc_eligibility import (
     OPPORTUNITY_CANDIDATE,
@@ -274,7 +274,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             if (row.get("identity") or {}).get("instrument_id") in candidate_ids
         ]
 
-        ranking = build_evidence_ranking(candidate_rows)
+        ranking = build_economic_ranking(candidate_rows)
         ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES"
         ranking["ranking_scope_row_count"] = len(candidate_rows)
         snapshot["ranking"] = ranking
@@ -333,7 +333,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"📌 Opportunity-Candidate: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('score') is not None)}",
         f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
         f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
-        f"📊 وضعیت امتیازدهی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
+        f"📊 وضعیت امتیازدهی اقتصادی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
         "⚠️ این رتبه‌بندی فقط از شواهد TSETMC و مشتقات ریاضی همان داده‌ها استفاده می‌کند؛ داده مفقود صفر یا حدس نمی‌شود.",
         "⚠️ هر فیلد فاقد شواهد مستقیم TSETMC عمداً «داده موجود نیست» باقی می‌ماند.",
     ]
@@ -358,11 +358,11 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     lines.append("INSUFFICIENT_ACTIVITY_EVIDENCE = عدم وجود شواهد فعالیت کافی")
     lines.append("Opportunity-Candidate = تعداد قراردادهایی که شواهد فعالیت صریح یا عمق دوطرفه TSETMC دارند.")
-    lines.append("Ranking-Evidence-Rows = تعداد ردیف‌هایی که Ranking Engine برای آن‌ها امتیاز معتبر ساخته است.")
+    lines.append("Ranking-Rows = تعداد ردیف‌هایی که Economic Scoring Engine برای آن‌ها امتیاز معتبر ساخته است.")
     lines.append("OPPORTUNITY_CANDIDATE = شواهد فعالیت صریح یا عمق دوطرفه TSETMC")
-    lines.append("⚠️ Candidate به معنی سیگنال خرید/فروش یا احتمال سود نیست.")
+    lines.append("⚠️ Candidate و Economic Score به معنی سیگنال خرید/فروش، بازده مورد انتظار یا احتمال سود نیستند.")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("🏆 رتبه‌بندی شواهد TSETMC")
+    lines.append("🏆 رتبه‌بندی اقتصادی TSETMC")
     lines.append("━━━━━━━━━━━━━━━━━━━━")
     if snapshot.get("report_mode") == "TRADING_ACTIVITY":
         lines.append("مبنای ترتیب: ارزش معاملات، سپس حجم معاملات و تعداد معاملات؛ بدون استفاده از امتیاز اقتصادی.")
@@ -374,7 +374,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     else:
         rankable = [x for x in ranking.get("ranking_rows", []) if x.get("score") is not None][:len(rows)]
         if rankable:
-            lines.append("مبنای ترتیب: امتیاز Evidence-based شش بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری نسبی 25، Payoff 18، زمان 15، Greeks 12، Market 10. ارزش‌گذاری در این نسخه فقط «بار پریمیوم نسبت به سهم پایه» است و ارزش منصفانه/IV ادعا نمی‌کند.")
+            lines.append("مبنای ترتیب: امتیاز اقتصادی شش‌بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری 25، Payoff 18، زمان 15، Greeks 12، Market 10. امتیاز اقتصادی کارایی نسبی اقتصادی را نشان می‌دهد و بازده مورد انتظار یا احتمال سود را ادعا نمی‌کند.")
             lines.append("⚠️ بلوک یا عامل فاقد شواهد TSETMC در همان ردیف از امتیاز آن ردیف حذف و وزن بلوک‌های دارای شواهد نرمال می‌شود.")
             for x in rankable:
                 blocks = " | ".join(
@@ -460,7 +460,7 @@ def save_tsetmc_report(report, snapshot):
             "rows": snapshot.get("evidence", {}).get("orderbook_evidence", []),
         },
         "market_state": snapshot.get("market_state", {}),
-        "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN" if snapshot.get("report_mode") == "TRADING_ACTIVITY" else "TSETMC_EVIDENCE_RANKING",
+        "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN" if snapshot.get("report_mode") == "TRADING_ACTIVITY" else "TSETMC_ECONOMIC_SCORING",
         "ranking_status": "OFF" if snapshot.get("report_mode") == "TRADING_ACTIVITY" else "TSETMC_EVIDENCE_RANKING",
         "ranking": snapshot.get("ranking", {}),
         "eligibility": snapshot.get("eligibility", {}),
