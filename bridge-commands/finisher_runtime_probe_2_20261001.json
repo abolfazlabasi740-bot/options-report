@@ -1,0 +1,9 @@
+{
+  "command_id": "finisher_runtime_probe_2_20261001",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\np=Path('PROJECT_FINISHER_STATE.json')\nprint(p.read_text(encoding='utf-8'))\nlog=Path('output/project_finisher_agent.log')\nprint('LOG_TAIL=', log.read_text(encoding='utf-8')[-5000:] if log.exists() else '')"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
