@@ -1,0 +1,17 @@
+{
+  "command_id": "inspect_validation_state_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T06:39:55.206939+00:00",
+  "finished_at": "2026-10-01T06:39:57.907267+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import glob,json,os; p=sorted(glob.glob('output/tsetmc_first/*_universe_snapshot.json')); print('SNAPSHOT_COUNT=',len(p));\nfor x in p[-10:]:\n d=json.load(open(x)); print(os.path.basename(x),'TOP_KEYS=',list(d)[:12],'SOURCE_TIME=',d.get('latest_source_market_timestamp',d.get('source_market_timestamp',d.get('market_timestamp'))),'GENERATED_AT=',d.get('generated_at',d.get('created_at')),'RECORDS=',len(d.get('records',d.get('universe',[]))))"
+  ],
+  "stdout": "SNAPSHOT_COUNT= 2\nlatest_universe_snapshot.json TOP_KEYS= ['status', 'engine_version', 'source_of_truth', 'external_comparison_source', 'generated_at', 'row_count', 'rows', 'evidence', 'snapshot_sha256', 'data_mode', 'live_refresh_status', 'universe_row_count'] SOURCE_TIME= None GENERATED_AT= 2026-10-01T06:36:56.694876+00:00 RECORDS= 0\nobservation_2_universe_snapshot.json TOP_KEYS= ['status', 'engine_version', 'source_of_truth', 'external_comparison_source', 'generated_at', 'row_count', 'rows', 'evidence', 'snapshot_sha256', 'data_mode', 'live_refresh_status', 'universe_row_count'] SOURCE_TIME= None GENERATED_AT= 2026-09-26T04:02:58.352616+00:00 RECORDS= 0\n",
+  "stderr": "",
+  "project_head": "591166429f91d76fbf224770a4a25b840a43d6f7",
+  "result_sha256": "715e007008ab821f61f1d4bf85f86d0f175983e0d27efa8de94ea8b467c9e02e"
+}
