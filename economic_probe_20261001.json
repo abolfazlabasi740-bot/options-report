@@ -1,0 +1,17 @@
+{
+  "command_id": "economic_probe_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T05:07:51.879476+00:00",
+  "finished_at": "2026-10-01T05:07:52.361929+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print((d:=__import__('json').load(open('output/latest_audit.json'))).keys())"
+  ],
+  "stdout": "dict_keys(['audit_version', 'status', 'source_of_truth', 'external_comparison_source', 'snapshot_sha256', 'row_count', 'generated_at', 'data_mode', 'live_refresh_status', 'fallback_reason', 'basis_source_market_timestamp', 'last_known_snapshot', 'market_watch', 'best_limits_evidence', 'market_state', 'scoring_status', 'ranking_status', 'ranking', 'eligibility', 'opportunity', 'live_movement_claim', 'report_sha256', 'audit_integrity'])\n",
+  "stderr": "",
+  "project_head": "c4ac94aca2ee867e539639ed12a6c8e20975304f",
+  "result_sha256": "4a4f9d26a55d262f99281a5bac0bd1f525149e3ed2429fe60f23c92f7b161ddf"
+}
