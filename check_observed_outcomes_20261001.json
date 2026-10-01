@@ -1,0 +1,17 @@
+{
+  "command_id": "check_observed_outcomes_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T06:53:12.532452+00:00",
+  "finished_at": "2026-10-01T06:53:41.177341+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path; import tsetmc_outcome_engine as e; r=e.build_observed_outcomes(Path('.')); print('SNAPSHOT_COUNT=',r['snapshot_count']); print('TRANSITION_COUNT=',r['transition_count']); print('STATUS=',r['status'])"
+  ],
+  "stdout": "SNAPSHOT_COUNT= 40\nTRANSITION_COUNT= 55772\nSTATUS= PASS\n",
+  "stderr": "",
+  "project_head": "591166429f91d76fbf224770a4a25b840a43d6f7",
+  "result_sha256": "7886b352ad645067699e129aacd06f41e048315814a091b34f025103771997f7"
+}
