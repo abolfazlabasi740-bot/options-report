@@ -1,0 +1,17 @@
+{
+  "command_id": "economic_probe_20261001_v3",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-01T05:08:51.622981+00:00",
+  "finished_at": "2026-10-01T05:08:51.950041+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print((r:=next(x for x in (d:=__import__('json').load(open('output/tsetmc_first/latest_snapshot.json')))['rows'] if x.get('opportunity_status')=='OPPORTUNITY_CANDIDATE')); print(r.get('identity')); print(r.get('canonical'))"
+  ],
+  "stdout": "",
+  "stderr": "  File \"<string>\", line 1\n    print((r:=next(x for x in (d:=__import__('json').load(open('output/tsetmc_first/latest_snapshot.json')))['rows'] if x.get('opportunity_status')=='OPPORTUNITY_CANDIDATE')); print(r.get('identity')); print(r.get('canonical'))\n                                                                                                                                                                              ^\nSyntaxError: invalid syntax\n",
+  "project_head": "c4ac94aca2ee867e539639ed12a6c8e20975304f",
+  "result_sha256": "6de4154b8f1d8887f127a72734435c40d5837336a5dda661debdd620a7425548"
+}
