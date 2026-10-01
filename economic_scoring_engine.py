@@ -20,6 +20,7 @@ Policy:
 """
 from __future__ import annotations
 import math
+from bisect import bisect_right
 from typing import Any
 
 BLOCK_WEIGHTS = {
@@ -52,20 +53,25 @@ def _num(v: Any) -> float | None:
 
 
 def _rank(values: list[float | None], higher: bool) -> list[float | None]:
+    """Return the established cross-sectional rank semantics in O(n log n)."""
     valid = sorted(v for v in values if v is not None)
     if not valid:
         return [None] * len(values)
     n = len(valid)
     if n == 1:
         return [1.0 if v is not None else None for v in values]
-    out=[]
+    out = []
     for v in values:
         if v is None:
             out.append(None)
             continue
-        r=sum(1 for x in valid if x <= v)/n
-        out.append(r if higher else 1.0-r+1.0/n)
-    return [max(0.0,min(1.0,x)) if x is not None else None for x in out]
+        count_le = bisect_right(valid, v)
+        if higher:
+            score = count_le / n
+        else:
+            score = 1.0 - count_le / n + 1.0 / n
+        out.append(max(0.0, min(1.0, score)))
+    return out
 
 
 def _derived(row: dict[str, Any]) -> dict[str, Any]:
