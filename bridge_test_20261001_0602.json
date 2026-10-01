@@ -1,0 +1,9 @@
+{
+  "command_id": "bridge_test_20261001_0602",
+  "argv": [
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
