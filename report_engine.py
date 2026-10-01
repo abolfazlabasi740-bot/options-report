@@ -19,6 +19,7 @@ from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from economic_scoring_engine import build_economic_ranking
+from signal_engine_shadow import evaluate_shadow_candidates
 from tsetmc_history import archive_universe_snapshot
 from tsetmc_eligibility import (
     OPPORTUNITY_CANDIDATE,
@@ -279,6 +280,21 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         ranking["ranking_scope_row_count"] = len(candidate_rows)
         snapshot["ranking"] = ranking
 
+        shadow_candidates = []
+        for item in ranking.get("ranking_rows", []):
+            shadow_candidates.append({
+                "instrument_id": item.get("instrument_id"),
+                "symbol": item.get("symbol"),
+                "contract_type": item.get("contract_type"),
+                "rank": item.get("rank"),
+                "economic_score": item.get("economic_score"),
+                "evidence": {
+                    "supported_blocks": item.get("supported_blocks") or [],
+                    "features": item.get("features") or {},
+                },
+            })
+        snapshot["signal_shadow"] = evaluate_shadow_candidates(shadow_candidates)
+
         opportunity = build_opportunity_candidates(rows, ranking, eligibility)
         snapshot["opportunity"] = opportunity
 
@@ -294,6 +310,15 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         )
         rows = candidate_rows[:limit]
         snapshot["report_mode"] = "RANKED"
+    if report_mode == "TRADING_ACTIVITY":
+        snapshot["signal_shadow"] = {
+            "status": "OFF",
+            "engine_version": "SIGNAL-SHADOW-1.1",
+            "production_enabled": False,
+            "signal_count": 0,
+            "buy_sell_signal": "NOT_GENERATED",
+            "items": [],
+        }
     _attach_canonical_quote_evidence(rows)
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
@@ -465,6 +490,7 @@ def save_tsetmc_report(report, snapshot):
         "ranking": snapshot.get("ranking", {}),
         "eligibility": snapshot.get("eligibility", {}),
         "opportunity": snapshot.get("opportunity", {}),
+        "signal_shadow": snapshot.get("signal_shadow", {}),
         "live_movement_claim": "NOT_CLAIMED",
         "report_sha256": report_sha256,
     }
