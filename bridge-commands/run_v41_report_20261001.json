@@ -1,0 +1,10 @@
+{
+  "command_id": "run_v41_report_20261001",
+  "argv": [
+    "python",
+    "report_engine.py",
+    "--top",
+    "15"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
