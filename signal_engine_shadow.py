@@ -4,7 +4,7 @@
 from __future__ import annotations
 from typing import Any
 
-SIGNAL_ENGINE_VERSION = "SIGNAL-SHADOW-1.0"
+SIGNAL_ENGINE_VERSION = "SIGNAL-SHADOW-1.1"
 BLOCKED = "BLOCKED"
 WATCH = "WATCH"
 PRODUCTION_NOT_ENABLED = "PRODUCTION_SIGNAL_NOT_ENABLED"
@@ -25,9 +25,10 @@ def evaluate_shadow_candidate(candidate: dict[str, Any], *, strategy_policy=None
     evidence = candidate.get("evidence") or {}
     features = evidence.get("features") or {}
     blockers = list(candidate.get("blockers") or [])
+    score = candidate.get("economic_score") if "economic_score" in candidate else candidate.get("score")
     if not candidate.get("instrument_id") or candidate.get("contract_type") not in {"CALL", "PUT"}:
         blockers.append("IDENTITY_OR_CONTRACT_TYPE_UNAVAILABLE")
-    if candidate.get("score") is None:
+    if score is None:
         blockers.append("RANKING_SCORE_UNAVAILABLE")
     if not evidence.get("supported_blocks"):
         blockers.append("NO_SUPPORTED_RANKING_BLOCK")
@@ -38,7 +39,7 @@ def evaluate_shadow_candidate(candidate: dict[str, Any], *, strategy_policy=None
     if not production_enabled:
         blockers.append(PRODUCTION_NOT_ENABLED)
     observed = {
-        "ranking_score": _num(candidate.get("score")),
+        "ranking_score": _num(score),
         "ranking_rank": candidate.get("rank"),
         "contract_type": candidate.get("contract_type"),
         "calendar_days": _num(features.get("calendar_days")),
@@ -57,7 +58,7 @@ def evaluate_shadow_candidate(candidate: dict[str, Any], *, strategy_policy=None
         "symbol": candidate.get("symbol"),
         "contract_type": candidate.get("contract_type"),
         "ranking_rank": candidate.get("rank"),
-        "ranking_score": candidate.get("score"),
+        "ranking_score": score,
         "observed_evidence": observed,
         "strategy_policy_version": strategy_policy.get("version"),
         "risk_policy_version": risk_policy.get("version"),
