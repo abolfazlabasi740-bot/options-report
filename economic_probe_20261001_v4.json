@@ -1,0 +1,17 @@
+{
+  "command_id": "economic_probe_20261001_v4",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-01T05:09:21.447194+00:00",
+  "finished_at": "2026-10-01T05:09:22.008345+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print((r:=next(x for x in __import__('json').load(open('output/tsetmc_first/latest_snapshot.json'))['rows'] if x.get('opportunity_status')=='OPPORTUNITY_CANDIDATE'), r.get('identity'), r.get('canonical')))"
+  ],
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    print((r:=next(x for x in __import__('json').load(open('output/tsetmc_first/latest_snapshot.json'))['rows'] if x.get('opportunity_status')=='OPPORTUNITY_CANDIDATE'), r.get('identity'), r.get('canonical')))\n              ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nStopIteration\n",
+  "project_head": "c4ac94aca2ee867e539639ed12a6c8e20975304f",
+  "result_sha256": "73d031134bc935ba52b087757619bc421de30412b21aeef76f38ad14ed70a2cf"
+}
