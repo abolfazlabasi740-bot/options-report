@@ -1,0 +1,8 @@
+{
+  "command_id": "finisher_supervisor_start_v2_20261001",
+  "argv": [
+    "python",
+    "scripts/project_finisher_agent.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
