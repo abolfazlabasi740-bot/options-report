@@ -1,0 +1,11 @@
+{
+  "command_id": "economic_tests_pull_verify",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ]
+}
