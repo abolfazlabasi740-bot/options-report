@@ -1,0 +1,8 @@
+{
+  "command_id": "economic_runtime_evidence_final_20261001",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "github_runtime_evidence.py"
+  ]
+}
