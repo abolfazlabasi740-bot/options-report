@@ -1,0 +1,17 @@
+{
+  "command_id": "run_economic_validation_real_20261001",
+  "status": "FAILED",
+  "exit_code": -9,
+  "started_at": "2026-10-01T11:20:05.679630+00:00",
+  "finished_at": "2026-10-01T14:52:47.578374+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path; import tsetmc_outcome_engine as o; import economic_validation_engine as v; r=o.build_observed_outcomes(Path('.')); rows=[]\nfor t in r['transitions']:\n f={'option_return_pct':t.get('option_change_pct'),'time_value_ratio':None,'breakeven_distance':None,'premium_burden':None,'intrinsic_coverage':None,'calendar_days':t.get('elapsed_days')}; rows.append({'entry_observation_time':t.get('entry_observation_time'),'instrument_id':t.get('instrument_id'),'option_return_pct':t.get('option_change_pct'),'entry_features':f})\nres=v.validate_walk_forward(rows); print('SNAPSHOTS=',res['entry_snapshot_count']); print('WINDOWS=',res['validation_window_count']); print('RESULTS=',res['result_count']); print('STATUS=',res['status'])"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "project_head": "fd47b319d4c65cac146386c0e3863091d8928481",
+  "result_sha256": "6fe48d0d5c5712406288442fea83acc9518ccb144c2782ea9f0e199214095de3"
+}
