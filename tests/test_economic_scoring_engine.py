@@ -5,7 +5,7 @@ class EconomicScoringTests(unittest.TestCase):
     def row(self,symbol,S,K,P,close,volume=100,value=1000,days=20,typ="CALL"):
         return {"canonical":{"نماد":symbol,"قیمت سهم پایه":S,"قیمت اعمال":K,"آخرین قیمت":P,
         "قیمت پایانی":close,"حجم معاملات":volume,"ارزش معاملات":value,"روزهای تقویمی":days,
-        "بیشترین قیمت":P*1.05,"کمترین قیمت":P*.95},
+        "بیشترین قیمت":(P*1.05 if P is not None else None),"کمترین قیمت":(P*.95 if P is not None else None)},
         "identity":{"instrument_id":symbol,"contract_type":typ}}
 
     def test_mode_and_source(self):
