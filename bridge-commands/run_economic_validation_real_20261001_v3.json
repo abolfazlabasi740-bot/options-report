@@ -1,0 +1,8 @@
+{
+  "command_id": "run_economic_validation_real_20261001_v3",
+  "argv": [
+    "python",
+    "economic_validation_evidence_builder.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
