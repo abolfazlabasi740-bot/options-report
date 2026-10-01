@@ -1,9 +1,0 @@
-{
-  "command_id": "finisher_cycle_2_now_20261001",
-  "argv": [
-    "python",
-    "-c",
-    "import project_finisher_agent as a\na.cycle(2)"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
