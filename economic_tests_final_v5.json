@@ -1,0 +1,14 @@
+{
+  "command_id": "economic_tests_final_v5",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_economic_scoring_engine.py"
+  ]
+}
