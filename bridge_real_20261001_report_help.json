@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_real_20261001_report_help",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T17:33:14.777609+00:00",
+  "finished_at": "2026-10-01T17:33:15.008756+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "report_engine.py",
+    "--help"
+  ],
+  "stdout": "usage: report_engine.py [-h] [--symbol SYMBOL] [--underlying UNDERLYING]\n                        [--top TOP] [--flow FLOW] [--trading-top]\n\nGenerate the active V4.1.1 report from TSETMC only.\n\noptions:\n  -h, --help            show this help message and exit\n  --symbol SYMBOL       Exact TSETMC option symbol prefix filter\n  --underlying UNDERLYING\n                        Exact TSETMC underlying symbol filter\n  --top TOP\n  --flow FLOW\n  --trading-top         Rank by explicit TSETMC trading activity\n",
+  "stderr": "",
+  "project_head": "0c73c99b2555f3a31e9352cd99bf72edcfc201ad",
+  "result_sha256": "070d9d542e61f49d4677a23246facafdc46c0b0d33ad4b2d823439bdc0b7f332"
+}
