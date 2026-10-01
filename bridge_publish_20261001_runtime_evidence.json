@@ -1,8 +1,0 @@
-{
-  "command_id": "bridge_publish_20261001_runtime_evidence",
-  "argv": [
-    "python",
-    "github_runtime_evidence.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
