@@ -32,7 +32,7 @@ class EconomicScoringTests(unittest.TestCase):
         r=build_economic_ranking([self.row("M",100,100,None,None)])
         x=r["ranking_rows"][0]
         self.assertIsNone(x["features"]["premium_burden"])
-        self.assertIsNone(x["economic_score"])
+        self.assertIsNone(x["features"]["trade_value"])
 
     def test_call_and_put_derivations(self):
         c=build_economic_ranking([self.row("C",100,90,15,15,typ="CALL")])["ranking_rows"][0]
