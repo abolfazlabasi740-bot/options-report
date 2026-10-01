@@ -1,0 +1,8 @@
+{
+  "command_id": "validation_observation_4_20261001",
+  "argv": [
+    "python",
+    "report_engine.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
