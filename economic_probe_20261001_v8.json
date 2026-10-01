@@ -1,9 +1,0 @@
-{
-  "command_id": "economic_probe_20261001_v8",
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
-  "argv": [
-    "python",
-    "-c",
-    "print((d:=__import__('json').load(open('output/tsetmc_first/latest_snapshot.json')))['eligibility'].get('candidate_instrument_ids')[:3], d['rows'][0]['identity']['instrument_id'], d['rows'][0]['identity']['instrument_id'] in set(d['eligibility'].get('candidate_instrument_ids') or []))"
-  ]
-}
