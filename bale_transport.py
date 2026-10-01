@@ -1,10 +1,13 @@
-"""Shared Bale transport; importing it never sends a message."""
+"""Shared Bale transport with no third-party HTTP dependency."""
+from __future__ import annotations
+
 import json
-import requests
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 
 def split_message(text, limit=3500):
-    """Keep report cards intact when possible; otherwise split at newlines."""
     if limit <= 0:
         raise ValueError("limit must be positive")
     chunks, current = [], ""
@@ -31,34 +34,38 @@ def send_message(token, chat_id, text, return_receipts=False, reply_markup=None)
     chunks = split_message(text)
     receipts = []
     for chunk in chunks:
+        payload = {"chat_id": chat_id, "text": chunk}
+        if reply_markup:
+            payload["reply_markup"] = json.dumps(reply_markup, ensure_ascii=False)
+        request = Request(
+            f"https://tapi.bale.ai/bot{token}/sendMessage",
+            data=urlencode(payload).encode("utf-8"),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            method="POST",
+        )
         try:
-            response = requests.post(
-                f"https://tapi.bale.ai/bot{token}/sendMessage",
-                data={"chat_id": chat_id, "text": chunk, **({"reply_markup": json.dumps(reply_markup, ensure_ascii=False)} if reply_markup else {})}, timeout=30,
-            )
-            response.raise_for_status()
-            payload = response.json()
-            if not payload.get("ok"):
-                raise ValueError("Bale rejected message")
+            with urlopen(request, timeout=30) as response:
+                raw = response.read().decode("utf-8")
+                status = getattr(response, "status", 200)
+            if status < 200 or status >= 300:
+                raise RuntimeError(f"ارسال بله ناموفق بود؛ HTTP_STATUS={status}")
+            result = json.loads(raw)
+            if not result.get("ok"):
+                raise RuntimeError("ارسال بله ناموفق بود؛ REASON=API_REJECTED")
             if return_receipts:
-                result = payload.get("result") or {}
+                item = result.get("result") or {}
                 receipts.append({
-                    "message_id": result.get("message_id"),
-                    "chat_id": (result.get("chat") or {}).get("id"),
+                    "message_id": item.get("message_id"),
+                    "chat_id": (item.get("chat") or {}).get("id"),
                 })
-        except requests.HTTPError as exc:
-            status = getattr(exc.response, "status_code", None)
+        except HTTPError as exc:
             raise RuntimeError(
-                "ارسال بله ناموفق بود؛ HTTP_STATUS=" + str(status or "UNKNOWN") + "؛ احتمال ارسال بخشی از گزارش وجود دارد"
+                f"ارسال بله ناموفق بود؛ HTTP_STATUS={exc.code}؛ احتمال ارسال بخشی از گزارش وجود دارد"
             ) from None
-        except requests.RequestException as exc:
-            reason = type(exc).__name__
+        except URLError as exc:
             raise RuntimeError(
-                f"ارسال بله ناموفق بود؛ NETWORK_ERROR={reason}؛ احتمال ارسال بخشی از گزارش وجود دارد"
+                f"ارسال بله ناموفق بود؛ NETWORK_ERROR={type(exc.reason).__name__ if exc.reason else 'URLError'}؛ احتمال ارسال بخشی از گزارش وجود دارد"
             ) from None
-        except ValueError as exc:
-            reason = "API_REJECTED" if str(exc) == "Bale rejected message" else "INVALID_RESPONSE"
-            raise RuntimeError(
-                f"ارسال بله ناموفق بود؛ REASON={reason}؛ احتمال ارسال بخشی از گزارش وجود دارد"
-            ) from None
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            raise RuntimeError("ارسال بله ناموفق بود؛ REASON=INVALID_RESPONSE") from None
     return receipts if return_receipts else len(chunks)
