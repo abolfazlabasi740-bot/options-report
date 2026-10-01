@@ -1,0 +1,22 @@
+{
+  "command_id": "economic_tests_final_v4",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-01T05:44:35.806472+00:00",
+  "finished_at": "2026-10-01T05:44:36.132270+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_economic_scoring_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "...F.\n======================================================================\nFAIL: test_missing_data_is_not_zero (test_economic_scoring_engine.EconomicScoringTests.test_missing_data_is_not_zero)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/tests/test_economic_scoring_engine.py\", line 35, in test_missing_data_is_not_zero\n    self.assertIsNone(x[\"economic_score\"])\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 100.0 is not None\n\n----------------------------------------------------------------------\nRan 5 tests in 0.005s\n\nFAILED (failures=1)\n",
+  "project_head": "ef8812cd563894952b4e5714ee38ae7ab5804b02",
+  "result_sha256": "e7e02e8778781a83eda6af1f9e9ea975986b2ecb1603a39c8dac67a25d37581c"
+}
