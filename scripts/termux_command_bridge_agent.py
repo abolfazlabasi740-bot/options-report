@@ -140,7 +140,7 @@ def remove_queue_item(path):
 
     ensure_commit_identity(QUEUE)
 
-    result = run("git", "rm", "-f", "--", path.name, cwd=QUEUE, check=False)
+    result = run("git", "rm", "-f", "--", path.relative_to(QUEUE).as_posix(), cwd=QUEUE, check=False)
     if result.returncode != 0:
         if "pathspec" in (result.stderr or "").lower():
             return
@@ -245,7 +245,7 @@ def main():
             print("BRIDGE_LOOP_TICK", flush=True)
             sync_branch(QUEUE_BRANCH, QUEUE)
             print("BRIDGE_QUEUE_SYNCED", flush=True)
-            for path in sorted(QUEUE.glob("*.json")):
+            for path in sorted((QUEUE / "bridge-commands").glob("*.json")):
                 try:
                     print(f"BRIDGE_COMMAND_START={path.stem}", flush=True)
                     process_file(path)
