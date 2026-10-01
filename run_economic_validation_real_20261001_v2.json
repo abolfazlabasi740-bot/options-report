@@ -1,0 +1,16 @@
+{
+  "command_id": "run_economic_validation_real_20261001_v2",
+  "status": "FAILED",
+  "exit_code": 2,
+  "started_at": "2026-10-01T14:52:54.792021+00:00",
+  "finished_at": "2026-10-01T14:52:54.949586+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "economic_validation_evidence_builder.py"
+  ],
+  "stdout": "",
+  "stderr": "python: can't open file '/data/data/com.termux/files/home/OptimusAI_V41_LIVE/economic_validation_evidence_builder.py': [Errno 2] No such file or directory\n",
+  "project_head": "fd47b319d4c65cac146386c0e3863091d8928481",
+  "result_sha256": "54399424ddfab2b61022253eecbac1f57b654c47c8f36633f9e74689a9d9d90a"
+}
