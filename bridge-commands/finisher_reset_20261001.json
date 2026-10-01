@@ -1,0 +1,10 @@
+{
+  "command_id": "finisher_reset_20261001",
+  "argv": [
+    "git",
+    "reset",
+    "--hard",
+    "origin/main"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
