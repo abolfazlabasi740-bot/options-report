@@ -1,0 +1,17 @@
+{
+  "command_id": "inspect_validation_snapshots_4_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T06:38:22.909019+00:00",
+  "finished_at": "2026-10-01T06:38:23.063830+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import glob,os; p=sorted(glob.glob('output/tsetmc_first/*_universe_snapshot.json')); print('SNAPSHOT_COUNT=',len(p)); [print(os.path.basename(x)) for x in p[-20:]]"
+  ],
+  "stdout": "SNAPSHOT_COUNT= 2\nlatest_universe_snapshot.json\nobservation_2_universe_snapshot.json\n",
+  "stderr": "",
+  "project_head": "591166429f91d76fbf224770a4a25b840a43d6f7",
+  "result_sha256": "d95a35b7ad7d33c5679b03cea93d7d05bf0558c0c60028ea194c99bc3180a52e"
+}
