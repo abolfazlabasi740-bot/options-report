@@ -1,9 +1,0 @@
-{
-  "command_id": "diagnose_g75_zero_returns_v2_20261001",
-  "argv": [
-    "python",
-    "-c",
-    "import json; p=json.load(open('output/g7_5_economic_validation_evidence.json')); r=p['validation']['results']; s=[x['test_stats'] for x in r]; print(json.dumps({'result_count':len(r),'positive_rate_none':sum(x.get('positive_rate') is None for x in s),'positive_rate_zero':sum(x.get('positive_rate')==0 for x in s),'positive_total':sum((x.get('positive_count') or 0) for x in s),'counts_total':sum((x.get('count') or 0) for x in s),'mean_none':sum(x.get('mean_return_pct') is None for x in s),'mean_zero':sum(x.get('mean_return_pct')==0 for x in s),'features':sorted({x.get('feature') for x in r})},ensure_ascii=False))"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
