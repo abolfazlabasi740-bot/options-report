@@ -58,18 +58,6 @@ def _groups(observations: list[dict[str, Any]]) -> list[str]:
     }, key=lambda x: _time(x))
 
 
-def _matched(rows: list[dict[str, Any]], feature: str, threshold: float, op: str) -> list[dict[str, Any]]:
-    out = []
-    for row in rows:
-        value = _num((row.get("entry_features") or {}).get(feature))
-        ret = _num(row.get("option_return_pct"))
-        if value is None or ret is None:
-            continue
-        if (value <= threshold if op == "LE" else value >= threshold):
-            out.append(row)
-    return out
-
-
 def _stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
     returns = [_num(r.get("option_return_pct")) for r in rows]
     returns = [x for x in returns if x is not None]
@@ -82,26 +70,55 @@ def _stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _match_stats(test: list[dict[str, Any]], feature: str, threshold: float, op: str) -> dict[str, Any]:
+    returns = []
+    for row in test:
+        value = _num((row.get("entry_features") or {}).get(feature))
+        ret = _num(row.get("option_return_pct"))
+        if value is None or ret is None:
+            continue
+        if value <= threshold if op == "LE" else value >= threshold:
+            returns.append(ret)
+    positive = sum(1 for x in returns if x > 0)
+    return {
+        "count": len(returns),
+        "positive_count": positive,
+        "positive_rate": positive / len(returns) if returns else None,
+        "mean_return_pct": sum(returns) / len(returns) if returns else None,
+    }
+
+
 def validate_walk_forward(observations: list[dict[str, Any]]) -> dict[str, Any]:
     groups = _groups(observations)
+    by_group = {g: [] for g in groups}
+    for row in observations:
+        g = row.get("entry_observation_time")
+        if g in by_group:
+            by_group[g].append(row)
+
     results = []
     for idx in range(MIN_TRAIN_SNAPSHOTS, len(groups)):
-        train_groups = set(groups[:idx])
+        train_groups = groups[:idx]
         test_group = groups[idx]
-        train = [r for r in observations if r.get("entry_observation_time") in train_groups]
-        test = [r for r in observations if r.get("entry_observation_time") == test_group]
-        for feature in sorted({
+        train = [r for g in train_groups for r in by_group[g]]
+        test = by_group[test_group]
+
+        feature_names = sorted({
             f for r in train for f in (r.get("entry_features") or {})
-            if any(_num((x.get("entry_features") or {}).get(f)) is not None for x in train)
-        }):
+            if _num((r.get("entry_features") or {}).get(f)) is not None
+        })
+        train_values = {}
+        for feature in feature_names:
             values = [_num((r.get("entry_features") or {}).get(feature)) for r in train]
-            values = [x for x in values if x is not None]
+            train_values[feature] = [x for x in values if x is not None]
+
+        for feature in feature_names:
+            values = train_values[feature]
             for name, p in PERCENTILES:
                 threshold = _percentile(values, p)
                 if threshold is None:
                     continue
                 for op in OPERATORS:
-                    matched = _matched(test, feature, threshold, op)
                     results.append({
                         "train_entry_snapshots": idx,
                         "test_entry_snapshot": test_group,
@@ -109,7 +126,7 @@ def validate_walk_forward(observations: list[dict[str, Any]]) -> dict[str, Any]:
                         "operator": op,
                         "threshold_source": name,
                         "threshold": threshold,
-                        "test_stats": _stats(matched),
+                        "test_stats": _match_stats(test, feature, threshold, op),
                     })
     return {
         "status": "PASS",
