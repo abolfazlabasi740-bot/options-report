@@ -1,0 +1,11 @@
+{
+  "command_id": "bridge_pull_20261001_economic_v2",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ]
+}
