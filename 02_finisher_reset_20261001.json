@@ -1,6 +1,18 @@
 {
   "command_id": "02_finisher_reset_20261001",
-  "status": "REJECTED",
-  "error": "queue consume push failed: To https://github.com/abolfazlabasi740-bot/options-report.git\n ! [remote rejected] bridge-commands -> bridge-commands (cannot lock ref 'refs/heads/bridge-commands': is at 4ffa4233c3f42dac068cf191c8f6a297d929c247 but expected 2790c17028845817c70b45d1d6a884b18a464a11)\nerror: failed to push some refs to 'https://github.com/abolfazlabasi740-bot/options-report.git'",
-  "finished_at": "2026-10-01T19:14:08.925370+00:00"
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T19:14:44.632587+00:00",
+  "finished_at": "2026-10-01T19:14:44.795299+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "reset",
+    "--hard",
+    "origin/main"
+  ],
+  "stdout": "HEAD is now at 703100e cleanup: remove queue file from main\n",
+  "stderr": "",
+  "project_head": "703100e015b3368ec47e07b81818bc066f69b404",
+  "result_sha256": "bac560ebfca815cd09aded3d5aaf16a27e6a3127e605d72b5ede20fd2d0bd65f"
 }
