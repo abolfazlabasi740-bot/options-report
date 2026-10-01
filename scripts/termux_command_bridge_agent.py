@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -202,7 +203,33 @@ def process_file(path):
     remove_queue_item(path)
 
 
+def _daemonize():
+    if os.environ.get("BRIDGE_DAEMON_CHILD") == "1":
+        return False
+    log_dir = WORK
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / "bridge_agent.log"
+    env = os.environ.copy()
+    env["BRIDGE_DAEMON_CHILD"] = "1"
+    with log_path.open("a", encoding="utf-8") as log:
+        subprocess.Popen(
+            [sys.executable, str(Path(__file__).resolve())],
+            cwd=str(PROJECT),
+            stdin=subprocess.DEVNULL,
+            stdout=log,
+            stderr=log,
+            start_new_session=True,
+            env=env,
+            close_fds=True,
+        )
+    print("BRIDGE_DAEMON_STARTED", flush=True)
+    print(f"BRIDGE_LOG={log_path}", flush=True)
+    return True
+
+
 def main():
+    if _daemonize():
+        return
     WORK.mkdir(parents=True, exist_ok=True)
     QUEUE.mkdir(exist_ok=True)
     RESULTS.mkdir(exist_ok=True)
