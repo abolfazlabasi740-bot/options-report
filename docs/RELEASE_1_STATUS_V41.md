@@ -2,7 +2,7 @@
 
 ## Scope
 
-Release 1 is the operational TSETMC-only reporting layer. Its purpose is to provide a reproducible market-universe snapshot, evidence-backed opportunity ranking, report generation, Bale delivery, and runtime evidence publication.
+Release 1 is the operational TSETMC-only reporting layer. Its purpose is to provide a reproducible market-universe snapshot, eligibility/candidate classification, economic-efficiency ranking from available TSETMC fields, report generation, Bale delivery, and runtime evidence publication.
 
 Release 1 does not claim an economically validated Buy/Sell signal.
 
@@ -11,8 +11,8 @@ Release 1 does not claim an economically validated Buy/Sell signal.
 - TSETMC is the operational source of truth.
 - Full option-universe discovery is performed before the report display limit is applied.
 - TSETMC eligibility and opportunity-candidate classification are implemented.
-- TSETMC evidence ranking is implemented and produces a deterministic Top-N report.
-- Explicit source market timestamps are preserved when available; retrieval time is not substituted for market time.
+- The report uses the V4.1 economic scoring engine on eligible opportunity candidates.
+- The report preserves explicit source market timestamps when available; retrieval time is not substituted for market time.
 - The report distinguishes LIVE_TSETMC_REFRESH from last-known/off-market state.
 - Bale delivery has been physically verified with message receipts.
 - Runtime evidence publisher architecture is integrated and nonblocking for Bale delivery.
@@ -20,32 +20,31 @@ Release 1 does not claim an economically validated Buy/Sell signal.
 - BestLimits semantic mapping has been independently evidenced and recorded.
 - G7.2 historical sensitivity is closed as evidence-only validation.
 - Historical OptionSchool artifacts remain audit evidence only and are not part of the operational TSETMC path.
-- The project-control rule requiring GitHub/history review before any Termux command is recorded in `docs/PROJECT_CONTROL_RULES_V41.md`.
+- The project-control rule requiring GitHub/history review before any Termux command is recorded in docs/PROJECT_CONTROL_RULES_V41.md.
 
 ## Current scoring boundary
 
-The production report uses `tsetmc_scoring_engine.build_evidence_ranking()`.
+The production report invokes economic_scoring_engine.build_economic_ranking() after TSETMC eligibility/candidate classification.
 
-It is explicitly an evidence ranking, not the historical `scoring_engine.py` FinalScore path.
+The economic score is a deterministic cross-sectional efficiency/ranking measure based only on currently available TSETMC inputs. It is not a predictive return model, probability-of-profit model, or Buy/Sell decision.
 
-The evidence-ranking layer does not fabricate IV, Greeks, Open Interest, Theta, or other unavailable fields. Missing information remains unavailable.
+The engine does not fabricate IV, Greeks, risk-free rate, theoretical value, or unavailable inputs. Missing information remains unavailable.
 
-The historical six-block `scoring_engine.py` path exists and has been audited, but it must not be connected directly to the TSETMC report until its required inputs and economic policy are actually evidenced.
+The historical scoring_engine.py six-block FinalScore path is retained for audit/history only and is not part of the active runtime compile gate.
 
 ## Current production claim
 
 Allowed claim:
 
-**TSETMC Evidence Ranking / Top-N operational report**
+**TSETMC economic-efficiency ranking / Top-N operational report**
 
 Not allowed:
 
-- validated economic score;
-- predictive score;
-- Buy/Sell signal;
+- economically validated predictive score;
 - expected return;
 - probability of profit;
-- economically validated "best opportunity".
+- Buy/Sell signal;
+- economically validated best opportunity.
 
 ## Remaining evidence gaps
 
@@ -58,9 +57,9 @@ These gaps must not be filled with guessed parameters or synthetic outcomes.
 
 ## Release decision boundary
 
-Release 1 operational reporting can be developed and used as an evidence/reporting product without enabling Buy/Sell behavior.
+V4.1 operational reporting can be developed and used as a TSETMC evidence/reporting product while economic validation and production Buy/Sell authorization remain open.
 
-Any transition from evidence ranking to economic scoring or Buy/Sell signaling requires a separately evidenced implementation, test, and GitHub record.
+Any transition from economic ranking to predictive or Buy/Sell signaling requires a separately evidenced implementation, test, validation package, and GitHub record.
 
 ## Control rule
 
