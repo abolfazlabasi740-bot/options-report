@@ -12,20 +12,21 @@
 
 ## Current live runtime evidence
 
-آخرین اجرای واقعی Bale گزارش کرده است:
+آخرین Evidence واقعی منتشرشده در شاخه runtime-evidence:
 
-- TSETMC records discovered: 1582
-- flows checked: 4
-- OPPORTUNITY_CANDIDATE: 746
-- Ranking-Evidence-Rows: 746
+- Published at: 2026-10-01T05:52:30.090099+00:00
+- TSETMC records discovered: 1684
+- OPPORTUNITY_CANDIDATE: 740
+- Ranking-Evidence-Rows: 740
 - Eligibility: PASS
 - Opportunity Engine: SUCCESS
-- Six-Block Ranking: PASS
+- Economic Scoring: TSETMC_ECONOMIC_SCORING / PASS
 - Data Mode: LIVE_TSETMC_REFRESH
 - Live Refresh: SUCCESS
-- Market/Report session: OFFMARKET
-- latest explicit source timestamp: 2026-09-26T12:29:59
-- Snapshot SHA: 8e97d6f2052f80aed87c302032ec72342cda0056ff2874d4e64415a73b6895cf
+- Session: OFFMARKET
+- Latest explicit source timestamp: 2026-09-30T12:30:02
+- Snapshot SHA: c735d0b0f14379cd24a8e462704612f67d7edfde08edfd37e244e787269e178d
+- Report SHA: f919ea796cbf25582e194c781f0bef6fdd5aada662632b0c43b2f0644cd6cf83
 
 The OFFMARKET report is explicitly treated as the latest valid TSETMC source state, not as a live movement claim.
 
