@@ -1,0 +1,10 @@
+{
+  "command_id": "economic_scoring_live_report_20261001_v2",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "report_engine.py",
+    "--top",
+    "15"
+  ]
+}
