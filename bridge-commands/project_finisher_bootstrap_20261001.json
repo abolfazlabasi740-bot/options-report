@@ -1,0 +1,8 @@
+{
+  "command_id": "project_finisher_bootstrap_20261001",
+  "argv": [
+    "python",
+    "scripts/project_finisher_agent.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
