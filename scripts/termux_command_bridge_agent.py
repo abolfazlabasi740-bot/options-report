@@ -29,13 +29,14 @@ BRIDGE_GIT_NAME = "Termux Command Bridge"
 BRIDGE_GIT_EMAIL = "termux-command-bridge@users.noreply.github.com"
 
 
-def run(*args, cwd=None, check=True):
+def run(*args, cwd=None, check=True, timeout=None):
     return subprocess.run(
         list(args),
         cwd=str(cwd or PROJECT),
         text=True,
         capture_output=True,
         check=check,
+        timeout=timeout,
     )
 
 
@@ -74,11 +75,11 @@ def sync_branch(branch, dest):
     if not (dest / ".git").exists():
         run(
             "git", "clone", "--branch", branch,
-            f"https://github.com/{REPO}.git", str(dest), cwd=WORK
+            f"https://github.com/{REPO}.git", str(dest), cwd=WORK, timeout=90
         )
     else:
-        run("git", "fetch", "origin", branch, cwd=dest)
-        run("git", "reset", "--hard", f"origin/{branch}", cwd=dest)
+        run("git", "fetch", "origin", branch, cwd=dest, timeout=90)
+        run("git", "reset", "--hard", f"origin/{branch}", cwd=dest, timeout=30)
 
 
 def validate_argv(argv):
@@ -241,9 +242,12 @@ def main():
 
     while True:
         try:
+            print("BRIDGE_LOOP_TICK", flush=True)
             sync_branch(QUEUE_BRANCH, QUEUE)
+            print("BRIDGE_QUEUE_SYNCED", flush=True)
             for path in sorted(QUEUE.glob("*.json")):
                 try:
+                    print(f"BRIDGE_COMMAND_START={path.stem}", flush=True)
                     process_file(path)
                     print(f"BRIDGE_COMMAND_DONE={path.stem}", flush=True)
                 except Exception as exc:
@@ -266,7 +270,7 @@ def main():
                             flush=True,
                         )
         except Exception as exc:
-            print(f"BRIDGE_LOOP_ERROR: {exc}", flush=True)
+            print(f"BRIDGE_LOOP_ERROR: {type(exc).__name__}: {exc}", flush=True)
 
         time.sleep(POLL_SECONDS)
 
