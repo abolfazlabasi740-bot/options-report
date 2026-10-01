@@ -1,0 +1,9 @@
+{
+  "command_id": "inspect_g75_20261001",
+  "argv": [
+    "python",
+    "-c",
+    "import json; p=json.load(open('output/g7_5_economic_validation_evidence.json')); v=p['validation']; print(json.dumps({'evidence_sha256':p.get('evidence_sha256'),'windows':v.get('validation_window_count'),'results':v.get('result_count'),'results_sample':v.get('results',[])[:20],'keys':list(v.keys())},ensure_ascii=False))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
