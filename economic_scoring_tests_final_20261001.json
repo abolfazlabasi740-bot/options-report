@@ -1,0 +1,22 @@
+{
+  "command_id": "economic_scoring_tests_final_20261001",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-01T05:41:40.832479+00:00",
+  "finished_at": "2026-10-01T05:41:41.236391+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_economic_scoring_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "...E.\n======================================================================\nERROR: test_missing_data_is_not_zero (test_economic_scoring_engine.EconomicScoringTests.test_missing_data_is_not_zero)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/tests/test_economic_scoring_engine.py\", line 32, in test_missing_data_is_not_zero\n    r=build_economic_ranking([self.row(\"M\",100,100,None,None)])\n                              ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/tests/test_economic_scoring_engine.py\", line 8, in row\n    \"بیشترین قیمت\":P*1.05,\"کمترین قیمت\":P*.95},\n                   ~^~~~~\nTypeError: unsupported operand type(s) for *: 'NoneType' and 'float'\n\n----------------------------------------------------------------------\nRan 5 tests in 0.010s\n\nFAILED (errors=1)\n",
+  "project_head": "e2b98ef2a2e0448ea56aefea554111007a5c4a03",
+  "result_sha256": "d01b7b4927c56a501b197059d1ad01f275178b679d2ab715063f0c363f3c9e7a"
+}
