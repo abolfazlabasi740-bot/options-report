@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_probe_20261001_0703",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T03:33:55.174771+00:00",
+  "finished_at": "2026-10-01T03:33:55.243696+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "status",
+    "--short"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "project_head": "29328c58931dd4d684d9db633fc6d76e6519ce79",
+  "result_sha256": "842c36065e2703f2a2e0e67ba594b5848860d2d9e99271c8a3635ef2cde5c669"
+}
