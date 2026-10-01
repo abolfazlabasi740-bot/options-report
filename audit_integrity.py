@@ -31,7 +31,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
             failures.append("SNAPSHOT_HASH_MISSING")
         if not isinstance(audit.get("row_count"), int) or audit.get("row_count") < 0:
             failures.append("ROW_COUNT_INVALID")
-        if audit.get("scoring_status") not in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING"}:
+        if audit.get("scoring_status") not in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING", "TSETMC_ECONOMIC_SCORING"}:
             failures.append("SCORING_STATUS_INVALID")
         if audit.get("ranking_status") not in {"OFF", "TSETMC_EVIDENCE_RANKING"}:
             failures.append("RANKING_STATUS_INVALID")
