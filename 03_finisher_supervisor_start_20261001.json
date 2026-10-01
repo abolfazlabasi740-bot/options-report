@@ -1,6 +1,16 @@
 {
   "command_id": "03_finisher_supervisor_start_20261001",
-  "status": "REJECTED",
-  "error": "queue consume push failed: To https://github.com/abolfazlabasi740-bot/options-report.git\n ! [rejected]        bridge-commands -> bridge-commands (fetch first)\nerror: failed to push some refs to 'https://github.com/abolfazlabasi740-bot/options-report.git'\nhint: Updates were rejected because the remote contains work that you do not\nhint: have locally. This is usually caused by another repository pushing to\nhint: the same ref. If you want to integrate the remote changes, use\nhint: 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.",
-  "finished_at": "2026-10-01T19:14:19.251784+00:00"
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T19:14:53.686520+00:00",
+  "finished_at": "2026-10-01T19:14:54.272742+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/project_finisher_agent.py"
+  ],
+  "stdout": "FINISHER_DAEMON_STARTED\n",
+  "stderr": "",
+  "project_head": "703100e015b3368ec47e07b81818bc066f69b404",
+  "result_sha256": "e6ba9609bcceb6b193be733bded8fb5dd4f74dfe01406c3c89acc2c9e7cb5cd0"
 }
