@@ -1,0 +1,17 @@
+{
+  "command_id": "diagnose_g75_zero_returns_v2_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T18:40:26.882561+00:00",
+  "finished_at": "2026-10-01T18:40:27.083950+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import json; p=json.load(open('output/g7_5_economic_validation_evidence.json')); r=p['validation']['results']; s=[x['test_stats'] for x in r]; print(json.dumps({'result_count':len(r),'positive_rate_none':sum(x.get('positive_rate') is None for x in s),'positive_rate_zero':sum(x.get('positive_rate')==0 for x in s),'positive_total':sum((x.get('positive_count') or 0) for x in s),'counts_total':sum((x.get('count') or 0) for x in s),'mean_none':sum(x.get('mean_return_pct') is None for x in s),'mean_zero':sum(x.get('mean_return_pct')==0 for x in s),'features':sorted({x.get('feature') for x in r})},ensure_ascii=False))"
+  ],
+  "stdout": "{\"result_count\": 1728, \"positive_rate_none\": 9, \"positive_rate_zero\": 1233, \"positive_total\": 66605, \"counts_total\": 1520122, \"mean_none\": 9, \"mean_zero\": 1193, \"features\": [\"breakeven_distance\", \"calendar_days\", \"intrinsic_coverage\", \"last_vs_close\", \"leverage_efficiency\", \"premium_burden\", \"trade_value\", \"volume\"]}\n",
+  "stderr": "",
+  "project_head": "0c73c99b2555f3a31e9352cd99bf72edcfc201ad",
+  "result_sha256": "e74b40e5463345151d118aeea4cd593452ee916efe795c0c4f67a96180c8c139"
+}
