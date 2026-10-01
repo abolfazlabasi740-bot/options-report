@@ -16,23 +16,28 @@ from audit_integrity import verify_audit
 
 ROOT = Path(__file__).resolve().parent
 
+# V4.1 canonical runtime surface. Historical/legacy scoring and shadow-only
+# modules are not part of the active runtime compile gate.
 CRITICAL_FILES = [
     "report_engine.py",
-    "scoring_engine.py",
-    "opportunity_engine.py",
+    "economic_scoring_engine.py",
+    "economic_validation_engine.py",
+    "economic_validation_evidence_builder.py",
+    "tsetmc_scoring_engine.py",
     "tsetmc_adapter.py",
     "tsetmc_mapping.py",
-    "canonical_snapshot.py",
-    "historical_snapshot.py",
-    "historical_pattern_shadow.py",
-    "case_lifecycle_shadow.py",
-    "replay_engine.py",
+    "tsetmc_first_source.py",
+    "tsetmc_history.py",
+    "tsetmc_eligibility.py",
+    "tsetmc_outcome_engine.py",
+    "signal_engine_shadow.py",
     "audit_integrity.py",
     "bale_listener.py",
     "bale_transport.py",
-    "bale_runtime_verification.py",
-    "gate6_runtime_verification.py",
-    "termux_gate6_launcher.py",
+    "github_runtime_evidence.py",
+    "bestlimits_evidence_gate.py",
+    "live_bestlimits_evidence_runner.py",
+    "scripts/termux_command_bridge_agent.py",
 ]
 
 
