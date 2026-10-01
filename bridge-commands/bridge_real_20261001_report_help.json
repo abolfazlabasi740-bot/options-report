@@ -1,0 +1,9 @@
+{
+  "command_id": "bridge_real_20261001_report_help",
+  "argv": [
+    "python",
+    "report_engine.py",
+    "--help"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
