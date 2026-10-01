@@ -1,17 +1,6 @@
 {
   "command_id": "bridge_test_20261001_0602",
-  "status": "SUCCESS",
-  "exit_code": 0,
-  "started_at": "2026-10-01T03:10:10.771840+00:00",
-  "finished_at": "2026-10-01T03:10:10.797969+00:00",
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
-  "argv": [
-    "git",
-    "rev-parse",
-    "HEAD"
-  ],
-  "stdout": "bbdbdd439a490e73b271f3361c5596f4a633167c\n",
-  "stderr": "",
-  "project_head": "bbdbdd439a490e73b271f3361c5596f4a633167c",
-  "result_sha256": "37b3f00a58424bbb568d8bef826acd48a4a01dc98b04a87253f8abdaff6fb91b"
+  "status": "REJECTED",
+  "error": "queue consume commit failed: Author identity unknown\n\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email \"you@example.com\"\n  git config --global user.name \"Your Name\"\n\nto set your account's default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: unable to auto-detect email address (got 'u0_a537@localhost.(none)')",
+  "finished_at": "2026-10-01T03:10:14.028984+00:00"
 }
