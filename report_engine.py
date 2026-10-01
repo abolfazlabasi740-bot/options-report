@@ -4,7 +4,7 @@
 
 Reporting remains available outside market hours by using the latest valid
 TSETMC snapshot. Cached data is explicitly labelled and never presented as
-live movement. Scoring/ranking remain fail-closed behind the evidence gate.
+live movement. Economic ranking is active only on TSETMC opportunity candidates; predictive signals remain fail-closed behind the validation/release boundary.
 """
 from __future__ import annotations
 
