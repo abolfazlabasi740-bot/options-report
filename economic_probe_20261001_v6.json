@@ -1,0 +1,17 @@
+{
+  "command_id": "economic_probe_20261001_v6",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T05:10:19.527902+00:00",
+  "finished_at": "2026-10-01T05:10:20.033742+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print(__import__('economic_scoring_engine').build_economic_ranking([__import__('json').load(open('output/tsetmc_first/latest_snapshot.json'))['rows'][0]])['ranking_rows'][0])"
+  ],
+  "stdout": "{'rank': 1, 'instrument_id': '66929476371860041', 'symbol': 'طستا7065', 'contract_type': 'PUT', 'economic_score': 100.0, 'supported_blocks': ['LIQUIDITY', 'VALUATION', 'PAYOFF', 'TIME', 'MARKET'], 'unavailable_blocks': ['GREEKS'], 'block_scores': {'LIQUIDITY': 20.0, 'VALUATION': 25.0, 'PAYOFF': 18.0, 'TIME': 15.0, 'GREEKS': None, 'MARKET': 10.0}, 'features': {'contract_type': 'PUT', 'premium_burden': 0.0, 'intrinsic_coverage': 1.2053571428571428, 'breakeven_distance': 0.012332439678284183, 'leverage_efficiency': 0.741657937951772, 'calendar_days': 6.0, 'trade_value': 9524208000.0, 'volume': 40820.0, 'last_vs_close': 0.03862660944206009, 'intraday_range': None}}\n",
+  "stderr": "",
+  "project_head": "c4ac94aca2ee867e539639ed12a6c8e20975304f",
+  "result_sha256": "94a0d739230ce14d35969e0836e9f90a977c7661a1741d23896acf8603cfd460"
+}
