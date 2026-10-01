@@ -23,6 +23,9 @@ BLOCKED_TOKENS = {
     "curl", "wget", "nc", "ncat", "ssh", "scp", "chmod", "chown"
 }
 
+BRIDGE_GIT_NAME = "Termux Command Bridge"
+BRIDGE_GIT_EMAIL = "termux-command-bridge@users.noreply.github.com"
+
 
 def run(*args, cwd=None, check=True):
     return subprocess.run(
@@ -49,6 +52,29 @@ def ensure_git_auth():
         raise RuntimeError(
             "GitHub Git credential setup failed: "
             + (setup.stderr.strip() or setup.stdout.strip())
+        )
+
+
+def ensure_commit_identity(repo_dir):
+    """Set a repository-local identity so the bridge never depends on global Git config."""
+    name = run(
+        "git", "config", "user.name", BRIDGE_GIT_NAME,
+        cwd=repo_dir, check=False
+    )
+    if name.returncode != 0:
+        raise RuntimeError(
+            "setting Git user.name failed: "
+            + (name.stderr.strip() or name.stdout.strip())
+        )
+
+    email = run(
+        "git", "config", "user.email", BRIDGE_GIT_EMAIL,
+        cwd=repo_dir, check=False
+    )
+    if email.returncode != 0:
+        raise RuntimeError(
+            "setting Git user.email failed: "
+            + (email.stderr.strip() or email.stdout.strip())
         )
 
 
@@ -86,11 +112,14 @@ def validate_argv(argv):
 
 def publish_result(result):
     sync_branch(RESULT_BRANCH, RESULTS)
+    ensure_commit_identity(RESULTS)
+
     path = RESULTS / f"{result['command_id']}.json"
     path.write_text(
         json.dumps(result, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
     run("git", "add", path.name, cwd=RESULTS)
     commit = run(
         "git", "commit", "-m",
@@ -103,6 +132,7 @@ def publish_result(result):
             "result commit failed: "
             + (commit.stderr.strip() or commit.stdout.strip())
         )
+
     push = run("git", "push", "origin", RESULT_BRANCH, cwd=RESULTS, check=False)
     if push.returncode != 0:
         raise RuntimeError(
@@ -138,6 +168,7 @@ def process_file(path):
             "git", "rev-parse", "HEAD", cwd=PROJECT
         ).stdout.strip(),
     }
+
     result["result_sha256"] = hashlib.sha256(
         json.dumps(
             result, sort_keys=True, ensure_ascii=False
