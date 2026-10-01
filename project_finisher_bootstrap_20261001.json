@@ -1,0 +1,16 @@
+{
+  "command_id": "project_finisher_bootstrap_20261001",
+  "status": "FAILED",
+  "exit_code": 2,
+  "started_at": "2026-10-01T18:48:48.758241+00:00",
+  "finished_at": "2026-10-01T18:48:48.877947+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/project_finisher_agent.py"
+  ],
+  "stdout": "",
+  "stderr": "python: can't open file '/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/project_finisher_agent.py': [Errno 2] No such file or directory\n",
+  "project_head": "0c73c99b2555f3a31e9352cd99bf72edcfc201ad",
+  "result_sha256": "3bc799be4a2d89e47cfb7425d8a386af88bc27e7603d69856779ba108f011b51"
+}
