@@ -1,18 +1,6 @@
 {
   "command_id": "finisher_reset_20261001",
-  "status": "SUCCESS",
-  "exit_code": 0,
-  "started_at": "2026-10-01T19:15:08.472676+00:00",
-  "finished_at": "2026-10-01T19:15:08.529188+00:00",
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
-  "argv": [
-    "git",
-    "reset",
-    "--hard",
-    "origin/main"
-  ],
-  "stdout": "HEAD is now at 703100e cleanup: remove queue file from main\n",
-  "stderr": "",
-  "project_head": "703100e015b3368ec47e07b81818bc066f69b404",
-  "result_sha256": "6a9afa83f5514cd290533cc0907a52f00b69cb9054fdfbb2f46932677def9937"
+  "status": "REJECTED",
+  "error": "queue consume push failed: To https://github.com/abolfazlabasi740-bot/options-report.git\n ! [rejected]        bridge-commands -> bridge-commands (fetch first)\nerror: failed to push some refs to 'https://github.com/abolfazlabasi740-bot/options-report.git'\nhint: Updates were rejected because the remote contains work that you do not\nhint: have locally. This is usually caused by another repository pushing to\nhint: the same ref. If you want to integrate the remote changes, use\nhint: 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.",
+  "finished_at": "2026-10-01T19:15:14.337130+00:00"
 }
