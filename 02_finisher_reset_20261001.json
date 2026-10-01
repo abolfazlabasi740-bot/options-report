@@ -1,0 +1,18 @@
+{
+  "command_id": "02_finisher_reset_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T19:14:01.654871+00:00",
+  "finished_at": "2026-10-01T19:14:01.698592+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "reset",
+    "--hard",
+    "origin/main"
+  ],
+  "stdout": "HEAD is now at 703100e cleanup: remove queue file from main\n",
+  "stderr": "",
+  "project_head": "703100e015b3368ec47e07b81818bc066f69b404",
+  "result_sha256": "fdd7e5aba2dea4ab70355db6100c98a4f072ff3b35287caa10e2f8f8a0204d0a"
+}
