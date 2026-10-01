@@ -1,8 +1,0 @@
-{
-  "command_id": "continue_20261001_observation",
-  "argv": [
-    "python",
-    "report_engine.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
