@@ -1,0 +1,17 @@
+{
+  "command_id": "diagnose_g75_returns_v3_20261001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T18:41:58.888339+00:00",
+  "finished_at": "2026-10-01T18:41:59.165282+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import json,statistics; p=json.load(open('output/g7_5_economic_validation_evidence.json')); s=[x['test_stats'] for x in p['validation']['results']]; vals=[x['mean_return_pct'] for x in s if x.get('mean_return_pct') is not None]; print(json.dumps({'n':len(vals),'min':min(vals),'max':max(vals),'nonzero':sum(x!=0 for x in vals),'positive_means':sum(x>0 for x in vals),'negative_means':sum(x<0 for x in vals),'total_positive':sum((x.get('positive_count') or 0) for x in s),'total_count':sum((x.get('count') or 0) for x in s),'zero_means':sum(x==0 for x in vals)},ensure_ascii=False))"
+  ],
+  "stdout": "{\"n\": 1719, \"min\": -0.0984185027001576, \"max\": 2672.56162492605, \"nonzero\": 526, \"positive_means\": 441, \"negative_means\": 85, \"total_positive\": 66605, \"total_count\": 1520122, \"zero_means\": 1193}\n",
+  "stderr": "",
+  "project_head": "0c73c99b2555f3a31e9352cd99bf72edcfc201ad",
+  "result_sha256": "f21a3baf3f8fd02450a6d12c49704345d01670b29702e2566fbea64715a659ba"
+}
