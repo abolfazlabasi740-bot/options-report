@@ -132,8 +132,21 @@ def publish_result(result):
 
 
 def remove_queue_item(path):
-    """Remove a consumed command from the remote queue branch."""
-    run("git", "rm", "-f", path.name, cwd=QUEUE)
+    """Consume one queue item exactly once."""
+    if not path.exists():
+        return
+
+    ensure_commit_identity(QUEUE)
+
+    result = run("git", "rm", "-f", "--", path.name, cwd=QUEUE, check=False)
+    if result.returncode != 0:
+        if "pathspec" in (result.stderr or "").lower():
+            return
+        raise RuntimeError(
+            "queue remove failed: "
+            + (result.stderr.strip() or result.stdout.strip())
+        )
+
     commit = run(
         "git", "commit", "-m",
         f"bridge: consume {path.stem}",
@@ -145,6 +158,7 @@ def remove_queue_item(path):
             "queue consume commit failed: "
             + (commit.stderr.strip() or commit.stdout.strip())
         )
+
     push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False)
     if push.returncode != 0:
         raise RuntimeError(
