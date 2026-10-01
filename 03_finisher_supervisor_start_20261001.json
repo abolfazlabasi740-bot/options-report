@@ -1,6 +1,16 @@
 {
   "command_id": "03_finisher_supervisor_start_20261001",
-  "status": "REJECTED",
-  "error": "queue consume push failed: To https://github.com/abolfazlabasi740-bot/options-report.git\n ! [remote rejected] bridge-commands -> bridge-commands (cannot lock ref 'refs/heads/bridge-commands': is at 05d83b01bbd92efb360f121ad4faea6ea619868d but expected d4deedce5d6bbfca7655f0de042c9d59a96091dd)\nerror: failed to push some refs to 'https://github.com/abolfazlabasi740-bot/options-report.git'",
-  "finished_at": "2026-10-01T19:15:03.718709+00:00"
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T19:15:39.821953+00:00",
+  "finished_at": "2026-10-01T19:15:40.330371+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/project_finisher_agent.py"
+  ],
+  "stdout": "FINISHER_DAEMON_STARTED\n",
+  "stderr": "",
+  "project_head": "703100e015b3368ec47e07b81818bc066f69b404",
+  "result_sha256": "17719e4e1aa64d291d801b4774512cf7ba424144713620dcea722f7e54cc28b3"
 }
