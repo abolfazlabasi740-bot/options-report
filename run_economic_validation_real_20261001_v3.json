@@ -1,0 +1,16 @@
+{
+  "command_id": "run_economic_validation_real_20261001_v3",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-01T17:33:20.598424+00:00",
+  "finished_at": "2026-10-01T17:33:36.527086+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "economic_validation_evidence_builder.py"
+  ],
+  "stdout": "STATUS= EVIDENCE_ONLY\nSNAPSHOTS= 40\nTRANSITIONS= 55772\nMATCHED= 55772\nUNRESOLVED= 0\nVALIDATION_WINDOWS= 36\nVALIDATION_RESULTS= 1728\nG7_5_STATUS= OPEN\nEVIDENCE_SHA256= 3f17a1e57c52734b96b630b3ee6a8dcce9aa25e3ac87fbbdcf866f238d43aafc\n",
+  "stderr": "",
+  "project_head": "0c73c99b2555f3a31e9352cd99bf72edcfc201ad",
+  "result_sha256": "064309d3b9c6c0e0a47fe2fcc9fa877df39930004d321861fc226109e00733cf"
+}
