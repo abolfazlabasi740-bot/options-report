@@ -1,0 +1,5 @@
+{
+  "command_id": "finisher_compile_check_20261001",
+  "argv": ["python", "-m", "py_compile", "scripts/project_finisher_agent.py"],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
