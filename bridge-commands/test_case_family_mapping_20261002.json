@@ -1,0 +1,9 @@
+{
+  "command_id": "test_case_family_mapping_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import subprocess,sys\nsubprocess.run(['git','fetch','origin','main'],check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],check=True)\nchecks=[['python','-m','py_compile','economic_validation_evidence_builder.py','scripts/project_finisher_agent.py','runtime_verification.py','audit_integrity.py'],['python','-m','unittest','discover','-s','tests','-p','test_g7_5_case_family_validation.py','-v']]\nfor args in checks:\n p=subprocess.run(args,text=True,capture_output=True)\n print('COMMAND',args,'EXIT',p.returncode)\n print(p.stdout[-5000:]); print(p.stderr[-5000:])\n if p.returncode: raise SystemExit(p.returncode)\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip())"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
