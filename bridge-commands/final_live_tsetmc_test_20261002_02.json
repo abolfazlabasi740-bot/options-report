@@ -1,0 +1,16 @@
+{
+  "command_id": "final_live_tsetmc_test_20261002_02",
+  "argv": [
+    "python",
+    "live_bestlimits_evidence_runner.py",
+    "--output",
+    "output/final_live_tsetmc_test_20261002.json",
+    "--option-count",
+    "3",
+    "--pause-seconds",
+    "3",
+    "--timeout",
+    "20"
+  ],
+  "cwd": "~/OptimusAI_V41_LIVE"
+}
