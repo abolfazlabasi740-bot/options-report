@@ -37,6 +37,13 @@ def read_state() -> dict:
     return json.loads(STATE.read_text(encoding="utf-8"))
 
 
+def load_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def write_state(**updates):
     data = read_state()
     data.update(updates)
@@ -144,12 +151,14 @@ def cycle(cycle_no: int) -> bool:
         cycle=cycle_no,
     )
     stages = []
+    stages.append(run_stage("PROJECT_COMPLETION_AUDIT", [sys.executable, "project_completion_audit.py"], 120))
     stages.append(run_stage("REPORT_RUNTIME", [sys.executable, "report_engine.py", "--top", "15"], 900))
     if stages[-1]["status"] == "PASS":
         stages.append(run_stage("G7-5_EVIDENCE", [sys.executable, "economic_validation_evidence_builder.py"], 2400))
     if stages and stages[-1]["status"] == "PASS":
         stages.append(run_stage("RUNTIME_VERIFICATION", [sys.executable, "runtime_verification.py"], 900))
 
+    completion_audit = load_json(OUTPUT / "project_completion_audit.json")
     failed = next((stage for stage in stages if stage["status"] != "PASS"), None)
     if failed:
         reason = (failed["stderr"] or failed["stdout"] or "stage failed")[-4000:]
@@ -210,7 +219,11 @@ def cycle(cycle_no: int) -> bool:
             runtime_status=runtime.get("status"),
             production_buy_sell=False,
             fail_closed=True,
+            completion_audit_status=completion_audit.get("status"),
+            completion_audit_blockers=completion_audit.get("blockers"),
         )
+        if completion_audit.get("status") == "COMPLETE":
+            write_state(full_project_status="COMPLETE", current_gate="PROJECT_COMPLETE", blocker=None, next_action="project completion evidence verified; production BUY/SELL remains forbidden")
         git_record(f"ops: finisher cycle {cycle_no} Track A screening milestone")
         if gate_status == "VERIFIED":
             try:
