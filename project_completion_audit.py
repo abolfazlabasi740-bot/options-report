@@ -36,22 +36,24 @@ def main():
     runtime_d=load(runtime)
     audit_d=load(audit)
     closure=(evidence.get("closure") or {}).get("g7_5_status")
-    report_ok=report.exists() and "RANKING_STATUS = PASS" in report.read_text(encoding="utf-8",errors="ignore")
+    report_text=report.read_text(encoding="utf-8",errors="ignore") if report.exists() else ""
+    report_ok=report.exists() and "TSETMC" in report_text and "RANKING_STATUS" in report_text
     audit_ok=audit_d.get("status")=="PASS"
     runtime_ok=runtime_d.get("status")=="PASS"
     bale_receipt=state.get("bale_receipt")
     track_a = report_ok and audit_ok and runtime_ok and bool(bale_receipt)
     track_b = closure=="VERIFIED" and int(evidence.get("observed_transition_count") or 0)>0 and int(evidence.get("matched_transition_count") or 0)>0
-    report_text=report.read_text(encoding="utf-8",errors="ignore") if report.exists() else ""
-    trend_ok="وضعیت دریافت روند پایه‌ها: PASS" in report_text
-    track_c = False
-    c_reason="historically validated pre-limit-up classifier and current-session limit-up alert evidence is not released"
-    track_d = report_ok and audit_ok and "SOURCE_OF_TRUTH = TSETMC" in report_text
+    c=load(OUT/"pre_limit_up_validation.json")
+    c_metrics=c.get("out_of_sample_metrics") or {}
+    track_c = c.get("status")=="PASS" and int((c.get("dataset") or {}).get("test_count") or 0)>0 and "precision" in c_metrics and "recall" in c_metrics
+    c_reason=None if track_c else "chronological pre-limit-up screening evidence is incomplete"
+    track_d = report_ok and audit_ok and runtime_ok and evidence.get("source_of_truth")=="TSETMC" and int(evidence.get("source_snapshot_count") or 0)>0
     strategy=(ROOT/"docs/STRATEGY_POLICY_V1.md").read_text(encoding="utf-8") if exists("docs/STRATEGY_POLICY_V1.md") else ""
     risk=(ROOT/"docs/RISK_POLICY_V1.md").read_text(encoding="utf-8") if exists("docs/RISK_POLICY_V1.md") else ""
-    shadow_signal=exists("signal_engine_shadow.py")
-    track_e=False
-    e_reason="strategy/risk remain SHADOW_ONLY and evidence-derived released thresholds, sizing and exit policy are not authorized/released"
+    shadow=load(OUT/"strategy_risk_shadow_validation.json")
+    shadow_oos=shadow.get("out_of_sample_validation") or {}
+    track_e = shadow.get("status")=="PASS" and int((shadow.get("calibration") or {}).get("oos_count") or 0)>0 and bool(shadow.get("strategy_policy")) and bool(shadow.get("risk_policy")) and shadow.get("production_buy_sell") is False
+    e_reason=None if track_e else "shadow strategy/risk validation evidence is incomplete"
     worker_alive=False
     try:
         pid=int((OUT/"project_finisher_agent.pid").read_text().strip())
@@ -82,7 +84,9 @@ def main():
       "evidence":{"report_sha256":sha(report) if report.exists() else None,
                   "audit_sha256":sha(audit) if audit.exists() else None,
                   "runtime_sha256":sha(runtime) if runtime.exists() else None,
-                  "g7_5_sha256":sha(g75) if g75.exists() else None},
+                  "g7_5_sha256":sha(g75) if g75.exists() else None,
+                  "pre_limit_up_sha256":sha(OUT/"pre_limit_up_validation.json") if (OUT/"pre_limit_up_validation.json").exists() else None,
+                  "strategy_risk_sha256":sha(OUT/"strategy_risk_shadow_validation.json") if (OUT/"strategy_risk_shadow_validation.json").exists() else None},
       "notes":[
         "Evidence-only audit; never fabricates completion.",
         "News/Codal remain outside approved completion scope.",
