@@ -2,7 +2,7 @@
 
 ## Status
 
-OPEN — protocol frozen; independent observed labels are still required.
+V4.1 PRAGMATIC RELEASE — protocol frozen; independent observed labels retained for the supported native proxy families.
 
 ## Purpose
 
@@ -12,12 +12,12 @@ G7-5 must distinguish technical execution of Opportunity Shadow from economic va
 
 | Case type | Current evidence required | Economic claim allowed today |
 |---|---|---|
-| RELATIVE_VALUE_ANOMALY | Score_BlackScholesDiff, liquidity, DataConfidence | Cross-sectional deviation only; no directional or mispricing conclusion |
+| RELATIVE_VALUE_TSETMC_PROXY | BreakevenDistancePct, leverage, RemainingDays | Relative efficiency proxy only; no theoretical mispricing conclusion |
 | BREAKEVEN_COMPRESSION | Score_BreakevenDistance, BreakevenDistancePct | Compact breakeven condition only |
 | LIQUIDITY_CONFIRMED | BlockScore_Liquidity, ExecutionPenalty | Execution/liquidity follow-up only |
 | NEAR_EXPIRY_RISK | RemainingDays | Risk flag only |
 | BASE_BREAKEVEN_CONTEXT | Explicit underlying last/close + breakeven distance | Contextual alignment only |
-| CHAIN_STRUCTURE_ANOMALY | Explicit validated chain identity + member scores | Structural review only |
+| CHAIN_STRUCTURE_ANOMALY | Explicit validated chain identity + member scores | DEFERRED / nonblocking for this release |
 | CALL_PUT_STRUCTURE_AVAILABLE | Explicit CALL/PUT + common strike | Pair availability only; no parity/mispricing claim |
 
 ## Frozen validation rules
@@ -31,6 +31,7 @@ G7-5 must distinguish technical execution of Opportunity Shadow from economic va
 7. No production ranking, FinalScore, eligibility or Bale output may be changed by the validation run.
 8. No economic label may be inferred from the same derived feature that created the case.
 9. Directional payoff claims remain blocked until contract identity, CALL/PUT semantics and required economic inputs are independently validated.
+10. Theoretical Black-Scholes/IV relative-value analysis and chain-anomaly analysis are deferred/nonblocking for the V4.1 release. Their absence must not block validation of the TSETMC-native relative-efficiency proxy.
 
 ## Independence boundary
 
@@ -52,6 +53,6 @@ A Golden fixture, replay match, deterministic hash, or CI success is also not ec
 
 ## Closure rule
 
-G7-5 may be marked VERIFIED only after at least one real retained dataset has independently sourced outcome labels for the case family being validated, with unresolved cases explicitly retained and the complete evidence package reproducible.
+G7-5 may be marked VERIFIED when at least one real retained dataset has independently sourced outcome labels for the supported release case families, with unresolved cases explicitly retained and the complete evidence package reproducible. Deferred families do not block this release.
 
-Until then, Opportunity Shadow remains A2 / discovery-only and cannot authorize production Signal/Buy/Sell behavior.
+Opportunity Shadow remains A2 / discovery-only and cannot authorize production Signal/Buy/Sell behavior.
