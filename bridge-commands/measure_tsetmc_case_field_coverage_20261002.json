@@ -1,9 +1,0 @@
-{
-  "command_id": "measure_tsetmc_case_field_coverage_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import json,glob\nfrom collections import Counter\npaths=sorted(glob.glob('output/history/tsetmc/*.json'))\nfields=['اختلاف تا بلک شولز','بلک شولز','نوسان ضمنی','دلتا','گاما','وگا','رو','تتا','اختلاف تا سر به سر','سر به سر','روزهای تقویمی','قیمت بهترین تقاضا','قیمت بهترین عرضه','حجم بهترین تقاضا','حجم بهترین عرضه','ارزش معاملات','حجم معاملات','قیمت سهم پایه','قیمت پایانی','قیمت اعمال','تاریخ سررسید']\nfor pth in [paths[0],paths[-1]] if paths else []:\n p=json.load(open(pth,encoding='utf-8')); rows=p.get('rows',[]); print('SNAPSHOT',pth,'TIME',p.get('observation_retrieved_at'),'ROWS',len(rows))\n for f in fields:\n  vals=[(r.get('canonical') or {}).get(f) for r in rows]\n  valid=[v for v in vals if v not in (None,'')]\n  print(f,'VALID',len(valid),'SAMPLE',valid[:2])"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
