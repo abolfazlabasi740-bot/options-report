@@ -204,7 +204,7 @@ def cycle(cycle_no: int) -> bool:
         status="IN_PROGRESS",
         current_gate="G7-5",
         blocker=blocker,
-        next_action="continue family-level validation; then complete underlying trend, macro/news and risk tracks",
+        next_action="continue family-level validation; then complete remaining approved market-context and risk tracks",
         last_cycle=stages,
         last_evidence_sha=evidence.get("evidence_sha256"),
         case_family_confusion_counts=family_counts,
