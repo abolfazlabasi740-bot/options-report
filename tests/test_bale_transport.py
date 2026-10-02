@@ -3,6 +3,7 @@ import json
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qs
 
 import bale_transport
 
@@ -55,8 +56,9 @@ class BaleTransportTests(unittest.TestCase):
         with patch("bale_transport.urlopen", return_value=Response()) as post:
             bale_transport.send_message("TOKEN", "CHAT", "test", reply_markup=markup)
         data = post.call_args.args[0].data.decode("utf-8")
-        self.assertIn("reply_markup=", data)
-        self.assertIn("%D8%AF%D8%B1%D8%B5%D8%AA", data)
+        encoded = parse_qs(data)["reply_markup"][0]
+        decoded = json.loads(encoded)
+        self.assertEqual(decoded["keyboard"][0][0]["text"], "📊 گزارش ۱۵ فرصت برتر")
 
     def test_send_message_supports_inline_keyboard(self):
         markup = {"inline_keyboard": [[{"text": "گزارش", "callback_data": "report_ranked_15"}]]}
@@ -68,7 +70,7 @@ class BaleTransportTests(unittest.TestCase):
 
     def test_send_message_reports_safe_network_error(self):
         with patch("bale_transport.urlopen", side_effect=URLError("network")):
-            with self.assertRaisesRegex(RuntimeError, "NETWORK_ERROR=URLError"):
+            with self.assertRaisesRegex(RuntimeError, "NETWORK_ERROR=str"):
                 bale_transport.send_message("TOKEN", "CHAT", "test")
 
     def test_send_message_reports_safe_api_rejection(self):
