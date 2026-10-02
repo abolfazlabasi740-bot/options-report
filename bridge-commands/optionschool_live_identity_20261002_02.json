@@ -1,0 +1,14 @@
+{
+  "command_id": "optionschool_live_identity_20261002_02",
+  "argv": [
+    "python",
+    "scripts/reconcile_tsetmc_optionschool_38.py",
+    "--optionschool",
+    "data/optionschool/optionschool_20261002_153619.xlsx",
+    "--tsetmc",
+    "output/tsetmc_first/live_market_open_snapshot.json",
+    "--output",
+    "output/g7_tsetmc/optionschool_live_identity_20261002.json"
+  ],
+  "cwd": "~/OptimusAI_V41_LIVE"
+}
