@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import hashlib
 import subprocess
 import sys
 import time
@@ -167,25 +168,36 @@ def cycle(cycle_no: int) -> bool:
     gate_status = closure.get("g7_5_status", "OPEN")
     blocker = closure.get("reason") or "G7-5 closure evidence is unavailable."
 
-    if gate_status == "VERIFIED" and runtime.get("status") == "PASS":
+    report_pass = bool(stages and stages[0].get("status") == "PASS")
+    runtime_pass = runtime.get("status") == "PASS"
+    if report_pass and runtime_pass:
+        milestone_key = "MILESTONE:TRACK_A_SCREENING"
+        previous = read_state()
+        already_released = previous.get("track_a_release_status") == "RELEASED"
         write_state(
             status="MILESTONE_COMPLETE",
-            current_gate="TRACK_A_SCREENING",
-            blocker=None,
-            next_action="Track A screening milestone complete; continue Tracks B-E before full project completion",
+            current_gate="TRACK_B_VALIDATION" if gate_status != "VERIFIED" else "TRACK_CDE_RELEASE",
+            blocker=None if gate_status == "VERIFIED" else blocker,
+            track_a_release_status="RELEASED",
+            full_project_status="IN_PROGRESS" if gate_status != "VERIFIED" else "IN_PROGRESS",
+            next_action="Track A screening delivered. Continue unresolved validation and remaining scope tracks; full project is not complete.",
             last_cycle=stages,
             last_evidence_sha=evidence.get("evidence_sha256"),
             case_family_confusion_counts=family_counts,
+            case_family_mapping_status=diagnostics.get("status"),
+            unsupported_case_families=diagnostics.get("unsupported_case_families"),
+            g7_5_status=gate_status,
             runtime_status=runtime.get("status"),
             production_buy_sell=False,
             fail_closed=True,
         )
-        git_record(f"ops: finisher cycle {cycle_no} screening milestone")
-        notify_on_change(
-            "MILESTONE:TRACK_A_SCREENING",
-            "OPTIMUSAI FINISHER\nوضعیت: TRACK_A_SCREENING_MILESTONE_COMPLETE\nگزارش، ممیزی و G7-5 تأیید شده‌اند.\nمسیرهای توسعه بعدی همچنان باز هستند؛ BUY/SELL مجوز مستقل می‌خواهد."
-        )
-        git_record(f"ops: finisher cycle {cycle_no} milestone notification")
+        git_record(f"ops: finisher cycle {cycle_no} Track A screening milestone")
+        if not already_released:
+            notify_on_change(
+                milestone_key,
+                "OPTIMUSAI FINISHER\nوضعیت: TRACK_A_SCREENING_MILESTONE_COMPLETE\nگزارش TSETMC، فیلتر سررسید، روند پایه‌ها، ممیزی و Runtime تأیید شدند.\nاعتبارسنجی کامل G7-5 و مسیرهای بنیادی/اخبار/ریسک همچنان باز هستند؛ این پیام اعلام پایان کل پروژه یا مجوز BUY/SELL نیست."
+            )
+            git_record(f"ops: finisher cycle {cycle_no} milestone notification")
         return True
 
     write_state(
@@ -204,7 +216,16 @@ def cycle(cycle_no: int) -> bool:
         human_action_required=False,
     )
     git_record(f"ops: finisher cycle {cycle_no} G7-5 progress")
-    key = "G7-5:" + str(evidence.get("evidence_sha256") or "NO_SHA")
+    notification_state = {
+        "status": "IN_PROGRESS",
+        "gate": "G7-5",
+        "mapping_status": diagnostics.get("status"),
+        "blocker": blocker,
+        "unsupported_families": sorted((diagnostics.get("unsupported_case_families") or {}).keys()),
+    }
+    key = "G7-5-STATE:" + hashlib.sha256(
+        json.dumps(notification_state, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
     message = (
         "OPTIMUSAI FINISHER\nوضعیت: IN_PROGRESS\n"
         f"چرخه: {cycle_no}\n"
