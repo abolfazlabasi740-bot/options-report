@@ -19,6 +19,7 @@ from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from underlying_trend_engine import fetch_underlying_context
+from codal_export_engine import fetch_export_context
 from economic_scoring_engine import build_economic_ranking
 from signal_engine_shadow import evaluate_shadow_candidates
 from tsetmc_history import archive_universe_snapshot
@@ -329,6 +330,12 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         if str((row.get("identity") or {}).get("underlying_id") or "").strip()
     })
     snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter)
+    underlying_symbols = sorted({
+        str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
+        for row in rows
+        if str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
+    })
+    snapshot["codal_export_context"] = fetch_export_context(underlying_symbols, root=ROOT)
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
@@ -450,6 +457,40 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     lines.append(
         f"وضعیت دریافت روند پایه‌ها: {underlying_context.get('status', 'داده موجود نیست')} | "
         f"تعداد پایه‌ها: {underlying_context.get('instrument_count', 0)}"
+    )
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("🧾 شواهد فروش صادراتی از گزارش‌های ماهانه کدال")
+    lines.append("این بخش فقط افشای صریح شرکت را گزارش می‌کند؛ نبود داده به معنی نبود صادرات نیست و ارز یورو به‌جای دلار تلقی نمی‌شود.")
+    codal_context = snapshot.get("codal_export_context") or {}
+    for symbol, evidence in (codal_context.get("symbols") or {}).items():
+        status = evidence.get("status", "داده موجود نیست")
+        period = evidence.get("period_end_jalali") or "داده موجود نیست"
+        title = evidence.get("title") or "گزارش ماهانه در دسترس نیست"
+        if status == "EXPORT_DISCLOSED":
+            parsed = evidence.get("parsed_export_evidence") or {}
+            product = parsed.get("product_sales") or {}
+            currencies = (parsed.get("foreign_currency_sales") or {}).get("currencies") or []
+            currency_text = "، ".join(
+                f"{x.get('currency')}: {number(x.get('month_foreign_amount'))} | معادل ریالی {number(x.get('month_rial_amount_million_irr'))} میلیون ریال"
+                for x in currencies
+            ) or "تفکیک ارز در گزارش موجود نیست"
+            lines.append(
+                f"{symbol} | صادرات افشا شده | دوره {period} | "
+                f"فروش صادراتی ماه: {number(product.get('month_total_million_irr'))} میلیون ریال | "
+                f"تجمعی: {number(product.get('cumulative_total_million_irr'))} میلیون ریال"
+            )
+            lines.append(f"ارزهای افشاشده: {currency_text} | USD صریحاً افشا شده: {'بله' if evidence.get('usd_currency_disclosed') else 'خیر/در این گزارش موجود نیست'}")
+        elif status == "NO_EXPORT_REVENUE_DISCLOSED":
+            lines.append(f"{symbol} | در آخرین گزارش ماهانه، مبلغ فروش صادراتی مثبت افشا نشده | دوره {period}")
+        else:
+            lines.append(f"{symbol} | وضعیت صادرات: {status} | {title}")
+        if evidence.get("tracing_no"):
+            lines.append(f"کد رهگیری کدال: {evidence.get('tracing_no')} | انتشار: {evidence.get('publish_datetime_jalali') or 'داده موجود نیست'}")
+        if evidence.get("report_url"):
+            lines.append(f"منبع: {evidence.get('report_url')}")
+    lines.append(
+        f"وضعیت دریافت شواهد کدال: {codal_context.get('status', 'داده موجود نیست')} | "
+        f"تعداد نمادها: {codal_context.get('symbol_count', 0)}"
     )
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
