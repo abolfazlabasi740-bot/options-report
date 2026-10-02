@@ -1,9 +1,0 @@
-{
-  "command_id": "inspect_tsetmc_case_family_inputs_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import json,glob\nfrom pathlib import Path\nimport economic_scoring_engine as s\npaths=sorted(glob.glob('output/history/tsetmc/*.json'))\nprint('ARCHIVES',len(paths))\nif paths:\n p=json.load(open(paths[-1],encoding='utf-8'))\n print('SNAPSHOT_KEYS',sorted(p.keys()))\n print('ROWS',len(p.get('rows',[])))\n rows=p.get('rows',[])\n for r in rows[:3]:\n  print('IDENTITY',json.dumps(r.get('identity',{}),ensure_ascii=False))\n  print('CANONICAL_KEYS',json.dumps(sorted((r.get('canonical') or {}).keys()),ensure_ascii=False))\n  print('FEATURES',json.dumps(s._derived(r),ensure_ascii=False))"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
