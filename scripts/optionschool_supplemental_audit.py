@@ -27,6 +27,31 @@ def clean(v):
     except (TypeError, ValueError):
         return str(v).strip() or None
 
+def normalize_digits(value):
+    table = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
+    return str(value).translate(table)
+
+def parse_contract_symbol(value):
+    """Parse OptionSchool's explicit Persian contract prefix convention.
+    ض = CALL, ط = PUT; remaining letters are underlying symbol and trailing digits
+    are the contract number. No TSETMC identity is inferred here.
+    """
+    if value is None:
+        return None
+    s = normalize_digits(str(value)).strip()
+    s = " ".join(s.split())
+    import re
+    m = re.fullmatch(r"([ضط])\\s*([\\u0600-\\u06FF]+?)\\s*(\\d+)", s)
+    if not m:
+        return None
+    prefix, underlying, number = m.groups()
+    return {
+        "contract_type": "CALL" if prefix == "ض" else "PUT",
+        "underlying_symbol": underlying.strip(),
+        "contract_number": int(number),
+        "normalized_contract_symbol": f"{prefix}{underlying.strip()} {int(number)}"
+    }
+
 def main():
     raw = FILE.read_bytes()
     sha = hashlib.sha256(raw).hexdigest()
@@ -41,8 +66,26 @@ def main():
     relative_complete = sum(1 for r in rows if all(clean(r.get(k)) is not None for k in required_relative))
     chain_required = ["نماد", "قیمت اعمال", "تاریخ سررسید"]
     chain_missing = {k: sum(1 for r in rows if clean(r.get(k)) is None) for k in chain_required}
-    # The workbook has no explicit underlying identifier/symbol and no explicit CALL/PUT field.
-    # Do not infer either from option symbol or underlying price.
+
+    parsed = []
+    parse_failures = []
+    for idx, row in enumerate(rows, start=2):
+        identity = parse_contract_symbol(row.get("نماد"))
+        if identity is None:
+            parse_failures.append({"excel_row": idx, "symbol": str(row.get("نماد"))})
+            continue
+        parsed.append({**identity, "excel_row": idx,
+                       "strike": clean(row.get("قیمت اعمال")),
+                       "expiry": str(row.get("تاریخ سررسید")).strip() if row.get("تاریخ سررسید") is not None else None})
+    symbol_counts = Counter(x["normalized_contract_symbol"] for x in parsed)
+    duplicate_contract_symbols = {k: v for k, v in symbol_counts.items() if v > 1}
+    chains = Counter((x["underlying_symbol"], x["contract_type"], x["expiry"]) for x in parsed)
+    chain_groups = [
+        {"underlying_symbol": k[0], "contract_type": k[1], "expiry": k[2], "member_count": n}
+        for k, n in sorted(chains.items(), key=lambda z: (z[0][0], z[0][1], str(z[0][2])))
+    ]
+    chain_ready = len(parsed) == len(rows) and not duplicate_contract_symbols
+
     payload = {
       "status": "AUDIT_COMPLETE",
       "source": SOURCE,
@@ -51,7 +94,7 @@ def main():
       "sheet": ws.title, "data_rows": len(rows), "column_count": len(headers),
       "columns": headers,
       "relative_value_anomaly": {
-        "status": "RAW_FIELDS_AVAILABLE_REQUIRES_MAPPING_AND_VALIDATION",
+        "status": "RAW_FIELDS_AVAILABLE_REQUIRES_TSETMC_MAPPING_AND_INDEPENDENT_VALIDATION",
         "required_fields": required_relative,
         "missing_rows_by_field": relative_missing,
         "rows_with_all_raw_fields": relative_complete,
@@ -60,19 +103,28 @@ def main():
           "آخرین قیمت", "قیمت سهم پایه", "قیمت اعمال", "حجم معاملات", "ارزش معاملات",
           "قیمت بهترین تقاضا", "قیمت بهترین عرضه", "دلتا", "تتا", "گاما", "وگا", "رو"],
         "constraints": [
-          "OptionSchool rows are source-local; no TSETMC instrument_id is present in this workbook.",
-          "Do not promote symbol-only matches to exact instrument identity.",
+          "OptionSchool rows remain supplemental; no TSETMC instrument_id is present in this workbook.",
+          "A parsed contract symbol is not itself a TSETMC instrument identity.",
           "Do not change TSETMC snapshots, scores, ranking, or source-of-truth.",
           "Raw Black-Scholes/IV availability is not itself independent economic validation."
         ]
       },
       "chain_structure_anomaly": {
-        "status": "IDENTITY_FIELDS_MISSING",
-        "missing_explicit_fields": ["underlying_id_or_symbol", "contract_type_CALL_PUT"],
-        "available_fields": ["نماد", "قیمت اعمال", "تاریخ سررسید", "قیمت سهم پایه"],
-        "missing_rows_by_available_field": chain_missing,
-        "reason": "Underlying price is not an underlying identity; option symbol is not parsed to infer underlying or CALL/PUT.",
-        "constraints": ["No guessed chain grouping.", "No member-score dispersion computed from OptionSchool raw fields."]
+        "status": "IDENTITY_PARSED" if chain_ready else "PARTIAL_PARSE_OR_DUPLICATE_REQUIRES_REVIEW",
+        "symbol_convention": {"prefix_ض": "CALL", "prefix_ط": "PUT", "trailing_digits": "contract_number", "middle_text": "underlying_symbol"},
+        "parsed_rows": len(parsed),
+        "parse_failure_count": len(parse_failures),
+        "parse_failures_sample": parse_failures[:25],
+        "duplicate_contract_symbols": duplicate_contract_symbols,
+        "unique_contract_symbols": len(symbol_counts),
+        "chain_group_count": len(chain_groups),
+        "chain_groups": chain_groups,
+        "identity_fields": ["underlying_symbol", "contract_type", "contract_number", "expiry", "strike"],
+        "constraints": [
+          "The parsed OptionSchool identity is source-local and supplemental only.",
+          "No TSETMC instrument_id is created or replaced.",
+          "No chain member-score dispersion is computed until the approved scoring definition is independently validated."
+        ]
       },
       "project_boundary": {
         "tsetmc_modified": False,
