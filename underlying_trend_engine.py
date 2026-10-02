@@ -45,12 +45,18 @@ def _rsi(values: list[float], period: int = 14) -> float | None:
     if len(values) <= period:
         return None
     changes = [values[i] - values[i - 1] for i in range(1, len(values))]
-    window = changes[-period:]
-    gains = sum(x for x in window if x > 0) / period
-    losses = -sum(x for x in window if x < 0) / period
-    if losses == 0:
-        return 100.0 if gains > 0 else 50.0
-    relative = gains / losses
+    if len(changes) < period:
+        return None
+    gains = [max(x, 0.0) for x in changes]
+    losses = [max(-x, 0.0) for x in changes]
+    avg_gain = sum(gains[:period]) / period
+    avg_loss = sum(losses[:period]) / period
+    for gain, loss in zip(gains[period:], losses[period:]):
+        avg_gain = (avg_gain * (period - 1) + gain) / period
+        avg_loss = (avg_loss * (period - 1) + loss) / period
+    if avg_loss == 0:
+        return 100.0 if avg_gain > 0 else 50.0
+    relative = avg_gain / avg_loss
     return 100.0 - (100.0 / (1.0 + relative))
 
 
