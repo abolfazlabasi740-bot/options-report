@@ -1,0 +1,9 @@
+{
+  "command_id": "probe_codal_export_excel_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import urllib.request,urllib.parse,json,io\nfrom tsetmc_adapter import TSETMCAdapter\nparams={'Symbol':'فملی','Category':'3','LetterType':'-1','PageNumber':'1','search':'true','Childs':'false','Mains':'true','Publisher':'false','Audited':'true','NotAudited':'true','Consolidatable':'true','NotConsolidatable':'true'}\nurl='https://search.codal.ir/api/search/v2/q?'+urllib.parse.urlencode(params)\nreq=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'application/json'})\ndata=json.loads(urllib.request.urlopen(req,timeout=20).read().decode('utf-8'))\nitem=next((x for x in data.get('Letters',[]) if 'گزارش فعالیت ماهانه' in x.get('Title','') and x.get('HasExcel')),None)\nprint('LETTER',json.dumps(item,ensure_ascii=False))\nif item:\n u=item['ExcelUrl']; raw=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0'}),timeout=30).read(); print('EXCEL_BYTES',len(raw),'MAGIC',raw[:8])\n try:\n  import openpyxl; print('OPENPYXL',openpyxl.__version__)\n  wb=openpyxl.load_workbook(io.BytesIO(raw),read_only=True,data_only=True)\n  print('SHEETS',wb.sheetnames)\n  for ws in wb.worksheets[:3]:\n   print('SHEET',ws.title,'DIM',ws.max_row,ws.max_column)\n   for row in ws.iter_rows(min_row=1,max_row=min(12,ws.max_row),values_only=True): print('ROW',json.dumps(row,ensure_ascii=False,default=str))\n except Exception as e: print('PARSE_ERROR',type(e).__name__,str(e)[:1000])"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
