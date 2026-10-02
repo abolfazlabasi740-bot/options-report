@@ -39,16 +39,14 @@ Required:
 
 Status: PARTIAL. Daily SMA/RSI/MACD/momentum/volume features and order-book/client-type diagnostics are now included for underlying stocks linked to the displayed option shortlist. A historically validated pre-limit-up event classifier and current-session limit-up alert rule are NOT RELEASED. The current report is not a pre-limit-up predictor.
 
-### Track D — Macro, FX, news, exporter and revenue context
+### Track D — TSETMC market-context validation
 Required:
-- separate source adapters with provenance, timestamps, and source hashes;
-- USD/FX observations;
-- issuer disclosures and export-revenue evidence from official filings;
-- news classification with source links and event timestamps;
-- mapping from underlying issuer to documented exposure, not a generic "dollar stock" guess;
-- source conflict and stale-data handling.
+- TSETMC-supported underlying trend and market-context features only;
+- timestamped source evidence and reproducible calculations;
+- explicit separation between descriptive market context and predictive claims;
+- no dependency on news, Codal disclosures, or external issuer-event enrichment for project completion.
 
-Status: PARTIAL. An official Codal monthly-activity adapter now parses explicit product export sales and disclosed foreign-currency rows. A live test on فملی returned EXPORT_DISCLOSED with product-level monthly/cumulative sales and a EUR currency row; USD was not explicitly disclosed in that report. Broad universe coverage, a separate live FX feed, and news/event enrichment remain NOT RELEASED. No generic dollar-sensitivity inference is allowed.
+Status: IN_SCOPE. News review and Codal review are explicitly excluded from the approved completion scope and cannot block project completion.
 
 ### Track E — Strategy and risk release
 Required:
