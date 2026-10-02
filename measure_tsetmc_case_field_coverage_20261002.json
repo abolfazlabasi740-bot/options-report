@@ -1,0 +1,17 @@
+{
+  "command_id": "measure_tsetmc_case_field_coverage_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:19:33.218399+00:00",
+  "finished_at": "2026-10-02T01:19:34.647406+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import json,glob\nfrom collections import Counter\npaths=sorted(glob.glob('output/history/tsetmc/*.json'))\nfields=['اختلاف تا بلک شولز','بلک شولز','نوسان ضمنی','دلتا','گاما','وگا','رو','تتا','اختلاف تا سر به سر','سر به سر','روزهای تقویمی','قیمت بهترین تقاضا','قیمت بهترین عرضه','حجم بهترین تقاضا','حجم بهترین عرضه','ارزش معاملات','حجم معاملات','قیمت سهم پایه','قیمت پایانی','قیمت اعمال','تاریخ سررسید']\nfor pth in [paths[0],paths[-1]] if paths else []:\n p=json.load(open(pth,encoding='utf-8')); rows=p.get('rows',[]); print('SNAPSHOT',pth,'TIME',p.get('observation_retrieved_at'),'ROWS',len(rows))\n for f in fields:\n  vals=[(r.get('canonical') or {}).get(f) for r in rows]\n  valid=[v for v in vals if v not in (None,'')]\n  print(f,'VALID',len(valid),'SAMPLE',valid[:2])"
+  ],
+  "stdout": "SNAPSHOT output/history/tsetmc/00efe9265e30bfa3e4d8145a1170291addac38df1cf78490de0e678abc34634f.json TIME 2026-10-01T19:01:05Z ROWS 1684\nاختلاف تا بلک شولز VALID 0 SAMPLE []\nبلک شولز VALID 0 SAMPLE []\nنوسان ضمنی VALID 0 SAMPLE []\nدلتا VALID 0 SAMPLE []\nگاما VALID 0 SAMPLE []\nوگا VALID 0 SAMPLE []\nرو VALID 0 SAMPLE []\nتتا VALID 0 SAMPLE []\nاختلاف تا سر به سر VALID 0 SAMPLE []\nسر به سر VALID 0 SAMPLE []\nروزهای تقویمی VALID 1684 SAMPLE [20.0, 20.0]\nقیمت بهترین تقاضا VALID 1684 SAMPLE [4.0, 2.0]\nقیمت بهترین عرضه VALID 1684 SAMPLE [9.0, 54997.0]\nحجم بهترین تقاضا VALID 1684 SAMPLE [998.0, 1000.0]\nحجم بهترین عرضه VALID 1684 SAMPLE [1.0, 10.0]\nارزش معاملات VALID 1684 SAMPLE [310000.0, 14427603000.0]\nحجم معاملات VALID 1684 SAMPLE [54.0, 265.0]\nقیمت سهم پایه VALID 1684 SAMPLE [73844.0, 73844.0]\nقیمت پایانی VALID 1684 SAMPLE [6.0, 54444.0]\nقیمت اعمال VALID 1684 SAMPLE [20000.0, 20000.0]\nتاریخ سررسید VALID 1684 SAMPLE ['20261021', '20261021']\nSNAPSHOT output/history/tsetmc/ff7e7f1f8a3e30750edb7e8c10c84b2a2f7b6511c44d373772fc2f15b37fe773.json TIME 2026-10-02T00:57:32Z ROWS 1684\nاختلاف تا بلک شولز VALID 0 SAMPLE []\nبلک شولز VALID 0 SAMPLE []\nنوسان ضمنی VALID 0 SAMPLE []\nدلتا VALID 0 SAMPLE []\nگاما VALID 0 SAMPLE []\nوگا VALID 0 SAMPLE []\nرو VALID 0 SAMPLE []\nتتا VALID 0 SAMPLE []\nاختلاف تا سر به سر VALID 0 SAMPLE []\nسر به سر VALID 0 SAMPLE []\nروزهای تقویمی VALID 1684 SAMPLE [19.0, 19.0]\nقیمت بهترین تقاضا VALID 1684 SAMPLE [4.0, 2.0]\nقیمت بهترین عرضه VALID 1684 SAMPLE [9.0, 54997.0]\nحجم بهترین تقاضا VALID 1684 SAMPLE [998.0, 1000.0]\nحجم بهترین عرضه VALID 1684 SAMPLE [1.0, 10.0]\nارزش معاملات VALID 1684 SAMPLE [310000.0, 14427603000.0]\nحجم معاملات VALID 1684 SAMPLE [54.0, 265.0]\nقیمت سهم پایه VALID 1684 SAMPLE [73844.0, 73844.0]\nقیمت پایانی VALID 1684 SAMPLE [6.0, 54444.0]\nقیمت اعمال VALID 1684 SAMPLE [20000.0, 20000.0]\nتاریخ سررسید VALID 1684 SAMPLE ['20261021', '20261021']\n",
+  "stderr": "",
+  "project_head": "6d4c9849d3205276f3a89544aca5e11babd56a1c",
+  "result_sha256": "270d7406a7c40d8f26df9e039647a0d5923748e511d39152d4f8efdf9e6c5906"
+}
