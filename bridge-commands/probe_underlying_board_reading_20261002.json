@@ -1,9 +1,0 @@
-{
-  "command_id": "probe_underlying_board_reading_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import json\nfrom tsetmc_adapter import TSETMCAdapter\na=TSETMCAdapter()\nfor name,fn in [('client_type',lambda:a.client_type('17914401175772326')),('order_book',lambda:a.order_book('17914401175772326'))]:\n try:\n  r=fn(); d=r.get('data'); print(name,'KEYS',list(r.keys()),'ENDPOINT',r.get('endpoint')); print(name,'DATA',json.dumps(d,ensure_ascii=False)[:8000])\n except Exception as e: print(name,'ERROR',type(e).__name__,str(e)[:500])"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
