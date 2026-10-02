@@ -1,0 +1,9 @@
+{
+  "command_id": "probe_underlying_daily_history_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import json\nfrom tsetmc_adapter import TSETMCAdapter\na=TSETMCAdapter()\nr=a.daily_history('17914401175772326',top=100)\nprint('STATUS',r.get('status'))\nprint('ENDPOINT',r.get('endpoint'))\nd=r.get('data') or {}\nprint('DATA_TYPE',type(d).__name__)\nprint('DATA_KEYS',list(d.keys()) if isinstance(d,dict) else None)\nprint('DATA_SAMPLE',json.dumps(d,ensure_ascii=False)[:12000])"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
