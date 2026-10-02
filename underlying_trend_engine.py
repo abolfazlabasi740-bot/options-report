@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path
 from datetime import datetime
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -215,7 +216,36 @@ def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter |
         try:
             history = adapter.daily_history(instrument_id, top=100)
             info = adapter.instrument_info(instrument_id)
-            results[instrument_id] = analyze_history(instrument_id, history, info)
+            analysis = analyze_history(instrument_id, history, info)
+            raw_rows = history.get("data") if isinstance(history.get("data"), list) else []
+            exact_rows = [
+                row for row in raw_rows
+                if isinstance(row, dict) and str(row.get("insCode") or "").strip() == instrument_id
+            ]
+            archive_payload = {
+                "archive_version": "TSETMC-UNDERLYING-HISTORY-1.0",
+                "source_of_truth": "TSETMC",
+                "instrument_id": instrument_id,
+                "retrieved_at": history.get("retrieved_at"),
+                "endpoint": history.get("endpoint"),
+                "source_response_sha256": history.get("snapshot_sha256"),
+                "rows": exact_rows,
+            }
+            archive_canonical = json.dumps(
+                archive_payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            )
+            archive_sha = hashlib.sha256(archive_canonical.encode("utf-8")).hexdigest()
+            archive_payload["archive_sha256"] = archive_sha
+            archive_dir = Path(__file__).resolve().parent / "output" / "history" / "underlying"
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            archive_path = archive_dir / f"{instrument_id}_{archive_sha}.json"
+            archive_path.write_text(
+                json.dumps(archive_payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            analysis["archive_path"] = str(archive_path)
+            analysis["archive_sha256"] = archive_sha
+            results[instrument_id] = analysis
         except Exception as exc:
             results[instrument_id] = {
                 "status": "UNAVAILABLE",
