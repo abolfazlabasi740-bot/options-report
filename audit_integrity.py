@@ -107,7 +107,7 @@ def verify_audit(audit: dict[str, Any]) -> dict[str, Any]:
                 "snapshot_hash_present": bool(audit.get("snapshot_sha256")),
                 "row_count_valid": isinstance(audit.get("row_count"), int) and audit.get("row_count") >= 0,
                 "live_movement_not_claimed": audit.get("live_movement_claim") == "NOT_CLAIMED",
-                "scoring_contract_valid": audit.get("scoring_status") in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING"},
+                "scoring_contract_valid": audit.get("scoring_status") in {"OFF_FIELD_EVIDENCE_GATE_OPEN", "TSETMC_EVIDENCE_RANKING", "TSETMC_ECONOMIC_SCORING"},
                 "ranking_contract_valid": audit.get("ranking_status") in {"OFF", "TSETMC_EVIDENCE_RANKING"},
                 "market_watch_evidence": isinstance(audit.get("market_watch"), dict) and all(
                     audit["market_watch"].get(k) for k in ("endpoint", "snapshot_sha256", "retrieved_at")
