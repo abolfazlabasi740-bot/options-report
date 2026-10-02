@@ -1,0 +1,42 @@
+name: Download OptionSchool24 workbook
+
+on:
+  push:
+    paths:
+      - ".github/workflows/download_optionschool_once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download workbook
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          url='https://s3.optionschool24.com/export/excel?type=1'
+          file="data/optionschool24_live.xlsx"
+          curl --fail --location --retry 3 --connect-timeout 20 --max-time 120 "$url" -o "$file"
+          test -s "$file"
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("data/optionschool24_live.xlsx")
+          b = p.read_bytes()
+          if len(b) < 5000 or not b.startswith(b"PK"):
+              raise SystemExit("Downloaded content is not a valid XLSX/ZIP workbook")
+          print("bytes:", len(b))
+          PY
+          sha256sum "$file" | tee data/optionschool24_live.sha256
+
+      - name: Commit workbook
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/optionschool24_live.xlsx data/optionschool24_live.sha256
+          git commit -m "archive: download OptionSchool24 live workbook" || exit 0
+          git push
