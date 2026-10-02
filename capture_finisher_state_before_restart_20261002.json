@@ -1,0 +1,17 @@
+{
+  "command_id": "capture_finisher_state_before_restart_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:43:12.669215+00:00",
+  "finished_at": "2026-10-02T01:43:13.011567+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport json,os\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\ns=json.loads((root/'PROJECT_FINISHER_STATE.json').read_text(encoding='utf-8'))\np=root/'output/g7_5_economic_validation_evidence.json'\nprint('STATE',json.dumps({k:s.get(k) for k in ['version','status','cycle','updated_at','blocker','last_evidence_sha','bale_notified','bale_receipt']},ensure_ascii=False))\nif p.exists():\n e=json.loads(p.read_text(encoding='utf-8')); d=e.get('case_family_diagnostics') or {}\n print('EVIDENCE',json.dumps({'sha':e.get('evidence_sha256'),'snapshots':e.get('source_snapshot_count'),'transitions':e.get('observed_transition_count'),'matched':e.get('matched_transition_count'),'unresolved':e.get('unresolved_feature_matches'),'validation_results':(e.get('validation') or {}).get('result_count'),'families':{k:v.get('confusion_counts') for k,v in (d.get('supported_case_families') or {}).items()},'status':d.get('status'),'global_closure':d.get('global_closure')},ensure_ascii=False))\nelse: print('EVIDENCE_MISSING')"
+  ],
+  "stdout": "STATE {\"version\": \"2.0.0\", \"status\": \"BLOCKED\", \"cycle\": 3, \"updated_at\": \"2026-10-02T01:40:33.359639+00:00\", \"blocker\": \"RuntimeError: To https://github.com/abolfazlabasi740-bot/options-report.git\\n ! [rejected]        main -> main (fetch first)\\nerror: failed to push some refs to 'https://github.com/abolfazlabasi740-bot/options-report.git'\\nhint: Updates were rejected because the remote contains work that you do not\\nhint: have locally. This is usually caused by another repository pushing to\\nhint: the same ref. If you want to integrate the remote changes, use\\nhint: 'git pull' before pushing again.\\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.\\n\", \"last_evidence_sha\": \"28c4fe3e8145b5d71d4e10c2aa9b31f90bde884f4e7630e387292fba0f2effed\", \"bale_notified\": false, \"bale_receipt\": \"BALE_SEND_FAILED:ModuleNotFoundError\"}\nEVIDENCE {\"sha\": \"28c4fe3e8145b5d71d4e10c2aa9b31f90bde884f4e7630e387292fba0f2effed\", \"snapshots\": 59, \"transitions\": 88344, \"matched\": 88344, \"unresolved\": 0, \"validation_results\": 6270, \"families\": {\"BREAKEVEN_COMPRESSION_TSETMC_PROXY\": {\"TP\": 1904, \"FP\": 20214, \"FN\": 2623, \"TN\": 63603}, \"LIQUIDITY_CONFIRMED_TSETMC_PROXY\": {\"TP\": 2588, \"FP\": 15986, \"FN\": 1939, \"TN\": 67831}, \"NEAR_EXPIRY_RISK_TSETMC\": {\"TP\": 1758, \"FP\": 23120, \"FN\": 2769, \"TN\": 60697}}, \"status\": \"PARTIAL\", \"global_closure\": \"OPEN\"}\n",
+  "stderr": "",
+  "project_head": "6d80abb9f31750ea675e20ee27da49debc260f2f",
+  "result_sha256": "f5ff9054885867b3b17caedb903677b5afc4f51c9ba8e170d46896f8f0462b24"
+}
