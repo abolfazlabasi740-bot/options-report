@@ -1,0 +1,24 @@
+{
+  "command_id": "optionschool_reconcile_20261002_2015",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T13:04:47.869364+00:00",
+  "finished_at": "2026-10-02T13:04:52.030848+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/reconcile_combined_tsetmc_identity.py",
+    "--optionschool",
+    "data/optionschool/optionschool_20261002_153619.xlsx",
+    "--market-watch-reconciliation",
+    "output/g7_tsetmc/reconciliation_38.json",
+    "--instrument-search",
+    "output/g7_tsetmc/unmatched_tsetmc_search.json",
+    "--output",
+    "output/g7_tsetmc/combined_identity_20261002.json"
+  ],
+  "stdout": "{\"status\": \"SUCCESS\", \"workbook_rows\": 461, \"market_watch_exact_symbols\": 369, \"instrument_search_exact_symbols\": 79, \"source_overlap_symbols\": 0, \"combined_exact_unique_symbols\": 368, \"unresolved_symbols\": 93, \"identity_conflicts\": 0, \"promotion_ready\": false}\n",
+  "stderr": "",
+  "project_head": "82e2cef5473936de9779dde52674e32dda26e2e8",
+  "result_sha256": "62303514d414e53ad9d3536cd6caddb5e1ea91fbfc9eeb65a3d29384f26b4c87"
+}
