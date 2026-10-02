@@ -119,13 +119,28 @@ def run_stage(name: str, argv: list[str], timeout: int):
 
 
 def cycle(cycle_no: int) -> bool:
+    # Preserve the already-reached gate when a new 15-minute cycle starts.
+    # A new cycle must not regress the canonical state back to Track A.
+    previous = read_state()
+    previous_g7 = previous.get("g7_5_status")
+    previous_track_a = previous.get("track_a_release_status") == "RELEASED"
+    if previous_track_a and previous_g7 == "VERIFIED":
+        cycle_gate = "TRACK_CDE_RELEASE"
+        cycle_action = "continue approved Track C/D/E/F completion checks; production BUY/SELL remains forbidden"
+    elif previous_track_a:
+        cycle_gate = "TRACK_B_VALIDATION"
+        cycle_action = "continue G7-5 validation and verify runtime/audit"
+    else:
+        cycle_gate = "TRACK_A_RUNTIME"
+        cycle_action = "run report, rebuild G7-5 diagnostics, and verify runtime/audit"
+
     write_state(
         version="2.1.0",
         status="RUNNING",
-        current_gate="TRACK_A_RUNTIME",
+        current_gate=cycle_gate,
         blocker=None,
         human_action_required=False,
-        next_action="run report, rebuild G7-5 diagnostics, and verify runtime/audit",
+        next_action=cycle_action,
         cycle=cycle_no,
     )
     stages = []
@@ -179,8 +194,13 @@ def cycle(cycle_no: int) -> bool:
             current_gate="TRACK_B_VALIDATION" if gate_status != "VERIFIED" else "TRACK_CDE_RELEASE",
             blocker=None if gate_status == "VERIFIED" else blocker,
             track_a_release_status="RELEASED",
-            full_project_status="IN_PROGRESS" if gate_status != "VERIFIED" else "IN_PROGRESS",
-            next_action="Track A screening delivered. Continue unresolved validation and remaining scope tracks; full project is not complete.",
+            full_project_status="IN_PROGRESS",
+            next_action=(
+                "G7-5 VERIFIED. Continue approved Track C/D/E/F completion checks; "
+                "full project is not complete and production BUY/SELL remains forbidden."
+                if gate_status == "VERIFIED"
+                else "Track A screening delivered. Continue G7-5 validation and remaining approved scope tracks."
+            ),
             last_cycle=stages,
             last_evidence_sha=evidence.get("evidence_sha256"),
             case_family_confusion_counts=family_counts,
@@ -192,6 +212,14 @@ def cycle(cycle_no: int) -> bool:
             fail_closed=True,
         )
         git_record(f"ops: finisher cycle {cycle_no} Track A screening milestone")
+        if gate_status == "VERIFIED":
+            try:
+                rc, git_head, git_err = cmd("git", "rev-parse", "HEAD", timeout=30)
+                if rc == 0:
+                    write_state(last_verified_commit=git_head.strip())
+                    git_record(f"ops: finisher cycle {cycle_no} verified runtime commit")
+            except Exception:
+                pass
         if not already_released:
             notify_on_change(
                 milestone_key,
