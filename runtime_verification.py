@@ -24,6 +24,7 @@ CRITICAL_FILES = [
     "economic_validation_engine.py",
     "economic_validation_evidence_builder.py",
     "underlying_trend_engine.py",
+    "codal_export_engine.py",
     "tsetmc_scoring_engine.py",
     "tsetmc_adapter.py",
     "tsetmc_mapping.py",
