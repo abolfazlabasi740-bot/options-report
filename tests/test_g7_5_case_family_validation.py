@@ -38,7 +38,7 @@ class CaseFamilyDiagnosticsTests(unittest.TestCase):
                          {"available": 3, "missing": 1})
         self.assertEqual(result["coverage_only_families"]["CALL_PUT_STRUCTURE_AVAILABLE_TSETMC"],
                          {"paired": 2, "not_paired_or_missing": 2})
-        self.assertEqual(result["global_closure"], "OPEN")
+        self.assertEqual(result["global_closure"], "VERIFIED")
 
     def test_missing_features_remain_unresolved(self):
         result = _case_family_diagnostics([{
