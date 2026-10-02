@@ -443,6 +443,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"عمق خرید/فروش ۵ سطح: {number(trend.get('bid_ask_volume_ratio_5'))} | "
             f"قدرت حقیقی خرید/فروش: {number(trend.get('individual_power_ratio'))} | "
             f"قدرت حقوقی خرید/فروش: {number(trend.get('legal_power_ratio'))} | "
+            f"وضعیت حقیقی/حقوقی: {trend.get('client_type_status', 'داده موجود نیست')} | "
+            f"دریافت سفارش‌ها: {trend.get('orderbook_retrieved_at', 'داده موجود نیست')} | "
             f"فاصله تا سقف مجاز روز: {percent(trend.get('upper_limit_headroom_pct'))}"
         )
     lines.append(
