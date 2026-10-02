@@ -1,9 +1,0 @@
-{
-  "command_id": "final_live_tsetmc_test_20261002_01",
-  "argv": [
-    "bash",
-    "-lc",
-    "set -e; rm -f output/final_live_tsetmc_test_20261002.json; python live_bestlimits_evidence_runner.py --output output/final_live_tsetmc_test_20261002.json --option-count 3 --pause-seconds 3 --timeout 20; python - <<'PY'\nimport json\np='output/final_live_tsetmc_test_20261002.json'\no=json.load(open(p,encoding='utf-8'))\nprint(json.dumps({'run_status':o.get('run_status','SUCCESS'),'source_of_truth':o.get('source_of_truth'),'generated_from_snapshot_sha256':o.get('generated_from_snapshot_sha256'),'live_market_watch_selection':o.get('live_market_watch_selection',{}),'gate_result':o.get('gate_result'),'scoring_status':o.get('scoring_status')},ensure_ascii=False))\nPY"
-  ],
-  "cwd": "~/OptimusAI_V41_LIVE"
-}
