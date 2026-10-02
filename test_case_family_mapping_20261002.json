@@ -1,0 +1,17 @@
+{
+  "command_id": "test_case_family_mapping_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:21:26.169496+00:00",
+  "finished_at": "2026-10-02T01:21:28.490495+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import subprocess,sys\nsubprocess.run(['git','fetch','origin','main'],check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],check=True)\nchecks=[['python','-m','py_compile','economic_validation_evidence_builder.py','scripts/project_finisher_agent.py','runtime_verification.py','audit_integrity.py'],['python','-m','unittest','discover','-s','tests','-p','test_g7_5_case_family_validation.py','-v']]\nfor args in checks:\n p=subprocess.run(args,text=True,capture_output=True)\n print('COMMAND',args,'EXIT',p.returncode)\n print(p.stdout[-5000:]); print(p.stderr[-5000:])\n if p.returncode: raise SystemExit(p.returncode)\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip())"
+  ],
+  "stdout": "HEAD is now at 2a4a550 docs: define TSETMC case-family diagnostic mapping\nCOMMAND ['python', '-m', 'py_compile', 'economic_validation_evidence_builder.py', 'scripts/project_finisher_agent.py', 'runtime_verification.py', 'audit_integrity.py'] EXIT 0\n\n\nCOMMAND ['python', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_g7_5_case_family_validation.py', '-v'] EXIT 0\n\ntest_confusion_counts_use_independent_forward_labels (test_g7_5_case_family_validation.CaseFamilyDiagnosticsTests.test_confusion_counts_use_independent_forward_labels) ... ok\ntest_missing_features_remain_unresolved (test_g7_5_case_family_validation.CaseFamilyDiagnosticsTests.test_missing_features_remain_unresolved) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.002s\n\nOK\n\nHEAD=2a4a5505e407aef23f557575589d0af15d317ddc\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\n   13ee662..2a4a550  main       -> origin/main\n",
+  "project_head": "2a4a5505e407aef23f557575589d0af15d317ddc",
+  "result_sha256": "cac28bbac832fbc8743df1f3823f54c5a6409979de7fd721805264e69604b83f"
+}
