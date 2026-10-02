@@ -1,6 +1,6 @@
 import unittest
 
-from codal_export_engine import parse_monthly_activity_html, _number
+from codal_export_engine import parse_monthly_activity_html, _number, _event_tags
 
 
 def cell_row(values):
@@ -39,6 +39,11 @@ class CodalExportParsingTests(unittest.TestCase):
         currencies = result["foreign_currency_sales"]["currencies"]
         self.assertEqual(currencies[0]["currency"], "یورو")
         self.assertEqual(currencies[0]["month_rial_amount_million_irr"], 56560528.0)
+
+    def test_event_tags_are_descriptive_not_sentiment(self):
+        self.assertIn("IMPORTANT_DISCLOSURE", _event_tags("افشای اطلاعات بااهمیت - انعقاد قرارداد"))
+        self.assertIn("CONTRACT", _event_tags("افشای اطلاعات بااهمیت - انعقاد قرارداد"))
+        self.assertEqual(_event_tags("اطلاعیه نامشخص"), ["OTHER_OFFICIAL_FILING"])
 
     def test_missing_export_section_is_not_assumed_zero(self):
         html = "<table><tr><td>تولید</td></tr></table>"
