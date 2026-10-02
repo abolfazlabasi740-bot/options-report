@@ -15,7 +15,7 @@ Required:
 - Bale delivery with a real message receipt;
 - no unsupported buy/sell, expected-return, or probability-of-profit claims.
 
-Current evidence: report and ranking PASS; runtime and audit PASS on 2026-10-02; Bale test delivery PASS with message receipt 1335. This is a working screening milestone, not the full project.
+Current evidence: report/ranking PASS; expired and expiry-unknown contracts are excluded; underlying daily technical indicators and TSETMC order-book/client-type diagnostics are integrated for displayed candidates; runtime and audit PASS on 2026-10-02; Bale test delivery PASS with message receipt 1335. This is a working screening milestone, not the full project.
 
 ### Track B — Historical case-family validation
 Required:
@@ -26,7 +26,7 @@ Required:
 - walk-forward and out-of-sample evidence;
 - costs/slippage assumptions explicitly sourced or left unavailable.
 
-Current evidence: 58 retained snapshots, 86,660 exact-ID transitions, 0 unresolved feature matches, 6,156 walk-forward results. Three TSETMC proxy families have diagnostic confusion counts. Two families are coverage-only. RELATIVE_VALUE_ANOMALY and CHAIN_STRUCTURE_ANOMALY remain unsupported; global G7-5 remains OPEN.
+Current evidence: latest captured run had 59 retained snapshots, 88,344 exact-ID transitions, 0 unresolved feature matches, and 6,270 walk-forward results. Three TSETMC proxy families have diagnostic confusion counts. Two families are coverage-only. RELATIVE_VALUE_ANOMALY and CHAIN_STRUCTURE_ANOMALY remain unsupported; global G7-5 remains OPEN.
 
 ### Track C — Underlying-stock trend and pre-limit-up screening
 Required:
@@ -37,7 +37,7 @@ Required:
 - chronological out-of-sample evaluation and false-positive reporting;
 - no claims that a pattern predicts a limit-up unless validated.
 
-Status: NOT RELEASED. The current option-ranking report is not a pre-limit-up predictor.
+Status: PARTIAL. Daily SMA/RSI/MACD/momentum/volume features and order-book/client-type diagnostics are now included for underlying stocks linked to the displayed option shortlist. A historically validated pre-limit-up event classifier and current-session limit-up alert rule are NOT RELEASED. The current report is not a pre-limit-up predictor.
 
 ### Track D — Macro, FX, news, exporter and revenue context
 Required:
@@ -67,7 +67,7 @@ Required:
 - Bale notifications deduplicated by state change and verified by receipts;
 - human intervention only for credentials, external account permissions, or explicit risk-policy authorization.
 
-Status: PARTIAL. Bridge and a Bale test receipt exist; continuous supervisor health and notification retry still require verification.
+Status: PARTIAL. Bridge and a Bale test receipt exist. A rebase-safe state-push fix has been deployed and the Finisher worker restarted; successful completion of its next full cycle and Bale receipt remains to be verified.
 
 ## Completion rule
 
