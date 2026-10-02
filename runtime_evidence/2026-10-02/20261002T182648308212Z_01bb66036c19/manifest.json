@@ -1,0 +1,40 @@
+{
+  "publisher_version": "GITHUB-RUNTIME-EVIDENCE-1.0",
+  "status": "READY",
+  "published_at": "2026-10-02T18:26:48.308212+00:00",
+  "run_id": "20261002T182648308212Z",
+  "snapshot_sha256": "01bb66036c1966eff38f7d5ac44308f417397c7a5ebe0682fb261273772bf7c1",
+  "report_sha256": "a4feef0ee141afe813f050256422c4b51b2c79c694bba37c8aff1711ecf63fa5",
+  "source_of_truth": "TSETMC",
+  "data_mode": "LIVE_TSETMC_REFRESH",
+  "live_refresh_status": "SUCCESS",
+  "ranking_status": "OFF",
+  "scoring_status": "OFF_FIELD_EVIDENCE_GATE_OPEN",
+  "artifacts": [
+    {
+      "file": "latest_report.txt",
+      "sha256": "a4feef0ee141afe813f050256422c4b51b2c79c694bba37c8aff1711ecf63fa5",
+      "bytes": 7481
+    },
+    {
+      "file": "latest_audit.json",
+      "sha256": "d1d177f598f0ade8001d0c880e2acd15b7c025009fac1c0b29d89afae759ad45",
+      "bytes": 1030263
+    },
+    {
+      "file": "latest_snapshot.json",
+      "sha256": "ca5e046d5adc30ec6951363822aae363bbc12f46c103ee3b1a0df3ba4561acd8",
+      "bytes": 1821355
+    },
+    {
+      "file": "latest_universe_snapshot.json",
+      "sha256": "261d0772e2ff1b49a33c9da5711a87768e3ad7f1a60360c46590624a54d69ed3",
+      "bytes": 10431321
+    },
+    {
+      "file": "latest_source_audit.json",
+      "sha256": "d1d177f598f0ade8001d0c880e2acd15b7c025009fac1c0b29d89afae759ad45",
+      "bytes": 1030263
+    }
+  ]
+}
