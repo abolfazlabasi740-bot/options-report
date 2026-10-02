@@ -1,0 +1,9 @@
+{
+  "command_id": "probe_finisher_worker_health_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport os,json\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npid=int((root/'output/project_finisher_agent.pid').read_text())\ntry: os.kill(pid,0); alive=True\nexcept OSError: alive=False\nlog=root/'output/project_finisher_agent.log'\nprint('PID',pid,'ALIVE',alive)\nprint('LOG_TAIL',log.read_text(encoding='utf-8')[-4000:] if log.exists() else 'MISSING')\nprint('STATE',json.dumps(json.loads((root/'PROJECT_FINISHER_STATE.json').read_text(encoding='utf-8')),ensure_ascii=False)[:2500])"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
