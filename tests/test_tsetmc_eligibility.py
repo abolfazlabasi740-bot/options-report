@@ -1,4 +1,5 @@
 import unittest
+from datetime import date
 
 from tsetmc_eligibility import (
     INSUFFICIENT_ACTIVITY_EVIDENCE,
@@ -8,6 +9,9 @@ from tsetmc_eligibility import (
     classify_eligibility,
     classify_universe,
 )
+
+
+TEST_EXPIRY = "20990101"
 
 
 def row(volume=None, trades=None, bid=None, ask=None, bid_price=None, ask_price=None):
@@ -20,37 +24,41 @@ def row(volume=None, trades=None, bid=None, ask=None, bid_price=None, ask_price=
             "حجم بهترین عرضه": ask,
             "قیمت بهترین تقاضا": bid_price,
             "قیمت بهترین عرضه": ask_price,
+            "تاریخ سررسید": TEST_EXPIRY,
         },
         "identity": {"instrument_id": "ID1", "contract_type": "CALL"},
     }
 
 
 class TsetmcEligibilityTests(unittest.TestCase):
+    def classify(self, value):
+        return classify_eligibility(value, as_of_date=date(2026, 10, 2))
+
     def test_zero_volume_and_trades_cannot_be_candidate(self):
-        result = classify_eligibility(row(volume=0, trades=0, bid=None, ask=None))
+        result = self.classify(row(volume=0, trades=0, bid=None, ask=None))
         self.assertEqual(result["state"], INSUFFICIENT_ACTIVITY_EVIDENCE)
         self.assertFalse(result["opportunity_eligible"])
 
     def test_missing_activity_is_not_zero_filled(self):
-        result = classify_eligibility(row())
+        result = self.classify(row())
         self.assertEqual(result["state"], INSUFFICIENT_ACTIVITY_EVIDENCE)
         self.assertIsNone(result["activity"]["volume"])
         self.assertIsNone(result["activity"]["trade_count"])
 
     def test_traded_contract_can_be_candidate(self):
-        result = classify_eligibility(row(volume=100, trades=2))
+        result = self.classify(row(volume=100, trades=2))
         self.assertEqual(result["state"], OPPORTUNITY_CANDIDATE)
 
     def test_two_sided_depth_can_be_candidate(self):
-        result = classify_eligibility(row(volume=0, trades=0, bid=5, ask=7))
+        result = self.classify(row(volume=0, trades=0, bid=5, ask=7))
         self.assertEqual(result["state"], OPPORTUNITY_CANDIDATE)
 
     def test_one_sided_depth_is_not_candidate_by_itself(self):
-        result = classify_eligibility(row(volume=0, trades=0, bid=5, ask=0))
+        result = self.classify(row(volume=0, trades=0, bid=5, ask=0))
         self.assertEqual(result["state"], INSUFFICIENT_ACTIVITY_EVIDENCE)
 
     def test_nonzero_activity_but_missing_trade_count_is_rankable(self):
-        result = classify_eligibility(row(volume=100, trades=None))
+        result = self.classify(row(volume=100, trades=None))
         self.assertEqual(result["state"], RANKABLE)
 
     def test_universe_counts_cover_every_row(self):
@@ -60,10 +68,7 @@ class TsetmcEligibilityTests(unittest.TestCase):
             row(volume=None, trades=None),
         ])
         self.assertEqual(result["rows_evaluated"], 3)
-        self.assertEqual(
-            sum(result["counts"].values()),
-            3,
-        )
+        self.assertEqual(sum(result["counts"].values()), 3)
         self.assertFalse(result["arbitrary_thresholds"])
 
     def test_oi_status_classifies_positive_zero_and_unavailable(self):
@@ -73,9 +78,9 @@ class TsetmcEligibilityTests(unittest.TestCase):
         zero["canonical"]["موقعیت های باز"] = 0
         unavailable = row(volume=1, trades=1)
 
-        self.assertEqual(classify_eligibility(positive)["activity"]["oi_status"], "POSITIVE")
-        self.assertEqual(classify_eligibility(zero)["activity"]["oi_status"], "ZERO")
-        self.assertEqual(classify_eligibility(unavailable)["activity"]["oi_status"], "UNAVAILABLE")
+        self.assertEqual(self.classify(positive)["activity"]["oi_status"], "POSITIVE")
+        self.assertEqual(self.classify(zero)["activity"]["oi_status"], "ZERO")
+        self.assertEqual(self.classify(unavailable)["activity"]["oi_status"], "UNAVAILABLE")
 
     def test_spread_status_classifies_positive_zero_negative_and_unavailable(self):
         positive = row(volume=1, trades=1, bid=10, ask=12, bid_price=10, ask_price=12)
@@ -85,19 +90,19 @@ class TsetmcEligibilityTests(unittest.TestCase):
         one_sided = row(volume=1, trades=1, bid=12, ask=0, bid_price=12, ask_price=0)
         zero_both = row(volume=1, trades=1, bid=0, ask=0, bid_price=0, ask_price=0)
 
-        self.assertEqual(classify_eligibility(positive)["activity"]["spread_status"], "POSITIVE")
-        self.assertEqual(classify_eligibility(zero)["activity"]["spread_status"], "ZERO")
-        self.assertEqual(classify_eligibility(negative)["activity"]["spread_status"], "NEGATIVE")
-        self.assertEqual(classify_eligibility(unavailable)["activity"]["spread_status"], "UNAVAILABLE")
-        self.assertEqual(classify_eligibility(one_sided)["activity"]["spread_status"], "UNAVAILABLE")
-        self.assertIsNone(classify_eligibility(one_sided)["activity"]["spread"])
-        self.assertEqual(classify_eligibility(zero_both)["activity"]["spread_status"], "UNAVAILABLE")
+        self.assertEqual(self.classify(positive)["activity"]["spread_status"], "POSITIVE")
+        self.assertEqual(self.classify(zero)["activity"]["spread_status"], "ZERO")
+        self.assertEqual(self.classify(negative)["activity"]["spread_status"], "NEGATIVE")
+        self.assertEqual(self.classify(unavailable)["activity"]["spread_status"], "UNAVAILABLE")
+        self.assertEqual(self.classify(one_sided)["activity"]["spread_status"], "UNAVAILABLE")
+        self.assertIsNone(self.classify(one_sided)["activity"]["spread"])
+        self.assertEqual(self.classify(zero_both)["activity"]["spread_status"], "UNAVAILABLE")
 
     def test_oi_and_spread_status_do_not_change_candidate_gate(self):
         positive = row(volume=1, trades=1, bid=10, ask=12)
         inverted = row(volume=1, trades=1, bid=12, ask=10)
         for candidate in (positive, inverted):
-            result = classify_eligibility(candidate)
+            result = self.classify(candidate)
             self.assertEqual(result["state"], OPPORTUNITY_CANDIDATE)
             self.assertTrue(result["opportunity_eligible"])
             self.assertFalse(result["buy_sell_signal"])
@@ -115,32 +120,17 @@ class TsetmcEligibilityTests(unittest.TestCase):
         self.assertEqual(result["rows_evaluated"], 5)
         self.assertEqual(result["counts"][OPPORTUNITY_CANDIDATE], 5)
         items = result["items"]
-        self.assertEqual(sum(
-            item["activity"]["oi_status"] == "POSITIVE" for item in items
-        ), 1)
-        self.assertEqual(sum(
-            item["activity"]["oi_status"] == "ZERO" for item in items
-        ), 1)
-        self.assertEqual(sum(
-            item["activity"]["oi_status"] == "UNAVAILABLE" for item in items
-        ), 3)
-        self.assertEqual(sum(
-            item["activity"]["spread_status"] == "POSITIVE" for item in items
-        ), 1)
-        self.assertEqual(sum(
-            item["activity"]["spread_status"] == "ZERO" for item in items
-        ), 1)
-        self.assertEqual(sum(
-            item["activity"]["spread_status"] == "NEGATIVE" for item in items
-        ), 1)
-        self.assertEqual(sum(
-            item["activity"]["spread_status"] == "UNAVAILABLE" for item in items
-        ), 2)
+        self.assertEqual(sum(item["activity"]["oi_status"] == "POSITIVE" for item in items), 1)
+        self.assertEqual(sum(item["activity"]["oi_status"] == "ZERO" for item in items), 1)
+        self.assertEqual(sum(item["activity"]["oi_status"] == "UNAVAILABLE" for item in items), 3)
+        self.assertEqual(sum(item["activity"]["spread_status"] == "POSITIVE" for item in items), 1)
+        self.assertEqual(sum(item["activity"]["spread_status"] == "ZERO" for item in items), 1)
+        self.assertEqual(sum(item["activity"]["spread_status"] == "NEGATIVE" for item in items), 1)
+        self.assertEqual(sum(item["activity"]["spread_status"] == "UNAVAILABLE" for item in items), 2)
 
     def test_no_trade_semantics_are_generated(self):
-        result = classify_eligibility(row(volume=10, trades=1))
+        result = self.classify(row(volume=10, trades=1))
         self.assertFalse(result["buy_sell_signal"])
-
 
     def test_opportunity_candidates_use_only_eligible_rows(self):
         rows = [row(volume=10, trades=1), row(volume=0, trades=0)]
