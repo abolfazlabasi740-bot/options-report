@@ -19,7 +19,7 @@ from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from underlying_trend_engine import fetch_underlying_context
-from codal_export_engine import fetch_export_context
+from codal_export_engine import fetch_export_context, fetch_recent_events
 from economic_scoring_engine import build_economic_ranking
 from signal_engine_shadow import evaluate_shadow_candidates
 from tsetmc_history import archive_universe_snapshot
@@ -337,6 +337,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         if str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
     })
     snapshot["codal_export_context"] = fetch_export_context(underlying_symbols, root=ROOT)
+    snapshot["codal_event_context"] = fetch_recent_events(underlying_symbols)
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
@@ -492,6 +493,26 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     lines.append(
         f"وضعیت دریافت شواهد کدال: {codal_context.get('status', 'داده موجود نیست')} | "
         f"تعداد نمادها: {codal_context.get('symbol_count', 0)}"
+    )
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("📰 افشاهای رسمی اخیر شرکت‌ها در کدال")
+    lines.append("فقط عنوان و زمان انتشار اطلاعیه گزارش می‌شود؛ جهت اثر یا مثبت/منفی بودن خبر حدس زده نمی‌شود.")
+    event_context = snapshot.get("codal_event_context") or {}
+    for symbol, event_data in (event_context.get("symbols") or {}).items():
+        events = event_data.get("events") or []
+        if not events:
+            lines.append(f"{symbol} | اطلاعیه قابل بازیابی نیست | وضعیت: {event_data.get('status')}")
+            continue
+        for event in events[:2]:
+            tags = "،".join(event.get("tags") or [])
+            lines.append(
+                f"{symbol} | {event.get('publish_datetime_jalali') or 'زمان ناموجود'} | "
+                f"{tags} | {event.get('title')}"
+            )
+            lines.append(f"کد رهگیری: {event.get('tracing_no')} | منبع: {event.get('report_url')}")
+    lines.append(
+        f"وضعیت دریافت اطلاعیه‌های کدال: {event_context.get('status', 'داده موجود نیست')} | "
+        f"تعداد نمادها: {event_context.get('symbol_count', 0)}"
     )
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
