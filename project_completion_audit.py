@@ -22,7 +22,10 @@ def main():
     runtime=OUT/"runtime_verification.json"
     state=load(STATE)
     report_text=report.read_text(encoding="utf-8",errors="ignore") if report.exists() else ""
-    report_ok=report.exists() and "TSETMC" in report_text and "RANKING_STATUS" in report_text
+    # Accept the canonical Persian report label emitted by report_engine.py.
+    # The previous check required an English token that production reports do not emit.
+    ranking_marker=("RANKING_STATUS" in report_text) or ("وضعیت رتبه‌بندی: PASS" in report_text)
+    report_ok=report.exists() and "TSETMC" in report_text and ranking_marker
     audit_ok=load(audit).get("status")=="PASS"
     runtime_ok=load(runtime).get("status")=="PASS"
     bale_receipt=state.get("bale_receipt")
