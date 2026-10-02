@@ -344,6 +344,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         except (TypeError, ValueError):
             return str(value)
 
+    def percent(value):
+        return "داده موجود نیست" if value in (None, "") else f"{float(value):.2f}%"
+
     mw = snapshot.get("evidence", {}).get("market_watch", {})
     data_mode = snapshot.get("data_mode") or "UNKNOWN"
     basis_timestamp = market_state["latest_source_market_timestamp"] or "داده موجود نیست"
@@ -432,12 +435,12 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         ), None)
         lines.append(
             f"{underlying_symbol or underlying_id} | روند: {trend.get('trend_state', 'داده موجود نیست')} | "
-            f"بازده ۵ جلسه: {number(trend.get('return_5_sessions_pct'))}% | "
-            f"بازده ۲۰ جلسه: {number(trend.get('return_20_sessions_pct'))}% | "
+            f"بازده ۵ جلسه: {percent(trend.get('return_5_sessions_pct'))} | "
+            f"بازده ۲۰ جلسه: {percent(trend.get('return_20_sessions_pct'))} | "
             f"RSI14: {number(trend.get('rsi_14'))} | "
             f"SMA20: {number(trend.get('sma_20'))} | SMA50: {number(trend.get('sma_50'))} | "
             f"نسبت حجم ۵/۲۰: {number(trend.get('volume_ratio_5_to_20'))} | "
-            f"فاصله تا سقف مجاز روز: {number(trend.get('upper_limit_headroom_pct'))}%"
+            f"فاصله تا سقف مجاز روز: {percent(trend.get('upper_limit_headroom_pct'))}"
         )
     lines.append(
         f"وضعیت دریافت روند پایه‌ها: {underlying_context.get('status', 'داده موجود نیست')} | "
