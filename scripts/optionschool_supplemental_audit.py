@@ -53,6 +53,18 @@ def parse_contract_symbol(value):
     }
 
 def main():
+    # Contract convention regression checks supplied by the project owner.
+    examples = {
+        "ضفزر ۷۱۹": ("CALL", "فزر", 719),
+        "ضسپا ۷۰۲۹": ("CALL", "سپا", 7029),
+        "طفزر ۷۱۹": ("PUT", "فزر", 719),
+        "طسپا ۷۰۲۹": ("PUT", "سپا", 7029),
+    }
+    for sample, expected in examples.items():
+        got = parse_contract_symbol(sample)
+        actual = (got["contract_type"], got["underlying_symbol"], got["contract_number"]) if got else None
+        if actual != expected:
+            raise SystemExit(f"Contract parser regression: {sample!r}: {actual!r} != {expected!r}")
     raw = FILE.read_bytes()
     sha = hashlib.sha256(raw).hexdigest()
     wb = load_workbook(FILE, read_only=True, data_only=True)
