@@ -20,6 +20,7 @@ from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from underlying_trend_engine import fetch_underlying_context
 from economic_scoring_engine import build_economic_ranking
+from option_model import attach_option_model_metrics
 from signal_engine_shadow import evaluate_shadow_candidates
 from tsetmc_history import archive_universe_snapshot
 from tsetmc_eligibility import (
@@ -332,6 +333,18 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             raise RuntimeError(
                 f"RANKED_REPORT_BLOCKED: ranking_status={ranking.get('status')}; rows={len(rows)}; required={limit}"
             )
+        # Bind the exact economic score to the displayed row itself. This
+        # removes any presentation-time ID lookup ambiguity.
+        score_by_id = {
+            str(item.get("instrument_id")): item.get("economic_score")
+            for item in ranking.get("ranking_rows", [])
+            if item.get("instrument_id") is not None
+        }
+        for row in rows:
+            rid = str((row.get("identity") or {}).get("instrument_id") or "")
+            row["_economic_score"] = score_by_id.get(rid)
+            if row["_economic_score"] is None:
+                raise RuntimeError(f"RANKED_REPORT_BLOCKED: missing_score_for_instrument={rid}")
         snapshot["report_mode"] = "RANKED"
     if report_mode == "TRADING_ACTIVITY":
         snapshot["signal_shadow"] = {
@@ -343,6 +356,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "items": [],
         }
     _attach_canonical_quote_evidence(rows, adapter=adapter)
+    # Greeks/Black-Scholes are derived only from TSETMC market inputs and
+    # TSETMC daily history. Model conventions are recorded in each row.
+    attach_option_model_metrics(rows, adapter)
     # Presentation enrichment is limited to displayed contracts; full universe remains in audit snapshot.
     enrichment_rows = rows
     underlying_ids = sorted({
@@ -425,9 +441,19 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
 
     for idx,item in enumerate(rows,1):
         c0=item.get("canonical") or {}; ident=item.get("identity") or {}
-        rid=str(ident.get("instrument_id") or "")
-        score=ranking_by_id.get(rid,{}).get("economic_score")
+        score=item.get("_economic_score")
         score_text=f"{float(score):.2f}" if score is not None else "داده موجود نیست"
+        model=item.get("option_model") or {}
+        delta_text=(
+            f"{float(model.get('delta')):.4f}"
+            if model.get("status") == "SUCCESS" and model.get("delta") is not None
+            else "داده موجود نیست"
+        )
+        bs_text=(
+            number(model.get("black_scholes"))
+            if model.get("status") == "SUCCESS" and model.get("black_scholes") is not None
+            else "داده موجود نیست"
+        )
         lines.extend([
             f"🔹 {idx}. {c0.get('نماد') or 'داده موجود نیست'}",
             f"نوع: {ident.get('contract_type') or 'داده موجود نیست'}",
@@ -437,7 +463,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"پایانی: {number(c0.get('قیمت پایانی'))}",
             f"فاصله سربه‌سر: {breakeven_distance(item)}",
             f"اهرم: {leverage(item)}",
-            "دلتا: داده موجود نیست","بلک‌شولز: داده موجود نیست",
+            f"دلتا: {delta_text}",
+            f"بلک‌شولز: {bs_text}",
             f"امتیاز: {score_text}/100","━━━━━━━━━━━━━━━━━━━━",
         ])
 
@@ -464,15 +491,15 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         "2) اهرم، فاصله سربه‌سر و زمان",
         f"بازه سررسید: {min(days)} تا {max(days)} روز" if days else "بازه سررسید: داده موجود نیست",
         "سررسید نزدیک، حساسیت به فرسایش زمانی را افزایش می‌دهد؛ اهرم بالا به‌تنهایی مبنای تصمیم نیست.",
-        "دلتا و بلک‌شولز: داده موجود نیست؛ تحلیل Greeks انجام نشده است.","",
+        "دلتا و بلک‌شولز از مدل Black-Scholes با نوسان تاریخی TSETMC محاسبه شده‌اند؛ نرخ بدون ریسک مدل 0% و سود تقسیمی 0% است و این دو عدد داده مشاهده‌شده بازار نیستند.","",
         "3) تمرکز ریسک",
         f"تعداد پایه‌های متمایز: {len(bases)}",
         f"بیشترین تمرکز: {conc_text or 'داده موجود نیست'}",
         "تمرکز چند قرارداد روی یک پایه، تنوع واقعی سبد را کاهش می‌دهد.","",
         "4) جمع‌بندی",
         "فرصت‌ها: قراردادهای با امتیاز اقتصادی و شواهد فعالیت TSETMC در صدر فهرست قرار گرفته‌اند.",
-        "ریسک‌ها: سررسید نزدیک، اهرم، تمرکز روی پایه و نبود OI/Greeks دامنه اطمینان تحلیل را محدود می‌کند.",
-        "پایش جلسه بعد: آخرین/پایانی، حجم، ارزش معاملات، عمق بازار و در صورت فراهم‌شدن OI/Greeks.",
+        "ریسک‌ها: سررسید نزدیک، اهرم، تمرکز روی پایه و تفاوت بین ارزش Black-Scholes مدل و قیمت بازار.",
+        "پایش جلسه بعد: آخرین/پایانی، حجم، ارزش معاملات، عمق بازار، تغییرات نوسان تاریخی و اختلاف قیمت مدل با بازار.",
         "⚠️ این خروجی رتبه‌بندی و تحلیل توصیفی است و BUY/SELL خودکار تولید نمی‌کند.","━━━━━━━━━━━━━━━━━━━━",
     ])
 
