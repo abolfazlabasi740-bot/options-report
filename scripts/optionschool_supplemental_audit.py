@@ -41,7 +41,7 @@ def parse_contract_symbol(value):
     s = normalize_digits(str(value)).strip()
     s = " ".join(s.split())
     import re
-    m = re.fullmatch(r"([ضط])\\s*([\\u0600-\\u06FF]+?)\\s*(\\d+)", s)
+    m = re.fullmatch(r"([ضط])\s*([\u0600-\u06FF]+?)\s*(\d+)", s)
     if not m:
         return None
     prefix, underlying, number = m.groups()
