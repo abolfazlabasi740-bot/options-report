@@ -1,0 +1,9 @@
+{
+  "command_id": "verify_expiry_filter_and_report_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import subprocess,sys\nroot='/data/data/com.termux/files/home/OptimusAI_V41_LIVE'\nsubprocess.run(['git','fetch','origin','main'],cwd=root,check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],cwd=root,check=True)\nchecks=[['python','-m','py_compile','tsetmc_eligibility.py','report_engine.py','underlying_trend_engine.py'],['python','-m','unittest','discover','-s','tests','-p','test_option_expiry_eligibility.py','-v'],['python','report_engine.py','--top','15'],['python','runtime_verification.py']]\nfor args in checks:\n p=subprocess.run(args,cwd=root,text=True,capture_output=True,timeout=1800)\n print('COMMAND',args,'EXIT',p.returncode)\n print('STDOUT',p.stdout[-12000:]); print('STDERR',p.stderr[-3000:])\n if p.returncode: raise SystemExit(p.returncode)\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip())"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
