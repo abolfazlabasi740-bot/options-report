@@ -1,0 +1,9 @@
+{
+  "command_id": "restart_finisher_dedup_tracka_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import os,sys,signal,time,subprocess\nfrom pathlib import Path\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\nsubprocess.run(['git','fetch','origin','main'],cwd=root,check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],cwd=root,check=True)\nscript=str(root/'scripts'/'project_finisher_agent.py')\nsubprocess.run([sys.executable,'-m','py_compile',script],cwd=root,check=True)\nold=[]\nfor name in os.listdir('/proc'):\n if not name.isdigit(): continue\n pid=int(name)\n if pid==os.getpid(): continue\n try:\n  cmdline=Path('/proc',name,'cmdline').read_bytes().replace(b'\\x00',b' ').decode(errors='ignore')\n  if script in cmdline and '--worker' in cmdline:\n   os.kill(pid,signal.SIGTERM); old.append(pid)\n except (OSError,ProcessLookupError): pass\ntime.sleep(2)\nenv=os.environ.copy(); env['FINISHER_DAEMON_CHILD']='1'\nlog=open(root/'output'/'project_finisher_agent.log','a',encoding='utf-8')\np=subprocess.Popen([sys.executable,script,'--worker'],cwd=root,stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True,env=env,close_fds=True)\ntime.sleep(2)\ntry: os.kill(p.pid,0); alive=True\nexcept OSError: alive=False\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip())\nprint('OLD_WORKERS_TERMINATED='+str(old))\nprint('NEW_WORKER_PID='+str(p.pid))\nprint('NEW_WORKER_ALIVE='+str(alive))\nprint('PID_FILE='+((root/'output'/'project_finisher_agent.pid').read_text().strip() if (root/'output'/'project_finisher_agent.pid').exists() else 'MISSING'))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
