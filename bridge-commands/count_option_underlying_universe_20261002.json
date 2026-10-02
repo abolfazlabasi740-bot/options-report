@@ -1,0 +1,9 @@
+{
+  "command_id": "count_option_underlying_universe_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import json\nfrom pathlib import Path\np=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/tsetmc_first/latest_universe_snapshot.json')\nd=json.loads(p.read_text(encoding='utf-8'))\nrows=d.get('rows',[])\nids={str((r.get('identity') or {}).get('underlying_id') or '') for r in rows if (r.get('identity') or {}).get('underlying_id')}\nsymbols={str((r.get('identity') or {}).get('underlying_symbol') or '').strip() for r in rows if (r.get('identity') or {}).get('underlying_symbol')}\nprint('UNIVERSE_ROWS',len(rows),'UNDERLYING_IDS',len(ids),'UNDERLYING_SYMBOLS',len(symbols))\nprint('SYMBOLS',';'.join(sorted(symbols)))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
