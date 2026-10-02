@@ -46,6 +46,16 @@ def write_state(**updates):
     os.replace(temp, STATE)
 
 
+def _rebase_main():
+    rc, out, err = cmd("git", "fetch", "origin", "main", timeout=120)
+    if rc:
+        raise RuntimeError(err or out)
+    rc, out, err = cmd("git", "rebase", "origin/main", timeout=180)
+    if rc:
+        cmd("git", "rebase", "--abort", timeout=60)
+        raise RuntimeError("state rebase failed: " + (err or out)[-3000:])
+
+
 def git_record(message: str):
     rc, out, err = cmd("git", "add", "PROJECT_FINISHER_STATE.json", timeout=60)
     if rc:
@@ -53,8 +63,16 @@ def git_record(message: str):
     rc, out, err = cmd("git", "commit", "-m", message, timeout=60)
     if rc and "nothing to commit" not in (err + out).lower():
         raise RuntimeError(err or out)
-    rc, out, err = cmd("git", "push", "origin", "main", timeout=120)
-    if rc:
+
+    # ChatGPT may update code/docs on main while the Termux worker is running.
+    # Rebase the state-only commit onto the latest main before pushing.
+    for attempt in range(2):
+        _rebase_main()
+        rc, out, err = cmd("git", "push", "origin", "HEAD:main", timeout=120)
+        if rc == 0:
+            return
+        if attempt == 0 and ("fetch first" in (err + out).lower() or "non-fast-forward" in (err + out).lower()):
+            continue
         raise RuntimeError(err or out)
 
 
