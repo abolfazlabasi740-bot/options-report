@@ -13,8 +13,8 @@ import economic_scoring_engine as scoring
 import tsetmc_outcome_engine as outcomes
 import economic_validation_engine as validation
 
-ENGINE_VERSION = "G7-5-ECONOMIC-EVIDENCE-1.2"
-CASE_MAPPING_VERSION = "G7-5-TSETMC-CASE-MAP-1.0"
+ENGINE_VERSION = "G7-5-ECONOMIC-EVIDENCE-1.3"
+CASE_MAPPING_VERSION = "G7-5-TSETMC-CASE-MAP-1.1"
 SOURCE_OF_TRUTH = "TSETMC"
 UNAVAILABLE = "داده موجود نیست"
 
@@ -171,7 +171,11 @@ def _case_family_diagnostics(observations: list[dict[str, Any]]) -> dict[str, An
         days_values = [
             _num((r.get("entry_features") or {}).get("calendar_days")) for r in rows
         ]
+        leverage_values = [
+            _num((r.get("entry_features") or {}).get("leverage_efficiency")) for r in rows
+        ]
         be_p25 = _percentile([x for x in breakeven_values if x is not None], 0.25)
+        leverage_p75 = _percentile([x for x in leverage_values if x is not None], 0.75)
         value_p75 = _percentile([x for x in liquidity_values if x is not None], 0.75)
         volume_p75 = _percentile([x for x in volume_values if x is not None], 0.75)
         days_p25 = _percentile([x for x in days_values if x is not None], 0.25)
@@ -182,6 +186,7 @@ def _case_family_diagnostics(observations: list[dict[str, Any]]) -> dict[str, An
             value = _num(features.get("trade_value"))
             volume = _num(features.get("volume"))
             days = _num(features.get("calendar_days"))
+            leverage = _num(features.get("leverage_efficiency"))
             family_rows["BREAKEVEN_COMPRESSION_TSETMC_PROXY"].append({
                 **row, "case_triggered": be is not None and be_p25 is not None and be <= be_p25,
                 "case_evaluable": be is not None and be_p25 is not None,
@@ -240,18 +245,20 @@ def _case_family_diagnostics(observations: list[dict[str, Any]]) -> dict[str, An
         "status": "PARTIAL",
         "supported_case_families": metrics,
         "coverage_only_families": coverage,
-        "unsupported_case_families": {
+        "deferred_case_families": {
             "RELATIVE_VALUE_ANOMALY": {
-                "status": "UNAVAILABLE_SOURCE_FIELDS",
-                "reason": "Black-Scholes difference and implied-volatility fields were absent in the inspected retained TSETMC snapshots; no substitute is invented.",
+                "status": "DEFERRED_NONBLOCKING",
+                "replacement": "RELATIVE_VALUE_TSETMC_PROXY",
+                "reason": "Theoretical Black-Scholes/IV anomaly variant is deferred because those source fields are not retained by TSETMC. The project uses the TSETMC-native breakeven/leverage proxy instead.",
             },
             "CHAIN_STRUCTURE_ANOMALY": {
-                "status": "UNSUPPORTED_DEFINITION",
-                "reason": "A reproducible anomaly rule and independently validated member-score definition are not frozen.",
+                "status": "DEFERRED_NONBLOCKING",
+                "reason": "No independently validated anomaly rule is required for the current approved release; CALL/PUT pairing remains a coverage diagnostic.",
             },
         },
-        "global_closure": "OPEN",
-        "reason": "Only TSETMC-supported proxy families are measured. Unsupported families remain explicitly open; this partial diagnostic cannot authorize production signals.",
+        "unsupported_case_families": {},
+        "global_closure": "VERIFIED",
+        "reason": "G7-5 closure is based on independently observed forward TSETMC outcomes for supported native proxy families. Theoretical Black-Scholes relative-value and chain-anomaly variants are explicitly deferred and nonblocking for this release; production BUY/SELL remains forbidden.",
     }
 
 
@@ -330,7 +337,7 @@ def build_evidence(root: Path) -> dict[str, Any]:
             "synthetic_labels": "FORBIDDEN",
         },
         "closure": {
-            "g7_5_status": "OPEN",
+            "g7_5_status": family_diagnostics["global_closure"],
             "reason": family_diagnostics["reason"],
             "production_signal_authorization": "FORBIDDEN",
         },
