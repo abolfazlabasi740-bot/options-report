@@ -1,9 +1,0 @@
-{
-  "command_id": "verify_finisher_after_restart_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import os,json,time\nfrom pathlib import Path\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npid=int((root/'output/project_finisher_agent.pid').read_text())\nos.kill(pid,0)\nlog=root/'output/project_finisher_agent.log'\nprint('WORKER_PID',pid,'ALIVE',True)\nprint('LOG_MTIME',time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(log.stat().st_mtime)) if log.exists() else 'MISSING')\nprint('LOG_TAIL',log.read_text(encoding='utf-8')[-2500:] if log.exists() else 'MISSING')\ns=json.loads((root/'PROJECT_FINISHER_STATE.json').read_text())\nprint('STATE',json.dumps({k:s.get(k) for k in ['version','status','current_gate','cycle','updated_at','track_a_release_status','full_project_status','last_bale_notification_key','bale_receipt']},ensure_ascii=False))"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
