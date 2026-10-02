@@ -1,0 +1,9 @@
+{
+  "command_id": "inspect_codal_excel_html_response_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import urllib.request,urllib.parse\nserial='yCLhQHvRODoYnzrVLAY4QQQaQQQA%3d%3d'\nfor url in [f'https://excel.codal.ir/service/Excel/GetAll/{serial}/0',f'https://www.codal.ir/Reports/Decision.aspx?LetterSerial={serial}&rt=0&let=58&ct=0&ft=-1']:\n try:\n  req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'*/*','Referer':'https://www.codal.ir/'})\n  with urllib.request.urlopen(req,timeout=30) as r:\n   raw=r.read(6000); print('URL',url,'STATUS',r.status,'TYPE',r.headers.get('Content-Type'),'FINAL',r.geturl()); print(raw[:5000].decode('utf-8','replace'))\n except Exception as e: print('ERROR',type(e).__name__,str(e)[:500])"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
