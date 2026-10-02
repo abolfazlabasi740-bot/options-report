@@ -245,7 +245,7 @@ def main():
             print("BRIDGE_LOOP_TICK", flush=True)
             sync_branch(QUEUE_BRANCH, QUEUE)
             print("BRIDGE_QUEUE_SYNCED", flush=True)
-            for path in sorted((QUEUE / "bridge-commands").glob("*.json")):
+            for path in sorted(QUEUE.glob("*.json")):
                 try:
                     print(f"BRIDGE_COMMAND_START={path.stem}", flush=True)
                     process_file(path)
