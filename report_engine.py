@@ -324,15 +324,16 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "items": [],
         }
     _attach_canonical_quote_evidence(rows, adapter=adapter)
+    enrichment_rows = snapshot.get("universe_rows") or rows
     underlying_ids = sorted({
         str((row.get("identity") or {}).get("underlying_id") or "").strip()
-        for row in rows
+        for row in enrichment_rows
         if str((row.get("identity") or {}).get("underlying_id") or "").strip()
     })
     snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter)
     underlying_symbols = sorted({
         str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
-        for row in rows
+        for row in enrichment_rows
         if str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
     })
     snapshot["codal_export_context"] = fetch_export_context(underlying_symbols, root=ROOT)
