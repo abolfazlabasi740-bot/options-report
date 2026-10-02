@@ -1,0 +1,17 @@
+{
+  "command_id": "count_option_underlying_universe_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:52:31.199070+00:00",
+  "finished_at": "2026-10-02T01:52:32.267573+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import json\nfrom pathlib import Path\np=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/tsetmc_first/latest_universe_snapshot.json')\nd=json.loads(p.read_text(encoding='utf-8'))\nrows=d.get('rows',[])\nids={str((r.get('identity') or {}).get('underlying_id') or '') for r in rows if (r.get('identity') or {}).get('underlying_id')}\nsymbols={str((r.get('identity') or {}).get('underlying_symbol') or '').strip() for r in rows if (r.get('identity') or {}).get('underlying_symbol')}\nprint('UNIVERSE_ROWS',len(rows),'UNDERLYING_IDS',len(ids),'UNDERLYING_SYMBOLS',len(symbols))\nprint('SYMBOLS',';'.join(sorted(symbols)))"
+  ],
+  "stdout": "UNIVERSE_ROWS 1684 UNDERLYING_IDS 25 UNDERLYING_SYMBOLS 25\nSYMBOLS اخابر;اطلس;اهرم;بساما;تاصيكو;توان;جوانه كوچك;خبهمن;خساپا;خودرو;دارونو;دزاگرس;ذوب;شستا;شپنا;طعام;فرابورس;فزر;فملي;كاريس;موج;هم تراز;وبصادر;وبملت;وتجارت\n",
+  "stderr": "",
+  "project_head": "b232362306a5121384286a1c9bfa26480edb8a5b",
+  "result_sha256": "7e1fd4e3d08e6950e7360ae2ad670ed5e82baf4891c2f5b8443bd83f8ed94f14"
+}
