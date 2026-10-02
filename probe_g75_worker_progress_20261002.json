@@ -1,0 +1,17 @@
+{
+  "command_id": "probe_g75_worker_progress_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:51:41.942540+00:00",
+  "finished_at": "2026-10-02T01:51:42.249814+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport json,os\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\nfor name in ['output/g7_5_economic_validation_progress.json','output/runtime_verification.json','output/g7_5_economic_validation_evidence.json']:\n p=root/name; print('FILE',name,'EXISTS',p.exists())\n if p.exists():\n  try:\n   d=json.loads(p.read_text(encoding='utf-8'))\n   keys=['status','stage','updated_at_epoch','snapshot_done','snapshot_count','evidence_sha256','source_snapshot_count','observed_transition_count','matched_transition_count','unresolved_feature_matches','validation_result_count']\n   print('DATA',json.dumps({k:d.get(k) for k in keys if k in d},ensure_ascii=False))\n  except Exception as e: print('READ_ERROR',type(e).__name__)\n"
+  ],
+  "stdout": "FILE output/g7_5_economic_validation_progress.json EXISTS True\nDATA {\"status\": \"RUNNING\", \"stage\": \"WALK_FORWARD_VALIDATION\", \"updated_at_epoch\": 1790905537.6253207, \"matched_transition_count\": 95272, \"unresolved_feature_matches\": 0}\nFILE output/runtime_verification.json EXISTS True\nDATA {\"status\": \"PASS\"}\nFILE output/g7_5_economic_validation_evidence.json EXISTS True\nDATA {\"status\": \"EVIDENCE_ONLY\", \"evidence_sha256\": \"28c4fe3e8145b5d71d4e10c2aa9b31f90bde884f4e7630e387292fba0f2effed\", \"source_snapshot_count\": 59, \"observed_transition_count\": 88344, \"matched_transition_count\": 88344, \"unresolved_feature_matches\": 0}\n",
+  "stderr": "",
+  "project_head": "b232362306a5121384286a1c9bfa26480edb8a5b",
+  "result_sha256": "df9ee50644f57e7b73d6281be35af0cf2f32f3ab86ee910d8d1a142ef5455d1e"
+}
