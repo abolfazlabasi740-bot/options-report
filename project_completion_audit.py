@@ -45,7 +45,7 @@ def main():
     track_b = closure=="VERIFIED" and int(evidence.get("observed_transition_count") or 0)>0 and int(evidence.get("matched_transition_count") or 0)>0
     c=load(OUT/"pre_limit_up_validation.json")
     c_metrics=c.get("out_of_sample_metrics") or {}
-    track_c = c.get("status")=="PASS" and int((c.get("dataset") or {}).get("test_count") or 0)>0 and "precision" in c_metrics and "recall" in c_metrics
+    track_c = c.get("status")=="PASS" and int((c.get("dataset") or {}).get("test_count") or 0)>0 and "precision" in c_metrics and "recall" in c_metrics and (c.get("current_session_alert") or {}).get("status")=="PASS"
     c_reason=None if track_c else "chronological pre-limit-up screening evidence is incomplete"
     track_d = report_ok and audit_ok and runtime_ok and evidence.get("source_of_truth")=="TSETMC" and int(evidence.get("source_snapshot_count") or 0)>0
     strategy=(ROOT/"docs/STRATEGY_POLICY_V1.md").read_text(encoding="utf-8") if exists("docs/STRATEGY_POLICY_V1.md") else ""
