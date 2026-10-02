@@ -278,9 +278,24 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             if (row.get("identity") or {}).get("instrument_id") in candidate_ids
         ]
 
-        ranking = build_economic_ranking(candidate_rows)
-        ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES"
-        ranking["ranking_scope_row_count"] = len(candidate_rows)
+        # Economic ranking must have enough evidence to populate the requested
+        # shortlist. If the activity gate yields fewer than TOP_COUNT rows, do
+        # not silently publish an unscored shortlist; expand only to non-expired
+        # TSETMC rows with explicit pricing evidence and record the fallback.
+        ranking_input = candidate_rows
+        ranking_fallback = False
+        if len(ranking_input) < limit:
+            ranking_input = [
+                row for row in rows
+                if (row.get("canonical") or {}).get("آخرین قیمت") not in (None, "")
+                and (row.get("canonical") or {}).get("قیمت سهم پایه") not in (None, "")
+                and (row.get("canonical") or {}).get("قیمت اعمال") not in (None, "")
+            ]
+            ranking_fallback = True
+        ranking = build_economic_ranking(ranking_input)
+        ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES" if not ranking_fallback else "TSETMC_PRICED_NONEXPIRED_FALLBACK"
+        ranking["ranking_scope_row_count"] = len(ranking_input)
+        ranking["eligibility_fallback_used"] = ranking_fallback
         snapshot["ranking"] = ranking
 
         shadow_candidates = []
@@ -305,13 +320,18 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             item.get("instrument_id"): item.get("rank")
             for item in ranking.get("ranking_rows", [])
         }
-        candidate_rows.sort(
+        ranked_source_rows = ranking_input
+        ranked_source_rows.sort(
             key=lambda row: (
                 ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
                 ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
             )
         )
-        rows = candidate_rows[:limit]
+        rows = ranked_source_rows[:limit]
+        if ranking.get("status") != "PASS" or len(rows) < limit:
+            raise RuntimeError(
+                f"RANKED_REPORT_BLOCKED: ranking_status={ranking.get('status')}; rows={len(rows)}; required={limit}"
+            )
         snapshot["report_mode"] = "RANKED"
     if report_mode == "TRADING_ACTIVITY":
         snapshot["signal_shadow"] = {
@@ -376,16 +396,27 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         except (TypeError,ValueError): return "داده موجود نیست"
 
     def breakeven_distance(row):
-        rid=str((row.get("identity") or {}).get("instrument_id") or "")
-        v=(ranking_by_id.get(rid,{}).get("features") or {}).get("breakeven_distance")
-        if v in (None,""): return "داده موجود نیست"
-        try: return f"{float(v)*100:.2f}%"
-        except (TypeError,ValueError): return "داده موجود نیست"
+        c0 = row.get("canonical") or {}
+        ident = row.get("identity") or {}
+        try:
+            s = float(c0.get("قیمت سهم پایه"))
+            k = float(c0.get("قیمت اعمال"))
+            p = float(c0.get("آخرین قیمت"))
+            if s <= 0 or k <= 0 or p <= 0:
+                return "داده موجود نیست"
+            typ = str(ident.get("contract_type") or "").upper()
+            breakeven = k + p if typ == "CALL" else k - p if typ == "PUT" else None
+            if breakeven is None:
+                return "داده موجود نیست"
+            return f"{abs(breakeven - s) / s * 100:.2f}%"
+        except (TypeError, ValueError):
+            return "داده موجود نیست"
 
     lines=[
         "📊 گزارش ۱۵ فرصت برتر","Optionmarket | TSETMC-ONLY","━━━━━━━━━━━━━━━━━━━━",
         f"وضعیت بازار: {market_state['status']}",
         f"مبنای رتبه‌بندی: امتیاز اقتصادی TSETMC | وضعیت: {ranking.get('status','داده موجود نیست')}",
+        f"دامنه رتبه‌بندی: {ranking.get('ranking_scope','داده موجود نیست')}" + (" | تکمیل از ردیف‌های دارای قیمت صریح TSETMC" if ranking.get("eligibility_fallback_used") else ""),
         f"تعداد قراردادهای مبنا: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
         "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
