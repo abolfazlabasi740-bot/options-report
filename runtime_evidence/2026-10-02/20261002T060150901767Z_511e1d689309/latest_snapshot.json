@@ -1,0 +1,227 @@
+{
+  "status": "SUCCESS",
+  "engine_version": "TSETMC-FIRST-SOURCE-1.3-MARKETWATCH-CANONICAL",
+  "source_of_truth": "TSETMC",
+  "external_comparison_source": null,
+  "generated_at": "2026-10-02T05:57:54.638748+00:00",
+  "row_count": 1,
+  "rows": [
+    {
+      "canonical": {
+        "نماد": "ضTEST",
+        "قیمت اعمال": 20000.0,
+        "قیمت سهم پایه": 21000.0,
+        "اختلاف تا اعمال": null,
+        "تاریخ سررسید": "20261021",
+        "روزهای تقویمی": 28.0,
+        "روزهای معاملاتی": null,
+        "موقعیت های باز": 10.0,
+        "حجم معاملات": 100.0,
+        "تعداد معاملات": null,
+        "ارزش معاملات": 150000.0,
+        "آخرین قیمت": 1500.0,
+        "درصد آخرین قیمت": null,
+        "قیمت پایانی": 1400.0,
+        "درصد قیمت پایانی": null,
+        "ارزش ذاتی": null,
+        "ارزش زمانی": null,
+        "سر به سر": null,
+        "اختلاف تا سر به سر": null,
+        "بلک شولز": null,
+        "اختلاف تا بلک شولز": null,
+        "وضعیت": null,
+        "اهرم": null,
+        "نوسان ضمنی": null,
+        "نوسان تاریخی": null,
+        "اندازه قرارداد": 1000.0,
+        "حجم بهترین تقاضا": 1.0,
+        "قیمت بهترین تقاضا": 1400.0,
+        "حجم بهترین عرضه": 2.0,
+        "قیمت بهترین عرضه": 1500.0,
+        "کمترین قیمت": null,
+        "بیشترین قیمت": null,
+        "شکاف قیمتی": null,
+        "وجه تضمین": null,
+        "دلتا": null,
+        "تتا": null,
+        "گاما": null,
+        "وگا": null,
+        "رو": null
+      },
+      "identity": {
+        "instrument_id": "OPT1",
+        "contract_type": "CALL",
+        "underlying_id": "UA1",
+        "underlying_symbol": "BASE",
+        "identity_source_field": "insCode_C",
+        "begin_date": null,
+        "end_date": "20261021"
+      },
+      "raw_market_watch": {
+        "instrument_id": "OPT1",
+        "contract_type": "CALL",
+        "underlying_id": "UA1",
+        "underlying_symbol": "BASE",
+        "symbol": "ضTEST",
+        "strike": 20000,
+        "end_date": "20261021",
+        "remaining_days": 28,
+        "identity_source_field": "insCode_C",
+        "contract_size": 1000,
+        "source_market_fields": {
+          "dEven": 20260924,
+          "hEven": 101530
+        },
+        "market_watch_fields": {
+          "last_price": 1500,
+          "close_price": 1400,
+          "volume": 100,
+          "trade_value": 150000,
+          "open_interest": 10,
+          "bid_price": 1400,
+          "ask_price": 1500,
+          "bid_quantity": 1,
+          "ask_quantity": 2
+        },
+        "underlying_market_watch_fields": {
+          "last_price": 21000,
+          "close_price": 20500
+        }
+      },
+      "market_watch_fields": {
+        "last_price": 1500,
+        "close_price": 1400,
+        "volume": 100,
+        "trade_value": 150000,
+        "open_interest": 10,
+        "bid_price": 1400,
+        "ask_price": 1500,
+        "bid_quantity": 1,
+        "ask_quantity": 2
+      },
+      "raw_remaining_days": 28,
+      "expiry_evidence": {
+        "end_date": "20261021",
+        "remaining_days": 28,
+        "source": "TSETMC",
+        "source_field": "endDate/remainedDay"
+      },
+      "source_market_timestamp": "2026-09-24T10:15:30",
+      "source_market_timestamp_status": "AVAILABLE",
+      "quote": {
+        "status": "DERIVED_FROM_MARKET_WATCH",
+        "source": "TSETMC",
+        "endpoint": "mw",
+        "snapshot_sha256": "mwhash",
+        "retrieved_at": "t",
+        "data": {
+          "last_price": 1500,
+          "close_price": 1400,
+          "volume": 100,
+          "trade_value": 150000,
+          "open_interest": 10,
+          "bid_price": 1400,
+          "ask_price": 1500,
+          "bid_quantity": 1,
+          "ask_quantity": 2
+        }
+      },
+      "order_book": {
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}"
+      },
+      "instrument_info": {
+        "status": "DERIVED_FROM_MARKET_WATCH",
+        "source": "TSETMC",
+        "endpoint": "mw",
+        "snapshot_sha256": "mwhash",
+        "retrieved_at": "t",
+        "data": {
+          "contractSize": 1000
+        }
+      },
+      "orderbook_raw_levels": [],
+      "quote_status": "SUCCESS",
+      "orderbook_status": "NOT_REQUESTED",
+      "instrument_info_status": "SUCCESS",
+      "orderbook_level_count": 0
+    }
+  ],
+  "evidence": {
+    "engine_version": "TSETMC-FIRST-SOURCE-1.3-MARKETWATCH-CANONICAL",
+    "source": "TSETMC",
+    "generated_at": "2026-10-02T05:57:54.638748+00:00",
+    "market_watch": {
+      "endpoint": "mw",
+      "snapshot_sha256": "mwhash",
+      "retrieved_at": "t",
+      "record_count": 1,
+      "flows": null,
+      "flow_evidence": null,
+      "source_market_timestamp_count": 1,
+      "latest_source_market_timestamp": "2026-09-24T10:15:30"
+    },
+    "quote_evidence": [
+      {
+        "instrument_id": "OPT1",
+        "status": "SUCCESS",
+        "source": "TSETMC",
+        "endpoint": "mw",
+        "snapshot_sha256": "mwhash",
+        "retrieved_at": "t",
+        "evidence_mode": "MARKET_WATCH_CANONICAL"
+      }
+    ],
+    "orderbook_evidence": [
+      {
+        "instrument_id": "OPT1",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "mwhash",
+        "identity_source_field": "insCode_C",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "t",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      }
+    ],
+    "underlying_evidence": {
+      "UA1": {
+        "status": "DERIVED_FROM_MARKET_WATCH",
+        "source": "TSETMC",
+        "endpoint": "mw",
+        "snapshot_sha256": "mwhash",
+        "retrieved_at": "t",
+        "quote": {
+          "status": "DERIVED_FROM_MARKET_WATCH",
+          "source": "TSETMC",
+          "endpoint": "mw",
+          "snapshot_sha256": "mwhash",
+          "retrieved_at": "t",
+          "data": {
+            "last_price": 21000,
+            "close_price": 20500
+          }
+        }
+      }
+    },
+    "best_limits_contract": {
+      "status": "RAW_ONLY_QUARANTINED",
+      "source": "TSETMC",
+      "endpoint": "BestLimits/{instrument_id}",
+      "identity_binding": "instrument_id",
+      "market_watch_binding": "market_watch_snapshot_sha256",
+      "source_timestamp_binding": "source_market_timestamp",
+      "delta_seconds_limit": 2.0,
+      "consumption_status": "NOT_CONSUMED_BY_SCORING_OR_RANKING"
+    }
+  },
+  "snapshot_sha256": "3c4e89dcc3482e1c09293ffb57a42080f47a04f853559472771ddfaceb22fd2f",
+  "data_mode": "LIVE_TSETMC_REFRESH",
+  "live_refresh_status": "SUCCESS"
+}
