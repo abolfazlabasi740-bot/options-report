@@ -1,0 +1,9 @@
+{
+  "command_id": "parse_codal_monthly_report_tables_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import urllib.request,urllib.parse,json\nfrom html.parser import HTMLParser\nclass P(HTMLParser):\n def __init__(self): super().__init__(); self.tables=[]; self.in_table=0; self.rows=[]; self.row=None; self.cell=None\n def handle_starttag(self,t,a):\n  if t=='table': self.in_table+=1; self.rows=[]\n  elif self.in_table and t=='tr': self.row=[]\n  elif self.in_table and t in ('td','th'): self.cell=[]\n def handle_data(self,d):\n  if self.in_table and self.cell is not None: self.cell.append(d)\n def handle_endtag(self,t):\n  if self.in_table and t in ('td','th') and self.cell is not None:\n   self.row.append(' '.join(' '.join(self.cell).split())); self.cell=None\n  elif self.in_table and t=='tr' and self.row is not None:\n   if self.row: self.rows.append(self.row)\n   self.row=None\n  elif t=='table' and self.in_table:\n   self.tables.append(self.rows); self.in_table-=1\nserial='yCLhQHvRODoYnzrVLAY4QQQaQQQA%3d%3d'\nurl=f'https://excel.codal.ir/service/Excel/GetAll/{serial}/0'\nreq=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'*/*','Referer':'https://www.codal.ir/'})\nraw=urllib.request.urlopen(req,timeout=30).read().decode('utf-8','replace')\np=P(); p.feed(raw)\nprint('TABLES',len(p.tables))\nfor i,t in enumerate(p.tables):\n print('TABLE',i,'ROWS',len(t),'COLS',max((len(x) for x in t),default=0))\n for row in t[:18]: print('ROW',json.dumps(row,ensure_ascii=False))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
