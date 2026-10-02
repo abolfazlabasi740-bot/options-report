@@ -1,9 +1,0 @@
-{
-  "command_id": "probe_g75_worker_progress_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "from pathlib import Path\nimport json,os\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\nfor name in ['output/g7_5_economic_validation_progress.json','output/runtime_verification.json','output/g7_5_economic_validation_evidence.json']:\n p=root/name; print('FILE',name,'EXISTS',p.exists())\n if p.exists():\n  try:\n   d=json.loads(p.read_text(encoding='utf-8'))\n   keys=['status','stage','updated_at_epoch','snapshot_done','snapshot_count','evidence_sha256','source_snapshot_count','observed_transition_count','matched_transition_count','unresolved_feature_matches','validation_result_count']\n   print('DATA',json.dumps({k:d.get(k) for k in keys if k in d},ensure_ascii=False))\n  except Exception as e: print('READ_ERROR',type(e).__name__)\n"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
