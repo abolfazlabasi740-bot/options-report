@@ -1,0 +1,17 @@
+{
+  "command_id": "verify_runtime_and_bale_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:18:05.988866+00:00",
+  "finished_at": "2026-10-02T01:18:13.810024+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import sys,subprocess\nsys.path.insert(0,'.')\np=subprocess.run([sys.executable,'runtime_verification.py'],text=True,capture_output=True)\nprint('RUNTIME_EXIT=',p.returncode)\nprint('RUNTIME_STDOUT=',p.stdout[-5000:])\nprint('RUNTIME_STDERR=',p.stderr[-2000:])\nif p.returncode==0:\n from scripts.project_finisher_agent import notify_bale\n ok,receipt=notify_bale('OPTIMUSAI | گزارش وضعیت واقعی\\nFinisher به‌روزرسانی شد. خطای import مربوط به Bale اصلاح و ممیزی Runtime سخت‌گیرانه‌تر شد. پروژه هنوز تکمیل نشده و G7-5 همچنان در حال بررسی است. این پیام صرفاً تأیید ارتباط و اطلاع‌رسانی است، نه اعلام پایان پروژه.')\n print('BALE_OK=',ok)\n print('BALE_RECEIPT=',receipt)"
+  ],
+  "stdout": "RUNTIME_EXIT= 0\nRUNTIME_STDOUT= {\n  \"status\": \"PASS\",\n  \"generated_at_utc\": \"2026-10-02T01:18:13.025286+00:00\",\n  \"root\": \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE\",\n  \"python\": \"3.14.6 (main, Jul  5 2026, 10:35:55) [Clang 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f0\",\n  \"platform\": \"Android-16-aarch64-64bit\",\n  \"git_sha\": \"7e49b29d07081512649ae5bb74875b3482f36c2d\",\n  \"critical_files\": {\n    \"report_engine.py\": \"OK\",\n    \"economic_scoring_engine.py\": \"OK\",\n    \"economic_validation_engine.py\": \"OK\",\n    \"economic_validation_evidence_builder.py\": \"OK\",\n    \"tsetmc_scoring_engine.py\": \"OK\",\n    \"tsetmc_adapter.py\": \"OK\",\n    \"tsetmc_mapping.py\": \"OK\",\n    \"tsetmc_first_source.py\": \"OK\",\n    \"tsetmc_history.py\": \"OK\",\n    \"tsetmc_eligibility.py\": \"OK\",\n    \"tsetmc_outcome_engine.py\": \"OK\",\n    \"signal_engine_shadow.py\": \"OK\",\n    \"audit_integrity.py\": \"OK\",\n    \"bale_listener.py\": \"OK\",\n    \"bale_transport.py\": \"OK\",\n    \"github_runtime_evidence.py\": \"OK\",\n    \"bestlimits_evidence_gate.py\": \"OK\",\n    \"live_bestlimits_evidence_runner.py\": \"OK\",\n    \"scripts/termux_command_bridge_agent.py\": \"OK\"\n  },\n  \"environment_presence_only\": {\n    \"BALE_BOT_TOKEN\": true,\n    \"BALE_CHAT_ID\": true,\n    \"TSETMC_BASE_URL\": false\n  },\n  \"latest_audit_integrity\": {\n    \"status\": \"PASS\",\n    \"engine_version\": \"AUDIT-INTEGRITY-1.3\",\n    \"contract\": \"TSETMC_ONLY_REPORT\",\n    \"missing_fields\": [],\n    \"failures\": [],\n    \"checks\": {\n      \"audit_version\": true,\n      \"source_of_truth\": true,\n      \"data_mode\": true,\n      \"snapshot_hash_present\": true,\n      \"row_count_valid\": true,\n      \"live_movement_not_claimed\": true,\n      \"scoring_contract_valid\": true,\n      \"ranking_contract_valid\": true,\n      \"market_watch_evidence\": true,\n      \"best_limits_evidence\": true,\n      \"market_state_evidence\": true,\n      \"report_hash_present\": true\n    }\n  },\n  \"secrets_recorded\": false\n}\n\nRUNTIME_STDERR= \nBALE_OK= True\nBALE_RECEIPT= [{\"message_id\": 1335, \"chat_id\": 770429773}]\n",
+  "stderr": "",
+  "project_head": "7e49b29d07081512649ae5bb74875b3482f36c2d",
+  "result_sha256": "c218eb5d67d9b53d1b6c88d85808760b29addce0102eade3596e97734f45f2c1"
+}
