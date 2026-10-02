@@ -257,8 +257,26 @@ def _case_family_diagnostics(observations: list[dict[str, Any]]) -> dict[str, An
             },
         },
         "unsupported_case_families": {},
-        "global_closure": "VERIFIED",
-        "reason": "G7-5 closure is based on independently observed forward TSETMC outcomes for supported native proxy families. Theoretical Black-Scholes relative-value and chain-anomaly variants are explicitly deferred and nonblocking for this release; production BUY/SELL remains forbidden.",
+        "global_closure": (
+            "VERIFIED"
+            if metrics
+            and all(
+                details["evaluable_rows"] > 0 and details["unresolved_rows"] == 0
+                for details in metrics.values()
+            )
+            else "OPEN"
+        ),
+        "reason": (
+            "G7-5 closure is based on independently observed forward TSETMC outcomes for supported native proxy families. "
+            "Theoretical Black-Scholes relative-value and chain-anomaly variants are explicitly deferred and nonblocking for this release; "
+            "production BUY/SELL remains forbidden."
+            if metrics
+            and all(
+                details["evaluable_rows"] > 0 and details["unresolved_rows"] == 0
+                for details in metrics.values()
+            )
+            else "G7-5 remains OPEN because retained forward observations are absent or at least one supported family is not fully evaluable."
+        ),
     }
 
 
