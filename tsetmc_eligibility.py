@@ -9,10 +9,15 @@ evidence. No arbitrary volume/value thresholds are introduced.
 from __future__ import annotations
 
 from typing import Any
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 INSUFFICIENT_ACTIVITY_EVIDENCE = "INSUFFICIENT_ACTIVITY_EVIDENCE"
 RANKABLE = "RANKABLE"
 OPPORTUNITY_CANDIDATE = "OPPORTUNITY_CANDIDATE"
+EXPIRED_CONTRACT = "EXPIRED_CONTRACT"
+EXPIRY_UNAVAILABLE = "EXPIRY_UNAVAILABLE"
+TEHRAN = ZoneInfo("Asia/Tehran")
 
 
 def _num(value: Any) -> float | None:
@@ -22,6 +27,21 @@ def _num(value: Any) -> float | None:
         result = float(value)
         return result if result == result else None
     except (TypeError, ValueError):
+        return None
+
+
+def _expiry_date(row: dict[str, Any]) -> date | None:
+    canonical = row.get("canonical") or {}
+    identity = row.get("identity") or {}
+    raw = canonical.get("تاریخ سررسید") or identity.get("end_date")
+    if raw in (None, ""):
+        return None
+    text = str(raw).strip()
+    try:
+        if len(text) == 8 and text.isdigit():
+            return datetime.strptime(text, "%Y%m%d").date()
+        return date.fromisoformat(text[:10])
+    except ValueError:
         return None
 
 
@@ -127,20 +147,24 @@ def _activity(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def classify_eligibility(row: dict[str, Any]) -> dict[str, Any]:
+def classify_eligibility(row: dict[str, Any], as_of_date: date | None = None) -> dict[str, Any]:
     canonical = row.get("canonical") or {}
     identity = row.get("identity") or {}
     activity = _activity(row)
+    as_of_date = as_of_date or datetime.now(TEHRAN).date()
+    expiry = _expiry_date(row)
 
-    # A row with explicit traded activity or explicit two-sided Market-Watch
-    # depth has enough activity evidence to become an opportunity candidate.
-    if activity["traded"] or activity["two_sided_depth"]:
+    # Expired and expiry-unknown contracts must never enter the live shortlist.
+    if expiry is None:
+        state = EXPIRY_UNAVAILABLE
+        reason = "EXPIRY_EVIDENCE_UNAVAILABLE_OR_INVALID"
+    elif expiry < as_of_date:
+        state = EXPIRED_CONTRACT
+        reason = "EXPIRED_BY_TEHRAN_DATE"
+    elif activity["traded"] or activity["two_sided_depth"]:
         state = OPPORTUNITY_CANDIDATE
         reason = "EXPLICIT_TSETMC_ACTIVITY_OR_TWO_SIDED_DEPTH"
-    elif (
-        activity["volume"] == 0
-        or activity["trade_count"] == 0
-    ):
+    elif activity["volume"] == 0 or activity["trade_count"] == 0:
         state = INSUFFICIENT_ACTIVITY_EVIDENCE
         reason = "ZERO_TSETMC_ACTIVITY"
     elif activity["volume"] is None and activity["trade_count"] is None:
@@ -156,6 +180,8 @@ def classify_eligibility(row: dict[str, Any]) -> dict[str, Any]:
         "instrument_id": identity.get("instrument_id"),
         "symbol": canonical.get("نماد"),
         "contract_type": identity.get("contract_type"),
+        "expiry_date": expiry.isoformat() if expiry else None,
+        "as_of_date": as_of_date.isoformat(),
         "activity": activity,
         "opportunity_eligible": state == OPPORTUNITY_CANDIDATE,
         "buy_sell_signal": False,
@@ -172,6 +198,8 @@ def classify_universe(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
         OPPORTUNITY_CANDIDATE: sum(
             x["state"] == OPPORTUNITY_CANDIDATE for x in items
         ),
+        EXPIRED_CONTRACT: sum(x["state"] == EXPIRED_CONTRACT for x in items),
+        EXPIRY_UNAVAILABLE: sum(x["state"] == EXPIRY_UNAVAILABLE for x in items),
     }
     activity_basis_counts = {
         "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH": sum(
@@ -207,6 +235,9 @@ def classify_universe(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
         "rules": {
             "zero_volume_or_zero_trade_count": INSUFFICIENT_ACTIVITY_EVIDENCE,
             "missing_activity": INSUFFICIENT_ACTIVITY_EVIDENCE,
+            "expired_contract": EXPIRED_CONTRACT,
+            "missing_or_invalid_expiry": EXPIRY_UNAVAILABLE,
+            "expiry_comparison_timezone": "Asia/Tehran",
             "two_sided_depth": "TSETMC_EXPLICIT_BID_ASK_QUANTITY_ONLY",
             "profitability_score": "NOT_COMPUTED",
             "buy_sell_signal": "NOT_GENERATED",
