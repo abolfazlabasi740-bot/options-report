@@ -1,9 +1,0 @@
-{
-  "command_id": "probe_finisher_after_restart_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "from pathlib import Path\nimport os,json\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npidfile=root/'output/project_finisher_agent.pid'\nprint('PID_FILE',pidfile.read_text().strip() if pidfile.exists() else 'MISSING')\nlog=root/'output/project_finisher_agent.log'\nprint('LOG',log.read_text(encoding='utf-8')[-2500:] if log.exists() else 'MISSING')\ns=json.loads((root/'PROJECT_FINISHER_STATE.json').read_text(encoding='utf-8'))\nprint('STATE',json.dumps({k:s.get(k) for k in ['version','status','current_gate','cycle','updated_at','blocker','bale_notified','bale_receipt','last_evidence_sha']},ensure_ascii=False))"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
