@@ -48,7 +48,7 @@ Required:
 - mapping from underlying issuer to documented exposure, not a generic "dollar stock" guess;
 - source conflict and stale-data handling.
 
-Status: NOT RELEASED. Current operational source of truth is TSETMC-only; external data must be added as a separately audited enrichment layer.
+Status: PARTIAL. An official Codal monthly-activity adapter now parses explicit product export sales and disclosed foreign-currency rows. A live test on فملی returned EXPORT_DISCLOSED with product-level monthly/cumulative sales and a EUR currency row; USD was not explicitly disclosed in that report. Broad universe coverage, a separate live FX feed, and news/event enrichment remain NOT RELEASED. No generic dollar-sensitivity inference is allowed.
 
 ### Track E — Strategy and risk release
 Required:
