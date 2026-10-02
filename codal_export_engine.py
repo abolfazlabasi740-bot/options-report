@@ -279,15 +279,23 @@ def fetch_symbol_export_evidence(symbol: str, root: Path | None = None) -> dict[
             }
 
         excel_url = letter["ExcelUrl"]
-        html = _request(excel_url, timeout=30, accept="*/*").decode("utf-8", "replace")
-        html_sha = hashlib.sha256(html.encode("utf-8")).hexdigest()
-        parsed = parse_monthly_activity_html(html)
         tracing_no = str(letter.get("TracingNo") or "")
         safe_symbol = re.sub(r"[^\w.-]+", "_", symbol, flags=re.UNICODE)
         archive_dir = root / "output" / "history" / "codal"
         archive_dir.mkdir(parents=True, exist_ok=True)
-        html_path = archive_dir / f"{safe_symbol}_{tracing_no}_{html_sha}.html"
-        html_path.write_text(html, encoding="utf-8")
+        cached = sorted(archive_dir.glob(f"{safe_symbol}_{tracing_no}_*.html"))
+        if cached:
+            html_path = cached[-1]
+            html = html_path.read_text(encoding="utf-8")
+            excel_fetch_status = "CACHE_HIT"
+        else:
+            html = _request(excel_url, timeout=30, accept="*/*").decode("utf-8", "replace")
+            html_sha_new = hashlib.sha256(html.encode("utf-8")).hexdigest()
+            html_path = archive_dir / f"{safe_symbol}_{tracing_no}_{html_sha_new}.html"
+            html_path.write_text(html, encoding="utf-8")
+            excel_fetch_status = "FETCHED"
+        html_sha = hashlib.sha256(html.encode("utf-8")).hexdigest()
+        parsed = parse_monthly_activity_html(html)
 
         report_url = CODAL_BASE + str(letter.get("Url") or "")
         evidence = {
@@ -299,7 +307,7 @@ def fetch_symbol_export_evidence(symbol: str, root: Path | None = None) -> dict[
             "letter_code": letter.get("LetterCode"),
             "title": letter.get("Title"),
             "period_end_jalali": (
-                "/".join(str(x) for x in (_jalali_tuple(letter.get("Title")) or ()))
+                f"{_jalali_tuple(letter.get('Title'))[0]:04d}/{_jalali_tuple(letter.get('Title'))[1]:02d}/{_jalali_tuple(letter.get('Title'))[2]:02d}"
                 if _jalali_tuple(letter.get("Title")) else None
             ),
             "publish_datetime_jalali": letter.get("PublishDateTime"),
@@ -310,6 +318,7 @@ def fetch_symbol_export_evidence(symbol: str, root: Path | None = None) -> dict[
             "excel_url": excel_url,
             "excel_html_sha256": html_sha,
             "excel_html_archive": str(html_path),
+            "excel_fetch_status": excel_fetch_status,
             "has_excel": bool(letter.get("HasExcel")),
             "parsed_export_evidence": parsed,
             "export_confirmed_by_explicit_codal_section": parsed.get("status") == "EXPORT_DISCLOSED",
