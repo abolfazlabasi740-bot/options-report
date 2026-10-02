@@ -1,0 +1,17 @@
+{
+  "command_id": "probe_codal_export_excel_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:46:05.473439+00:00",
+  "finished_at": "2026-10-02T01:46:07.630949+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import urllib.request,urllib.parse,json,io\nfrom tsetmc_adapter import TSETMCAdapter\nparams={'Symbol':'فملی','Category':'3','LetterType':'-1','PageNumber':'1','search':'true','Childs':'false','Mains':'true','Publisher':'false','Audited':'true','NotAudited':'true','Consolidatable':'true','NotConsolidatable':'true'}\nurl='https://search.codal.ir/api/search/v2/q?'+urllib.parse.urlencode(params)\nreq=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'application/json'})\ndata=json.loads(urllib.request.urlopen(req,timeout=20).read().decode('utf-8'))\nitem=next((x for x in data.get('Letters',[]) if 'گزارش فعالیت ماهانه' in x.get('Title','') and x.get('HasExcel')),None)\nprint('LETTER',json.dumps(item,ensure_ascii=False))\nif item:\n u=item['ExcelUrl']; raw=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0'}),timeout=30).read(); print('EXCEL_BYTES',len(raw),'MAGIC',raw[:8])\n try:\n  import openpyxl; print('OPENPYXL',openpyxl.__version__)\n  wb=openpyxl.load_workbook(io.BytesIO(raw),read_only=True,data_only=True)\n  print('SHEETS',wb.sheetnames)\n  for ws in wb.worksheets[:3]:\n   print('SHEET',ws.title,'DIM',ws.max_row,ws.max_column)\n   for row in ws.iter_rows(min_row=1,max_row=min(12,ws.max_row),values_only=True): print('ROW',json.dumps(row,ensure_ascii=False,default=str))\n except Exception as e: print('PARSE_ERROR',type(e).__name__,str(e)[:1000])"
+  ],
+  "stdout": "LETTER {\"SuperVision\": {\"UnderSupervision\": 0, \"AdditionalInfo\": \"\", \"Reasons\": []}, \"TracingNo\": 1605011, \"Symbol\": \"فملی\", \"CompanyName\": \"ملی صنایع مس ایران\", \"UnderSupervision\": 0, \"Title\": \"گزارش فعالیت ماهانه دوره ۱ ماهه منتهی به  ۱۴۰۵/۰۶/۳۱\", \"LetterCode\": \"ن-۳۰\", \"SentDateTime\": \"۱۴۰۵/۰۷/۰۶ ۱۹:۵۲:۴۲\", \"PublishDateTime\": \"۱۴۰۵/۰۷/۰۶ ۱۹:۵۲:۴۲\", \"HasHtml\": true, \"IsEstimate\": false, \"Url\": \"/Reports/Decision.aspx?LetterSerial=yCLhQHvRODoYnzrVLAY4QQQaQQQA%3d%3d&rt=0&let=58&ct=0&ft=-1\", \"HasExcel\": true, \"HasPdf\": true, \"HasXbrl\": false, \"HasAttachment\": false, \"AttachmentUrl\": \"\", \"PdfUrl\": \"DownloadFile.aspx?hs=yCLhQHvRODoYnzrVLAY4QQQaQQQA%3d%3d&ft=1005&let=58\", \"ExcelUrl\": \"https://excel.codal.ir/service/Excel/GetAll/yCLhQHvRODoYnzrVLAY4QQQaQQQA%3d%3d/0\", \"XbrlUrl\": \"\", \"TedanUrl\": \"http://www.tedan.ir\"}\nEXCEL_BYTES 209860 MAGIC b'\\r\\n<html '\nOPENPYXL 3.1.5\nPARSE_ERROR BadZipFile File is not a zip file\n",
+  "stderr": "",
+  "project_head": "de73f4402f038c1d3593c75045a9ad54cf7aeeb1",
+  "result_sha256": "d2062fa1a5657ece00adfe305947504fbf472e25cf55f0c28580ce05be9dd9fd"
+}
