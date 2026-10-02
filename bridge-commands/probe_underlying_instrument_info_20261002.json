@@ -1,0 +1,9 @@
+{
+  "command_id": "probe_underlying_instrument_info_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "import json\nfrom tsetmc_adapter import TSETMCAdapter\na=TSETMCAdapter()\nr=a.instrument_info('17914401175772326')\nprint('KEYS',list(r.keys()))\nprint('DATA',json.dumps(r.get('data'),ensure_ascii=False)[:10000])\nprint('ENDPOINT',r.get('endpoint'))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
