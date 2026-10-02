@@ -1,0 +1,17 @@
+{
+  "command_id": "probe_finisher_after_restart_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:39:12.607803+00:00",
+  "finished_at": "2026-10-02T01:39:12.798251+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport os,json\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npidfile=root/'output/project_finisher_agent.pid'\nprint('PID_FILE',pidfile.read_text().strip() if pidfile.exists() else 'MISSING')\nlog=root/'output/project_finisher_agent.log'\nprint('LOG',log.read_text(encoding='utf-8')[-2500:] if log.exists() else 'MISSING')\ns=json.loads((root/'PROJECT_FINISHER_STATE.json').read_text(encoding='utf-8'))\nprint('STATE',json.dumps({k:s.get(k) for k in ['version','status','current_gate','cycle','updated_at','blocker','bale_notified','bale_receipt','last_evidence_sha']},ensure_ascii=False))"
+  ],
+  "stdout": "PID_FILE 21497\nLOG \nSTATE {\"version\": \"2.0.0\", \"status\": \"BLOCKED\", \"current_gate\": \"G7-5\", \"cycle\": 3, \"updated_at\": \"2026-10-02T01:20:27.749296+00:00\", \"blocker\": \"Validation evidence exists, but the frozen protocol requires closure by case family with explicit confusion counts and the current economic engine does not map its features to the frozen Opportunity Shadow case-family definitions.\", \"bale_notified\": false, \"bale_receipt\": \"BALE_SEND_FAILED:ModuleNotFoundError\", \"last_evidence_sha\": \"3f17a1e57c52734b96b630b3ee6a8dcce9aa25e3ac87fbbdcf866f238d43aafc\"}\n",
+  "stderr": "",
+  "project_head": "17e67cc13f1575ace113bcb2ca3919333d5afbed",
+  "result_sha256": "1d82a2e91fb2ada5c57faeb3cf1c38660b5c1e869c838451d1af92b7d824f325"
+}
