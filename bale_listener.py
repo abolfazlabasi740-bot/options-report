@@ -189,11 +189,9 @@ def generate_report(command):
             report_mode="RANKED",
         )
 
+    # Evidence publication is deliberately kept out of the Bale response path.
+    # The user must receive the report first; audit publication is non-critical.
     save_tsetmc_report(report, snapshot)
-    try:
-        publish_latest_evidence()
-    except Exception as exc:
-        print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
     return report
 
 
@@ -328,7 +326,12 @@ def main():
                         if command == "وضعیت":
                             send_message(chat_id, system_status())
                         else:
-                            send_message(chat_id, generate_report(command))
+                            report = generate_report(command)
+                            send_message(chat_id, report)
+                            try:
+                                publish_latest_evidence()
+                            except Exception as exc:
+                                print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
 
                         send_report_menu(chat_id)
                         print(
@@ -395,6 +398,10 @@ def main():
                     else:
                         report = generate_report(text)
                         send_message(chat_id, report)
+                        try:
+                            publish_latest_evidence()
+                        except Exception as exc:
+                            print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
                         send_report_menu(chat_id)
 
                     print(
