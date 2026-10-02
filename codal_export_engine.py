@@ -348,7 +348,10 @@ def fetch_symbol_export_evidence(symbol: str, root: Path | None = None) -> dict[
 def fetch_export_context(symbols: list[str], root: Path | None = None) -> dict[str, Any]:
     root = root or Path(__file__).resolve().parent
     results = {}
-    for symbol in sorted({ _norm(x) for x in symbols if _norm(x) }):
+    normalized_symbols = sorted({_norm(x) for x in symbols if _norm(x)})
+    for index, symbol in enumerate(normalized_symbols):
+        if index:
+            time.sleep(0.35)
         results[symbol] = fetch_symbol_export_evidence(symbol, root=root)
     statuses = [x.get("status") for x in results.values()]
     return {
