@@ -1,9 +1,0 @@
-{
-  "command_id": "verify_runtime_and_bale_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import sys,subprocess\nsys.path.insert(0,'.')\np=subprocess.run([sys.executable,'runtime_verification.py'],text=True,capture_output=True)\nprint('RUNTIME_EXIT=',p.returncode)\nprint('RUNTIME_STDOUT=',p.stdout[-5000:])\nprint('RUNTIME_STDERR=',p.stderr[-2000:])\nif p.returncode==0:\n from scripts.project_finisher_agent import notify_bale\n ok,receipt=notify_bale('OPTIMUSAI | گزارش وضعیت واقعی\\nFinisher به‌روزرسانی شد. خطای import مربوط به Bale اصلاح و ممیزی Runtime سخت‌گیرانه‌تر شد. پروژه هنوز تکمیل نشده و G7-5 همچنان در حال بررسی است. این پیام صرفاً تأیید ارتباط و اطلاع‌رسانی است، نه اعلام پایان پروژه.')\n print('BALE_OK=',ok)\n print('BALE_RECEIPT=',receipt)"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
