@@ -125,12 +125,21 @@ def publish_result(result):
             + (commit.stderr.strip() or commit.stdout.strip())
         )
 
-    push = run("git", "push", "origin", RESULT_BRANCH, cwd=RESULTS, check=False)
-    if push.returncode != 0:
-        raise RuntimeError(
-            "result push failed: "
-            + (push.stderr.strip() or push.stdout.strip())
-        )
+    for attempt in range(3):
+        push = run("git", "push", "origin", RESULT_BRANCH, cwd=RESULTS, check=False)
+        if push.returncode == 0:
+            return
+        sync = run("git", "fetch", "origin", RESULT_BRANCH, cwd=RESULTS, check=False, timeout=90)
+        if sync.returncode != 0:
+            break
+        rebase = run("git", "rebase", f"origin/{RESULT_BRANCH}", cwd=RESULTS, check=False, timeout=90)
+        if rebase.returncode != 0:
+            run("git", "rebase", "--abort", cwd=RESULTS, check=False)
+            break
+    raise RuntimeError(
+        "result push failed after rebase retries: "
+        + (push.stderr.strip() or push.stdout.strip())
+    )
 
 
 def remove_queue_item(path):
@@ -161,12 +170,21 @@ def remove_queue_item(path):
             + (commit.stderr.strip() or commit.stdout.strip())
         )
 
-    push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False)
-    if push.returncode != 0:
-        raise RuntimeError(
-            "queue consume push failed: "
-            + (push.stderr.strip() or push.stdout.strip())
-        )
+    for attempt in range(3):
+        push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False)
+        if push.returncode == 0:
+            return
+        sync = run("git", "fetch", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False, timeout=90)
+        if sync.returncode != 0:
+            break
+        rebase = run("git", "rebase", f"origin/{QUEUE_BRANCH}", cwd=QUEUE, check=False, timeout=90)
+        if rebase.returncode != 0:
+            run("git", "rebase", "--abort", cwd=QUEUE, check=False)
+            break
+    raise RuntimeError(
+        "queue consume push failed after rebase retries: "
+        + (push.stderr.strip() or push.stdout.strip())
+    )
 
 
 def process_file(path):
