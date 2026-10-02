@@ -1,0 +1,9 @@
+{
+  "command_id": "check_finisher_process_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport os\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npid=int((root/'output/project_finisher_agent.pid').read_text())\ntry: os.kill(pid,0); print('WORKER_ALIVE',True)\nexcept OSError: print('WORKER_ALIVE',False)\nprint('PID',pid)\nlog=root/'output/project_finisher_agent.log'\nprint('LOG_SIZE',log.stat().st_size if log.exists() else -1)\nprint('LOG_TAIL',log.read_text(encoding='utf-8')[-3000:] if log.exists() else '')"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
