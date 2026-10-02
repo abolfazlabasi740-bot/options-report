@@ -151,12 +151,17 @@ def cycle(cycle_no: int) -> bool:
         cycle=cycle_no,
     )
     stages = []
-    stages.append(run_stage("PROJECT_COMPLETION_AUDIT", [sys.executable, "project_completion_audit.py"], 120))
     stages.append(run_stage("REPORT_RUNTIME", [sys.executable, "report_engine.py", "--top", "15"], 900))
     if stages[-1]["status"] == "PASS":
         stages.append(run_stage("G7-5_EVIDENCE", [sys.executable, "economic_validation_evidence_builder.py"], 2400))
     if stages and stages[-1]["status"] == "PASS":
         stages.append(run_stage("RUNTIME_VERIFICATION", [sys.executable, "runtime_verification.py"], 900))
+    if stages and stages[-1]["status"] == "PASS":
+        stages.append(run_stage("TRACK_C_PRE_LIMIT_UP", [sys.executable, "pre_limit_up_validation.py"], 900))
+    if stages and stages[-1]["status"] == "PASS":
+        stages.append(run_stage("TRACK_E_STRATEGY_RISK", [sys.executable, "strategy_risk_shadow_validation.py"], 1800))
+    if stages and stages[-1]["status"] == "PASS":
+        stages.append(run_stage("PROJECT_COMPLETION_AUDIT", [sys.executable, "project_completion_audit.py"], 120))
 
     completion_audit = load_json(OUTPUT / "project_completion_audit.json")
     failed = next((stage for stage in stages if stage["status"] != "PASS"), None)
