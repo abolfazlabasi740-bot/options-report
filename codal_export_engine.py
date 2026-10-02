@@ -368,3 +368,105 @@ def fetch_export_context(symbols: list[str], root: Path | None = None) -> dict[s
             "inference": "NO_GENERIC_DOLLAR_SENSITIVITY_INFERENCE",
         },
     }
+
+
+def _event_tags(title: str) -> list[str]:
+    text = _norm(title)
+    rules = [
+        ("IMPORTANT_DISCLOSURE", "افشای اطلاعات بااهمیت"),
+        ("CLARIFICATION", "شفاف سازی"),
+        ("INVESTOR_CONFERENCE", "کنفرانس اطلاع رسانی"),
+        ("FINANCIAL_EXPLANATION", "توضیحات در خصوص اطلاعات و صورت"),
+        ("CONTRACT", "قرارداد"),
+        ("TENDER", "مناقصه"),
+        ("PRODUCTION_STOP_OR_RESTART", "توقف"),
+        ("CAPITAL_CHANGE", "افزایش سرمایه"),
+        ("DIVIDEND", "سود"),
+        ("RESERVE_OR_DISCOVERY", "ذخایر"),
+        ("PRICE_OR_TARIFF_CHANGE", "نرخ"),
+    ]
+    tags = [tag for tag, phrase in rules if phrase in text]
+    return tags or ["OTHER_OFFICIAL_FILING"]
+
+
+def fetch_symbol_events(symbol: str) -> dict[str, Any]:
+    symbol = _norm(symbol)
+    retrieved_at = datetime.now(timezone.utc).isoformat()
+    params = {
+        "Symbol": symbol,
+        "Category": "2",
+        "LetterType": "-1",
+        "PageNumber": "1",
+        "search": "true",
+        "Childs": "false",
+        "Mains": "true",
+        "Publisher": "false",
+        "Audited": "true",
+        "NotAudited": "true",
+        "Consolidatable": "true",
+        "NotConsolidatable": "true",
+    }
+    api_url = SEARCH_BASE + "?" + urlencode(params)
+    try:
+        raw = _request(api_url, timeout=20)
+        payload = json.loads(raw.decode("utf-8"))
+        letters = list(payload.get("Letters") or [])
+        letters.sort(key=lambda x: _publish_tuple(x.get("PublishDateTime")), reverse=True)
+        events = []
+        for letter in letters[:5]:
+            title = _norm(letter.get("Title"))
+            events.append({
+                "tracing_no": letter.get("TracingNo"),
+                "title": title,
+                "letter_code": letter.get("LetterCode"),
+                "publish_datetime_jalali": letter.get("PublishDateTime"),
+                "tags": _event_tags(title),
+                "report_url": CODAL_BASE + str(letter.get("Url") or ""),
+                "has_html": bool(letter.get("HasHtml")),
+                "has_pdf": bool(letter.get("HasPdf")),
+                "has_attachment": bool(letter.get("HasAttachment")),
+            })
+        return {
+            "status": "PASS",
+            "source": "CODAL",
+            "category": 2,
+            "symbol": symbol,
+            "retrieved_at": retrieved_at,
+            "api_url": api_url,
+            "api_response_sha256": hashlib.sha256(raw).hexdigest(),
+            "total_results": payload.get("Total"),
+            "events": events,
+        }
+    except Exception as exc:
+        return {
+            "status": "UNAVAILABLE",
+            "source": "CODAL",
+            "category": 2,
+            "symbol": symbol,
+            "retrieved_at": retrieved_at,
+            "error_type": type(exc).__name__,
+            "error": str(exc)[:500],
+        }
+
+
+def fetch_recent_events(symbols: list[str]) -> dict[str, Any]:
+    results = {}
+    normalized_symbols = sorted({_norm(x) for x in symbols if _norm(x)})
+    for index, symbol in enumerate(normalized_symbols):
+        if index:
+            time.sleep(0.35)
+        results[symbol] = fetch_symbol_events(symbol)
+    return {
+        "status": "PASS" if results and all(x.get("status") == "PASS" for x in results.values()) else "PARTIAL",
+        "engine_version": "CODAL-OFFICIAL-EVENT-FEED-1.0",
+        "source": "CODAL",
+        "category": 2,
+        "symbol_count": len(results),
+        "symbols": results,
+        "rules": {
+            "selection": "LATEST_PUBLISHED_OFFICIAL_CODAL_LETTERS",
+            "sentiment": "NOT_INFERRED",
+            "event_direction": "NOT_INFERRED",
+            "missing_data": "UNAVAILABLE_NOT_ZERO",
+        },
+    }
