@@ -1,0 +1,8 @@
+{
+  "command_id": "g75_proxy_release_20261002_01",
+  "argv": [
+    "python",
+    "economic_validation_evidence_builder.py"
+  ],
+  "cwd": "~/OptimusAI_V41_LIVE"
+}
