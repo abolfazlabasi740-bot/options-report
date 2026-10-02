@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
+from underlying_trend_engine import fetch_underlying_context
 from economic_scoring_engine import build_economic_ranking
 from signal_engine_shadow import evaluate_shadow_candidates
 from tsetmc_history import archive_universe_snapshot
@@ -204,7 +205,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     if isinstance(limit, bool) or limit <= 0:
         raise ValueError("تعداد قراردادها باید عدد صحیح مثبت باشد")
 
+    adapter = TSETMCAdapter()
     snapshot = build_tsetmc_snapshot(
+        adapter=adapter,
         flow=flow,
         max_instruments=None,
         symbol_prefix=symbol_prefix,
@@ -319,7 +322,13 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "buy_sell_signal": "NOT_GENERATED",
             "items": [],
         }
-    _attach_canonical_quote_evidence(rows)
+    _attach_canonical_quote_evidence(rows, adapter=adapter)
+    underlying_ids = sorted({
+        str((row.get("identity") or {}).get("underlying_id") or "").strip()
+        for row in rows
+        if str((row.get("identity") or {}).get("underlying_id") or "").strip()
+    })
+    snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter)
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
@@ -411,6 +420,29 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 )
         else:
             lines.append("داده کافی برای رتبه‌بندی شش‌بلوک وجود ندارد.")
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("📈 روند تکنیکال سهم‌های پایه — داده روزانه TSETMC")
+    lines.append("این شاخص‌ها توصیفی‌اند و به‌تنهایی سیگنال خرید، فروش یا پیش‌بینی صف خرید نیستند.")
+    underlying_context = snapshot.get("underlying_context") or {}
+    for underlying_id, trend in (underlying_context.get("instruments") or {}).items():
+        underlying_symbol = next((
+            (row.get("identity") or {}).get("underlying_symbol")
+            for row in rows
+            if str((row.get("identity") or {}).get("underlying_id") or "") == underlying_id
+        ), None)
+        lines.append(
+            f"{underlying_symbol or underlying_id} | روند: {trend.get('trend_state', 'داده موجود نیست')} | "
+            f"بازده ۵ جلسه: {number(trend.get('return_5_sessions_pct'))}% | "
+            f"بازده ۲۰ جلسه: {number(trend.get('return_20_sessions_pct'))}% | "
+            f"RSI14: {number(trend.get('rsi_14'))} | "
+            f"SMA20: {number(trend.get('sma_20'))} | SMA50: {number(trend.get('sma_50'))} | "
+            f"نسبت حجم ۵/۲۰: {number(trend.get('volume_ratio_5_to_20'))} | "
+            f"فاصله تا سقف مجاز روز: {number(trend.get('upper_limit_headroom_pct'))}%"
+        )
+    lines.append(
+        f"وضعیت دریافت روند پایه‌ها: {underlying_context.get('status', 'داده موجود نیست')} | "
+        f"تعداد پایه‌ها: {underlying_context.get('instrument_count', 0)}"
+    )
     lines.append("━━━━━━━━━━━━━━━━━━━━")
 
     for idx, item in enumerate(rows, 1):
