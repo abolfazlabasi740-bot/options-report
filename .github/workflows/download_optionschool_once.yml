@@ -1,64 +1,41 @@
-name: Download and inspect OptionSchool24 workbook
+name: Download and inspect OptionSchool24 supplemental evidence
 
 on:
   push:
     paths:
       - ".github/workflows/download_optionschool_once.yml"
+      - "scripts/optionschool_supplemental_audit.py"
 
 permissions:
   contents: write
 
 jobs:
-  download-and-inspect:
+  download-and-audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download and validate workbook
+      - name: Download workbook
         run: |
           set -euo pipefail
           mkdir -p data
           curl --fail --location --retry 3 --connect-timeout 20 --max-time 120 'https://s3.optionschool24.com/export/excel?type=1' -o data/optionschool24_live.xlsx
           python - <<'PY'
           from pathlib import Path
-          b = Path("data/optionschool24_live.xlsx").read_bytes()
-          if len(b) < 5000 or not b.startswith(b"PK"):
-              raise SystemExit("Invalid XLSX")
-          print("bytes:", len(b))
+          b=Path("data/optionschool24_live.xlsx").read_bytes()
+          if len(b)<5000 or not b.startswith(b"PK"): raise SystemExit("Invalid XLSX")
+          print("bytes:",len(b))
           PY
           sha256sum data/optionschool24_live.xlsx | tee data/optionschool24_live.sha256
-
-      - name: Inspect workbook schema
+      - name: Build supplemental-only audit
         run: |
           set -euo pipefail
           python -m pip install --quiet openpyxl
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          from openpyxl import load_workbook
-          p = Path("data/optionschool24_live.xlsx")
-          wb = load_workbook(p, read_only=True, data_only=True)
-          out = {"file": str(p), "bytes": p.stat().st_size, "sha256": Path("data/optionschool24_live.sha256").read_text().split()[0], "sheets": []}
-          for ws in wb.worksheets:
-              rows = ws.iter_rows(values_only=True)
-              header = next(rows, ())
-              count = 0
-              samples = []
-              for row in rows:
-                  if any(v is not None for v in row):
-                      count += 1
-                      if len(samples) < 3:
-                          samples.append([None if v is None else str(v)[:120] for v in row])
-              out["sheets"].append({"name": ws.title, "max_row": ws.max_row, "max_column": ws.max_column, "nonempty_data_rows": count, "headers": [None if v is None else str(v) for v in header], "sample_rows": samples})
-          Path("data/optionschool24_live_schema.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-          print(json.dumps(out, ensure_ascii=False))
-          PY
-
-      - name: Commit workbook and schema
+          python scripts/optionschool_supplemental_audit.py
+      - name: Commit source and audit
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f data/optionschool24_live.xlsx data/optionschool24_live.sha256 data/optionschool24_live_schema.json
-          git commit -m "data: archive and inspect OptionSchool24 workbook"
+          git add -f data/optionschool24_live.xlsx data/optionschool24_live.sha256 data/optionschool24_live_schema.json data/optionschool24_supplemental_audit.json
+          git commit -m "data: archive OptionSchool24 supplemental audit"
           git push
