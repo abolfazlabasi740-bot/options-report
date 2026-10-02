@@ -1,0 +1,24 @@
+{
+  "command_id": "final_live_tsetmc_test_20261002_02",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T13:20:09.540830+00:00",
+  "finished_at": "2026-10-02T13:21:31.747269+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "live_bestlimits_evidence_runner.py",
+    "--output",
+    "output/final_live_tsetmc_test_20261002.json",
+    "--option-count",
+    "3",
+    "--pause-seconds",
+    "3",
+    "--timeout",
+    "20"
+  ],
+  "stdout": "{\"status\": \"SUCCESS\", \"gate_status\": \"READY_FOR_REVIEW\", \"capture_count\": 8, \"option_instruments\": 3, \"underlying_instruments\": 1, \"semantic_evidence_count\": 8, \"errors\": [], \"semantic_mapping_status\": \"OPEN\", \"scoring_status\": \"BLOCKED\", \"output\": \"output/final_live_tsetmc_test_20261002.json\"}\n",
+  "stderr": "",
+  "project_head": "82e2cef5473936de9779dde52674e32dda26e2e8",
+  "result_sha256": "328c8cc9972392e10ddb4f18810343aa71205c24bb1e13628e46c8a9ee3b22ae"
+}
