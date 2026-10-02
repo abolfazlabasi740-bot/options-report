@@ -458,27 +458,6 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"تعداد پایه‌ها: {underlying_context.get('instrument_count', 0)}"
     )
     lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("📰 افشاهای رسمی اخیر شرکت‌ها در کدال")
-    lines.append("فقط عنوان و زمان انتشار اطلاعیه گزارش می‌شود؛ جهت اثر یا مثبت/منفی بودن خبر حدس زده نمی‌شود.")
-    event_context = snapshot.get("codal_event_context") or {}
-    for symbol, event_data in (event_context.get("symbols") or {}).items():
-        events = event_data.get("events") or []
-        if not events:
-            lines.append(f"{symbol} | اطلاعیه قابل بازیابی نیست | وضعیت: {event_data.get('status')}")
-            continue
-        for event in events[:2]:
-            tags = "،".join(event.get("tags") or [])
-            lines.append(
-                f"{symbol} | {event.get('publish_datetime_jalali') or 'زمان ناموجود'} | "
-                f"{tags} | {event.get('title')}"
-            )
-            lines.append(f"کد رهگیری: {event.get('tracing_no')} | منبع: {event.get('report_url')}")
-    lines.append(
-        f"وضعیت دریافت اطلاعیه‌های کدال: {event_context.get('status', 'داده موجود نیست')} | "
-        f"تعداد نمادها: {event_context.get('symbol_count', 0)}"
-    )
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
 
     for idx, item in enumerate(rows, 1):
         canonical = item.get("canonical", {})
