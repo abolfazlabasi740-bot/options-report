@@ -209,6 +209,86 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     }
 
 
+def _board_metrics(orderbook_response: dict[str, Any] | None, client_type_response: dict[str, Any] | None) -> dict[str, Any]:
+    orderbook_response = orderbook_response or {}
+    client_type_response = client_type_response or {}
+    levels = orderbook_response.get("data")
+    levels = [x for x in levels if isinstance(x, dict)] if isinstance(levels, list) else []
+    levels.sort(key=lambda x: int(x.get("number") or 999))
+
+    bid_volume = sum(_num(x.get("qTitMeDem")) or 0.0 for x in levels)
+    ask_volume = sum(_num(x.get("qTitMeOf")) or 0.0 for x in levels)
+    bid_orders = sum(_num(x.get("zOrdMeDem")) or 0.0 for x in levels)
+    ask_orders = sum(_num(x.get("zOrdMeOf")) or 0.0 for x in levels)
+    best_bid = _num(levels[0].get("pMeDem")) if levels else None
+    best_ask = _num(levels[0].get("pMeOf")) if levels else None
+    spread = best_ask - best_bid if best_ask is not None and best_bid is not None else None
+    mid = (best_ask + best_bid) / 2.0 if best_ask is not None and best_bid is not None else None
+    client = client_type_response.get("data") or {}
+    if not isinstance(client, dict):
+        client = {}
+
+    def ratio(a, b):
+        return a / b if a is not None and b not in (None, 0) else None
+
+    buy_i = _num(client.get("buy_I_Volume"))
+    sell_i = _num(client.get("sell_I_Volume"))
+    buy_n = _num(client.get("buy_N_Volume"))
+    sell_n = _num(client.get("sell_N_Volume"))
+    count_buy_i = _num(client.get("buy_CountI"))
+    count_sell_i = _num(client.get("sell_CountI"))
+    count_buy_n = _num(client.get("buy_CountN"))
+    count_sell_n = _num(client.get("sell_CountN"))
+    buy_i_power = ratio(buy_i, count_buy_i)
+    sell_i_power = ratio(sell_i, count_sell_i)
+    buy_n_power = ratio(buy_n, count_buy_n)
+    sell_n_power = ratio(sell_n, count_sell_n)
+
+    client_values = [buy_i, sell_i, buy_n, sell_n, count_buy_i, count_sell_i, count_buy_n, count_sell_n]
+    client_status = "UNAVAILABLE" if not client else (
+        "NO_RECORDED_ACTIVITY" if all(x in (None, 0) for x in client_values) else "SUCCESS"
+    )
+    return {
+        "orderbook_status": "SUCCESS" if levels else "UNAVAILABLE",
+        "orderbook_level_count": len(levels),
+        "bid_depth_volume_5": bid_volume if levels else None,
+        "ask_depth_volume_5": ask_volume if levels else None,
+        "bid_order_count_5": bid_orders if levels else None,
+        "ask_order_count_5": ask_orders if levels else None,
+        "bid_ask_volume_ratio_5": ratio(bid_volume, ask_volume) if levels else None,
+        "orderbook_imbalance_5": (
+            (bid_volume - ask_volume) / (bid_volume + ask_volume)
+            if levels and bid_volume + ask_volume > 0 else None
+        ),
+        "best_bid_price": best_bid,
+        "best_ask_price": best_ask,
+        "best_bid_ask_spread": spread,
+        "best_bid_ask_spread_pct": spread / mid * 100.0 if spread is not None and mid not in (None, 0) else None,
+        "orderbook_endpoint": orderbook_response.get("endpoint"),
+        "orderbook_retrieved_at": orderbook_response.get("retrieved_at"),
+        "orderbook_snapshot_sha256": orderbook_response.get("snapshot_sha256"),
+        "client_type_status": client_status,
+        "individual_buy_volume": buy_i,
+        "individual_sell_volume": sell_i,
+        "individual_buy_count": count_buy_i,
+        "individual_sell_count": count_sell_i,
+        "individual_buy_power": buy_i_power,
+        "individual_sell_power": sell_i_power,
+        "individual_power_ratio": ratio(buy_i_power, sell_i_power),
+        "legal_buy_volume": buy_n,
+        "legal_sell_volume": sell_n,
+        "legal_buy_count": count_buy_n,
+        "legal_sell_count": count_sell_n,
+        "legal_buy_power": buy_n_power,
+        "legal_sell_power": sell_n_power,
+        "legal_power_ratio": ratio(buy_n_power, sell_n_power),
+        "client_type_endpoint": client_type_response.get("endpoint"),
+        "client_type_retrieved_at": client_type_response.get("retrieved_at"),
+        "client_type_snapshot_sha256": client_type_response.get("snapshot_sha256"),
+        "board_interpretation": "DESCRIPTIVE_ORDERBOOK_AND_CLIENT_TYPE_EVIDENCE_ONLY",
+    }
+
+
 def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter | None = None) -> dict[str, Any]:
     adapter = adapter or TSETMCAdapter()
     results = {}
@@ -216,20 +296,39 @@ def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter |
         try:
             history = adapter.daily_history(instrument_id, top=100)
             info = adapter.instrument_info(instrument_id)
+            orderbook = adapter.order_book(instrument_id)
+            client_type = adapter.client_type(instrument_id)
             analysis = analyze_history(instrument_id, history, info)
+            board = _board_metrics(orderbook, client_type)
+            analysis.update(board)
+
             raw_rows = history.get("data") if isinstance(history.get("data"), list) else []
             exact_rows = [
                 row for row in raw_rows
                 if isinstance(row, dict) and str(row.get("insCode") or "").strip() == instrument_id
             ]
             archive_payload = {
-                "archive_version": "TSETMC-UNDERLYING-HISTORY-1.0",
+                "archive_version": "TSETMC-UNDERLYING-SNAPSHOT-1.0",
                 "source_of_truth": "TSETMC",
                 "instrument_id": instrument_id,
-                "retrieved_at": history.get("retrieved_at"),
-                "endpoint": history.get("endpoint"),
-                "source_response_sha256": history.get("snapshot_sha256"),
-                "rows": exact_rows,
+                "daily_history": {
+                    "retrieved_at": history.get("retrieved_at"),
+                    "endpoint": history.get("endpoint"),
+                    "source_response_sha256": history.get("snapshot_sha256"),
+                    "rows": exact_rows,
+                },
+                "instrument_info": info.get("data"),
+                "instrument_info_endpoint": info.get("endpoint"),
+                "instrument_info_retrieved_at": info.get("retrieved_at"),
+                "instrument_info_snapshot_sha256": info.get("snapshot_sha256"),
+                "orderbook": orderbook.get("data"),
+                "orderbook_endpoint": orderbook.get("endpoint"),
+                "orderbook_retrieved_at": orderbook.get("retrieved_at"),
+                "orderbook_snapshot_sha256": orderbook.get("snapshot_sha256"),
+                "client_type": client_type.get("data"),
+                "client_type_endpoint": client_type.get("endpoint"),
+                "client_type_retrieved_at": client_type.get("retrieved_at"),
+                "client_type_snapshot_sha256": client_type.get("snapshot_sha256"),
             }
             archive_canonical = json.dumps(
                 archive_payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -253,7 +352,7 @@ def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter |
                 "source": "TSETMC",
                 "instrument_id": instrument_id,
                 "error_type": type(exc).__name__,
-                "interpretation": "NO_TECHNICAL_CLAIM",
+                "interpretation": "NO_TECHNICAL_OR_BOARD_CLAIM",
             }
     return {
         "status": "PASS" if results and all(x.get("status") in {"PASS", "PARTIAL"} for x in results.values()) else "PARTIAL",
@@ -264,8 +363,10 @@ def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter |
         "rules": {
             "history_match": "EXACT_INSTRUMENT_ID",
             "history_order": "SORTED_BY_TSETMC_D_EVEN",
-            "technical_features": ["SMA_5", "SMA_10", "SMA_20", "SMA_50", "RSI_14", "MACD_12_26", "RETURN_5_20", "VOLUME_VALUE_RATIO_5_20"],
+            "technical_features": ["SMA_5", "SMA_10", "SMA_20", "SMA_50", "RSI_14_WILDER", "MACD_12_26", "RETURN_5_20", "VOLUME_VALUE_RATIO_5_20"],
+            "board_features": ["BEST_LIMITS_5_LEVELS", "CLIENT_TYPE_INDIVIDUAL_LEGAL"],
             "limit_headroom": "ONLY_WHEN_DAILY_HISTORY_DATE_MATCHES_CURRENT_TEHRAN_DATE",
+            "retrieval_time_is_not_market_time": True,
             "missing_data": "UNAVAILABLE_NOT_ZERO",
             "signal_generation": "FORBIDDEN",
         },
