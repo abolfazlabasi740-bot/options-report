@@ -440,6 +440,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"RSI14: {number(trend.get('rsi_14'))} | "
             f"SMA20: {number(trend.get('sma_20'))} | SMA50: {number(trend.get('sma_50'))} | "
             f"نسبت حجم ۵/۲۰: {number(trend.get('volume_ratio_5_to_20'))} | "
+            f"عمق خرید/فروش ۵ سطح: {number(trend.get('bid_ask_volume_ratio_5'))} | "
+            f"قدرت حقیقی خرید/فروش: {number(trend.get('individual_power_ratio'))} | "
+            f"قدرت حقوقی خرید/فروش: {number(trend.get('legal_power_ratio'))} | "
             f"فاصله تا سقف مجاز روز: {percent(trend.get('upper_limit_headroom_pct'))}"
         )
     lines.append(
