@@ -293,10 +293,17 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 and (row.get("canonical") or {}).get("قیمت اعمال") not in (None, "")
             ]
             ranking_fallback = True
+        # Ranked top-15 is contractually tied to the TSETMC economic scoring engine.
+        # Scoring runs before the display limit is applied and cannot silently
+        # degrade to activity-only ranking.
         ranking = build_economic_ranking(ranking_input)
         ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES" if not ranking_fallback else "TSETMC_PRICED_NONEXPIRED_FALLBACK"
         ranking["ranking_scope_row_count"] = len(ranking_input)
         ranking["eligibility_fallback_used"] = ranking_fallback
+        ranking["economic_scoring_enabled"] = True
+        ranking["economic_scoring_target_count"] = limit
+        snapshot["economic_scoring_enabled"] = True
+        snapshot["economic_scoring_target_count"] = limit
         snapshot["ranking"] = ranking
 
         shadow_candidates = []
