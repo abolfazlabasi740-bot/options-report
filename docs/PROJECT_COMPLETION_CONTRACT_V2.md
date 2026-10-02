@@ -1,0 +1,74 @@
+# OptimusAI V4.1 — Project Completion Contract V2
+
+Status: IN_PROGRESS. This document defines what "project complete" means. A successful report run alone is not completion.
+
+## Release tracks
+
+### Track A — TSETMC market scanner and option shortlist
+Required:
+- live/last-known source state is explicit;
+- exact instrument identity and CALL/PUT semantics;
+- deterministic economic ranking with missing data preserved as unavailable;
+- retained snapshot and report hashes;
+- audit-integrity PASS;
+- runtime verification PASS;
+- Bale delivery with a real message receipt;
+- no unsupported buy/sell, expected-return, or probability-of-profit claims.
+
+Current evidence: report and ranking PASS; runtime and audit PASS on 2026-10-02; Bale test delivery PASS with message receipt 1335. This is a working screening milestone, not the full project.
+
+### Track B — Historical case-family validation
+Required:
+- reproducible case definitions;
+- independent forward outcomes matched by exact instrument ID;
+- confusion counts and unresolved counts per supported family;
+- separate unsupported families, with no invented substitute fields;
+- walk-forward and out-of-sample evidence;
+- costs/slippage assumptions explicitly sourced or left unavailable.
+
+Current evidence: 58 retained snapshots, 86,660 exact-ID transitions, 0 unresolved feature matches, 6,156 walk-forward results. Three TSETMC proxy families have diagnostic confusion counts. Two families are coverage-only. RELATIVE_VALUE_ANOMALY and CHAIN_STRUCTURE_ANOMALY remain unsupported; global G7-5 remains OPEN.
+
+### Track C — Underlying-stock trend and pre-limit-up screening
+Required:
+- underlying price/volume/market-depth history;
+- technical indicators computed from retained, timestamped underlying observations;
+- explicit board-reading features;
+- label definition for "pre-limit-up" based on observable market events;
+- chronological out-of-sample evaluation and false-positive reporting;
+- no claims that a pattern predicts a limit-up unless validated.
+
+Status: NOT RELEASED. The current option-ranking report is not a pre-limit-up predictor.
+
+### Track D — Macro, FX, news, exporter and revenue context
+Required:
+- separate source adapters with provenance, timestamps, and source hashes;
+- USD/FX observations;
+- issuer disclosures and export-revenue evidence from official filings;
+- news classification with source links and event timestamps;
+- mapping from underlying issuer to documented exposure, not a generic "dollar stock" guess;
+- source conflict and stale-data handling.
+
+Status: NOT RELEASED. Current operational source of truth is TSETMC-only; external data must be added as a separately audited enrichment layer.
+
+### Track E — Strategy and risk release
+Required:
+- versioned CALL/PUT decision rules;
+- evidence-derived thresholds;
+- expiry/liquidity/spread/freshness controls;
+- position sizing, max loss, and exit policy;
+- independent validation before any production BUY/SELL authorization.
+
+Status: SHADOW_ONLY. Production BUY/SELL remains disabled.
+
+### Track F — Automation and delivery
+Required:
+- Finisher worker with singleton/process health evidence;
+- automatic report, audit, evidence, and retry workflow;
+- Bale notifications deduplicated by state change and verified by receipts;
+- human intervention only for credentials, external account permissions, or explicit risk-policy authorization.
+
+Status: PARTIAL. Bridge and a Bale test receipt exist; continuous supervisor health and notification retry still require verification.
+
+## Completion rule
+
+The full project is COMPLETE only when all tracks required by the approved scope have reproducible PASS evidence. Track A may be released independently as a screening product. A partial G7-5 diagnostic, a report PASS, a compile PASS, or a Bale test receipt alone never means the full project is complete.
