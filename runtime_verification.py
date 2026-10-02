@@ -93,8 +93,9 @@ def main() -> None:
     missing_files = [name for name, status in compile_result.items() if status == "MISSING"]
     compile_failures = [name for name, status in compile_result.items() if status != "OK"]
 
+    audit_pass = bool(audit_result and audit_result.get("status") == "PASS")
     result = {
-        "status": "PASS" if not missing_files and not compile_failures else "FAIL",
+        "status": "PASS" if not missing_files and not compile_failures and audit_pass else "FAIL",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "root": str(ROOT),
         "python": sys.version,
