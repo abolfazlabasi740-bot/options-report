@@ -323,7 +323,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "items": [],
         }
     _attach_canonical_quote_evidence(rows, adapter=adapter)
-    enrichment_rows = snapshot.get("universe_rows") or rows
+    # Presentation enrichment is limited to displayed contracts; full universe remains in audit snapshot.
+    enrichment_rows = rows
     underlying_ids = sorted({
         str((row.get("identity") or {}).get("underlying_id") or "").strip()
         for row in enrichment_rows
@@ -357,121 +358,92 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     data_mode = snapshot.get("data_mode") or "UNKNOWN"
     basis_timestamp = market_state["latest_source_market_timestamp"] or "داده موجود نیست"
 
-    lines = [
-        "📊 گزارش اولیه بازار اختیار معامله — TSETMC-ONLY",
+    ranking_rows = ranking.get("ranking_rows") or []
+    ranking_by_id = {str(x.get("instrument_id")): x for x in ranking_rows if x.get("instrument_id") is not None}
+
+    def days_to_expiry(value):
+        if not value: return "داده موجود نیست"
+        try:
+            expiry=datetime.strptime(str(value)[:8],"%Y%m%d").date()
+            return str(max(0,(expiry-datetime.now(TEHRAN).date()).days))
+        except (TypeError,ValueError): return "داده موجود نیست"
+
+    def leverage(row):
+        c0=row.get("canonical") or {}
+        try:
+            s0,p0=float(c0.get("قیمت سهم پایه")),float(c0.get("آخرین قیمت"))
+            return f"{s0/p0:.2f}x" if s0>0 and p0>0 else "داده موجود نیست"
+        except (TypeError,ValueError): return "داده موجود نیست"
+
+    def breakeven_distance(row):
+        rid=str((row.get("identity") or {}).get("instrument_id") or "")
+        v=(ranking_by_id.get(rid,{}).get("features") or {}).get("breakeven_distance")
+        if v in (None,""): return "داده موجود نیست"
+        try: return f"{float(v)*100:.2f}%"
+        except (TypeError,ValueError): return "داده موجود نیست"
+
+    lines=[
+        "📊 گزارش ۱۵ فرصت برتر","Optionmarket | TSETMC-ONLY","━━━━━━━━━━━━━━━━━━━━",
+        f"وضعیت بازار: {market_state['status']}",
+        f"مبنای رتبه‌بندی: امتیاز اقتصادی TSETMC | وضعیت: {ranking.get('status','داده موجود نیست')}",
+        f"تعداد قراردادهای مبنا: {snapshot.get('row_count',0)}",
+        f"آخرین timestamp منبع: {basis_timestamp}",
+        "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
         "━━━━━━━━━━━━━━━━━━━━",
-        "📥 منبع حقیقت: TSETMC",
-        f"📌 حالت داده: {data_mode}",
-        f"📌 وضعیت به‌روزرسانی زنده: {snapshot.get('live_refresh_status', 'داده موجود نیست')}",
-        f"📌 وضعیت جلسه بازار: {market_state['session_state']}",
-        f"📌 وضعیت گزارش: {market_state['status']}",
-        f"📌 تعداد timestamp مشاهده‌شده از منبع: {market_state['unique_timestamp_count']}",
-        f"📌 آخرین timestamp صریح منبع: {basis_timestamp}",
-        f"📌 تعداد رکوردهای کشف‌شده TSETMC: {snapshot.get('universe_row_count', snapshot.get('row_count', 0))}",
-        f"📌 تعداد Flowهای بررسی‌شده: {len(mw.get('flows') or [])}",
-        f"📌 تعداد قراردادهای واجد وضعیت OPPORTUNITY_CANDIDATE: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)}",
-        f"📌 تعداد قراردادهای مبنای گزارش: {snapshot.get('row_count', 0)}",
-        f"📌 وضعیت Eligibility: {eligibility.get('status')} | ارزیابی کل رکوردها: {eligibility.get('rows_evaluated', 0)}",
-        f"📌 وضعیت Opportunity Engine: {opportunity.get('status')} | نسخه: {opportunity.get('engine_version')} | کاندیداها: {opportunity.get('candidate_count', 0)}",
-        f"📌 Opportunity-Candidate: {eligibility.get('counts', {}).get(OPPORTUNITY_CANDIDATE, 0)} | Ranking-Evidence-Rows: {sum(1 for x in ranking.get('ranking_rows', []) if x.get('economic_score') is not None)}",
-        f"⏱ زمان دریافت/تولید منبع: {mw.get('retrieved_at', 'داده موجود نیست')}",
-        f"🔐 Snapshot SHA256: {snapshot.get('snapshot_sha256')}",
-        f"📊 وضعیت امتیازدهی اقتصادی: {ranking.get('mode')} | وضعیت رتبه‌بندی: {ranking.get('status')}",
-        "⚠️ این رتبه‌بندی فقط از شواهد TSETMC و مشتقات ریاضی همان داده‌ها استفاده می‌کند؛ داده مفقود صفر یا حدس نمی‌شود.",
-        "⚠️ هر فیلد فاقد شواهد مستقیم TSETMC عمداً «داده موجود نیست» باقی می‌ماند.",
     ]
 
-    if data_mode == "LAST_KNOWN_TSETMC_SNAPSHOT":
-        lines.append(
-            "ℹ️ بازار/endpoint در این اجرا refresh زنده نداده است؛ مبنای گزارش آخرین Snapshot معتبر TSETMC است و این خروجی حرکت زنده فعلی را ادعا نمی‌کند."
-        )
-        if snapshot.get("fallback_reason"):
-            lines.append(f"ℹ️ علت استفاده از Snapshot قبلی: {snapshot['fallback_reason']}")
-    elif market_state["session_state"] == "OFFMARKET":
-        lines.append(
-            "ℹ️ بازار خارج از جلسه معاملاتی است؛ داده TSETMC در این خروجی به‌عنوان آخرین وضعیت معتبر منبع گزارش می‌شود، نه حرکت زنده."
-        )
-    elif market_state["observation_state"] == "SINGLE_SOURCE_OBSERVATION":
-        lines.append(
-            "ℹ️ timestamp مشاهده‌شده یکتا است؛ حرکت لحظه‌ای بازار اثبات نشده و گزارش live-moving محسوب نمی‌شود."
-        )
-
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("🧭 Eligibility / Opportunity Candidate Gate")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("INSUFFICIENT_ACTIVITY_EVIDENCE = عدم وجود شواهد فعالیت کافی")
-    lines.append("Opportunity-Candidate = تعداد قراردادهایی که شواهد فعالیت صریح یا عمق دوطرفه TSETMC دارند.")
-    lines.append("Ranking-Rows = تعداد ردیف‌هایی که Economic Scoring Engine برای آن‌ها امتیاز معتبر ساخته است.")
-    lines.append("OPPORTUNITY_CANDIDATE = شواهد فعالیت صریح یا عمق دوطرفه TSETMC")
-    lines.append("⚠️ Candidate و Economic Score به معنی سیگنال خرید/فروش، بازده مورد انتظار یا احتمال سود نیستند.")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("🏆 رتبه‌بندی اقتصادی TSETMC")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    if snapshot.get("report_mode") == "TRADING_ACTIVITY":
-        lines.append("مبنای ترتیب: ارزش معاملات، سپس حجم معاملات و تعداد معاملات؛ بدون استفاده از امتیاز اقتصادی.")
-        for idx, item in enumerate(rows, 1):
-            canonical = item.get("canonical") or {}
-            lines.append(
-                f"#{idx} {canonical.get('نماد') or 'داده موجود نیست'} | ارزش {number(canonical.get('ارزش معاملات'))} | حجم {number(canonical.get('حجم معاملات'))} | تعداد معاملات {number(canonical.get('تعداد معاملات'))}"
-            )
-    else:
-        rankable = [x for x in ranking.get("ranking_rows", []) if x.get("economic_score") is not None][:len(rows)]
-        if rankable:
-            lines.append("مبنای ترتیب: امتیاز اقتصادی شش‌بلوک؛ وزن‌ها: نقدشوندگی 20، ارزش‌گذاری 25، Payoff 18، زمان 15، Greeks 12، Market 10. امتیاز اقتصادی کارایی نسبی اقتصادی را نشان می‌دهد و بازده مورد انتظار یا احتمال سود را ادعا نمی‌کند.")
-            lines.append("⚠️ بلوک یا عامل فاقد شواهد TSETMC در همان ردیف از امتیاز آن ردیف حذف و وزن بلوک‌های دارای شواهد نرمال می‌شود.")
-            for x in rankable:
-                blocks = " | ".join(
-                    f"{block}={x['block_scores'].get(block) if x['block_scores'].get(block) is not None else 'داده موجود نیست'}"
-                    for block in ("LIQUIDITY", "VALUATION", "PAYOFF", "TIME", "GREEKS", "MARKET")
-                )
-                lines.append(
-                    f"#{x['rank']} {x.get('symbol') or 'داده موجود نیست'} | امتیاز کل {x['economic_score']:.2f}/100 | {blocks}"
-                )
-        else:
-            lines.append("داده کافی برای رتبه‌بندی شش‌بلوک وجود ندارد.")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("📈 روند تکنیکال سهم‌های پایه — داده روزانه TSETMC")
-    lines.append("این شاخص‌ها توصیفی‌اند و به‌تنهایی سیگنال خرید، فروش یا پیش‌بینی صف خرید نیستند.")
-    underlying_context = snapshot.get("underlying_context") or {}
-    for underlying_id, trend in (underlying_context.get("instruments") or {}).items():
-        underlying_symbol = next((
-            (row.get("identity") or {}).get("underlying_symbol")
-            for row in rows
-            if str((row.get("identity") or {}).get("underlying_id") or "") == underlying_id
-        ), None)
-        lines.append(
-            f"{underlying_symbol or underlying_id} | روند: {trend.get('trend_state', 'داده موجود نیست')} | "
-            f"بازده ۵ جلسه: {percent(trend.get('return_5_sessions_pct'))} | "
-            f"بازده ۲۰ جلسه: {percent(trend.get('return_20_sessions_pct'))} | "
-            f"RSI14: {number(trend.get('rsi_14'))} | "
-            f"SMA20: {number(trend.get('sma_20'))} | SMA50: {number(trend.get('sma_50'))} | "
-            f"نسبت حجم ۵/۲۰: {number(trend.get('volume_ratio_5_to_20'))} | "
-            f"عمق خرید/فروش ۵ سطح: {number(trend.get('bid_ask_volume_ratio_5'))} | "
-            f"قدرت حقیقی خرید/فروش: {number(trend.get('individual_power_ratio'))} | "
-            f"قدرت حقوقی خرید/فروش: {number(trend.get('legal_power_ratio'))} | "
-            f"وضعیت حقیقی/حقوقی: {trend.get('client_type_status', 'داده موجود نیست')} | "
-            f"دریافت سفارش‌ها: {trend.get('orderbook_retrieved_at', 'داده موجود نیست')} | "
-            f"فاصله تا سقف مجاز روز: {percent(trend.get('upper_limit_headroom_pct'))}"
-        )
-    lines.append(
-        f"وضعیت دریافت روند پایه‌ها: {underlying_context.get('status', 'داده موجود نیست')} | "
-        f"تعداد پایه‌ها: {underlying_context.get('instrument_count', 0)}"
-    )
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-
-    for idx, item in enumerate(rows, 1):
-        canonical = item.get("canonical", {})
-        identity = item.get("identity", {})
+    for idx,item in enumerate(rows,1):
+        c0=item.get("canonical") or {}; ident=item.get("identity") or {}
+        rid=str(ident.get("instrument_id") or "")
+        score=ranking_by_id.get(rid,{}).get("economic_score")
+        score_text=f"{float(score):.2f}" if score is not None else "داده موجود نیست"
         lines.extend([
-            f"🔹 {idx}. {canonical.get('نماد') or 'داده موجود نیست'}",
-            f"نوع: {identity.get('contract_type') or 'داده موجود نیست'} | ID: {identity.get('instrument_id') or 'داده موجود نیست'}",
-            f"پایه: {canonical.get('قیمت سهم پایه') if canonical.get('قیمت سهم پایه') is not None else 'داده موجود نیست'}",
-            f"اعمال: {number(canonical.get('قیمت اعمال'))} | آخرین: {number(canonical.get('آخرین قیمت'))}",
-            f"پایانی: {number(canonical.get('قیمت پایانی'))} | حجم: {number(canonical.get('حجم معاملات'))}",
-            f"ارزش: {number(canonical.get('ارزش معاملات'))} | اندازه قرارداد: {number(canonical.get('اندازه قرارداد'))}",
-            f"سررسید: {canonical.get('تاریخ سررسید') or 'داده موجود نیست'}",
-            "━━━━━━━━━━━━━━━━━━━━",
+            f"🔹 {idx}. {c0.get('نماد') or 'داده موجود نیست'}",
+            f"نوع: {ident.get('contract_type') or 'داده موجود نیست'}",
+            f"اعمال: {number(c0.get('قیمت اعمال'))}",
+            f"سررسید: {days_to_expiry(c0.get('تاریخ سررسید'))} روز",
+            f"آخرین قیمت: {number(c0.get('آخرین قیمت'))}",
+            f"پایانی: {number(c0.get('قیمت پایانی'))}",
+            f"فاصله سربه‌سر: {breakeven_distance(item)}",
+            f"اهرم: {leverage(item)}",
+            "دلتا: داده موجود نیست","بلک‌شولز: داده موجود نیست",
+            f"امتیاز: {score_text}/100","━━━━━━━━━━━━━━━━━━━━",
         ])
+
+    bases={}; total_volume=0.0; total_value=0.0; va=False; vala=False; days=[]
+    for item in rows:
+        c0=item.get("canonical") or {}
+        u=str((item.get("identity") or {}).get("underlying_symbol") or "").strip() or "داده موجود نیست"
+        bases[u]=bases.get(u,0)+1
+        try: total_volume+=float(c0.get("حجم معاملات")); va=True
+        except (TypeError,ValueError): pass
+        try: total_value+=float(c0.get("ارزش معاملات")); vala=True
+        except (TypeError,ValueError): pass
+        d=days_to_expiry(c0.get("تاریخ سررسید"))
+        if d!="داده موجود نیست": days.append(int(d))
+    conc=sorted(bases.items(),key=lambda x:(-x[1],x[0]))
+    conc_text=", ".join(f"{k} ({v})" for k,v in conc[:5])
+    lines.extend([
+        "📈 تحلیل جامع ۱۵ فرصت","━━━━━━━━━━━━━━━━━━━━",
+        "1) نقدشوندگی و فعالیت",
+        f"حجم معاملات مجموع: {number(total_volume) if va else 'داده موجود نیست'}",
+        f"ارزش معاملات مجموع: {number(total_value) if vala else 'داده موجود نیست'}",
+        f"تمرکز بر پایه‌ها: {conc_text or 'داده موجود نیست'}",
+        "OI و تغییرات OI: داده موجود نیست؛ تفسیر جریان موقعیت‌ها انجام نشده است.","",
+        "2) اهرم، فاصله سربه‌سر و زمان",
+        f"بازه سررسید: {min(days)} تا {max(days)} روز" if days else "بازه سررسید: داده موجود نیست",
+        "سررسید نزدیک، حساسیت به فرسایش زمانی را افزایش می‌دهد؛ اهرم بالا به‌تنهایی مبنای تصمیم نیست.",
+        "دلتا و بلک‌شولز: داده موجود نیست؛ تحلیل Greeks انجام نشده است.","",
+        "3) تمرکز ریسک",
+        f"تعداد پایه‌های متمایز: {len(bases)}",
+        f"بیشترین تمرکز: {conc_text or 'داده موجود نیست'}",
+        "تمرکز چند قرارداد روی یک پایه، تنوع واقعی سبد را کاهش می‌دهد.","",
+        "4) جمع‌بندی",
+        "فرصت‌ها: قراردادهای با امتیاز اقتصادی و شواهد فعالیت TSETMC در صدر فهرست قرار گرفته‌اند.",
+        "ریسک‌ها: سررسید نزدیک، اهرم، تمرکز روی پایه و نبود OI/Greeks دامنه اطمینان تحلیل را محدود می‌کند.",
+        "پایش جلسه بعد: آخرین/پایانی، حجم، ارزش معاملات، عمق بازار و در صورت فراهم‌شدن OI/Greeks.",
+        "⚠️ این خروجی رتبه‌بندی و تحلیل توصیفی است و BUY/SELL خودکار تولید نمی‌کند.","━━━━━━━━━━━━━━━━━━━━",
+    ])
 
     return "\n".join(lines), snapshot
 
