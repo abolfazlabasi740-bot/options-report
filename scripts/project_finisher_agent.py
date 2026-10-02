@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[1]
+if str(PROJECT) not in sys.path:
+    sys.path.insert(0, str(PROJECT))
 STATE = PROJECT / "PROJECT_FINISHER_STATE.json"
 INTERVAL_SECONDS = int(os.environ.get("FINISHER_INTERVAL_SECONDS", "900"))
 MAX_RUNTIME_SECONDS = int(os.environ.get("FINISHER_MAX_RUNTIME_SECONDS", "0"))
@@ -67,7 +69,7 @@ def notify_bale(text: str) -> tuple[bool, str]:
             return False, "BALE_NO_RECEIPTS"
         return True, json.dumps(receipts, ensure_ascii=False)
     except Exception as exc:
-        return False, f"BALE_SEND_FAILED:{type(exc).__name__}"
+        return False, f"BALE_SEND_FAILED:{type(exc).__name__}:{str(exc)[:500]}"
 
 def run_stage(name: str, argv: list[str], timeout: int = 1200):
     started = now()
