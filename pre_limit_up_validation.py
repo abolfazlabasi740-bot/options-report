@@ -10,7 +10,7 @@ historical limit-up claim is made from this proxy.
 from __future__ import annotations
 import hashlib,json,math
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime\nfrom zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parent
 OUT=ROOT/"output"
@@ -105,6 +105,29 @@ def build():
         return {"rows":n,"TP":tp,"FP":fp,"FN":fn,"TN":tn,
                 "precision":tp/(tp+fp) if tp+fp else None,
                 "recall":tp/(tp+fn) if tp+fn else None}
+    current_alerts=[]
+    today=datetime.now(ZoneInfo("Asia/Tehran")).strftime("%Y%m%d")
+    for iid,h in by.items():
+        h=sorted(h,key=lambda r:int(r.get("dEven") or 0))
+        if not h: continue
+        latest=h[-1]
+        if str(latest.get("dEven") or "")!=today: continue
+        latest_price=num(latest.get("pDrCotVal")) or num(latest.get("pClosing"))
+        # Historical static limits are not retained; current-session static limit is
+        # taken only from the archived TSETMC instrument-info response.
+        # This alert is descriptive proximity monitoring, not a prediction.
+        info=None
+        for pp in (OUT/"history"/"underlying").glob(f"{iid}_*.json"):
+            try:
+                dd=json.loads(pp.read_text(encoding="utf-8")); info=dd.get("instrument_info") or {}
+                break
+            except: pass
+        lim=num((info or {}).get("staticThreshold",{}).get("psGelStaMax"))
+        headroom=(lim-latest_price)/latest_price*100 if lim is not None and latest_price not in (None,0) else None
+        current_alerts.append({"instrument_id":iid,"market_date":today,"last_price":latest_price,
+          "upper_limit":lim,"headroom_pct":headroom,
+          "alert_rule":"headroom_pct <= 0.5%","alert_state":"APPROACHING_UPPER_LIMIT" if headroom is not None and headroom<=0.5 else "NO_ALERT",
+          "source":"TSETMC","prediction":False})
     result={"status":"PASS" if len(test)>0 and len(train)>0 else "PARTIAL",
       "engine_version":ENGINE_VERSION,"source_of_truth":SOURCE,
       "event_definition":{"name":"NEXT_SESSION_STRONG_UPPER_MOVE_PROXY",
@@ -112,6 +135,7 @@ def build():
         "definition":"next retained TSETMC session high >= 5.5% above entry close",
         "historical_exact_limit_table_available":False,
         "exact_limit_up_claim":False},
+      "current_session_alert":{"status":"PASS" if current_alerts else "NO_CURRENT_SESSION_SNAPSHOT","rule":"headroom_pct <= 0.5%","alerts":current_alerts,"prediction":False},
       "dataset":{"observation_count":len(observations),"train_count":len(train),"test_count":len(test),
                  "split":"chronological_70_30","instrument_count":len(by)},
       "thresholds":{"source":"TRAINING_ONLY_P75","values":thresholds,"rule":"at_least_2_of_3"},
