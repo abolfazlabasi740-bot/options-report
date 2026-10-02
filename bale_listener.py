@@ -189,6 +189,27 @@ def generate_report(command):
             report_mode="RANKED",
         )
 
+    # Fail closed: the "گزارش" command must never send a TRADING_ACTIVITY
+    # report under the "۱۵ فرصت برتر" label. This protects the user from a
+    # stale/misrouted runtime silently publishing an unscored activity list.
+    if command in ("گزارش", "همه", "کل"):
+        if snapshot.get("report_mode") != "RANKED":
+            raise RuntimeError(
+                "REPORT_ROUTE_MISMATCH: expected=RANKED; "
+                f"actual={snapshot.get('report_mode')}"
+            )
+        ranking = snapshot.get("ranking") or {}
+        if ranking.get("mode") != "TSETMC_ECONOMIC_SCORING":
+            raise RuntimeError(
+                "REPORT_RANKING_MODE_MISMATCH: expected=TSETMC_ECONOMIC_SCORING; "
+                f"actual={ranking.get('mode')}"
+            )
+        if ranking.get("status") != "PASS":
+            raise RuntimeError(
+                "REPORT_RANKING_STATUS_BLOCKED: "
+                f"status={ranking.get('status')}"
+            )
+
     # Evidence publication is deliberately kept out of the Bale response path.
     # The user must receive the report first; audit publication is non-critical.
     save_tsetmc_report(report, snapshot)
