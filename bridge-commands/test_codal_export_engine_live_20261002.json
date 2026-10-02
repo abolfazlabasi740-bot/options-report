@@ -1,9 +1,0 @@
-{
-  "command_id": "test_codal_export_engine_live_20261002",
-  "argv": [
-    "python",
-    "-c",
-    "import subprocess,sys,json\nroot='/data/data/com.termux/files/home/OptimusAI_V41_LIVE'\nsubprocess.run(['git','fetch','origin','main'],cwd=root,check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],cwd=root,check=True)\nfor args in [['python','-m','py_compile','codal_export_engine.py'],['python','-m','unittest','discover','-s','tests','-p','test_codal_export_engine.py','-v']]:\n p=subprocess.run(args,cwd=root,text=True,capture_output=True,timeout=300)\n print('COMMAND',args,'EXIT',p.returncode); print(p.stdout[-5000:]); print(p.stderr[-5000:])\n if p.returncode: raise SystemExit(p.returncode)\nfrom codal_export_engine import fetch_symbol_export_evidence\nr=fetch_symbol_export_evidence('فملی')\nprint('LIVE_CODAL_RESULT',json.dumps({k:r.get(k) for k in ['status','symbol','company_name','tracing_no','title','period_end_jalali','publish_datetime_jalali','evidence_sha256','report_url','usd_currency_disclosed']},ensure_ascii=False))\np=r.get('parsed_export_evidence') or {}\nprint('PRODUCT_EXPORT',json.dumps(p.get('product_sales'),ensure_ascii=False))\nprint('CURRENCY_EXPORT',json.dumps(p.get('foreign_currency_sales'),ensure_ascii=False))\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip())"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
