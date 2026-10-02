@@ -1,0 +1,17 @@
+{
+  "command_id": "restart_finisher_supervisor_20261002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-02T01:32:12.079633+00:00",
+  "finished_at": "2026-10-02T01:32:17.814945+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import os,sys,signal,time,subprocess\nfrom pathlib import Path\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\nsubprocess.run(['git','fetch','origin','main'],cwd=root,check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],cwd=root,check=True)\nscript=str(root/'scripts'/'project_finisher_agent.py')\nkilled=[]\nfor name in os.listdir('/proc'):\n if not name.isdigit(): continue\n pid=int(name)\n if pid==os.getpid(): continue\n try:\n  raw=Path('/proc',name,'cmdline').read_bytes().replace(b'\\x00',b' ').decode(errors='ignore')\n  if script in raw and '--worker' in raw:\n   os.kill(pid,signal.SIGTERM); killed.append(pid)\n except (OSError,ProcessLookupError): pass\ntime.sleep(2)\nenv=os.environ.copy(); env['FINISHER_DAEMON_CHILD']='1'\nlog=open(root/'output'/'project_finisher_agent.log','a',encoding='utf-8')\np=subprocess.Popen([sys.executable,script,'--worker'],cwd=root,stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True,env=env,close_fds=True)\ntime.sleep(2)\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip())\nprint('OLD_WORKERS_TERMINATED='+str(killed))\nprint('NEW_WORKER_PID='+str(p.pid))\nprint('NEW_WORKER_ALIVE='+str(p.poll() is None))\nprint('PID_FILE='+((root/'output'/'project_finisher_agent.pid').read_text().strip() if (root/'output'/'project_finisher_agent.pid').exists() else 'MISSING'))"
+  ],
+  "stdout": "HEAD is now at e459c43 ops: upgrade finisher supervisor with deduplicated Bale and release milestones\nHEAD=e459c4397b103d6e0aad8dea7348b5248bb96405\nOLD_WORKERS_TERMINATED=[14124, 14886, 16131, 17550]\nNEW_WORKER_PID=21497\nNEW_WORKER_ALIVE=True\nPID_FILE=21497\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\n   2a4a550..e459c43  main       -> origin/main\n",
+  "project_head": "e459c4397b103d6e0aad8dea7348b5248bb96405",
+  "result_sha256": "cd879c51382c8f34f666e79be15765a21d9364f814dcafcf27bbdfb008a47bcb"
+}
