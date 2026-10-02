@@ -1,0 +1,9 @@
+{
+  "command_id": "probe_finisher_cycle_checkpoint_20261002",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path\nimport os,json\nroot=Path('/data/data/com.termux/files/home/OptimusAI_V41_LIVE')\npid=int((root/'output/project_finisher_agent.pid').read_text())\ntry: os.kill(pid,0); alive=True\nexcept OSError: alive=False\ns=json.loads((root/'PROJECT_FINISHER_STATE.json').read_text(encoding='utf-8'))\nprint('WORKER_ALIVE',alive,'PID',pid)\nprint('STATE',json.dumps({k:s.get(k) for k in ['version','status','current_gate','cycle','updated_at','blocker','bale_notified','bale_receipt','last_evidence_sha']},ensure_ascii=False))\nprint('LOG_SIZE',(root/'output/project_finisher_agent.log').stat().st_size)"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
