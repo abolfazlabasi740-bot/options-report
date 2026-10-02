@@ -265,6 +265,27 @@ def _case_family_diagnostics(observations: list[dict[str, Any]]) -> dict[str, An
 def build_evidence(root: Path) -> dict[str, Any]:
     _write_progress(root, "LOAD_ARCHIVES")
     archives = _archives(root)
+    # Reuse unchanged verified evidence so the Finisher does not replay the
+    # full retained transition set on every cycle.
+    existing_path = root / "output" / "g7_5_economic_validation_evidence.json"
+    if existing_path.exists():
+        try:
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            if (
+                existing.get("status") == "EVIDENCE_ONLY"
+                and existing.get("closure", {}).get("g7_5_status") == "VERIFIED"
+                and sorted(existing.get("source_snapshot_shas") or []) == sorted(archives)
+                and int(existing.get("unresolved_feature_matches") or 0) == 0
+            ):
+                _write_progress(
+                    root,
+                    "REUSED_EXISTING_EVIDENCE",
+                    snapshot_count=len(archives),
+                    evidence_sha256=existing.get("evidence_sha256"),
+                )
+                return existing
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
+            pass
     _write_progress(root, "LOAD_OBSERVED_OUTCOMES", snapshot_count=len(archives))
     observed = outcomes.build_observed_outcomes(root)
 
