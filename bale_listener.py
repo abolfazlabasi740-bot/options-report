@@ -23,6 +23,7 @@ REPLY_MENU_MARKUP = {
         [{"text": "🔥 سود لحظه آخری"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
         [{"text": "🔎 انتخاب نماد"}],
+        [{"text": "🧩 استراتژی‌ها"}],
         [{"text": "📋 وضعیت سیستم"}],
     ],
     "resize_keyboard": True,
@@ -437,7 +438,6 @@ def send_report_menu(chat_id):
         "📋 منوی گزارش‌های OptimusAI V4.1\n\nاز منوی پایین، گزارش موردنظر را انتخاب کنید:",
         reply_markup=REPLY_MENU_MARKUP,
     )
-    send_strategy_menu(chat_id)
 
 def main():
     if not TOKEN or not CHAT_ID:
