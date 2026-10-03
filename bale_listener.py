@@ -73,6 +73,7 @@ from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
 from last_minute_profit_engine import build_last_minute_ranking
+from underlying_trend_engine import fetch_underlying_context
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -177,7 +178,18 @@ def generate_report(command):
         return format_behavior_report(build_behavior_report(ROOT))
     if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
         snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
-        result = build_last_minute_ranking(snapshot.get("rows", []), top_count=15)
+        source_rows = snapshot.get("rows", [])
+        underlying_ids = sorted({
+            str((row.get("identity") or {}).get("underlying_id") or "").strip()
+            for row in source_rows
+            if str((row.get("identity") or {}).get("underlying_id") or "").strip()
+        })
+        underlying_context = fetch_underlying_context(underlying_ids)
+        result = build_last_minute_ranking(
+            source_rows,
+            top_count=15,
+            underlying_context=underlying_context.get("instruments", {}),
+        )
         lines = [
             "🔥 سود لحظه آخری",
             "TSETMC-ONLY | سناریوی رشد ۳ درصدی پایه",
@@ -201,6 +213,11 @@ def generate_report(command):
                     f"ارزش سناریویی آپشن در سررسید: {item.get('scenario_option_value_at_expiry')}",
                     f"بازده سناریویی: {item.get('scenario_return_pct'):.2f}%",
                     f"اهرم: {item.get('leverage'):.2f}x",
+                    "تحلیل سهم پایه:",
+                    f"• صف/تقاضا: {(item.get('underlying_analysis') or {}).get('queue_state') or 'داده موجود نیست'}",
+                    f"• روند: {(item.get('underlying_analysis') or {}).get('trend_state') or 'داده موجود نیست'}",
+                    f"• حجم/ارزش: {(item.get('underlying_analysis') or {}).get('volume_state') or 'داده موجود نیست'}",
+                    f"• جمع‌بندی شواهد: {(item.get('underlying_analysis') or {}).get('persistence_evidence') or 'داده موجود نیست'}",
                     "━━━━━━━━━━━━━━━━━━━━",
                 ])
         return "\n".join(lines)
