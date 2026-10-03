@@ -179,12 +179,13 @@ def generate_report(command):
     if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
         snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
         source_rows = snapshot.get("rows", [])
-        underlying_ids = sorted({
-            str((row.get("identity") or {}).get("underlying_id") or "").strip()
-            for row in source_rows
-            if str((row.get("identity") or {}).get("underlying_id") or "").strip()
+        result = build_last_minute_ranking(source_rows, top_count=15)
+        top_underlying_ids = sorted({
+            str(item.get("underlying_id") or "").strip()
+            for item in result.get("ranking_rows", [])
+            if str(item.get("underlying_id") or "").strip()
         })
-        underlying_context = fetch_underlying_context(underlying_ids)
+        underlying_context = fetch_underlying_context(top_underlying_ids)
         result = build_last_minute_ranking(
             source_rows,
             top_count=15,
