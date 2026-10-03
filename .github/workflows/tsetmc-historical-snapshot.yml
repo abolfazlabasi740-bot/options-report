@@ -1,0 +1,46 @@
+name: TSETMC Historical Snapshot
+
+on:
+  push:
+    paths:
+      - "capture_tsetmc_historical_snapshot.py"
+      - ".github/workflows/tsetmc-historical-snapshot.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tehran
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Capture TSETMC historical snapshot
+        run: |
+          TARGET_DATE="$(date +%Y%m%d)"
+          TARGET_TIME="123000"
+          python capture_tsetmc_historical_snapshot.py \
+            --date "$TARGET_DATE" \
+            --time "$TARGET_TIME" \
+            --output "output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json"
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/tsetmc_first/historical_*.json
+          if git diff --cached --quiet; then
+            echo "No snapshot file change to commit."
+            exit 0
+          fi
+          git commit -m "data: capture TSETMC historical snapshot"
+          git push
