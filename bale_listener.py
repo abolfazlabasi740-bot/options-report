@@ -10,6 +10,7 @@ from bale_transport import send_message as transport_send
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
+        [{"text": "🔥 سود لحظه آخری", "callback_data": "report_last_minute"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
         [{"text": "🔎 انتخاب نماد", "callback_data": "symbols_page:0"}],
         [{"text": "📋 وضعیت سیستم", "callback_data": "system_status"}],
@@ -19,6 +20,7 @@ MENU_MARKUP = {
 REPLY_MENU_MARKUP = {
     "keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر"}],
+        [{"text": "🔥 سود لحظه آخری"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
         [{"text": "🔎 انتخاب نماد"}],
         [{"text": "📋 وضعیت سیستم"}],
@@ -29,6 +31,7 @@ REPLY_MENU_MARKUP = {
 
 REPLY_MENU_COMMANDS = {
     "📊 گزارش ۱۵ فرصت برتر": "گزارش",
+    "🔥 سود لحظه آخری": "سودلحظهآخری",
     "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
     "🔎 انتخاب نماد": "نمادها",
     "📋 وضعیت سیستم": "وضعیت",
@@ -61,6 +64,7 @@ PREFERRED_UNDERLYINGS = (
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
     "report_activity_15": "فعالیت",
+    "report_last_minute": "سودلحظهآخری",
     "system_status": "وضعیت",
 }
 
@@ -68,6 +72,7 @@ from report_engine import build_tsetmc_report, save_tsetmc_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
+from last_minute_profit_engine import build_last_minute_ranking
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -170,6 +175,35 @@ def system_status():
 def generate_report(command):
     if command in ("رفتار", "تغییرات", "behavior"):
         return format_behavior_report(build_behavior_report(ROOT))
+    if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
+        snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
+        result = build_last_minute_ranking(snapshot.get("rows", []), top_count=15)
+        lines = [
+            "🔥 سود لحظه آخری",
+            "TSETMC-ONLY | سناریوی رشد ۳ درصدی پایه",
+            "━━━━━━━━━━━━━━━━━━━━",
+            "شرایط: دقیقاً یک روز تا سررسید + ITM + بازده سناریویی مثبت",
+            f"تعداد کاندیداهای معتبر: {result.get('candidate_count', 0)}",
+            f"تعداد نمایش: {result.get('display_count', 0)}",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ]
+        if not result.get("ranking_rows"):
+            lines.append("داده موجود نیست")
+        else:
+            for item in result["ranking_rows"]:
+                lines.extend([
+                    f"🔹 {item['rank']}. {item.get('symbol') or 'داده موجود نیست'}",
+                    f"پایه: {item.get('underlying_symbol') or 'داده موجود نیست'} | نوع: {item.get('contract_type') or 'داده موجود نیست'}",
+                    f"قیمت پایه فعلی: {item.get('underlying_price')}",
+                    f"قیمت پایه در سناریو: {item.get('scenario_underlying_price')}",
+                    f"اعمال: {item.get('strike')}",
+                    f"قیمت فعلی آپشن: {item.get('current_option_price')}",
+                    f"ارزش سناریویی آپشن در سررسید: {item.get('scenario_option_value_at_expiry')}",
+                    f"بازده سناریویی: {item.get('scenario_return_pct'):.2f}%",
+                    f"اهرم: {item.get('leverage'):.2f}x",
+                    "━━━━━━━━━━━━━━━━━━━━",
+                ])
+        return "\n".join(lines)
     if command in ("گزارش", "همه", "کل"):
         report, snapshot = build_tsetmc_report(
             top_count=15,
