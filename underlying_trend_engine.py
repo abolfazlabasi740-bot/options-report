@@ -124,6 +124,11 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         if _sma(volumes, 5) is not None and _sma(volumes, 20) not in (None, 0)
         else None
     )
+    volume_ratio_5_to_50 = (
+        (_sma(volumes, 5) / _sma(volumes, 50))
+        if _sma(volumes, 5) is not None and _sma(volumes, 50) not in (None, 0)
+        else None
+    )
     value_ratio = (
         (_sma(values, 5) / _sma(values, 20))
         if _sma(values, 5) is not None and _sma(values, 20) not in (None, 0)
@@ -194,6 +199,7 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         "rsi_14": rsi14,
         "macd_12_26": macd,
         "volume_ratio_5_to_20": volume_ratio,
+        "volume_ratio_5_to_50": volume_ratio_5_to_50,
         "value_ratio_5_to_20": value_ratio,
         "range_position_20": range_position,
         "trend_state": trend_state,
