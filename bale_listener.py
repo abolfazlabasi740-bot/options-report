@@ -68,12 +68,23 @@ CALLBACK_COMMANDS = {
     "system_status": "وضعیت",
 }
 
+STRATEGY_CALLBACKS = {
+    "strategy_bull_call_spread": "BULL_CALL_SPREAD",
+}
+
+STRATEGY_MENU_MARKUP = {
+    "inline_keyboard": [
+        [{"text": "📈 Bull Call Spread", "callback_data": "strategy_bull_call_spread"}],
+    ]
+}
+
 from report_engine import build_tsetmc_report, save_tsetmc_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
 from last_minute_profit_engine import build_last_minute_ranking
 from underlying_trend_engine import fetch_underlying_context
+from bull_call_spread_engine import build_strategy_report
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -362,13 +373,71 @@ def send_symbol_menu(chat_id, page=0):
     )
 
 
+def send_strategy_menu(chat_id):
+    send_message(
+        chat_id,
+        "🧩 استراتژی‌ها\n\nاستراتژی موردنظر را انتخاب کنید:",
+        reply_markup=STRATEGY_MENU_MARKUP,
+    )
+
+
+def generate_strategy_report(strategy):
+    if strategy != "BULL_CALL_SPREAD":
+        raise RuntimeError("UNKNOWN_STRATEGY: " + str(strategy))
+
+    snapshot = build_tsetmc_snapshot(
+        flow=None,
+        max_instruments=None,
+        symbol_prefix=None,
+    )
+    rows = snapshot.get("rows") or []
+    result = build_strategy_report(rows, top_count=15)
+
+    lines = [
+        "📈 Bull Call Spread",
+        "TSETMC-ONLY",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "وضعیت موتور: " + str(result.get("status") or "داده موجود نیست"),
+        "تعداد کاندیدا: " + str(result.get("candidate_count", 0)),
+        "Snapshot SHA: " + str(snapshot.get("snapshot_sha256") or "داده موجود نیست"),
+        "━━━━━━━━━━━━━━━━━━━━",
+    ]
+
+    results = result.get("results") or []
+    if not results:
+        lines.append("کاندیدای معتبر Bull Call Spread پیدا نشد.")
+        return "\n".join(lines)
+
+    for index, item in enumerate(results, 1):
+        lines.extend([
+            "🔹 Spread " + str(index),
+            "پایه: " + str(item.get("underlying_symbol") or "داده موجود نیست"),
+            "سررسید: " + str(item.get("expiry") or "داده موجود نیست"),
+            "Call خرید: " + str(item.get("long_call_symbol") or "داده موجود نیست") + " | Strike: " + str(item.get("lower_strike")),
+            "Call فروش: " + str(item.get("short_call_symbol") or "داده موجود نیست") + " | Strike: " + str(item.get("higher_strike")),
+            "Premium خرید: " + str(item.get("long_premium")),
+            "Premium فروش: " + str(item.get("short_premium")),
+            "Net Debit: " + str(item.get("net_debit")),
+            "حداکثر زیان: " + str(item.get("max_loss")),
+            "حداکثر سود: " + str(item.get("max_profit")),
+            "نقطه سربه‌سر: " + str(item.get("breakeven")),
+            "Liquidity Evidence: " + str(item.get("liquidity_evidence")),
+            "Profit/Loss Efficiency: " + str(item.get("profit_loss_efficiency")),
+            "سیگنال اجرا: False",
+            "توصیه خرید/فروش: False",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ])
+
+    return "\n".join(lines)
+
+
 def send_report_menu(chat_id):
     send_message(
         chat_id,
         "📋 منوی گزارش‌های OptimusAI V4.1\n\nاز منوی پایین، گزارش موردنظر را انتخاب کنید:",
         reply_markup=REPLY_MENU_MARKUP,
     )
-
+    send_strategy_menu(chat_id)
 
 def main():
     if not TOKEN or not CHAT_ID:
@@ -414,6 +483,7 @@ def main():
                         answer_callback_query(callback.get("id"))
                         callback_data = str(callback.get("data") or "").strip()
                         command = CALLBACK_COMMANDS.get(callback_data)
+                        strategy = STRATEGY_CALLBACKS.get(callback_data)
 
                         if callback_data.startswith("symbols_page:"):
                             page = int(callback_data.split(":", 1)[1])
@@ -430,6 +500,11 @@ def main():
                                 print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
                             send_report_menu(chat_id)
                         elif callback_data == "main_menu":
+                            send_report_menu(chat_id)
+                        elif strategy:
+                            report = generate_strategy_report(strategy)
+                            send_message(chat_id, report)
+                            send_strategy_menu(chat_id)
                             send_report_menu(chat_id)
                         elif command == "وضعیت":
                             send_message(chat_id, system_status())
@@ -487,6 +562,8 @@ def main():
                 try:
                     if text in ("منو", "menu", "/start", "/menu", "🏠 منوی اصلی"):
                         send_report_menu(chat_id)
+                    elif text in ("استراتژی‌ها", "استراتژی ها", "استراتژی"):
+                        send_strategy_menu(chat_id)
                     elif text in ("رفتار", "تغییرات", "behavior"):
                         send_message(chat_id, generate_report("رفتار"))
                         send_report_menu(chat_id)
