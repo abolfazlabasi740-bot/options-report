@@ -93,6 +93,7 @@ def _scenario(row: dict[str, Any], now=None) -> dict[str, Any] | None:
         "instrument_id": identity.get("instrument_id"),
         "symbol": canonical.get("نماد"),
         "underlying_symbol": identity.get("underlying_symbol"),
+        "underlying_id": identity.get("underlying_id"),
         "contract_type": typ,
         "days_to_expiry": days,
         "underlying_price": spot,
@@ -108,7 +109,73 @@ def _scenario(row: dict[str, Any], now=None) -> dict[str, Any] | None:
     }
 
 
-def build_last_minute_ranking(rows: list[dict[str, Any]], *, top_count=15, now=None) -> dict[str, Any]:
+def analyze_underlying_context(context: dict[str, Any] | None) -> dict[str, Any]:
+    """Summarize TSETMC underlying board, trend and volume evidence."""
+    context = context or {}
+    if not isinstance(context, dict) or context.get("status") == "UNAVAILABLE":
+        return {"status": "UNAVAILABLE", "queue_state": "داده موجود نیست", "trend_state": "داده موجود نیست", "volume_state": "داده موجود نیست", "persistence_evidence": "داده موجود نیست"}
+
+    def num(key):
+        return _num(context.get(key))
+
+    last_price = num("last_price")
+    sma20 = num("sma_20")
+    sma50 = num("sma_50")
+    volume_ratio = num("volume_ratio_5_to_20")
+    value_ratio = num("value_ratio_5_to_20")
+    bid_depth = num("bid_depth_volume_5")
+    ask_depth = num("ask_depth_volume_5")
+    imbalance = num("orderbook_imbalance_5")
+    upper_headroom = num("upper_limit_headroom_pct")
+
+    if upper_headroom is not None and upper_headroom <= 0.05 and bid_depth is not None and bid_depth > 0 and ask_depth in (None, 0):
+        queue_state = "صف خرید قابل‌تأیید در داده سفارش‌ها"
+    elif imbalance is not None and imbalance >= 0.60:
+        queue_state = "تقاضای سنگین‌تر از عرضه؛ صف قطعی تأیید نشده"
+    elif imbalance is not None:
+        queue_state = "برتری صف/تقاضا تأیید نشد"
+    else:
+        queue_state = "داده صف کافی نیست"
+
+    if last_price is not None and sma20 is not None and sma50 is not None:
+        trend_state = "ساختار صعودی: قیمت بالای SMA20 و SMA20 بالای SMA50" if last_price > sma20 > sma50 else "ساختار صعودی کامل تأیید نشد"
+    else:
+        trend_state = "داده میانگین 20/50 روزه کافی نیست"
+
+    volume_parts = []
+    if volume_ratio is not None:
+        volume_parts.append(f"نسبت حجم ۵ به ۲۰ روزه: {volume_ratio:.2f}x")
+    if value_ratio is not None:
+        volume_parts.append(f"نسبت ارزش ۵ به ۲۰ روزه: {value_ratio:.2f}x")
+    volume_state = " | ".join(volume_parts) if volume_parts else "داده حجم/ارزش کافی نیست"
+
+    supportive = (
+        queue_state.startswith("صف خرید قابل")
+        and last_price is not None and sma20 is not None and sma50 is not None
+        and last_price > sma20 > sma50
+        and volume_ratio is not None and volume_ratio >= 1.0
+    )
+    persistence_evidence = (
+        "مثبت: صف/تقاضا + ساختار قیمت + حجم هم‌جهت هستند؛ تداوم صف برای جلسه بعد قطعی نیست."
+        if supportive
+        else "شواهد کافی برای تأیید هم‌زمان صف، روند و حجم وجود ندارد."
+    )
+
+    return {
+        "status": context.get("status", "PARTIAL"),
+        "queue_state": queue_state,
+        "trend_state": trend_state,
+        "volume_state": volume_state,
+        "persistence_evidence": persistence_evidence,
+        "touched_upper_limit_today": context.get("touched_upper_limit_today"),
+        "upper_limit_headroom_pct": upper_headroom,
+        "volume_ratio_5_to_20": volume_ratio,
+        "value_ratio_5_to_20": value_ratio,
+        "orderbook_imbalance_5": imbalance,
+    }
+
+
+def build_last_minute_ranking(rows: list[dict[str, Any]], *, top_count=15, now=None, underlying_context=None) -> dict[str, Any]:
     candidates = []
     excluded = {
         "not_one_day_to_expiry": 0,
@@ -155,8 +222,11 @@ def build_last_minute_ranking(rows: list[dict[str, Any]], *, top_count=15, now=N
     )
     ranked = candidates[: int(top_count)]
 
+    context_map = underlying_context or {}
     for rank, item in enumerate(ranked, 1):
         item["rank"] = rank
+        context = context_map.get(str(item.get("underlying_id") or ""))
+        item["underlying_analysis"] = analyze_underlying_context(context)
 
     return {
         "status": "PASS" if ranked else "NO_ELIGIBLE_OPPORTUNITY",
