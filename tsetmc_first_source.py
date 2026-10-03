@@ -3,13 +3,19 @@
 """TSETMC-only canonical option source for OptimusAI V4.1."""
 from __future__ import annotations
 import hashlib, json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, time
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 from tsetmc_adapter import TSETMCAdapter
 
 ENGINE_VERSION = "TSETMC-FIRST-SOURCE-1.3-MARKETWATCH-CANONICAL"
 CACHE_PATH = Path("output/tsetmc_first/latest_snapshot.json")
+CLOSED_CACHE_PATH = Path("output/tsetmc_first/closed_snapshot.json")
+TEHRAN = ZoneInfo("Asia/Tehran")
+TRADING_WEEKDAYS = {5, 6, 0, 1, 2}
+MARKET_OPEN = time(9, 1)
+MARKET_CLOSE = time(12, 30)
 FIELD_NAMES = [
     "نماد","قیمت اعمال","قیمت سهم پایه","اختلاف تا اعمال","تاریخ سررسید",
     "روزهای تقویمی","روزهای معاملاتی","موقعیت های باز","حجم معاملات","تعداد معاملات","ارزش معاملات",
@@ -69,7 +75,7 @@ def _persist_snapshot(snapshot: dict[str, Any]) -> None:
         CACHE_PATH.parent.mkdir(parents=True,exist_ok=True)
         CACHE_PATH.write_text(json.dumps(snapshot,ensure_ascii=False,indent=2,allow_nan=False),encoding="utf-8")
     except OSError: pass
-def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
+def _build_live_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None, allow_cached_fallback: bool=True) -> dict[str,Any]:
     adapter=adapter or TSETMCAdapter()
     if max_instruments is not None:
         if isinstance(max_instruments,bool) or int(max_instruments)<=0: raise ValueError("max_instruments must be a positive integer")
@@ -79,8 +85,9 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
         elif flow is None: mw=adapter.option_market_watch_instrument_records(flow=1)
         else: mw=adapter.option_market_watch_instrument_records(flow=flow)
     except Exception as exc:
-        cached=_load_last_known_snapshot()
-        if cached is not None: cached["fallback_reason"]=type(exc).__name__; return cached
+        if allow_cached_fallback:
+            cached=_load_last_known_snapshot()
+            if cached is not None: cached["fallback_reason"]=type(exc).__name__; return cached
         raise
     instruments=mw.get("records",[])
     if not instruments:
@@ -150,6 +157,52 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
               "best_limits_contract":{"status":"RAW_ONLY_QUARANTINED","source":"TSETMC","endpoint":"BestLimits/{instrument_id}","identity_binding":"instrument_id","market_watch_binding":"market_watch_snapshot_sha256","source_timestamp_binding":"source_market_timestamp","delta_seconds_limit":2.0,"consumption_status":"NOT_CONSUMED_BY_SCORING_OR_RANKING"}}
     snapshot={"status":"SUCCESS","engine_version":ENGINE_VERSION,"source_of_truth":"TSETMC","external_comparison_source":None,"generated_at":generated_at,"row_count":len(rows),"rows":rows,"evidence":evidence,"snapshot_sha256":_hash_json({"rows":rows,"evidence":evidence}),"data_mode":"LIVE_TSETMC_REFRESH","live_refresh_status":"SUCCESS"}
     _persist_snapshot(snapshot); return snapshot
+def _load_closed_snapshot_for_date(date_key: str) -> dict[str, Any] | None:
+    try:
+        if not CLOSED_CACHE_PATH.exists():
+            return None
+        cached = json.loads(CLOSED_CACHE_PATH.read_text(encoding="utf-8"))
+        if not isinstance(cached, dict) or cached.get("source_of_truth") != "TSETMC":
+            return None
+        if cached.get("closed_for_date") != date_key:
+            return None
+        cached["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+        cached["live_refresh_status"] = "NOT_REQUESTED_CLOSED_MODE"
+        cached["cache_path"] = str(CLOSED_CACHE_PATH)
+        return cached
+    except (OSError, ValueError, TypeError):
+        return None
+
+def _persist_closed_snapshot(snapshot: dict[str, Any], date_key: str, capture_kind: str) -> None:
+    payload = dict(snapshot)
+    payload["closed_for_date"] = date_key
+    payload["closed_snapshot_kind"] = capture_kind
+    payload["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+    payload["live_refresh_status"] = "PRECAPTURED_1230" if capture_kind == "PRECAPTURED_1230" else "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+    CLOSED_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CLOSED_CACHE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+
+def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
+    now = datetime.now(TEHRAN)
+    session_open = now.weekday() in TRADING_WEEKDAYS and MARKET_OPEN <= now.time() <= MARKET_CLOSE
+    if session_open:
+        return _build_live_snapshot(adapter=adapter, flow=flow, max_instruments=max_instruments, symbol_prefix=symbol_prefix, allow_cached_fallback=False)
+
+    date_key = now.strftime("%Y%m%d")
+    closed = _load_closed_snapshot_for_date(date_key)
+    if closed is not None:
+        return closed
+
+    if now.weekday() in TRADING_WEEKDAYS and now.time() > MARKET_CLOSE:
+        captured = _build_live_snapshot(adapter=adapter, flow=flow, max_instruments=max_instruments, symbol_prefix=symbol_prefix, allow_cached_fallback=False)
+        _persist_closed_snapshot(captured, date_key, "CAPTURED_ON_FIRST_CLOSED_REQUEST")
+        captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+        captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+        captured["closed_for_date"] = date_key
+        return captured
+
+    raise RuntimeError("CLOSED_SNAPSHOT_UNAVAILABLE_FOR_CURRENT_TRADING_DAY")
+
 def write_snapshot(snapshot:dict[str,Any], output:str|Path)->Path:
     path=Path(output); path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(snapshot,ensure_ascii=False,indent=2,allow_nan=False),encoding="utf-8"); return path
