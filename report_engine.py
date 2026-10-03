@@ -125,13 +125,18 @@ def _trading_rank_rows(rows):
     return [item[-1] for item in ranked]
 
 
-def _attach_canonical_quote_evidence(rows, *, adapter=None):
+def _attach_canonical_quote_evidence(rows, *, adapter=None, allow_refresh=True):
     """Attach exact TSETMC ClosingPriceInfo evidence to displayed rows only.
 
     MarketWatch remains the ranking/value source. ClosingPriceInfo is used only
     to bind a displayed instrument to an explicit TSETMC observation timestamp
     and to record quote consistency. Retrieval time is never used as market time.
     """
+    if not allow_refresh:
+        for row in rows:
+            if not isinstance(row.get("canonical_quote_evidence"), dict):
+                row["canonical_quote_evidence"] = {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source":"TSETMC","instrument_id":(row.get("identity") or {}).get("instrument_id"),"source_market_timestamp":row.get("source_market_timestamp"),"source_market_timestamp_status":row.get("source_market_timestamp_status","UNAVAILABLE"),"quote_consistency":"NOT_REEVALUATED"}
+        return rows
     adapter = adapter or TSETMCAdapter()
     for row in rows:
         identity = row.get("identity") or {}
@@ -362,10 +367,13 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "buy_sell_signal": "NOT_GENERATED",
             "items": [],
         }
-    _attach_canonical_quote_evidence(rows, adapter=adapter)
-    # Greeks/Black-Scholes are derived only from TSETMC market inputs and
-    # TSETMC daily history. Model conventions are recorded in each row.
-    attach_option_model_metrics(rows, adapter)
+    live_enrichment = snapshot.get("data_mode") == "LIVE_TSETMC_REFRESH"
+    _attach_canonical_quote_evidence(rows, adapter=adapter, allow_refresh=live_enrichment)
+    if live_enrichment:
+        attach_option_model_metrics(rows, adapter)
+    else:
+        for row in rows:
+            row["option_model"] = {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_market_inputs":"TSETMC_CLOSED_SNAPSHOT"}
     # Presentation enrichment is limited to displayed contracts; full universe remains in audit snapshot.
     enrichment_rows = rows
     underlying_ids = sorted({
@@ -373,7 +381,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         for row in enrichment_rows
         if str((row.get("identity") or {}).get("underlying_id") or "").strip()
     })
-    snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter)
+    snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter) if live_enrichment else {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_truth":"TSETMC","instrument_count":len(underlying_ids),"instruments":{}}
     underlying_symbols = sorted({
         str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
         for row in enrichment_rows
