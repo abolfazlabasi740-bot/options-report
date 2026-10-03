@@ -140,5 +140,24 @@ class BaleListenerStateTests(unittest.TestCase):
             self.assertFalse(state.exists())
 
 
+    def test_strategy_button_and_bull_call_spread_submenu_are_available(self):
+        reply_buttons = [
+            button["text"]
+            for row in bale_listener.REPLY_MENU_MARKUP["keyboard"]
+            for button in row
+        ]
+        self.assertIn("🧩 استراتژی‌ها", reply_buttons)
+        self.assertEqual(
+            bale_listener.STRATEGY_CALLBACKS["strategy_bull_call_spread"],
+            "BULL_CALL_SPREAD",
+        )
+        strategy_buttons = [
+            button["text"]
+            for row in bale_listener.STRATEGY_MENU_MARKUP["inline_keyboard"]
+            for button in row
+        ]
+        self.assertEqual(strategy_buttons[0], "📈 Bull Call Spread")
+
+
 if __name__ == "__main__":
     unittest.main()
