@@ -15,32 +15,44 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: Asia/Tehran
+      TARGET_DATE: "20261003"
+      TARGET_TIME: "123000"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Capture TSETMC historical snapshot
         run: |
-          TARGET_DATE="$(date +%Y%m%d)"
-          TARGET_TIME="123000"
           python capture_tsetmc_historical_snapshot.py \
             --date "$TARGET_DATE" \
             --time "$TARGET_TIME" \
             --output "output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json"
-
+      - name: Validate snapshot exists
+        run: |
+          test -s "output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json"
+          python - <<'PY'
+          import json
+          p = "output/tsetmc_first/historical_20261003_123000.json"
+          with open(p, encoding="utf-8") as f:
+              data = json.load(f)
+          print("SNAPSHOT_PATH=", p)
+          print("STATUS=", data.get("status"))
+          print("TARGET_DATE=", data.get("target", {}).get("date"))
+          print("TARGET_TIME=", data.get("target", {}).get("time"))
+          print("RECORD_COUNT=", len(data.get("records", [])))
+          print("ERROR_COUNT=", len(data.get("errors", [])))
+          PY
       - name: Commit snapshot
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/tsetmc_first/historical_*.json
+          git add output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json
           if git diff --cached --quiet; then
             echo "No snapshot file change to commit."
             exit 0
           fi
-          git commit -m "data: capture TSETMC historical snapshot"
+          git commit -m "data: capture TSETMC snapshot 20261003 123000"
           git push
