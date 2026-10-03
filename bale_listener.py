@@ -11,6 +11,7 @@ MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
+        [{"text": "🔎 انتخاب نماد", "callback_data": "symbols_page:0"}],
         [{"text": "📋 وضعیت سیستم", "callback_data": "system_status"}],
     ]
 }
@@ -189,15 +190,10 @@ def generate_report(command):
             report_mode="RANKED",
         )
 
-    # Fail closed: the "گزارش" command must never send a TRADING_ACTIVITY
-    # report under the "۱۵ فرصت برتر" label. This protects the user from a
-    # stale/misrouted runtime silently publishing an unscored activity list.
-    if command in ("گزارش", "همه", "کل"):
-        if snapshot.get("report_mode") != "RANKED":
-            raise RuntimeError(
-                "REPORT_ROUTE_MISMATCH: expected=RANKED; "
-                f"actual={snapshot.get('report_mode')}"
-            )
+    # Fail closed for every RANKED route, including symbol-specific Top-5.
+    # A symbol report must use the same TSETMC economic ranking as the global
+    # Top-15 report; only the universe is narrowed to the selected underlying.
+    if snapshot.get("report_mode") == "RANKED":
         ranking = snapshot.get("ranking") or {}
         if ranking.get("mode") != "TSETMC_ECONOMIC_SCORING":
             raise RuntimeError(
@@ -208,6 +204,11 @@ def generate_report(command):
             raise RuntimeError(
                 "REPORT_RANKING_STATUS_BLOCKED: "
                 f"status={ranking.get('status')}"
+            )
+        if command not in ("گزارش", "همه", "کل") and snapshot.get("underlying_symbol") != command:
+            raise RuntimeError(
+                "REPORT_SYMBOL_ROUTE_MISMATCH: "
+                f"expected={command}; actual={snapshot.get('underlying_symbol')}"
             )
 
     # Evidence publication is deliberately kept out of the Bale response path.
@@ -284,8 +285,29 @@ def send_symbol_menu(chat_id, page=0):
     if navigation:
         keyboard.append(navigation)
     keyboard.append([{"text": "🏠 منوی اصلی"}])
-    markup = {"keyboard": keyboard, "resize_keyboard": True, "one_time_keyboard": False}
-    send_message(chat_id, f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر آن نماد بر اساس Ranking شش‌بلوک نمایش داده می‌شود:", reply_markup=markup)
+    # Use Bale inline (glass) buttons for symbol selection so the user can
+    # tap a symbol directly. Reply-keyboard support remains available through
+    # the existing "🔎 انتخاب نماد" command.
+    inline_keyboard = []
+    for index in range(0, len(page_symbols), 2):
+        inline_keyboard.append([
+            {"text": symbol, "callback_data": f"symbol:{symbol}"}
+            for symbol in page_symbols[index:index + 2]
+        ])
+    navigation = []
+    if page > 0:
+        navigation.append({"text": "◀️ صفحه قبل", "callback_data": f"symbols_page:{page - 1}"})
+    if page < total_pages - 1:
+        navigation.append({"text": "صفحه بعد ▶️", "callback_data": f"symbols_page:{page + 1}"})
+    if navigation:
+        inline_keyboard.append(navigation)
+    inline_keyboard.append([{"text": "🏠 منوی اصلی", "callback_data": "main_menu"}])
+    markup = {"inline_keyboard": inline_keyboard}
+    send_message(
+        chat_id,
+        f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر همان نماد بر اساس Ranking اقتصادی TSETMC نمایش داده می‌شود:",
+        reply_markup=markup,
+    )
 
 
 def send_report_menu(chat_id):
@@ -338,23 +360,38 @@ def main():
 
                     try:
                         answer_callback_query(callback.get("id"))
-                        command = CALLBACK_COMMANDS.get(
-                            str(callback.get("data") or "").strip()
-                        )
-                        if not command:
-                            raise RuntimeError("UNKNOWN_CALLBACK")
+                        callback_data = str(callback.get("data") or "").strip()
+                        command = CALLBACK_COMMANDS.get(callback_data)
 
-                        if command == "وضعیت":
+                        if callback_data.startswith("symbols_page:"):
+                            page = int(callback_data.split(":", 1)[1])
+                            send_symbol_menu(chat_id, page)
+                        elif callback_data.startswith("symbol:"):
+                            symbol = normalize_command(callback_data.split(":", 1)[1])
+                            if not symbol:
+                                raise RuntimeError("EMPTY_SYMBOL_CALLBACK")
+                            report = generate_report(symbol)
+                            send_message(chat_id, report)
+                            try:
+                                publish_latest_evidence()
+                            except Exception as exc:
+                                print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
+                            send_report_menu(chat_id)
+                        elif callback_data == "main_menu":
+                            send_report_menu(chat_id)
+                        elif command == "وضعیت":
                             send_message(chat_id, system_status())
-                        else:
+                            send_report_menu(chat_id)
+                        elif command:
                             report = generate_report(command)
                             send_message(chat_id, report)
                             try:
                                 publish_latest_evidence()
                             except Exception as exc:
                                 print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
-
-                        send_report_menu(chat_id)
+                            send_report_menu(chat_id)
+                        else:
+                            raise RuntimeError("UNKNOWN_CALLBACK")
                         print(
                             f"REPORT_OK callback={callback.get('data')}"
                         )
