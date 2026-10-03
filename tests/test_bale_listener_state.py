@@ -41,15 +41,28 @@ class BaleListenerStateTests(unittest.TestCase):
         self.assertEqual(captured["chat_id"], "123")
         self.assertIn("تعداد نمادهای دارای اختیار معامله", captured["text"])
         self.assertIn("صفحه 1 از 1", captured["text"])
+        self.assertIn("inline_keyboard", captured["markup"])
         buttons = [
-            button["text"]
-            for row in captured["markup"]["keyboard"]
+            button
+            for row in captured["markup"]["inline_keyboard"]
             for button in row
         ]
-        self.assertIn("نماد: خودرو", buttons)
-        self.assertIn("نماد: شستا", buttons)
-        self.assertIn("نماد: وبملت", buttons)
-        self.assertEqual(captured["markup"]["one_time_keyboard"], False)
+        symbol_callbacks = {
+            button["callback_data"]: button["text"]
+            for button in buttons
+            if "callback_data" in button and button["callback_data"].startswith("symbol:")
+        }
+        self.assertEqual(
+            symbol_callbacks,
+            {
+                "symbol:خودرو": "خودرو",
+                "symbol:شستا": "شستا",
+                "symbol:وبملت": "وبملت",
+            },
+        )
+        self.assertTrue(
+            any(button.get("callback_data") == "main_menu" for button in buttons)
+        )
 
     def test_symbol_menu_uses_requested_priority_then_alphabetical_remainder(self):
         rows = [
