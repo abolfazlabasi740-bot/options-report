@@ -1,10 +1,8 @@
-name: TSETMC Historical Snapshot
+name: TSETMC Live Trading-Day Snapshots
 
 on:
-  push:
-    paths:
-      - "capture_tsetmc_historical_snapshot.py"
-      - ".github/workflows/tsetmc-historical-snapshot.yml"
+  schedule:
+    - cron: "31 5 * * 6,0,1,2,3"
   workflow_dispatch:
 
 permissions:
@@ -15,44 +13,53 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: Asia/Tehran
-      TARGET_DATE: "20261003"
-      TARGET_TIME: "123000"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Capture TSETMC historical snapshot
+
+      - name: Capture live snapshots from 09:01 through 12:30
         run: |
+          START="090100"
+          END="123000"
+          DATE="$(date +%Y%m%d)"
           python capture_tsetmc_historical_snapshot.py \
-            --date "$TARGET_DATE" \
-            --time "$TARGET_TIME" \
-            --output "output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json"
-      - name: Validate snapshot exists
+            --date "$DATE" \
+            --time "$END" \
+            --output "output/tsetmc_first/historical_${DATE}_${END}.json"
+
+      - name: Validate live snapshot
         run: |
-          test -s "output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json"
-          python - <<'PY'
-          import json
-          p = "output/tsetmc_first/historical_20261003_123000.json"
-          with open(p, encoding="utf-8") as f:
+          DATE="$(date +%Y%m%d)"
+          FILE="output/tsetmc_first/historical_${DATE}_123000.json"
+          test -s "$FILE"
+          python - "$FILE" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as f:
               data = json.load(f)
-          print("SNAPSHOT_PATH=", p)
+          records = data.get("records", [])
+          print("SNAPSHOT_PATH=", sys.argv[1])
           print("STATUS=", data.get("status"))
-          print("TARGET_DATE=", data.get("target", {}).get("date"))
-          print("TARGET_TIME=", data.get("target", {}).get("time"))
-          print("RECORD_COUNT=", len(data.get("records", [])))
+          print("TARGET=", data.get("target"))
+          print("RECORD_COUNT=", len(records))
           print("ERROR_COUNT=", len(data.get("errors", [])))
+          if not records:
+              raise SystemExit("FAIL: snapshot contains no records")
           PY
+
       - name: Commit snapshot
         run: |
+          DATE="$(date +%Y%m%d)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/tsetmc_first/historical_${TARGET_DATE}_${TARGET_TIME}.json
+          git add "output/tsetmc_first/historical_${DATE}_123000.json"
           if git diff --cached --quiet; then
             echo "No snapshot file change to commit."
             exit 0
           fi
-          git commit -m "data: capture TSETMC snapshot 20261003 123000"
+          git commit -m "data: TSETMC live snapshot ${DATE} 123000"
           git push
