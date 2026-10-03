@@ -123,6 +123,7 @@ def analyze_underlying_context(context: dict[str, Any] | None) -> dict[str, Any]
     sma50 = num("sma_50")
     volume_ratio = num("volume_ratio_5_to_20")
     value_ratio = num("value_ratio_5_to_20")
+    volume_ratio_5_to_50 = num("volume_ratio_5_to_50")
     bid_depth = num("bid_depth_volume_5")
     ask_depth = num("ask_depth_volume_5")
     imbalance = num("orderbook_imbalance_5")
@@ -147,6 +148,8 @@ def analyze_underlying_context(context: dict[str, Any] | None) -> dict[str, Any]
         volume_parts.append(f"نسبت حجم ۵ به ۲۰ روزه: {volume_ratio:.2f}x")
     if value_ratio is not None:
         volume_parts.append(f"نسبت ارزش ۵ به ۲۰ روزه: {value_ratio:.2f}x")
+    if volume_ratio_5_to_50 is not None:
+        volume_parts.append(f"نسبت حجم ۵ به ۵۰ روزه: {volume_ratio_5_to_50:.2f}x")
     volume_state = " | ".join(volume_parts) if volume_parts else "داده حجم/ارزش کافی نیست"
 
     supportive = (
@@ -170,6 +173,7 @@ def analyze_underlying_context(context: dict[str, Any] | None) -> dict[str, Any]
         "touched_upper_limit_today": context.get("touched_upper_limit_today"),
         "upper_limit_headroom_pct": upper_headroom,
         "volume_ratio_5_to_20": volume_ratio,
+        "volume_ratio_5_to_50": volume_ratio_5_to_50,
         "value_ratio_5_to_20": value_ratio,
         "orderbook_imbalance_5": imbalance,
     }
