@@ -41,11 +41,13 @@ class BestLimitsEvidenceGateTests(unittest.TestCase):
             "independent_semantic_evidence": semantic,
         }
 
-    def test_complete_package_is_ready_for_review_but_stays_blocked(self):
+    def test_complete_package_verifies_mapping_and_unblocks_scoring(self):
         result = gate.validate_package(self._package())
-        self.assertEqual(result["status"], "READY_FOR_REVIEW")
-        self.assertEqual(result["mapping_freeze"], "BLOCKED")
-        self.assertEqual(result["scoring"], "BLOCKED")
+        self.assertEqual(result["status"], "READY")
+        self.assertEqual(result["mapping_freeze"], "VERIFIED")
+        self.assertEqual(result["scoring"], "UNBLOCKED")
+        self.assertEqual(result["semantic_mapping_status"], "VERIFIED")
+        self.assertEqual(result["scoring_status"], "UNBLOCKED")
 
 
     def test_semantic_evidence_timestamp_must_be_within_2s_of_capture(self):
