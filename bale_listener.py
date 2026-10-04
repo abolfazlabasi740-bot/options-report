@@ -479,8 +479,21 @@ def main():
                         offset = next_offset
                         continue
 
+                    # Callback acknowledgement is best-effort. Bale may reject
+                    # an old callback with HTTP 400 after its short response window;
+                    # that must never prevent the requested report from executing.
                     try:
                         answer_callback_query(callback.get("id"))
+                    except Exception as ack_error:
+                        response = getattr(ack_error, "response", None)
+                        status_code = getattr(response, "status_code", None)
+                        print(
+                            "CALLBACK_ACK_ERROR "
+                            f"type={type(ack_error).__name__} "
+                            f"http_status={status_code}"
+                        )
+
+                    try:
                         callback_data = str(callback.get("data") or "").strip()
                         command = CALLBACK_COMMANDS.get(callback_data)
                         strategy = STRATEGY_CALLBACKS.get(callback_data)
