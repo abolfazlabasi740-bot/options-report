@@ -182,26 +182,76 @@ def _persist_closed_snapshot(snapshot: dict[str, Any], date_key: str, capture_ki
     CLOSED_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     CLOSED_CACHE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
 
+def _previous_trading_date(now: datetime) -> str:
+    probe = now
+    while True:
+        probe = probe.replace(
+            year=probe.year,
+            month=probe.month,
+            day=probe.day,
+        )
+        probe = probe.fromordinal(probe.toordinal() - 1)
+        if probe.weekday() in TRADING_WEEKDAYS:
+            return probe.strftime("%Y%m%d")
+
+
 def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | None=None, max_instruments: int | None=None, symbol_prefix: str | None=None) -> dict[str,Any]:
     now = datetime.now(TEHRAN)
-    session_open = now.weekday() in TRADING_WEEKDAYS and MARKET_OPEN <= now.time() <= MARKET_CLOSE
+    is_trading_day = now.weekday() in TRADING_WEEKDAYS
+    session_open = is_trading_day and MARKET_OPEN <= now.time() <= MARKET_CLOSE
+
+    # During the live market session, only a fresh TSETMC snapshot is valid.
     if session_open:
-        return _build_live_snapshot(adapter=adapter, flow=flow, max_instruments=max_instruments, symbol_prefix=symbol_prefix, allow_cached_fallback=False)
+        return _build_live_snapshot(
+            adapter=adapter,
+            flow=flow,
+            max_instruments=max_instruments,
+            symbol_prefix=symbol_prefix,
+            allow_cached_fallback=False,
+        )
 
-    date_key = now.strftime("%Y%m%d")
-    closed = _load_closed_snapshot_for_date(date_key)
-    if closed is not None:
-        return closed
+    # After market close on a trading day, the closed snapshot belongs to
+    # that same trading day.
+    if is_trading_day and now.time() > MARKET_CLOSE:
+        date_key = now.strftime("%Y%m%d")
+        closed = _load_closed_snapshot_for_date(date_key)
+        if closed is not None:
+            return closed
 
-    if now.weekday() in TRADING_WEEKDAYS and now.time() > MARKET_CLOSE:
-        captured = _build_live_snapshot(adapter=adapter, flow=flow, max_instruments=max_instruments, symbol_prefix=symbol_prefix, allow_cached_fallback=False)
-        _persist_closed_snapshot(captured, date_key, "CAPTURED_ON_FIRST_CLOSED_REQUEST")
+        captured = _build_live_snapshot(
+            adapter=adapter,
+            flow=flow,
+            max_instruments=max_instruments,
+            symbol_prefix=symbol_prefix,
+            allow_cached_fallback=False,
+        )
+        _persist_closed_snapshot(
+            captured,
+            date_key,
+            "CAPTURED_ON_FIRST_CLOSED_REQUEST",
+        )
         captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
         captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
         captured["closed_for_date"] = date_key
         return captured
 
-    raise RuntimeError("CLOSED_SNAPSHOT_UNAVAILABLE_FOR_CURRENT_TRADING_DAY")
+    # Before market open on a trading day, and on non-trading days, the
+    # current date is NOT a closed-market date. Use the most recent trading
+    # day's closed snapshot instead. This is the critical pre-open/weekend
+    # rule: never demand a closed snapshot for the current non-closed date.
+    previous_date_key = _previous_trading_date(now)
+    previous_closed = _load_closed_snapshot_for_date(previous_date_key)
+    if previous_closed is not None:
+        previous_closed["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+        previous_closed["live_refresh_status"] = "NOT_REQUESTED_CLOSED_MODE"
+        previous_closed["closed_for_date"] = previous_date_key
+        previous_closed["selection_reason"] = "PREOPEN_OR_NONTRADING_DAY_PREVIOUS_TRADING_DAY"
+        return previous_closed
+
+    raise RuntimeError(
+        "CLOSED_SNAPSHOT_UNAVAILABLE_FOR_PREVIOUS_TRADING_DAY:"
+        f"{previous_date_key}"
+    )
 
 def write_snapshot(snapshot:dict[str,Any], output:str|Path)->Path:
     path=Path(output); path.parent.mkdir(parents=True,exist_ok=True)
