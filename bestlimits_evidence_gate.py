@@ -193,7 +193,7 @@ def main():
     args = parser.parse_args()
     result = validate_package(json.loads(args.package.read_text(encoding="utf-8")))
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0 if result["status"] == "READY_FOR_REVIEW" else 2
+    return 0 if result["status"] == "READY" else 2
 
 if __name__ == "__main__":
     raise SystemExit(main())
