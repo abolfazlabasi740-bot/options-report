@@ -679,6 +679,9 @@ def main() -> int:
         }
 
     package["gate_result"] = result
+    package["semantic_mapping_status"] = result.get("semantic_mapping_status", "OPEN")
+    package["scoring_status"] = result.get("scoring_status", "BLOCKED")
+    package["governance"]["production_scoring_enabled"] = result.get("scoring_status") == "UNBLOCKED"
 
     args.output.parent.mkdir(
         parents=True,
@@ -727,7 +730,7 @@ def main() -> int:
                         "BLOCKED",
                     )
                 ),
-                "scoring_status": "BLOCKED",
+                "scoring_status": package.get("scoring_status", "BLOCKED"),
                 "output": str(
                     args.output
                 ),
