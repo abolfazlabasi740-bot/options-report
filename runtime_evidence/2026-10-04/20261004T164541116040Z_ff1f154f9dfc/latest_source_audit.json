@@ -1,0 +1,1362 @@
+{
+  "audit_version": "AUDIT-INTEGRITY-1.3",
+  "status": "PASS",
+  "source_of_truth": "TSETMC",
+  "external_comparison_source": null,
+  "snapshot_sha256": "ff1f154f9dfccf0624e4da38cb0655d3b2e47b8eb5cded2a6aa63389db07b507",
+  "row_count": 9,
+  "generated_at": "2026-10-04T10:27:22.474967+00:00",
+  "data_mode": "LAST_KNOWN_TSETMC_SNAPSHOT",
+  "live_refresh_status": "NOT_REQUESTED_CLOSED_MODE",
+  "fallback_reason": null,
+  "basis_source_market_timestamp": null,
+  "last_known_snapshot": true,
+  "market_watch": {
+    "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentOptionMarketWatch/1?__optimusai_ts=1791109640545054127",
+    "snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+    "retrieved_at": "2026-10-04T10:27:22Z",
+    "record_count": 9,
+    "flows": null,
+    "flow_evidence": null,
+    "source_market_timestamp_count": 0,
+    "latest_source_market_timestamp": null
+  },
+  "best_limits_evidence": {
+    "contract": {
+      "status": "RAW_ONLY_QUARANTINED",
+      "source": "TSETMC",
+      "endpoint": "BestLimits/{instrument_id}",
+      "identity_binding": "instrument_id",
+      "market_watch_binding": "market_watch_snapshot_sha256",
+      "source_timestamp_binding": "source_market_timestamp",
+      "delta_seconds_limit": 2.0,
+      "consumption_status": "NOT_CONSUMED_BY_SCORING_OR_RANKING"
+    },
+    "rows": [
+      {
+        "instrument_id": "36665733374298747",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_P",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "17584549282536815",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_C",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "10516709093072498",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_P",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "11478047418774367",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_C",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "10473964939392510",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_P",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "51289558219706024",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_C",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "8308284405887823",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_P",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "13147302752722222",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_C",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      },
+      {
+        "instrument_id": "5212915362147341",
+        "status": "NOT_REQUESTED",
+        "reason": "AUXILIARY_BEST_LIMITS_DISABLED_BY_DEFAULT",
+        "source": "TSETMC",
+        "endpoint": "BestLimits/{instrument_id}",
+        "level_count": 0,
+        "market_watch_snapshot_sha256": "57f8d991967b378915ff90337c0aafbb9d1d7eeb6a23961e6d363f677e4e5a72",
+        "identity_source_field": "insCode_P",
+        "source_market_timestamp": null,
+        "quote_retrieved_at": "2026-10-04T10:27:22Z",
+        "delta_seconds": null,
+        "delta_status": "NOT_APPLICABLE_MARKET_WATCH_CANONICAL"
+      }
+    ]
+  },
+  "market_state": {
+    "session_state": "OFFMARKET",
+    "observation_state": "NO_SOURCE_MARKET_TIMESTAMP",
+    "status": "OFFMARKET_USING_LAST_KNOWN_TSETMC",
+    "data_mode": "LAST_KNOWN_TSETMC_SNAPSHOT",
+    "live_refresh_status": "NOT_REQUESTED_CLOSED_MODE",
+    "fallback_reason": null,
+    "unique_timestamp_count": 0,
+    "latest_source_market_timestamp": null
+  },
+  "scoring_status": "TSETMC_ECONOMIC_SCORING",
+  "ranking_status": "TSETMC_EVIDENCE_RANKING",
+  "ranking": {
+    "status": "PASS",
+    "mode": "TSETMC_ECONOMIC_SCORING",
+    "source_of_truth": "TSETMC",
+    "ranking_scope": "OPPORTUNITY_CANDIDATES",
+    "ranking_rows": [
+      {
+        "rank": 1,
+        "instrument_id": "5212915362147341",
+        "symbol": "طمخا7106",
+        "contract_type": "PUT",
+        "economic_score": 68.8131,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 23.3333,
+          "PAYOFF": 12.2222,
+          "TIME": 8.3333,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "PUT",
+          "premium_burden": 0.0,
+          "intrinsic_coverage": 247.0,
+          "breakeven_distance": 0.24453280318091453,
+          "leverage_efficiency": 0.8736533163850226,
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 2,
+        "instrument_id": "11478047418774367",
+        "symbol": "ضمخا7090",
+        "contract_type": "CALL",
+        "economic_score": 65.4882,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 19.0741,
+          "VALUATION": 14.4444,
+          "PAYOFF": 13.5556,
+          "TIME": 8.3333,
+          "GREEKS": null,
+          "MARKET": 2.2222
+        },
+        "features": {
+          "contract_type": "CALL",
+          "premium_burden": 0.006958250497017893,
+          "intrinsic_coverage": 0.9902777777777778,
+          "breakeven_distance": 0.006958250497017893,
+          "leverage_efficiency": 0.46647051551440244,
+          "calendar_days": 10.0,
+          "trade_value": 1325350000.0,
+          "volume": 1829.0,
+          "last_vs_close": 0.006896551724137931,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 3,
+        "instrument_id": "36665733374298747",
+        "symbol": "طمخا8020",
+        "contract_type": "PUT",
+        "economic_score": 65.404,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 22.2222,
+          "PAYOFF": 13.6667,
+          "TIME": 5.0,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "PUT",
+          "premium_burden": 0.0,
+          "intrinsic_coverage": 194.0,
+          "breakeven_distance": 0.1918489065606362,
+          "leverage_efficiency": 0.8736533163850226,
+          "calendar_days": 38.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 4,
+        "instrument_id": "51289558219706024",
+        "symbol": "ضمخا9013",
+        "contract_type": "CALL",
+        "economic_score": 52.6936,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 18.7037,
+          "VALUATION": 11.6667,
+          "PAYOFF": 13.2222,
+          "TIME": 1.6667,
+          "GREEKS": null,
+          "MARKET": 1.1111
+        },
+        "features": {
+          "contract_type": "CALL",
+          "premium_burden": 0.04970178926441352,
+          "intrinsic_coverage": 0.9100719424460432,
+          "breakeven_distance": 0.04970178926441352,
+          "leverage_efficiency": 0.5081049634086839,
+          "calendar_days": 66.0,
+          "trade_value": 1286265000.0,
+          "volume": 2211.0,
+          "last_vs_close": 0.044673539518900345,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 5,
+        "instrument_id": "8308284405887823",
+        "symbol": "طمخا7095",
+        "contract_type": "PUT",
+        "economic_score": 51.8939,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 12.7778,
+          "PAYOFF": 7.8889,
+          "TIME": 8.3333,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "PUT",
+          "premium_burden": 0.0009940357852882703,
+          "intrinsic_coverage": 0.0,
+          "breakeven_distance": 0.5506958250497018,
+          "leverage_efficiency": 0.8736533163850226,
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 6,
+        "instrument_id": "10516709093072498",
+        "symbol": "طمخا7090",
+        "contract_type": "PUT",
+        "economic_score": 50.2525,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 12.7778,
+          "PAYOFF": 6.4444,
+          "TIME": 8.3333,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "PUT",
+          "premium_burden": 0.0009940357852882703,
+          "intrinsic_coverage": 0.0,
+          "breakeven_distance": 0.709741550695825,
+          "leverage_efficiency": 0.8736533163850226,
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 7,
+        "instrument_id": "13147302752722222",
+        "symbol": "ضمخا7095",
+        "contract_type": "CALL",
+        "economic_score": 49.3687,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 7.2222,
+          "PAYOFF": 11.2222,
+          "TIME": 8.3333,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "CALL",
+          "premium_burden": 0.10636182902584493,
+          "intrinsic_coverage": 0.8378787878787879,
+          "breakeven_distance": 0.10636182902584493,
+          "leverage_efficiency": 0.48077329140238007,
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 8,
+        "instrument_id": "10473964939392510",
+        "symbol": "طمخا9013",
+        "contract_type": "PUT",
+        "economic_score": 45.9596,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 13.3333,
+          "VALUATION": 12.7778,
+          "PAYOFF": 9.3333,
+          "TIME": 1.6667,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "PUT",
+          "premium_burden": 0.0009940357852882703,
+          "intrinsic_coverage": 0.0,
+          "breakeven_distance": 0.5039761431411531,
+          "leverage_efficiency": 0.8736533163850226,
+          "calendar_days": 66.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      },
+      {
+        "rank": 9,
+        "instrument_id": "17584549282536815",
+        "symbol": "ضمخا8020",
+        "contract_type": "CALL",
+        "economic_score": 45.0758,
+        "supported_blocks": [
+          "LIQUIDITY",
+          "VALUATION",
+          "PAYOFF",
+          "TIME",
+          "MARKET"
+        ],
+        "unavailable_blocks": [
+          "GREEKS"
+        ],
+        "block_scores": {
+          "LIQUIDITY": 15.5556,
+          "VALUATION": 7.7778,
+          "PAYOFF": 8.0,
+          "TIME": 5.0,
+          "GREEKS": null,
+          "MARKET": 3.3333
+        },
+        "features": {
+          "contract_type": "CALL",
+          "premium_burden": 0.05964214711729622,
+          "intrinsic_coverage": 0.0,
+          "breakeven_distance": 0.2524850894632207,
+          "leverage_efficiency": 0.7420901660428996,
+          "calendar_days": 38.0,
+          "trade_value": 6000000.0,
+          "volume": 100.0,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        }
+      }
+    ],
+    "weights": {
+      "LIQUIDITY": 20.0,
+      "VALUATION": 25.0,
+      "PAYOFF": 18.0,
+      "TIME": 15.0,
+      "GREEKS": 12.0,
+      "MARKET": 10.0
+    },
+    "rules": {
+      "economic_score": "relative_economic_efficiency_not_expected_return",
+      "premium_burden": "lower_better",
+      "intrinsic_coverage": "higher_better",
+      "breakeven_distance": "lower_better",
+      "leverage_efficiency": "bounded_monotonic_efficiency",
+      "calendar_days": "supporting_factor_only",
+      "missing_data": "UNAVAILABLE_NOT_ZERO",
+      "iv": "NOT_USED",
+      "greeks": "NOT_USED",
+      "buy_sell_signal": "NOT_GENERATED"
+    },
+    "ranking_scope_row_count": 9,
+    "eligibility_fallback_used": false,
+    "economic_scoring_enabled": true,
+    "economic_scoring_target_count": 15
+  },
+  "eligibility": {
+    "status": "PASS",
+    "source_of_truth": "TSETMC",
+    "rules_version": "ELIGIBILITY-1.0",
+    "arbitrary_thresholds": false,
+    "rows_evaluated": 9,
+    "counts": {
+      "INSUFFICIENT_ACTIVITY_EVIDENCE": 6,
+      "RANKABLE": 0,
+      "OPPORTUNITY_CANDIDATE": 3,
+      "EXPIRED_CONTRACT": 0,
+      "EXPIRY_UNAVAILABLE": 0
+    },
+    "activity_basis_counts": {
+      "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH": 2,
+      "TRADED_ACTIVITY": 1,
+      "TWO_SIDED_DEPTH": 0,
+      "NO_ACTIVITY_EVIDENCE": 6
+    },
+    "candidate_instrument_ids": [
+      "17584549282536815",
+      "11478047418774367",
+      "51289558219706024"
+    ],
+    "items": [
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "36665733374298747",
+        "symbol": "طمخا8020",
+        "contract_type": "PUT",
+        "expiry_date": "2026-11-11",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 5000.0,
+          "ask_quantity": 0.0,
+          "open_interest": 0.0,
+          "bid_price": 20.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "ZERO",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "OPPORTUNITY_CANDIDATE",
+        "reason": "EXPLICIT_TSETMC_ACTIVITY_OR_TWO_SIDED_DEPTH",
+        "instrument_id": "17584549282536815",
+        "symbol": "ضمخا8020",
+        "contract_type": "CALL",
+        "expiry_date": "2026-11-11",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 100.0,
+          "trade_count": 1.0,
+          "bid_quantity": 6100.0,
+          "ask_quantity": 100.0,
+          "open_interest": 200.0,
+          "bid_price": 1.0,
+          "ask_price": 58.0,
+          "spread": 57.0,
+          "spread_pct_mid": 1.9322033898305084,
+          "spread_status": "POSITIVE",
+          "oi_status": "POSITIVE",
+          "traded": true,
+          "two_sided_depth": true,
+          "activity_basis": "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": "TSETMC:حجم بهترین تقاضا+حجم بهترین عرضه"
+        },
+        "opportunity_eligible": true,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "10516709093072498",
+        "symbol": "طمخا7090",
+        "contract_type": "PUT",
+        "expiry_date": "2026-10-14",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 0.0,
+          "ask_quantity": 0.0,
+          "open_interest": 0.0,
+          "bid_price": 0.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "ZERO",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "OPPORTUNITY_CANDIDATE",
+        "reason": "EXPLICIT_TSETMC_ACTIVITY_OR_TWO_SIDED_DEPTH",
+        "instrument_id": "11478047418774367",
+        "symbol": "ضمخا7090",
+        "contract_type": "CALL",
+        "expiry_date": "2026-10-14",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 1829.0,
+          "trade_count": 20.0,
+          "bid_quantity": 1.0,
+          "ask_quantity": 0.0,
+          "open_interest": 6680.0,
+          "bid_price": 700.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "POSITIVE",
+          "traded": true,
+          "two_sided_depth": false,
+          "activity_basis": "TRADED_ACTIVITY",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": true,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "10473964939392510",
+        "symbol": "طمخا9013",
+        "contract_type": "PUT",
+        "expiry_date": "2026-12-09",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 100.0,
+          "ask_quantity": 0.0,
+          "open_interest": 0.0,
+          "bid_price": 1.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "ZERO",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "OPPORTUNITY_CANDIDATE",
+        "reason": "EXPLICIT_TSETMC_ACTIVITY_OR_TWO_SIDED_DEPTH",
+        "instrument_id": "51289558219706024",
+        "symbol": "ضمخا9013",
+        "contract_type": "CALL",
+        "expiry_date": "2026-12-09",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 2211.0,
+          "trade_count": 6.0,
+          "bid_quantity": 100.0,
+          "ask_quantity": 40.0,
+          "open_interest": 66692.0,
+          "bid_price": 555.0,
+          "ask_price": 633.0,
+          "spread": 78.0,
+          "spread_pct_mid": 0.13131313131313133,
+          "spread_status": "POSITIVE",
+          "oi_status": "POSITIVE",
+          "traded": true,
+          "two_sided_depth": true,
+          "activity_basis": "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": "TSETMC:حجم بهترین تقاضا+حجم بهترین عرضه"
+        },
+        "opportunity_eligible": true,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "8308284405887823",
+        "symbol": "طمخا7095",
+        "contract_type": "PUT",
+        "expiry_date": "2026-10-14",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 0.0,
+          "ask_quantity": 0.0,
+          "open_interest": 0.0,
+          "bid_price": 0.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "ZERO",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "13147302752722222",
+        "symbol": "ضمخا7095",
+        "contract_type": "CALL",
+        "expiry_date": "2026-10-14",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 500.0,
+          "ask_quantity": 0.0,
+          "open_interest": 209.0,
+          "bid_price": 200.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "POSITIVE",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      },
+      {
+        "state": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+        "reason": "ZERO_TSETMC_ACTIVITY",
+        "instrument_id": "5212915362147341",
+        "symbol": "طمخا7106",
+        "contract_type": "PUT",
+        "expiry_date": "2026-10-14",
+        "as_of_date": "2026-10-04",
+        "activity": {
+          "volume": 0.0,
+          "trade_count": 0.0,
+          "bid_quantity": 99.0,
+          "ask_quantity": 0.0,
+          "open_interest": 0.0,
+          "bid_price": 15.0,
+          "ask_price": 0.0,
+          "spread": null,
+          "spread_pct_mid": null,
+          "spread_status": "UNAVAILABLE",
+          "oi_status": "ZERO",
+          "traded": false,
+          "two_sided_depth": false,
+          "activity_basis": "NO_ACTIVITY_EVIDENCE",
+          "volume_evidence": "TSETMC:حجم معاملات",
+          "trade_count_evidence": "TSETMC:تعداد معاملات",
+          "depth_evidence": null
+        },
+        "opportunity_eligible": false,
+        "buy_sell_signal": false
+      }
+    ],
+    "rules": {
+      "zero_volume_or_zero_trade_count": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+      "missing_activity": "INSUFFICIENT_ACTIVITY_EVIDENCE",
+      "expired_contract": "EXPIRED_CONTRACT",
+      "missing_or_invalid_expiry": "EXPIRY_UNAVAILABLE",
+      "expiry_comparison_timezone": "Asia/Tehran",
+      "two_sided_depth": "TSETMC_EXPLICIT_BID_ASK_QUANTITY_ONLY",
+      "profitability_score": "NOT_COMPUTED",
+      "buy_sell_signal": "NOT_GENERATED"
+    }
+  },
+  "opportunity": {
+    "status": "SUCCESS",
+    "engine_version": "TSETMC-OPPORTUNITY-1.0",
+    "source_of_truth": "TSETMC",
+    "rows_evaluated": 9,
+    "candidate_count": 3,
+    "cases": [
+      {
+        "instrument_id": "11478047418774367",
+        "symbol": "ضمخا7090",
+        "contract_type": "CALL",
+        "status": "CANDIDATE_WITH_BLOCKERS",
+        "rank": 2,
+        "score": null,
+        "evidence": {
+          "activity": {
+            "volume": 1829.0,
+            "trade_count": 20.0,
+            "bid_quantity": 1.0,
+            "ask_quantity": 0.0,
+            "open_interest": 6680.0,
+            "bid_price": 700.0,
+            "ask_price": 0.0,
+            "spread": null,
+            "spread_pct_mid": null,
+            "spread_status": "UNAVAILABLE",
+            "oi_status": "POSITIVE",
+            "traded": true,
+            "two_sided_depth": false,
+            "activity_basis": "TRADED_ACTIVITY",
+            "volume_evidence": "TSETMC:حجم معاملات",
+            "trade_count_evidence": "TSETMC:تعداد معاملات",
+            "depth_evidence": null
+          },
+          "ranking_score": null,
+          "ranking_rank": 2,
+          "supported_blocks": [
+            "LIQUIDITY",
+            "VALUATION",
+            "PAYOFF",
+            "TIME",
+            "MARKET"
+          ],
+          "features": {
+            "contract_type": "CALL",
+            "premium_burden": 0.006958250497017893,
+            "intrinsic_coverage": 0.9902777777777778,
+            "breakeven_distance": 0.006958250497017893,
+            "leverage_efficiency": 0.46647051551440244,
+            "calendar_days": 10.0,
+            "trade_value": 1325350000.0,
+            "volume": 1829.0,
+            "last_vs_close": 0.006896551724137931,
+            "intraday_range": null
+          }
+        },
+        "blockers": [
+          "NO_RANKING_SCORE"
+        ],
+        "buy_sell_signal": false
+      },
+      {
+        "instrument_id": "51289558219706024",
+        "symbol": "ضمخا9013",
+        "contract_type": "CALL",
+        "status": "CANDIDATE_WITH_BLOCKERS",
+        "rank": 4,
+        "score": null,
+        "evidence": {
+          "activity": {
+            "volume": 2211.0,
+            "trade_count": 6.0,
+            "bid_quantity": 100.0,
+            "ask_quantity": 40.0,
+            "open_interest": 66692.0,
+            "bid_price": 555.0,
+            "ask_price": 633.0,
+            "spread": 78.0,
+            "spread_pct_mid": 0.13131313131313133,
+            "spread_status": "POSITIVE",
+            "oi_status": "POSITIVE",
+            "traded": true,
+            "two_sided_depth": true,
+            "activity_basis": "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH",
+            "volume_evidence": "TSETMC:حجم معاملات",
+            "trade_count_evidence": "TSETMC:تعداد معاملات",
+            "depth_evidence": "TSETMC:حجم بهترین تقاضا+حجم بهترین عرضه"
+          },
+          "ranking_score": null,
+          "ranking_rank": 4,
+          "supported_blocks": [
+            "LIQUIDITY",
+            "VALUATION",
+            "PAYOFF",
+            "TIME",
+            "MARKET"
+          ],
+          "features": {
+            "contract_type": "CALL",
+            "premium_burden": 0.04970178926441352,
+            "intrinsic_coverage": 0.9100719424460432,
+            "breakeven_distance": 0.04970178926441352,
+            "leverage_efficiency": 0.5081049634086839,
+            "calendar_days": 66.0,
+            "trade_value": 1286265000.0,
+            "volume": 2211.0,
+            "last_vs_close": 0.044673539518900345,
+            "intraday_range": null
+          }
+        },
+        "blockers": [
+          "NO_RANKING_SCORE"
+        ],
+        "buy_sell_signal": false
+      },
+      {
+        "instrument_id": "17584549282536815",
+        "symbol": "ضمخا8020",
+        "contract_type": "CALL",
+        "status": "CANDIDATE_WITH_BLOCKERS",
+        "rank": 9,
+        "score": null,
+        "evidence": {
+          "activity": {
+            "volume": 100.0,
+            "trade_count": 1.0,
+            "bid_quantity": 6100.0,
+            "ask_quantity": 100.0,
+            "open_interest": 200.0,
+            "bid_price": 1.0,
+            "ask_price": 58.0,
+            "spread": 57.0,
+            "spread_pct_mid": 1.9322033898305084,
+            "spread_status": "POSITIVE",
+            "oi_status": "POSITIVE",
+            "traded": true,
+            "two_sided_depth": true,
+            "activity_basis": "TRADED_ACTIVITY_AND_TWO_SIDED_DEPTH",
+            "volume_evidence": "TSETMC:حجم معاملات",
+            "trade_count_evidence": "TSETMC:تعداد معاملات",
+            "depth_evidence": "TSETMC:حجم بهترین تقاضا+حجم بهترین عرضه"
+          },
+          "ranking_score": null,
+          "ranking_rank": 9,
+          "supported_blocks": [
+            "LIQUIDITY",
+            "VALUATION",
+            "PAYOFF",
+            "TIME",
+            "MARKET"
+          ],
+          "features": {
+            "contract_type": "CALL",
+            "premium_burden": 0.05964214711729622,
+            "intrinsic_coverage": 0.0,
+            "breakeven_distance": 0.2524850894632207,
+            "leverage_efficiency": 0.7420901660428996,
+            "calendar_days": 38.0,
+            "trade_value": 6000000.0,
+            "volume": 100.0,
+            "last_vs_close": 0.0,
+            "intraday_range": null
+          }
+        },
+        "blockers": [
+          "NO_RANKING_SCORE"
+        ],
+        "buy_sell_signal": false
+      }
+    ],
+    "rules": {
+      "selection_basis": "OPPORTUNITY_CANDIDATE_PLUS_TSETMC_EVIDENCE_RANKING",
+      "new_profitability_threshold": false,
+      "buy_sell_signal": "NOT_GENERATED",
+      "missing_data": "UNAVAILABLE_NOT_ZERO",
+      "external_source": "FORBIDDEN"
+    }
+  },
+  "signal_shadow": {
+    "status": "PASS",
+    "engine_version": "SIGNAL-SHADOW-1.1",
+    "production_enabled": false,
+    "signal_count": 9,
+    "buy_sell_signal": "NOT_GENERATED",
+    "items": [
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "5212915362147341",
+        "symbol": "طمخا7106",
+        "contract_type": "PUT",
+        "ranking_rank": 1,
+        "ranking_score": 68.8131,
+        "observed_evidence": {
+          "ranking_score": 68.8131,
+          "ranking_rank": 1,
+          "contract_type": "PUT",
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.24453280318091453,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "11478047418774367",
+        "symbol": "ضمخا7090",
+        "contract_type": "CALL",
+        "ranking_rank": 2,
+        "ranking_score": 65.4882,
+        "observed_evidence": {
+          "ranking_score": 65.4882,
+          "ranking_rank": 2,
+          "contract_type": "CALL",
+          "calendar_days": 10.0,
+          "trade_value": 1325350000.0,
+          "volume": 1829.0,
+          "breakeven_distance": 0.006958250497017893,
+          "last_vs_close": 0.006896551724137931,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "36665733374298747",
+        "symbol": "طمخا8020",
+        "contract_type": "PUT",
+        "ranking_rank": 3,
+        "ranking_score": 65.404,
+        "observed_evidence": {
+          "ranking_score": 65.404,
+          "ranking_rank": 3,
+          "contract_type": "PUT",
+          "calendar_days": 38.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.1918489065606362,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "51289558219706024",
+        "symbol": "ضمخا9013",
+        "contract_type": "CALL",
+        "ranking_rank": 4,
+        "ranking_score": 52.6936,
+        "observed_evidence": {
+          "ranking_score": 52.6936,
+          "ranking_rank": 4,
+          "contract_type": "CALL",
+          "calendar_days": 66.0,
+          "trade_value": 1286265000.0,
+          "volume": 2211.0,
+          "breakeven_distance": 0.04970178926441352,
+          "last_vs_close": 0.044673539518900345,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "8308284405887823",
+        "symbol": "طمخا7095",
+        "contract_type": "PUT",
+        "ranking_rank": 5,
+        "ranking_score": 51.8939,
+        "observed_evidence": {
+          "ranking_score": 51.8939,
+          "ranking_rank": 5,
+          "contract_type": "PUT",
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.5506958250497018,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "10516709093072498",
+        "symbol": "طمخا7090",
+        "contract_type": "PUT",
+        "ranking_rank": 6,
+        "ranking_score": 50.2525,
+        "observed_evidence": {
+          "ranking_score": 50.2525,
+          "ranking_rank": 6,
+          "contract_type": "PUT",
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.709741550695825,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "13147302752722222",
+        "symbol": "ضمخا7095",
+        "contract_type": "CALL",
+        "ranking_rank": 7,
+        "ranking_score": 49.3687,
+        "observed_evidence": {
+          "ranking_score": 49.3687,
+          "ranking_rank": 7,
+          "contract_type": "CALL",
+          "calendar_days": 10.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.10636182902584493,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "10473964939392510",
+        "symbol": "طمخا9013",
+        "contract_type": "PUT",
+        "ranking_rank": 8,
+        "ranking_score": 45.9596,
+        "observed_evidence": {
+          "ranking_score": 45.9596,
+          "ranking_rank": 8,
+          "contract_type": "PUT",
+          "calendar_days": 66.0,
+          "trade_value": 0.0,
+          "volume": 0.0,
+          "breakeven_distance": 0.5039761431411531,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      },
+      {
+        "signal_engine_version": "SIGNAL-SHADOW-1.1",
+        "state": "BLOCKED",
+        "proposed_signal": null,
+        "production_signal": null,
+        "instrument_id": "17584549282536815",
+        "symbol": "ضمخا8020",
+        "contract_type": "CALL",
+        "ranking_rank": 9,
+        "ranking_score": 45.0758,
+        "observed_evidence": {
+          "ranking_score": 45.0758,
+          "ranking_rank": 9,
+          "contract_type": "CALL",
+          "calendar_days": 38.0,
+          "trade_value": 6000000.0,
+          "volume": 100.0,
+          "breakeven_distance": 0.2524850894632207,
+          "last_vs_close": 0.0,
+          "intraday_range": null
+        },
+        "strategy_policy_version": null,
+        "risk_policy_version": null,
+        "blockers": [
+          "PRODUCTION_SIGNAL_NOT_ENABLED",
+          "RISK_POLICY_NOT_VERSIONED",
+          "STRATEGY_POLICY_NOT_VERSIONED"
+        ],
+        "reason_codes": [
+          "SIGNAL_POLICY_OR_RELEASE_GATE_BLOCKED"
+        ],
+        "buy_sell_signal": "NOT_GENERATED"
+      }
+    ],
+    "rules": {
+      "ranking_threshold_as_signal": "FORBIDDEN",
+      "missing_evidence": "FAIL_CLOSED",
+      "unversioned_strategy_policy": "BLOCKED",
+      "unversioned_risk_policy": "BLOCKED",
+      "production_without_gate7": "BLOCKED"
+    }
+  },
+  "live_movement_claim": "NOT_CLAIMED",
+  "report_sha256": "108d429fc760d634b6e24355e144685d8a0fef957d908531dae6264c3d6e7e30",
+  "audit_integrity": {
+    "status": "PASS",
+    "engine_version": "AUDIT-INTEGRITY-1.3",
+    "contract": "TSETMC_ONLY_REPORT",
+    "missing_fields": [],
+    "failures": [],
+    "checks": {
+      "audit_version": true,
+      "source_of_truth": true,
+      "data_mode": true,
+      "snapshot_hash_present": true,
+      "row_count_valid": true,
+      "live_movement_not_claimed": true,
+      "scoring_contract_valid": true,
+      "ranking_contract_valid": true,
+      "market_watch_evidence": true,
+      "best_limits_evidence": true,
+      "market_state_evidence": true,
+      "report_hash_present": true
+    }
+  }
+}
