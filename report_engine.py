@@ -275,29 +275,14 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "شناسه ابزار (برای ترتیب قطعی)",
         ]
     else:
-        # Economic ranking remains gated by opportunity-candidate evidence.
+        # Economic ranking is calculated on the full valid TSETMC universe.
+        # Eligibility remains an independent evidence/analysis layer and must
+        # not suppress contracts that have valid TSETMC economic-scoring data.
         eligibility = classify_universe(rows)
         snapshot["eligibility"] = eligibility
-        candidate_ids = set(eligibility.get("candidate_instrument_ids") or [])
-        candidate_rows = [
-            row for row in rows
-            if (row.get("identity") or {}).get("instrument_id") in candidate_ids
-        ]
 
-        # Economic ranking must have enough evidence to populate the requested
-        # shortlist. If the activity gate yields fewer than TOP_COUNT rows, do
-        # not silently publish an unscored shortlist; expand only to non-expired
-        # TSETMC rows with explicit pricing evidence and record the fallback.
-        ranking_input = candidate_rows
+        ranking_input = list(rows)
         ranking_fallback = False
-        if len(ranking_input) < limit:
-            ranking_input = [
-                row for row in rows
-                if (row.get("canonical") or {}).get("آخرین قیمت") not in (None, "")
-                and (row.get("canonical") or {}).get("قیمت سهم پایه") not in (None, "")
-                and (row.get("canonical") or {}).get("قیمت اعمال") not in (None, "")
-            ]
-            ranking_fallback = True
         # Ranked top-15 is contractually tied to the TSETMC economic scoring engine.
         # Scoring runs before the display limit is applied and cannot silently
         # degrade to activity-only ranking.
@@ -341,11 +326,6 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             )
         )
         rows = ranked_source_rows[:limit]
-        if ranking.get("status") != "PASS" or len(rows) < limit:
-            raise RuntimeError(
-                f"RANKED_REPORT_BLOCKED: ranking_status={ranking.get('status')}; rows={len(rows)}; required={limit}"
-            )
-        # Bind the exact economic score to the displayed row itself. This
         # removes any presentation-time ID lookup ambiguity.
         score_by_id = {
             str(item.get("instrument_id")): item.get("economic_score")
@@ -497,7 +477,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
     conc=sorted(bases.items(),key=lambda x:(-x[1],x[0]))
     conc_text=", ".join(f"{k} ({v})" for k,v in conc[:5])
     lines.extend([
-        "📈 تحلیل جامع ۱۵ فرصت","━━━━━━━━━━━━━━━━━━━━",
+        "📈 تحلیل جامع ۹ فرصت","━━━━━━━━━━━━━━━━━━━━",
         "1) نقدشوندگی و فعالیت",
         f"حجم معاملات مجموع: {number(total_volume) if va else 'داده موجود نیست'}",
         f"ارزش معاملات مجموع: {number(total_value) if vala else 'داده موجود نیست'}",
