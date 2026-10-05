@@ -191,19 +191,9 @@ def generate_report(command):
     if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
         snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
 
-        # Last-minute analysis is valid only on a fresh live TSETMC snapshot.
-        # Cached/off-market data must never be presented as a current opportunity.
-        if snapshot.get("data_mode") != "LIVE_TSETMC_REFRESH" or snapshot.get("live_refresh_status") != "SUCCESS":
-            return (
-                "🔥 سود لحظه آخری\n"
-                "TSETMC-ONLY | CURRENT-EVIDENCE MODE\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                "داده زنده بازار برای این گزارش در دسترس نیست؛ "
-                "گزارش لحظه‌آخری تولید نشد.\n"
-                f"Data Mode: {snapshot.get('data_mode') or 'داده موجود نیست'}\n"
-                f"Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}"
-            )
-
+        # Live data is preferred during market hours, but it is NOT required.
+        # Outside market hours, the latest valid TSETMC snapshot is an accepted
+        # data basis and must be clearly labeled in the report.
         source_rows = snapshot.get("rows", [])
         underlying_ids = sorted({
             str((row.get("identity") or {}).get("underlying_id") or "").strip()
