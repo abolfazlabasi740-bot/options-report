@@ -1,0 +1,18 @@
+{
+  "command_id": "bridge_probe_20261005_0703",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T03:48:59.569579+00:00",
+  "finished_at": "2026-10-05T03:48:59.663202+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import os,sys; print('PYTHON='+sys.version.split()[0]); print('PID='+str(os.getpid())); print('PROJECT='+os.getcwd())"
+  ],
+  "stdout": "PYTHON=3.14.6\nPID=5736\nPROJECT=/data/data/com.termux/files/home/OptimusAI_V41_LIVE\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "project_head": "a7fdb9ef240f1bcb25f8cd4937ee24691a9774cc",
+  "result_sha256": "3437e3c2d41ce142fd74534abb8237cb2fff362792dd643b6f7a324658001de9"
+}
