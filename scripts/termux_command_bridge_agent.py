@@ -17,7 +17,8 @@ RESULT_BRANCH = "bridge-results"
 WORK = Path.home() / ".termux_command_bridge"
 QUEUE = WORK / "queue"
 RESULTS = WORK / "results"
-POLL_SECONDS = int(os.environ.get("BRIDGE_POLL_SECONDS", "20"))
+POLL_SECONDS = int(os.environ.get("BRIDGE_POLL_SECONDS", "5"))
+COMMAND_TIMEOUT_SECONDS = int(os.environ.get("BRIDGE_COMMAND_TIMEOUT_SECONDS", "120"))
 
 ALLOWED = {"python", "python3", "git", "bash", "sh", "printf", "pwd", "ls"}
 BLOCKED_TOKENS = {
@@ -198,7 +199,7 @@ def process_file(path):
         raise ValueError("cwd outside project is not allowed")
 
     started = datetime.now(timezone.utc).isoformat()
-    proc = run(*argv, cwd=cwd, check=False)
+    proc = run(*argv, cwd=cwd, check=False, timeout=COMMAND_TIMEOUT_SECONDS)
 
     result = {
         "command_id": command_id,
@@ -210,6 +211,7 @@ def process_file(path):
         "argv": argv,
         "stdout": proc.stdout[-20000:],
         "stderr": proc.stderr[-20000:],
+        "timeout_seconds": COMMAND_TIMEOUT_SECONDS,
         "project_head": run(
             "git", "rev-parse", "HEAD", cwd=PROJECT
         ).stdout.strip(),
@@ -257,6 +259,7 @@ def main():
     print("BRIDGE_STATUS=READY", flush=True)
     print(f"BRIDGE_PROJECT={PROJECT}", flush=True)
     print(f"BRIDGE_POLL_SECONDS={POLL_SECONDS}", flush=True)
+    print(f"BRIDGE_COMMAND_TIMEOUT_SECONDS={COMMAND_TIMEOUT_SECONDS}", flush=True)
 
     while True:
         try:
