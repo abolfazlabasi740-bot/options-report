@@ -10,7 +10,7 @@ from bale_transport import send_message as transport_send
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
-        [{"text": "🔥 سود لحظه آخری", "callback_data": "report_last_minute"}],
+        [{"text": "⚡ فرصت لحظه آخری آپشن", "callback_data": "report_last_minute_option_opportunity"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
         [{"text": "🔎 انتخاب نماد", "callback_data": "symbols_page:0"}],
         [{"text": "📋 وضعیت سیستم", "callback_data": "system_status"}],
@@ -20,7 +20,7 @@ MENU_MARKUP = {
 REPLY_MENU_MARKUP = {
     "keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر"}],
-        [{"text": "🔥 سود لحظه آخری"}],
+        [{"text": "⚡ فرصت لحظه آخری آپشن"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
         [{"text": "🔎 انتخاب نماد"}],
         [{"text": "🧩 استراتژی‌ها"}],
@@ -32,7 +32,7 @@ REPLY_MENU_MARKUP = {
 
 REPLY_MENU_COMMANDS = {
     "📊 گزارش ۱۵ فرصت برتر": "گزارش",
-    "🔥 سود لحظه آخری": "سودلحظهآخری",
+    "⚡ فرصت لحظه آخری آپشن": "فرصت‌لحظه‌آخری‌آپشن",
     "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
     "🔎 انتخاب نماد": "نمادها",
     "📋 وضعیت سیستم": "وضعیت",
@@ -65,7 +65,7 @@ PREFERRED_UNDERLYINGS = (
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
     "report_activity_15": "فعالیت",
-    "report_last_minute": "سودلحظهآخری",
+    "report_last_minute_option_opportunity": "فرصت‌لحظه‌آخری‌آپشن",
     "system_status": "وضعیت",
 }
 
@@ -188,7 +188,7 @@ def system_status():
 def generate_report(command):
     if command in ("رفتار", "تغییرات", "behavior"):
         return format_behavior_report(build_behavior_report(ROOT))
-    if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
+    if command in ("فرصت‌لحظه‌آخری‌آپشن", "فرصت لحظه آخری آپشن", "last_minute_option_opportunity"):
         snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
 
         # Live data is preferred during market hours, but it is NOT required.
@@ -209,8 +209,8 @@ def generate_report(command):
         )
 
         lines = [
-            "🔥 سود لحظه آخری",
-            "TSETMC-ONLY | CURRENT-EVIDENCE OPPORTUNITY",
+            "⚡ فرصت لحظه آخری آپشن",
+            "TSETMC-ONLY | CURRENT-EVIDENCE OPTION OPPORTUNITY",
             "━━━━━━━━━━━━━━━━━━━━",
             "مبنای انتخاب: قدرت و شتاب سهم پایه + تابلو/سفارش + حجم/ارزش + کیفیت معامله‌پذیری آپشن",
             "سررسید فقط عامل زمینه‌ای است؛ شرط یک‌روزه و سناریوی ثابت ۳٪ حذف شده است.",
