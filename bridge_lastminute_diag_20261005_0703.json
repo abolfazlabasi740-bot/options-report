@@ -1,1 +1,0 @@
-{"command_id":"bridge_lastminute_diag_20261005_0703","argv":["python","-c","from pathlib import Path; p=Path('output/latest_report.txt'); print('EXISTS='+str(p.exists())); print('SIZE='+str(p.stat().st_size if p.exists() else 0)); print(p.read_text(encoding='utf-8')[-12000:] if p.exists() else 'NO_REPORT')"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE"}
