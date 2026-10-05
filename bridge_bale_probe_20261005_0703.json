@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_bale_probe_20261005_0703",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T03:50:02.235706+00:00",
+  "finished_at": "2026-10-05T03:50:02.940889+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "bale_runtime_verification.py"
+  ],
+  "stdout": "{\n  \"status\": \"SUCCESS\",\n  \"generated_at_utc\": \"2026-10-05T03:50:02.529311+00:00\",\n  \"report_file\": \"latest_report.txt\",\n  \"report_sha256\": \"476849b70ffbe1c4515f78180cbb4d106eda6e2179e3e372701a9bfb535c3897\",\n  \"source_file\": null,\n  \"source_sha256\": \"ff1f154f9dfccf0624e4da38cb0655d3b2e47b8eb5cded2a6aa63389db07b507\",\n  \"source_hash_verified\": true,\n  \"report_generated_at\": \"2026-10-04T10:27:22.474967+00:00\",\n  \"audit_report_sha256\": \"476849b70ffbe1c4515f78180cbb4d106eda6e2179e3e372701a9bfb535c3897\",\n  \"audit_integrity\": \"PASS\",\n  \"chunks\": 1,\n  \"receipts\": [\n    {\n      \"message_id\": 1476,\n      \"chat_id\": 770429773\n    }\n  ],\n  \"environment_presence_only\": {\n    \"BALE_BOT_TOKEN\": true,\n    \"BALE_CHAT_ID\": true\n  },\n  \"secrets_recorded\": false\n}\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "project_head": "a7fdb9ef240f1bcb25f8cd4937ee24691a9774cc",
+  "result_sha256": "99fb4742f5e97b062b950a942c45031fcf2ba2a5dfeb2e4815207dc155f8f10e"
+}
