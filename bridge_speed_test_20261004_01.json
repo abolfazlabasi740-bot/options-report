@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_speed_test_20261004_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T03:06:21.368522+00:00",
+  "finished_at": "2026-10-05T03:06:21.427235+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_SPEED_TEST')"
+  ],
+  "stdout": "BRIDGE_SPEED_TEST\n",
+  "stderr": "",
+  "project_head": "e513dd8bc1085864c1d473775907e63b2a10786a",
+  "result_sha256": "77b6183ebdbeeb209189052ea7be2763e75dde8df86a3e4b7add595b55da7432"
+}
