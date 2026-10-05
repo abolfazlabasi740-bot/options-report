@@ -1,9 +1,0 @@
-{
-  "command_id": "bridge_live_verify_20261005_0001",
-  "argv": [
-    "git",
-    "status",
-    "--short"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
