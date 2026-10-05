@@ -1,9 +1,0 @@
-{
-  "command_id": "operational_scope_finish_20261002_01",
-  "cwd": "~/OptimusAI_V41_LIVE",
-  "argv": [
-    "python",
-    "-c",
-    "import subprocess,sys,json\nfor a in [['git','fetch','origin','main'],['git','reset','--hard','origin/main']]:\n p=subprocess.run(a,text=True,capture_output=True); print('SYNC',a,'EXIT',p.returncode,p.stdout[-3000:],p.stderr[-3000:]);\n if p.returncode: raise SystemExit(p.returncode)\np=subprocess.run([sys.executable,'scripts/project_finisher_agent.py','--once'],text=True,capture_output=True,timeout=1800); print('FINISHER_EXIT',p.returncode); print(p.stdout[-12000:]); print(p.stderr[-5000:]);\nfor n in ['output/project_completion_audit.json','PROJECT_FINISHER_STATE.json']:\n try: print(n,open(n,encoding='utf-8').read()[-12000:])\n except Exception as e: print(n,'MISSING',e)\nif p.returncode: raise SystemExit(p.returncode)"
-  ]
-}
