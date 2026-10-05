@@ -190,47 +190,60 @@ def generate_report(command):
         return format_behavior_report(build_behavior_report(ROOT))
     if command in ("سودلحظهآخری", "سود لحظه آخری", "last_minute_profit"):
         snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
+
+        # Last-minute analysis is valid only on a fresh live TSETMC snapshot.
+        # Cached/off-market data must never be presented as a current opportunity.
+        if snapshot.get("data_mode") != "LIVE_TSETMC_REFRESH" or snapshot.get("live_refresh_status") != "SUCCESS":
+            return (
+                "🔥 سود لحظه آخری\n"
+                "TSETMC-ONLY | CURRENT-EVIDENCE MODE\n"
+                "━━━━━━━━━━━━━━━━━━━━\n"
+                "داده زنده بازار برای این گزارش در دسترس نیست؛ "
+                "گزارش لحظه‌آخری تولید نشد.\n"
+                f"Data Mode: {snapshot.get('data_mode') or 'داده موجود نیست'}\n"
+                f"Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}"
+            )
+
         source_rows = snapshot.get("rows", [])
-        result = build_last_minute_ranking(source_rows, top_count=15)
-        top_underlying_ids = sorted({
-            str(item.get("underlying_id") or "").strip()
-            for item in result.get("ranking_rows", [])
-            if str(item.get("underlying_id") or "").strip()
+        underlying_ids = sorted({
+            str((row.get("identity") or {}).get("underlying_id") or "").strip()
+            for row in source_rows
+            if str((row.get("identity") or {}).get("underlying_id") or "").strip()
         })
-        underlying_context = fetch_underlying_context(top_underlying_ids)
+        underlying_context = fetch_underlying_context(underlying_ids)
         result = build_last_minute_ranking(
             source_rows,
             top_count=15,
             underlying_context=underlying_context.get("instruments", {}),
+            snapshot=snapshot,
         )
+
         lines = [
             "🔥 سود لحظه آخری",
-            "TSETMC-ONLY | سناریوی رشد ۳ درصدی پایه",
+            "TSETMC-ONLY | CURRENT-EVIDENCE OPPORTUNITY",
             "━━━━━━━━━━━━━━━━━━━━",
-            "شرایط: دقیقاً یک روز تا سررسید + ITM + بازده سناریویی مثبت",
+            "مبنای انتخاب: قدرت و شتاب سهم پایه + تابلو/سفارش + حجم/ارزش + کیفیت معامله‌پذیری آپشن",
+            "سررسید فقط عامل زمینه‌ای است؛ شرط یک‌روزه و سناریوی ثابت ۳٪ حذف شده است.",
             f"تعداد کاندیداهای معتبر: {result.get('candidate_count', 0)}",
             f"تعداد نمایش: {result.get('display_count', 0)}",
             "━━━━━━━━━━━━━━━━━━━━",
         ]
+
         if not result.get("ranking_rows"):
-            lines.append("داده موجود نیست")
+            lines.append("در این لحظه فرصت معتبر با شواهد کافی پیدا نشد.")
         else:
             for item in result["ranking_rows"]:
+                components = item.get("score_components") or {}
+                analysis = item.get("underlying_analysis") or {}
                 lines.extend([
-                    f"🔹 {item['rank']}. {item.get('symbol') or 'داده موجود نیست'}",
-                    f"پایه: {item.get('underlying_symbol') or 'داده موجود نیست'} | نوع: {item.get('contract_type') or 'داده موجود نیست'}",
-                    f"قیمت پایه فعلی: {item.get('underlying_price')}",
-                    f"قیمت پایه در سناریو: {item.get('scenario_underlying_price')}",
-                    f"اعمال: {item.get('strike')}",
-                    f"قیمت فعلی آپشن: {item.get('current_option_price')}",
-                    f"ارزش سناریویی آپشن در سررسید: {item.get('scenario_option_value_at_expiry')}",
-                    f"بازده سناریویی: {item.get('scenario_return_pct'):.2f}%",
-                    f"اهرم: {item.get('leverage'):.2f}x",
-                    "تحلیل سهم پایه:",
-                    f"• صف/تقاضا: {(item.get('underlying_analysis') or {}).get('queue_state') or 'داده موجود نیست'}",
-                    f"• روند: {(item.get('underlying_analysis') or {}).get('trend_state') or 'داده موجود نیست'}",
-                    f"• حجم/ارزش: {(item.get('underlying_analysis') or {}).get('volume_state') or 'داده موجود نیست'}",
-                    f"• جمع‌بندی شواهد: {(item.get('underlying_analysis') or {}).get('persistence_evidence') or 'داده موجود نیست'}",
+                    f"🔹 {item['rank']}. {item.get('symbol') or 'داده موجود نیست'} | امتیاز فرصت: {item.get('score')}",
+                    f"پایه: {item.get('underlying_symbol') or 'داده موجود نیست'} | نوع: {item.get('contract_type') or 'داده موجود نیست'} | جهت: {item.get('direction') or 'داده موجود نیست'}",
+                    f"قیمت پایه: {item.get('underlying_price')} | اعمال: {item.get('strike')} | قیمت آپشن: {item.get('current_option_price')}",
+                    f"فاصله اعمال: {item.get('moneyness_pct'):.2f}% | روز باقی‌مانده: {item.get('days_to_expiry')}",
+                    f"اهرم خام: {item.get('raw_leverage'):.2f}x | امتیاز نقدشوندگی: {components.get('option_liquidity'):.1f}",
+                    f"قدرت پایه: {components.get('underlying_momentum'):.1f} | تابلو: {components.get('board_strength'):.1f} | حجم/ارزش: {components.get('volume_value'):.1f}",
+                    f"فاصله تا سقف: {item.get('underlying_analysis', {}).get('upper_limit_headroom_pct') if item.get('underlying_analysis') else 'داده موجود نیست'}%",
+                    f"شواهد پایه: {', '.join(analysis.get('evidence') or []) or 'داده موجود نیست'}",
                     "━━━━━━━━━━━━━━━━━━━━",
                 ])
         return "\n".join(lines)
