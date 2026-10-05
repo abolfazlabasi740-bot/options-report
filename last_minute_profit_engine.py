@@ -32,7 +32,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 TEHRAN = ZoneInfo("Asia/Tehran")
-ENGINE_VERSION = "TSETMC-LAST-MINUTE-2.0"
+ENGINE_VERSION = "TSETMC-LAST-MINUTE-OPTION-OPPORTUNITY-2.1"
 
 # Ranking weights. These describe opportunity evidence; they are not a
 # buy/sell signal and do not predict a limit-up outcome.
@@ -501,7 +501,7 @@ def _candidate(row: dict[str, Any], context: dict[str, Any]) -> dict[str, Any] |
         "option_liquidity": liquidity,
         "option_sensitivity": sensitivity,
         "underlying_analysis": underlying,
-        "method": "CURRENT_EVIDENCE_OPPORTUNITY_RANKING",
+        "method": "CURRENT_EVIDENCE_OPTION_OPPORTUNITY_RANKING",
         "expiry_not_primary": True,
     }
 
@@ -579,7 +579,7 @@ def build_last_minute_ranking(
 
     return {
         "status": "PASS" if ranked else "NO_ELIGIBLE_OPPORTUNITY",
-        "mode": "LAST_MINUTE_PROFIT",
+        "mode": "LAST_MINUTE_OPTION_OPPORTUNITY",
         "engine_version": ENGINE_VERSION,
         "source_of_truth": "TSETMC",
         "method": "CURRENT_EVIDENCE_OPPORTUNITY_RANKING",
