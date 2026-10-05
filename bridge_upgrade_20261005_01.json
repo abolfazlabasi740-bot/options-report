@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_upgrade_20261005_01",
+  "status": "FAILED",
+  "exit_code": 128,
+  "started_at": "2026-10-05T04:34:42.116839+00:00",
+  "finished_at": "2026-10-05T04:34:42.934340+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/bridge_upgrade.py"
+  ],
+  "stdout": "\nFrom https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\nfatal: Cannot fast-forward to multiple branches.\n\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "project_head": "554087c2055fe7e58bf5f1f2f9949440e13db0d9",
+  "result_sha256": "d88ca1380ae6d5be57b35425e590117519c5f86a4aeef044d9bf5b079bd84a18"
+}
