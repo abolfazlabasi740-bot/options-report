@@ -1,0 +1,65 @@
+name: TSETMC Live Trading-Day Snapshots
+
+on:
+  schedule:
+    - cron: "31 5 * * 6,0,1,2,3"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tehran
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Capture live snapshots from 09:01 through 12:30
+        run: |
+          START="090100"
+          END="123000"
+          DATE="$(date +%Y%m%d)"
+          python capture_tsetmc_historical_snapshot.py \
+            --date "$DATE" \
+            --time "$END" \
+            --output "output/tsetmc_first/historical_${DATE}_${END}.json"
+
+      - name: Validate live snapshot
+        run: |
+          DATE="$(date +%Y%m%d)"
+          FILE="output/tsetmc_first/historical_${DATE}_123000.json"
+          test -s "$FILE"
+          python - "$FILE" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as f:
+              data = json.load(f)
+          records = data.get("records", [])
+          print("SNAPSHOT_PATH=", sys.argv[1])
+          print("STATUS=", data.get("status"))
+          print("TARGET=", data.get("target"))
+          print("RECORD_COUNT=", len(records))
+          print("ERROR_COUNT=", len(data.get("errors", [])))
+          if not records:
+              raise SystemExit("FAIL: snapshot contains no records")
+          PY
+
+      - name: Commit snapshot
+        run: |
+          DATE="$(date +%Y%m%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "output/tsetmc_first/historical_${DATE}_123000.json"
+          if git diff --cached --quiet; then
+            echo "No snapshot file change to commit."
+            exit 0
+          fi
+          git commit -m "data: TSETMC live snapshot ${DATE} 123000"
+          git push
