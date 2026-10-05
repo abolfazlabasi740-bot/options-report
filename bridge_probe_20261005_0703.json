@@ -1,0 +1,1 @@
+{"command_id":"bridge_probe_20261005_0703","argv":["python","-c","import os,sys; print('PYTHON='+sys.version.split()[0]); print('PID='+str(os.getpid())); print('PROJECT='+os.getcwd())"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE"}
