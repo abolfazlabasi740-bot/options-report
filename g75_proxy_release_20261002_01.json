@@ -1,0 +1,16 @@
+{
+  "command_id": "g75_proxy_release_20261002_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T03:06:27.572622+00:00",
+  "finished_at": "2026-10-05T03:44:08.455250+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "economic_validation_evidence_builder.py"
+  ],
+  "stdout": "STATUS= EVIDENCE_ONLY\nSNAPSHOTS= 103\nTRANSITIONS= 161341\nMATCHED= 161341\nUNRESOLVED= 0\nVALIDATION_WINDOWS= 99\nVALIDATION_RESULTS= 11286\nCASE_MAPPING_STATUS= PARTIAL\nCASE_FAMILY= BREAKEVEN_COMPRESSION_TSETMC_PROXY {\"TP\": 4288, \"FP\": 36098, \"FN\": 6164, \"TN\": 114791}\nCASE_FAMILY= LIQUIDITY_CONFIRMED_TSETMC_PROXY {\"TP\": 6092, \"FP\": 28099, \"FN\": 4360, \"TN\": 122790}\nCASE_FAMILY= NEAR_EXPIRY_RISK_TSETMC {\"TP\": 4084, \"FP\": 40947, \"FN\": 6368, \"TN\": 109942}\nG7_5_STATUS= VERIFIED\nEVIDENCE_SHA256= 3c010383cccf2e81894aefb089938855ec7a3d054a39b6ea67f80c99d8a014f7\n",
+  "stderr": "",
+  "project_head": "e513dd8bc1085864c1d473775907e63b2a10786a",
+  "result_sha256": "cab5475f9b72c6c97bfd5c9c60981c2de000d3948ec69785e44667c08090f441"
+}
