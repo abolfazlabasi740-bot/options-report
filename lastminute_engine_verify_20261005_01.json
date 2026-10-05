@@ -1,0 +1,20 @@
+{
+  "command_id": "lastminute_engine_verify_20261005_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T04:34:48.401410+00:00",
+  "finished_at": "2026-10-05T04:34:48.499646+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "py_compile",
+    "last_minute_profit_engine.py",
+    "bale_listener.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "project_head": "554087c2055fe7e58bf5f1f2f9949440e13db0d9",
+  "result_sha256": "01ad11348a356d47a1e207d63403406f082a0d94985e981970f38da9afe809a2"
+}
