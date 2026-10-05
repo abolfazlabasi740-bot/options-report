@@ -1,9 +1,0 @@
-{
-  "command_id": "release_gate_repair_20261002_01",
-  "argv": [
-    "python",
-    "-c",
-    "import subprocess\nroot='.'\nsubprocess.run(['git','fetch','origin','main'],check=True)\nsubprocess.run(['git','reset','--hard','origin/main'],check=True)\nfor a in [['python','economic_validation_evidence_builder.py'],['python','runtime_verification.py'],['python','report_engine.py','--top','15']]:\n p=subprocess.run(a,text=True,capture_output=True,timeout=2400); print('COMMAND',a,'EXIT',p.returncode); print(p.stdout[-12000:]); print(p.stderr[-4000:]);\n if p.returncode: raise SystemExit(p.returncode)\nprint('HEAD='+subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip())"
-  ],
-  "cwd": "~/OptimusAI_V41_LIVE"
-}
