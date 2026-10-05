@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_live_verify_20261005_0001",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-05T03:06:15.268637+00:00",
+  "finished_at": "2026-10-05T03:06:15.314994+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "status",
+    "--short"
+  ],
+  "stdout": " M bale_listener.py\n M bale_transport.py\n M last_minute_profit_engine.py\n?? backup_last_minute_profit/\n?? bale_listener.py.bak\n?? bale_transport.py.bak\n",
+  "stderr": "",
+  "project_head": "e513dd8bc1085864c1d473775907e63b2a10786a",
+  "result_sha256": "edefae7c12c63d8c04623b93f51b9d2fa31297064507e94d76e61df89694cc51"
+}
