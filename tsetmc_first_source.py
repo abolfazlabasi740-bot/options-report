@@ -61,12 +61,36 @@ def _source_market_timestamp(*sources: dict[str, Any]) -> str | None:
         except (TypeError, ValueError):
             continue
     return None
+def _snapshot_is_usable_as_closed(snapshot: dict[str, Any] | None) -> bool:
+    """Accept only a full, timestamped TSETMC observation as a closed snapshot."""
+    if not isinstance(snapshot, dict) or snapshot.get("source_of_truth") != "TSETMC":
+        return False
+    rows = snapshot.get("rows")
+    if not isinstance(rows, list) or len(rows) < 15:
+        return False
+    ids = {
+        str((row.get("identity") or {}).get("instrument_id") or "").strip()
+        for row in rows if isinstance(row, dict)
+    }
+    if len(ids) < 15:
+        return False
+    evidence = snapshot.get("evidence") or {}
+    market_watch = evidence.get("market_watch") or {}
+    timestamp = market_watch.get("latest_source_market_timestamp")
+    if timestamp:
+        return True
+    return any(
+        isinstance(row, dict) and row.get("source_market_timestamp")
+        for row in rows
+    )
+
+
 def _load_last_known_snapshot() -> dict[str, Any] | None:
     try:
         path=CACHE_PATH
         if not path.exists(): return None
         cached=json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(cached,dict) or cached.get("source_of_truth")!="TSETMC": return None
+        if not _snapshot_is_usable_as_closed(cached): return None
         cached["data_mode"]="LAST_KNOWN_TSETMC_SNAPSHOT"; cached["live_refresh_status"]="UNAVAILABLE"; cached["cache_path"]=str(path)
         return cached
     except (OSError, ValueError, TypeError): return None
@@ -215,7 +239,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
     if is_trading_day and now.time() > MARKET_CLOSE:
         date_key = now.strftime("%Y%m%d")
         closed = _load_closed_snapshot_for_date(date_key)
-        if closed is not None:
+        if closed is not None and _snapshot_is_usable_as_closed(closed):
             return closed
 
         captured = _build_live_snapshot(
@@ -225,15 +249,25 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             symbol_prefix=symbol_prefix,
             allow_cached_fallback=False,
         )
-        _persist_closed_snapshot(
-            captured,
-            date_key,
-            "CAPTURED_ON_FIRST_CLOSED_REQUEST",
+        if _snapshot_is_usable_as_closed(captured):
+            _persist_closed_snapshot(
+                captured,
+                date_key,
+                "CAPTURED_ON_FIRST_CLOSED_REQUEST",
+            )
+            captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+            captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+            captured["closed_for_date"] = date_key
+            return captured
+
+        cached = _load_last_known_snapshot()
+        if cached is not None:
+            cached["fallback_reason"] = "CURRENT_CLOSED_CAPTURE_NOT_A_VALID_TIMESTAMPED_SNAPSHOT"
+            return cached
+
+        raise RuntimeError(
+            "CURRENT_CLOSED_SNAPSHOT_NOT_VALID_AND_NO_PREVIOUS_VALID_SNAPSHOT"
         )
-        captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
-        captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
-        captured["closed_for_date"] = date_key
-        return captured
 
     # Before market open on a trading day, and on non-trading days, the
     # current date is NOT a closed-market date. Use the most recent trading
@@ -241,7 +275,7 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
     # rule: never demand a closed snapshot for the current non-closed date.
     previous_date_key = _previous_trading_date(now)
     previous_closed = _load_closed_snapshot_for_date(previous_date_key)
-    if previous_closed is not None:
+    if previous_closed is not None and _snapshot_is_usable_as_closed(previous_closed):
         previous_closed["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
         previous_closed["live_refresh_status"] = "NOT_REQUESTED_CLOSED_MODE"
         previous_closed["closed_for_date"] = previous_date_key
