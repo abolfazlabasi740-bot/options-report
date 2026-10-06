@@ -207,6 +207,50 @@ def _attach_canonical_quote_evidence(rows, *, adapter=None, allow_refresh=True):
     return rows
 
 
+def _tradability_gate(row):
+    """Hard Stage-1 quality gate against non-tradable/extreme-premium contracts."""
+    canonical = row.get("canonical") or {}
+    try:
+        underlying = float(canonical.get("قیمت سهم پایه"))
+        premium = float(canonical.get("آخرین قیمت"))
+    except (TypeError, ValueError):
+        return False, "MISSING_PRICE_EVIDENCE"
+    if underlying <= 0 or premium <= 0:
+        return False, "INVALID_PRICE_EVIDENCE"
+    activity_values = []
+    for key in ("حجم معاملات", "ارزش معاملات", "تعداد معاملات"):
+        try:
+            value = float(canonical.get(key))
+            activity_values.append(value > 0)
+        except (TypeError, ValueError):
+            activity_values.append(False)
+    if not any(activity_values):
+        return False, "NO_TRADE_ACTIVITY_EVIDENCE"
+    premium_ratio = premium / underlying
+    if premium_ratio < 0.0005:
+        return False, "EXTREME_PREMIUM_TO_UNDERLYING"
+    return True, "PASS"
+
+
+def _directional_eligibility(row, intelligence_map):
+    """Bullish->CALL only; Bearish->PUT only; all other states are unconfirmed."""
+    identity = row.get("identity") or {}
+    underlying_id = str(identity.get("underlying_id") or "").strip()
+    contract_type = str(identity.get("contract_type") or "").upper()
+    context = intelligence_map.get(underlying_id)
+    if not context:
+        return False, "UNDERLYING_INTELLIGENCE_UNAVAILABLE"
+    bias = str(context.get("bias") or "").upper()
+    confidence = str(context.get("confidence") or "").upper()
+    if bias == "BULLISH" and confidence in {"HIGH", "MEDIUM"}:
+        return (contract_type == "CALL"), "BULLISH_CALL_ONLY" if contract_type == "CALL" else "OPPOSING_DIRECTION_BEARISH_REQUIRED"
+    if bias == "BEARISH" and confidence in {"HIGH", "MEDIUM"}:
+        return (contract_type == "PUT"), "BEARISH_PUT_ONLY" if contract_type == "PUT" else "OPPOSING_DIRECTION_BULLISH_REQUIRED"
+    if bias in {"NEUTRAL", "CONFLICTED", "INSUFFICIENT_DATA", ""}:
+        return False, "DIRECTION_UNCONFIRMED"
+    return False, "DIRECTION_UNAVAILABLE"
+
+
 def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol=None, flow=None, report_mode="RANKED"):
     limit = TOP_COUNT if top_count is None else int(top_count)
     if isinstance(limit, bool) or limit <= 0:
@@ -278,108 +322,48 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             "شناسه ابزار (برای ترتیب قطعی)",
         ]
     else:
-        # Economic ranking is calculated on the full valid TSETMC universe.
-        # Eligibility remains an independent evidence/analysis layer and must
-        # not suppress contracts that have valid TSETMC economic-scoring data.
+        # Stage-1 flow:
+        #   1) tradability quality gate
+        #   2) discovery scoring only to keep underlying-network work bounded
+        #   3) underlying intelligence from TSETMC
+        #   4) directional eligibility
+        #   5) final six-block economic scoring/ranking
         eligibility = classify_universe(rows)
         snapshot["eligibility"] = eligibility
 
-        ranking_input = list(rows)
-        ranking_fallback = False
-        # Ranked top-15 is contractually tied to the TSETMC economic scoring engine.
-        # Scoring runs before the display limit is applied and cannot silently
-        # degrade to activity-only ranking.
-        ranking = build_economic_ranking(ranking_input)
-        ranking["ranking_scope"] = "OPPORTUNITY_CANDIDATES" if not ranking_fallback else "TSETMC_PRICED_NONEXPIRED_FALLBACK"
-        ranking["ranking_scope_row_count"] = len(ranking_input)
-        ranking["eligibility_fallback_used"] = ranking_fallback
-        ranking["economic_scoring_enabled"] = True
-        ranking["economic_scoring_target_count"] = limit
-        snapshot["economic_scoring_enabled"] = True
-        snapshot["economic_scoring_target_count"] = limit
-        snapshot["ranking"] = ranking
-
-        shadow_candidates = []
-        for item in ranking.get("ranking_rows", []):
-            shadow_candidates.append({
-                "instrument_id": item.get("instrument_id"),
-                "symbol": item.get("symbol"),
-                "contract_type": item.get("contract_type"),
-                "rank": item.get("rank"),
-                "economic_score": item.get("economic_score"),
-                "evidence": {
-                    "supported_blocks": item.get("supported_blocks") or [],
-                    "features": item.get("features") or {},
-                },
-            })
-        snapshot["signal_shadow"] = evaluate_shadow_candidates(shadow_candidates)
-
-        opportunity = build_opportunity_candidates(rows, ranking, eligibility)
-        snapshot["opportunity"] = opportunity
-
-        ranked_order = {
-            item.get("instrument_id"): item.get("rank")
-            for item in ranking.get("ranking_rows", [])
-        }
-        ranked_source_rows = ranking_input
-        ranked_source_rows.sort(
-            key=lambda row: (
-                ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
-                ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
-            )
-        )
-        rows = ranked_source_rows[:limit]
-        # removes any presentation-time ID lookup ambiguity.
-        score_by_id = {
-            str(item.get("instrument_id")): item.get("economic_score")
-            for item in ranking.get("ranking_rows", [])
-            if item.get("instrument_id") is not None
-        }
+        quality_rows = []
+        quality_rejections = {}
         for row in rows:
-            rid = str((row.get("identity") or {}).get("instrument_id") or "")
-            row["_economic_score"] = score_by_id.get(rid)
-            if row["_economic_score"] is None:
-                raise RuntimeError(f"RANKED_REPORT_BLOCKED: missing_score_for_instrument={rid}")
-        snapshot["report_mode"] = "RANKED"
-    if report_mode == "TRADING_ACTIVITY":
-        snapshot["signal_shadow"] = {
-            "status": "OFF",
-            "engine_version": "SIGNAL-SHADOW-1.1",
-            "production_enabled": False,
-            "signal_count": 0,
-            "buy_sell_signal": "NOT_GENERATED",
-            "items": [],
-        }
-    live_enrichment = snapshot.get("data_mode") == "LIVE_TSETMC_REFRESH"
+            ok, reason = _tradability_gate(row)
+            if ok:
+                quality_rows.append(row)
+            else:
+                quality_rejections[str((row.get("identity") or {}).get("instrument_id") or "")] = reason
+
+        discovery = build_economic_ranking(quality_rows)
+        discovery_rows = [
+            item for item in (discovery.get("ranking_rows") or [])
+            if item.get("economic_score") is not None
+        ][:75]
+        discovery_ids = {str(item.get("instrument_id")) for item in discovery_rows if item.get("instrument_id") is not None}
+        discovery_source_rows = [
+            row for row in quality_rows
+            if str((row.get("identity") or {}).get("instrument_id") or "") in discovery_ids
+        ]
+        underlying_ids = sorted({
+            str((row.get("identity") or {}).get("underlying_id") or "").strip()
+            for row in discovery_source_rows
+            if str((row.get("identity") or {}).get("underlying_id") or "").strip()
+        })
+        live_enrichment = snapshot.get("data_mode") == "LIVE_TSETMC_REFRESH"
     _attach_canonical_quote_evidence(rows, adapter=adapter, allow_refresh=live_enrichment)
     if live_enrichment:
         attach_option_model_metrics(rows, adapter)
     else:
         for row in rows:
             row["option_model"] = {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_market_inputs":"TSETMC_CLOSED_SNAPSHOT"}
-    # Presentation enrichment is limited to displayed contracts; full universe remains in audit snapshot.
-    enrichment_rows = rows
-    underlying_ids = sorted({
-        str((row.get("identity") or {}).get("underlying_id") or "").strip()
-        for row in enrichment_rows
-        if str((row.get("identity") or {}).get("underlying_id") or "").strip()
-    })
-    snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter) if live_enrichment else {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_truth":"TSETMC","instrument_count":len(underlying_ids),"instruments":{}}
-    underlying_map = (snapshot.get("underlying_context") or {}).get("instruments") or {}
-    snapshot["underlying_intelligence"] = build_underlying_intelligence(underlying_map) if underlying_map else {
-        "status": "UNAVAILABLE",
-        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.0",
-        "source_of_truth": "TSETMC",
-        "instrument_count": 0,
-        "instruments": {},
-        "production_signal": "OFF",
-        "stage": "STAGE_1",
-    }
-    underlying_symbols = sorted({
-        str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
-        for row in enrichment_rows
-        if str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
-    })
+    # Underlying intelligence is computed before final ranking above. Do not
+    # refresh the underlying board again merely for presentation.
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
