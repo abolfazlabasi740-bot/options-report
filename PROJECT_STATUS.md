@@ -59,6 +59,18 @@ Missing evidence remains unavailable and is not converted to zero.
 
 Current ranking does not compute IV or Greeks. Open interest is not used by the current ranking contract.
 
+## Stage 1 status
+
+Stage 1 Operational Report V1 is implemented.
+
+- TSETMC-only full-universe ranking remains active.
+- Six-Block Economic Scoring remains unchanged: 20/25/18/15/12/10.
+- Stage-1 Underlying Intelligence is integrated as a descriptive layer.
+- Global snapshot cache is protected from symbol-filtered report overwrites.
+- Invalid post-market captures are rejected; the latest valid TSETMC snapshot is used instead.
+- BUY/SELL remains OFF.
+- Advanced indicators and adaptive learning are deliberately deferred until Stage 1 reports are reviewed.
+
 ## Signal state
 
 The final business objective of OptimusAI is BUY/SELL option signals.
