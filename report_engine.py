@@ -356,14 +356,125 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             if str((row.get("identity") or {}).get("underlying_id") or "").strip()
         })
         live_enrichment = snapshot.get("data_mode") == "LIVE_TSETMC_REFRESH"
-    _attach_canonical_quote_evidence(rows, adapter=adapter, allow_refresh=live_enrichment)
-    if live_enrichment:
-        attach_option_model_metrics(rows, adapter)
-    else:
+        snapshot["underlying_context"] = fetch_underlying_context(
+            underlying_ids,
+            adapter=adapter,
+            include_board=live_enrichment,
+        ) if underlying_ids else {
+            "status": "UNAVAILABLE",
+            "source_of_truth": "TSETMC",
+            "instrument_count": 0,
+            "instruments": {},
+        }
+        underlying_map = (snapshot.get("underlying_context") or {}).get("instruments") or {}
+        snapshot["underlying_intelligence"] = build_underlying_intelligence(underlying_map) if underlying_map else {
+            "status": "UNAVAILABLE",
+            "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.0",
+            "source_of_truth": "TSETMC",
+            "instrument_count": 0,
+            "instruments": {},
+            "production_signal": "OFF",
+            "stage": "STAGE_1",
+        }
+        intelligence_map = snapshot["underlying_intelligence"].get("instruments") or {}
+
+        directional_rows = []
+        direction_rejections = {}
+        for row in quality_rows:
+            instrument_id = str((row.get("identity") or {}).get("instrument_id") or "")
+            if instrument_id not in discovery_ids:
+                direction_rejections[instrument_id] = "OUTSIDE_DISCOVERY_POOL"
+                continue
+            ok, reason = _directional_eligibility(row, intelligence_map)
+            if ok:
+                directional_rows.append(row)
+            else:
+                direction_rejections[instrument_id] = reason
+
+        ranking_input = directional_rows
+        ranking = build_economic_ranking(ranking_input)
+        ranking["ranking_scope"] = "DIRECTIONALLY_ELIGIBLE_CANDIDATES"
+        ranking["ranking_scope_row_count"] = len(ranking_input)
+        ranking["discovery_pool_row_count"] = len(discovery_source_rows)
+        ranking["quality_gate_row_count"] = len(quality_rows)
+        ranking["quality_gate_rejections"] = len(quality_rejections)
+        ranking["direction_gate_rejections"] = len(direction_rejections)
+        ranking["eligibility_fallback_used"] = False
+        ranking["economic_scoring_enabled"] = True
+        ranking["economic_scoring_target_count"] = limit
+        ranking["direction_gate"] = {
+            "status": "PASS" if directional_rows else "NO_DIRECTIONALLY_ELIGIBLE_CANDIDATES",
+            "rule": "BULLISH_CALL_ONLY | BEARISH_PUT_ONLY | NEUTRAL_CONFLICTED_UNCONFIRMED",
+            "opposing_direction_excluded_before_final_six_block_scoring": True,
+            "eligible_count": len(directional_rows),
+            "rejected_count": len(direction_rejections),
+        }
+        ranking["tradability_gate"] = {
+            "status": "PASS" if quality_rows else "NO_QUALITY_CANDIDATES",
+            "minimum_premium_to_underlying": 0.0005,
+            "minimum_premium_to_underlying_pct": 0.05,
+            "extreme_premium_rule": "premium/underlying < 0.05% => rejected",
+            "activity_rule": "at least one of volume/value/trade_count must be positive",
+            "eligible_count": len(quality_rows),
+            "rejected_count": len(quality_rejections),
+        }
+        snapshot["economic_scoring_enabled"] = True
+        snapshot["economic_scoring_target_count"] = limit
+        snapshot["ranking"] = ranking
+        snapshot["direction_gate"] = ranking["direction_gate"]
+        snapshot["tradability_gate"] = ranking["tradability_gate"]
+
+        shadow_candidates = []
+        for item in ranking.get("ranking_rows", []):
+            shadow_candidates.append({
+                "instrument_id": item.get("instrument_id"),
+                "symbol": item.get("symbol"),
+                "contract_type": item.get("contract_type"),
+                "rank": item.get("rank"),
+                "economic_score": item.get("economic_score"),
+                "evidence": {
+                    "supported_blocks": item.get("supported_blocks") or [],
+                    "features": item.get("features") or {},
+                },
+            })
+        snapshot["signal_shadow"] = evaluate_shadow_candidates(shadow_candidates)
+
+        opportunity = build_opportunity_candidates(ranking_input, ranking, eligibility)
+        snapshot["opportunity"] = opportunity
+
+        ranked_order = {
+            item.get("instrument_id"): item.get("rank")
+            for item in ranking.get("ranking_rows", [])
+        }
+        ranked_source_rows = list(ranking_input)
+        ranked_source_rows.sort(
+            key=lambda row: (
+                ranked_order.get((row.get("identity") or {}).get("instrument_id")) is None,
+                ranked_order.get((row.get("identity") or {}).get("instrument_id")) or 10**9,
+            )
+        )
+        rows = ranked_source_rows[:limit]
+        score_by_id = {
+            str(item.get("instrument_id")): item.get("economic_score")
+            for item in ranking.get("ranking_rows", [])
+            if item.get("instrument_id") is not None
+        }
         for row in rows:
-            row["option_model"] = {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_market_inputs":"TSETMC_CLOSED_SNAPSHOT"}
-    # Underlying intelligence is computed before final ranking above. Do not
-    # refresh the underlying board again merely for presentation.
+            rid = str((row.get("identity") or {}).get("instrument_id") or "")
+            row["_economic_score"] = score_by_id.get(rid)
+            if row["_economic_score"] is None:
+                raise RuntimeError(f"RANKED_REPORT_BLOCKED: missing_score_for_instrument={rid}")
+        snapshot["report_mode"] = "RANKED"
+
+        _attach_canonical_quote_evidence(rows, adapter=adapter, allow_refresh=live_enrichment)
+        if live_enrichment:
+            attach_option_model_metrics(rows, adapter)
+        else:
+            for row in rows:
+                row["option_model"] = {
+                    "status": "CLOSED_SNAPSHOT_NO_REFRESH",
+                    "source_of_market_inputs": "TSETMC_CLOSED_SNAPSHOT",
+                }
     snapshot["rows"] = rows
     snapshot["row_count"] = len(rows)
 
