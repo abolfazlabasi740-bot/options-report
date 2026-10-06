@@ -295,17 +295,28 @@ def _board_metrics(orderbook_response: dict[str, Any] | None, client_type_respon
     }
 
 
-def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter | None = None) -> dict[str, Any]:
+def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter | None = None, *, include_board: bool = True) -> dict[str, Any]:
     adapter = adapter or TSETMCAdapter()
     results = {}
     for instrument_id in sorted({str(x).strip() for x in instrument_ids if str(x).strip()}):
         try:
             history = adapter.daily_history(instrument_id, top=100)
-            info = adapter.instrument_info(instrument_id)
-            orderbook = adapter.order_book(instrument_id)
-            client_type = adapter.client_type(instrument_id)
+            if include_board:
+                info = adapter.instrument_info(instrument_id)
+                orderbook = adapter.order_book(instrument_id)
+                client_type = adapter.client_type(instrument_id)
+            else:
+                # Closed-mode underlying intelligence may use retained TSETMC
+                # daily history, but must not refresh current board/client flow.
+                info = {"source": "TSETMC", "data": {}, "retrieved_at": None}
+                orderbook = {"source": "TSETMC", "data": [], "retrieved_at": None}
+                client_type = {"source": "TSETMC", "data": {}, "retrieved_at": None}
             analysis = analyze_history(instrument_id, history, info)
-            board = _board_metrics(orderbook, client_type)
+            board = _board_metrics(orderbook, client_type) if include_board else {
+                "orderbook_status": "CLOSED_SNAPSHOT_NO_REFRESH",
+                "client_type_status": "CLOSED_SNAPSHOT_NO_REFRESH",
+                "board_interpretation": "CURRENT_BOARD_NOT_REFRESHED_IN_CLOSED_MODE",
+            }
             analysis.update(board)
 
             raw_rows = history.get("data") if isinstance(history.get("data"), list) else []
