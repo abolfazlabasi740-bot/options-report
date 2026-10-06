@@ -14,7 +14,7 @@ CACHE_PATH = Path("output/tsetmc_first/latest_snapshot.json")
 CLOSED_CACHE_PATH = Path("output/tsetmc_first/closed_snapshot.json")
 TEHRAN = ZoneInfo("Asia/Tehran")
 TRADING_WEEKDAYS = {5, 6, 0, 1, 2}
-MARKET_OPEN = time(9, 1)
+MARKET_OPEN = time(9, 0)
 MARKET_CLOSE = time(12, 30)
 FIELD_NAMES = [
     "نماد","قیمت اعمال","قیمت سهم پایه","اختلاف تا اعمال","تاریخ سررسید",
@@ -62,7 +62,7 @@ def _source_market_timestamp(*sources: dict[str, Any]) -> str | None:
             continue
     return None
 def _snapshot_is_usable_as_closed(snapshot: dict[str, Any] | None) -> bool:
-    """Accept only a full, timestamped TSETMC observation as a closed snapshot."""
+    """Validate a frozen TSETMC market snapshot without requiring a source timestamp."""
     if not isinstance(snapshot, dict) or snapshot.get("source_of_truth") != "TSETMC":
         return False
     rows = snapshot.get("rows")
@@ -74,14 +74,28 @@ def _snapshot_is_usable_as_closed(snapshot: dict[str, Any] | None) -> bool:
     }
     if len(ids) < 15:
         return False
+
     evidence = snapshot.get("evidence") or {}
     market_watch = evidence.get("market_watch") or {}
-    timestamp = market_watch.get("latest_source_market_timestamp")
-    if timestamp:
-        return True
-    return any(
+    explicit_timestamp = market_watch.get("latest_source_market_timestamp") or any(
         isinstance(row, dict) and row.get("source_market_timestamp")
         for row in rows
+    )
+    if explicit_timestamp:
+        return True
+
+    # After 12:30 TSETMC may expose the final market state without carrying
+    # an explicit dEven/hEven timestamp in the normalized option universe.
+    # A first-request frozen snapshot is therefore valid when its TSETMC
+    # retrieval evidence, row universe and immutable snapshot hash exist.
+    closed_kind = str(snapshot.get("closed_snapshot_kind") or "")
+    retrieved_at = market_watch.get("retrieved_at") or snapshot.get("generated_at")
+    snapshot_hash = snapshot.get("snapshot_sha256")
+    return (
+        closed_kind == "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+        and bool(retrieved_at)
+        and isinstance(snapshot_hash, str)
+        and len(snapshot_hash) == 64
     )
 
 
@@ -234,57 +248,57 @@ def build_tsetmc_snapshot(*, adapter: TSETMCAdapter | None=None, flow: int | Non
             allow_cached_fallback=False,
         )
 
-    # After market close on a trading day, the closed snapshot belongs to
-    # that same trading day.
-    if is_trading_day and now.time() > MARKET_CLOSE:
-        date_key = now.strftime("%Y%m%d")
-        closed = _load_closed_snapshot_for_date(date_key)
-        if closed is not None and _snapshot_is_usable_as_closed(closed):
-            return closed
+    # After market close, freeze the first final TSETMC state requested for
+    # the relevant trading session and reuse it until the next live opening.
+    # On a trading day the basis date is today; before open/non-trading it is
+    # the most recent trading day.
+    basis_date_key = now.strftime("%Y%m%d") if is_trading_day and now.time() > MARKET_CLOSE else _previous_trading_date(now)
 
-        captured = _build_live_snapshot(
-            adapter=adapter,
-            flow=flow,
-            max_instruments=max_instruments,
-            symbol_prefix=symbol_prefix,
-            allow_cached_fallback=False,
+    closed = _load_closed_snapshot_for_date(basis_date_key)
+    if closed is not None and _snapshot_is_usable_as_closed(closed):
+        closed["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+        closed["live_refresh_status"] = "NOT_REQUESTED_CLOSED_MODE"
+        closed["closed_for_date"] = basis_date_key
+        closed["selection_reason"] = "EXISTING_FINAL_MARKET_SNAPSHOT"
+        return closed
+
+    # No frozen end-of-session snapshot exists yet. The first request after
+    # the market session becomes the snapshot event: capture the final state
+    # currently available from TSETMC, freeze it, and use it for all later
+    # reports until the next opening. This deliberately does not require a
+    # dEven/hEven field when TSETMC's final option universe omits it.
+    captured = _build_live_snapshot(
+        adapter=adapter,
+        flow=flow,
+        max_instruments=max_instruments,
+        symbol_prefix=symbol_prefix,
+        allow_cached_fallback=False,
+    )
+    captured["closed_snapshot_kind"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+    captured["closed_capture_at"] = now.isoformat()
+    captured["closed_for_date"] = basis_date_key
+    captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
+    captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
+
+    if _snapshot_is_usable_as_closed(captured):
+        _persist_closed_snapshot(
+            captured,
+            basis_date_key,
+            "CAPTURED_ON_FIRST_CLOSED_REQUEST",
         )
-        if _snapshot_is_usable_as_closed(captured):
-            _persist_closed_snapshot(
-                captured,
-                date_key,
-                "CAPTURED_ON_FIRST_CLOSED_REQUEST",
-            )
-            captured["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
-            captured["live_refresh_status"] = "CAPTURED_ON_FIRST_CLOSED_REQUEST"
-            captured["closed_for_date"] = date_key
-            return captured
+        return captured
 
-        cached = _load_last_known_snapshot()
-        if cached is not None:
-            cached["fallback_reason"] = "CURRENT_CLOSED_CAPTURE_NOT_A_VALID_TIMESTAMPED_SNAPSHOT"
-            return cached
-
-        raise RuntimeError(
-            "CURRENT_CLOSED_SNAPSHOT_NOT_VALID_AND_NO_PREVIOUS_VALID_SNAPSHOT"
-        )
-
-    # Before market open on a trading day, and on non-trading days, the
-    # current date is NOT a closed-market date. Use the most recent trading
-    # day's closed snapshot instead. This is the critical pre-open/weekend
-    # rule: never demand a closed snapshot for the current non-closed date.
-    previous_date_key = _previous_trading_date(now)
-    previous_closed = _load_closed_snapshot_for_date(previous_date_key)
-    if previous_closed is not None and _snapshot_is_usable_as_closed(previous_closed):
-        previous_closed["data_mode"] = "LAST_KNOWN_TSETMC_SNAPSHOT"
-        previous_closed["live_refresh_status"] = "NOT_REQUESTED_CLOSED_MODE"
-        previous_closed["closed_for_date"] = previous_date_key
-        previous_closed["selection_reason"] = "PREOPEN_OR_NONTRADING_DAY_PREVIOUS_TRADING_DAY"
-        return previous_closed
+    # Only if TSETMC itself did not return a usable universe do we fall back
+    # to an older valid frozen snapshot. Report generation must not be blocked
+    # merely because the current closed response lacks an explicit timestamp.
+    cached = _load_last_known_snapshot()
+    if cached is not None:
+        cached["fallback_reason"] = "CURRENT_FINAL_TSETMC_STATE_UNUSABLE"
+        cached["selection_reason"] = "LAST_VALID_SNAPSHOT_FALLBACK"
+        return cached
 
     raise RuntimeError(
-        "CLOSED_SNAPSHOT_UNAVAILABLE_FOR_PREVIOUS_TRADING_DAY:"
-        f"{previous_date_key}"
+        "TSETMC_FINAL_STATE_UNAVAILABLE_AND_NO_PREVIOUS_VALID_SNAPSHOT"
     )
 
 def write_snapshot(snapshot:dict[str,Any], output:str|Path)->Path:
