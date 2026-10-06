@@ -208,14 +208,23 @@ def _attach_canonical_quote_evidence(rows, *, adapter=None, allow_refresh=True):
 
 
 def _tradability_gate(row):
-    """Hard Stage-1 quality gate against non-tradable/extreme-premium contracts."""
+    """Hard Stage-1 quality gate for tradability and contract structure.
+
+    Mandatory rejection rules:
+      - OTM contracts are excluded.
+      - Last traded premium below 10 IRR is excluded.
+      - Leverage above 20x is excluded.
+    These rules are applied before discovery/final economic ranking.
+    """
     canonical = row.get("canonical") or {}
+    identity = row.get("identity") or {}
     try:
         underlying = float(canonical.get("قیمت سهم پایه"))
         premium = float(canonical.get("آخرین قیمت"))
+        strike = float(canonical.get("قیمت اعمال"))
     except (TypeError, ValueError):
         return False, "MISSING_PRICE_EVIDENCE"
-    if underlying <= 0 or premium <= 0:
+    if underlying <= 0 or premium <= 0 or strike <= 0:
         return False, "INVALID_PRICE_EVIDENCE"
     activity_values = []
     for key in ("حجم معاملات", "ارزش معاملات", "تعداد معاملات"):
@@ -226,6 +235,16 @@ def _tradability_gate(row):
             activity_values.append(False)
     if not any(activity_values):
         return False, "NO_TRADE_ACTIVITY_EVIDENCE"
+    contract_type = str(identity.get("contract_type") or "").upper()
+    if contract_type == "CALL" and underlying < strike:
+        return False, "OTM_CONTRACT"
+    if contract_type == "PUT" and underlying > strike:
+        return False, "OTM_CONTRACT"
+    if premium < 10:
+        return False, "LAST_PRICE_LT_10_IRR"
+    leverage = underlying / premium
+    if leverage > 20:
+        return False, "LEVERAGE_GT_20X"
     premium_ratio = premium / underlying
     if premium_ratio < 0.0005:
         return False, "EXTREME_PREMIUM_TO_UNDERLYING"
@@ -333,12 +352,15 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
 
         quality_rows = []
         quality_rejections = {}
+        quality_rejection_counts = {}
         for row in rows:
             ok, reason = _tradability_gate(row)
             if ok:
                 quality_rows.append(row)
             else:
-                quality_rejections[str((row.get("identity") or {}).get("instrument_id") or "")] = reason
+                instrument_id = str((row.get("identity") or {}).get("instrument_id") or "")
+                quality_rejections[instrument_id] = reason
+                quality_rejection_counts[reason] = quality_rejection_counts.get(reason, 0) + 1
 
         discovery = build_economic_ranking(quality_rows)
         discovery_rows = [
@@ -398,6 +420,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         ranking["discovery_pool_row_count"] = len(discovery_source_rows)
         ranking["quality_gate_row_count"] = len(quality_rows)
         ranking["quality_gate_rejections"] = len(quality_rejections)
+        ranking["quality_gate_rejection_counts"] = quality_rejection_counts
         ranking["direction_gate_rejections"] = len(direction_rejections)
         ranking["eligibility_fallback_used"] = False
         ranking["economic_scoring_enabled"] = True
@@ -411,12 +434,16 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         }
         ranking["tradability_gate"] = {
             "status": "PASS" if quality_rows else "NO_QUALITY_CANDIDATES",
+            "minimum_last_price_irr": 10,
+            "maximum_leverage_x": 20,
+            "otm_rule": "CALL: underlying < strike => rejected | PUT: underlying > strike => rejected | ATM retained",
             "minimum_premium_to_underlying": 0.0005,
             "minimum_premium_to_underlying_pct": 0.05,
             "extreme_premium_rule": "premium/underlying < 0.05% => rejected",
             "activity_rule": "at least one of volume/value/trade_count must be positive",
             "eligible_count": len(quality_rows),
             "rejected_count": len(quality_rejections),
+            "rejection_counts": quality_rejection_counts,
         }
         snapshot["economic_scoring_enabled"] = True
         snapshot["economic_scoring_target_count"] = limit
@@ -540,97 +567,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"آخرین timestamp منبع: {basis_timestamp}",
         f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
-        f"گیت کیفیت معاملات: {(snapshot.get('tradability_gate') or {}).get('status', 'داده موجود نیست')} | حذف پریمیوم بسیار کم/فاقد شواهد معامله",
-        "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
-        "━━━━━━━━━━━━━━━━━━━━",
-    ]
-
-    for idx,item in enumerate(rows,1):
-        c0=item.get("canonical") or {}; ident=item.get("identity") or {}
-        score=item.get("_economic_score")
-        score_text=f"{float(score):.2f}" if score is not None else "داده موجود نیست"
-        model=item.get("option_model") or {}
-        delta_text=(
-            f"{float(model.get('delta')):.4f}"
-            if model.get("status") == "SUCCESS" and model.get("delta") is not None
-            else "داده موجود نیست"
-        )
-        bs_text=(
-            number(model.get("black_scholes"))
-            if model.get("status") == "SUCCESS" and model.get("black_scholes") is not None
-            else "داده موجود نیست"
-        )
-        lines.extend([
-            f"🔹 {idx}. {c0.get('نماد') or 'داده موجود نیست'}",
-            f"نوع: {ident.get('contract_type') or 'داده موجود نیست'}",
-            f"اعمال: {number(c0.get('قیمت اعمال'))}",
-            f"سررسید: {days_to_expiry(c0.get('تاریخ سررسید'))} روز",
-            f"آخرین قیمت: {number(c0.get('آخرین قیمت'))}",
-            f"پایانی: {number(c0.get('قیمت پایانی'))}",
-            f"فاصله سربه‌سر: {breakeven_distance(item)}",
-            f"اهرم: {leverage(item)}",
-            f"دلتا: {delta_text}",
-            f"بلک‌شولز: {bs_text}",
-            f"امتیاز: {score_text}/100","━━━━━━━━━━━━━━━━━━━━",
-        ])
-
-    bases={}; total_volume=0.0; total_value=0.0; va=False; vala=False; days=[]
-    for item in rows:
-        c0=item.get("canonical") or {}
-        u=str((item.get("identity") or {}).get("underlying_symbol") or "").strip() or "داده موجود نیست"
-        bases[u]=bases.get(u,0)+1
-        try: total_volume+=float(c0.get("حجم معاملات")); va=True
-        except (TypeError,ValueError): pass
-        try: total_value+=float(c0.get("ارزش معاملات")); vala=True
-        except (TypeError,ValueError): pass
-        d=days_to_expiry(c0.get("تاریخ سررسید"))
-        if d!="داده موجود نیست": days.append(int(d))
-    conc=sorted(bases.items(),key=lambda x:(-x[1],x[0]))
-    conc_text=", ".join(f"{k} ({v})" for k,v in conc[:5])
-    ui = snapshot.get("underlying_intelligence", {}).get("instruments") or {}
-    if ui:
-        bullish = sum(1 for x in ui.values() if x.get("bias") == "BULLISH")
-        bearish = sum(1 for x in ui.values() if x.get("bias") == "BEARISH")
-        conflicted = sum(1 for x in ui.values() if x.get("bias") == "CONFLICTED")
-        neutral = sum(1 for x in ui.values() if x.get("bias") == "NEUTRAL")
-        lines.extend([
-            "🧭 تحلیل سهم‌های پایه — مرحله ۱","━━━━━━━━━━━━━━━━━━━━",
-            f"پایه‌های تحلیل‌شده: {len(ui)} | Bullish: {bullish} | Bearish: {bearish} | Neutral: {neutral} | Conflicted: {conflicted}",
-        ])
-        for uid, item in ui.items():
-            context = (snapshot.get("underlying_context", {}).get("instruments") or {}).get(uid) or {}
-            lines.append(
-                f"پایه {context.get('instrument_id', uid)} | Bias={item.get('bias','N/A')} | "
-                f"Confidence={item.get('confidence','N/A')} | Score={item.get('score','N/A')}"
-            )
-        lines.extend([
-            "این بخش توصیفی است؛ SuperTrend/Bollinger/Ichimoku و یادگیری تطبیقی در مراحل بعدی اضافه می‌شوند.",
-            "━━━━━━━━━━━━━━━━━━━━",
-        ])
-
-    lines.extend([
-        f"📈 تحلیل جامع {len(rows)} فرصت","━━━━━━━━━━━━━━━━━━━━",
-        "1) نقدشوندگی و فعالیت",
-        f"حجم معاملات مجموع: {number(total_volume) if va else 'داده موجود نیست'}",
-        f"ارزش معاملات مجموع: {number(total_value) if vala else 'داده موجود نیست'}",
-        f"تمرکز بر پایه‌ها: {conc_text or 'داده موجود نیست'}",
-        "OI و تغییرات OI: داده موجود نیست؛ تفسیر جریان موقعیت‌ها انجام نشده است.","",
-        "2) اهرم، فاصله سربه‌سر و زمان",
-        f"بازه سررسید: {min(days)} تا {max(days)} روز" if days else "بازه سررسید: داده موجود نیست",
-        "سررسید نزدیک، حساسیت به فرسایش زمانی را افزایش می‌دهد؛ اهرم بالا به‌تنهایی مبنای تصمیم نیست.",
-        "دلتا و بلک‌شولز از مدل Black-Scholes با نوسان تاریخی TSETMC محاسبه شده‌اند؛ نرخ بدون ریسک مدل 0% و سود تقسیمی 0% است و این دو عدد داده مشاهده‌شده بازار نیستند.","",
-        "3) تمرکز ریسک",
-        f"تعداد پایه‌های متمایز: {len(bases)}",
-        f"بیشترین تمرکز: {conc_text or 'داده موجود نیست'}",
-        "تمرکز چند قرارداد روی یک پایه، تنوع واقعی سبد را کاهش می‌دهد.","",
-        "4) جمع‌بندی",
-        "فرصت‌ها: قراردادهای با امتیاز اقتصادی و شواهد فعالیت TSETMC در صدر فهرست قرار گرفته‌اند.",
-        "ریسک‌ها: سررسید نزدیک، اهرم، تمرکز روی پایه و تفاوت بین ارزش Black-Scholes مدل و قیمت بازار.",
-        "پایش جلسه بعد: آخرین/پایانی، حجم، ارزش معاملات، عمق بازار، تغییرات نوسان تاریخی و اختلاف قیمت مدل با بازار.",
-        "⚠️ این خروجی رتبه‌بندی و تحلیل توصیفی است و BUY/SELL خودکار تولید نمی‌کند.","━━━━━━━━━━━━━━━━━━━━",
-    ])
-
-    return "\n".join(lines), snapshot
+        f"گیت کیفیت معاملات: {(snapshot.get("tradability_gate") or {}).get("status", "داده موجود نیست")} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف\n".join(lines), snapshot
 
 
 def save_tsetmc_report(report, snapshot):
