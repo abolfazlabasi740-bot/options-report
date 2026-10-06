@@ -208,14 +208,7 @@ def _attach_canonical_quote_evidence(rows, *, adapter=None, allow_refresh=True):
 
 
 def _tradability_gate(row):
-    """Hard Stage-1 quality gate for tradability and contract structure.
-
-    Mandatory rejection rules:
-      - OTM contracts are excluded.
-      - Last traded premium below 10 IRR is excluded.
-      - Leverage above 20x is excluded.
-    These rules are applied before discovery/final economic ranking.
-    """
+    """Hard Stage-1 quality gate for tradability and contract structure."""
     canonical = row.get("canonical") or {}
     identity = row.get("identity") or {}
     try:
@@ -242,8 +235,7 @@ def _tradability_gate(row):
         return False, "OTM_CONTRACT"
     if premium < 10:
         return False, "LAST_PRICE_LT_10_IRR"
-    leverage = underlying / premium
-    if leverage > 20:
+    if underlying / premium > 20:
         return False, "LEVERAGE_GT_20X"
     premium_ratio = premium / underlying
     if premium_ratio < 0.0005:
@@ -567,7 +559,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"آخرین timestamp منبع: {basis_timestamp}",
         f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
-        f"گیت کیفیت معاملات: {(snapshot.get("tradability_gate") or {}).get("status", "داده موجود نیست")} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف\n".join(lines), snapshot
+        f"گیت کیفیت معاملات: {(snapshot.get("tradability_gate") or {}).get("status", "داده موجود نیست")} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف",\n".join(lines), snapshot
 
 
 def save_tsetmc_report(report, snapshot):
