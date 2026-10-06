@@ -428,6 +428,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"تعداد قراردادهای مبنا: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
         f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
+        f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
+        f"گیت کیفیت معاملات: {(snapshot.get('tradability_gate') or {}).get('status', 'داده موجود نیست')} | حذف پریمیوم بسیار کم/فاقد شواهد معامله",
         "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
