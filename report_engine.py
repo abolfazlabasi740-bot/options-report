@@ -19,6 +19,7 @@ from audit_integrity import verify_audit
 from tsetmc_first_source import build_tsetmc_snapshot
 from tsetmc_adapter import TSETMCAdapter
 from underlying_trend_engine import fetch_underlying_context
+from underlying_intelligence_engine import build_underlying_intelligence
 from economic_scoring_engine import build_economic_ranking
 from option_model import attach_option_model_metrics
 from signal_engine_shadow import evaluate_shadow_candidates
@@ -216,7 +217,9 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         adapter=adapter,
         flow=flow,
         max_instruments=None,
-        symbol_prefix=symbol_prefix,
+        # The canonical/cache snapshot must always be the full TSETMC universe.
+        # Any symbol/underlying filter is applied only after the snapshot is built.
+        symbol_prefix=None,
     )
     # Discovery must cover the full TSETMC option universe. The report display
     # limit is applied only after ranking so the ranking is not truncated by
@@ -362,6 +365,16 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         if str((row.get("identity") or {}).get("underlying_id") or "").strip()
     })
     snapshot["underlying_context"] = fetch_underlying_context(underlying_ids, adapter=adapter) if live_enrichment else {"status":"CLOSED_SNAPSHOT_NO_REFRESH","source_of_truth":"TSETMC","instrument_count":len(underlying_ids),"instruments":{}}
+    underlying_map = (snapshot.get("underlying_context") or {}).get("instruments") or {}
+    snapshot["underlying_intelligence"] = build_underlying_intelligence(underlying_map) if underlying_map else {
+        "status": "UNAVAILABLE",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.0",
+        "source_of_truth": "TSETMC",
+        "instrument_count": 0,
+        "instruments": {},
+        "production_signal": "OFF",
+        "stage": "STAGE_1",
+    }
     underlying_symbols = sorted({
         str((row.get("identity") or {}).get("underlying_symbol") or "").strip()
         for row in enrichment_rows
@@ -430,6 +443,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"دامنه رتبه‌بندی: {ranking.get('ranking_scope','داده موجود نیست')}" + (" | تکمیل از ردیف‌های دارای قیمت صریح TSETMC" if ranking.get("eligibility_fallback_used") else ""),
         f"تعداد قراردادهای مبنا: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
+        f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
         "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
@@ -476,8 +490,29 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         if d!="داده موجود نیست": days.append(int(d))
     conc=sorted(bases.items(),key=lambda x:(-x[1],x[0]))
     conc_text=", ".join(f"{k} ({v})" for k,v in conc[:5])
+    ui = snapshot.get("underlying_intelligence", {}).get("instruments") or {}
+    if ui:
+        bullish = sum(1 for x in ui.values() if x.get("bias") == "BULLISH")
+        bearish = sum(1 for x in ui.values() if x.get("bias") == "BEARISH")
+        conflicted = sum(1 for x in ui.values() if x.get("bias") == "CONFLICTED")
+        neutral = sum(1 for x in ui.values() if x.get("bias") == "NEUTRAL")
+        lines.extend([
+            "🧭 تحلیل سهم‌های پایه — مرحله ۱","━━━━━━━━━━━━━━━━━━━━",
+            f"پایه‌های تحلیل‌شده: {len(ui)} | Bullish: {bullish} | Bearish: {bearish} | Neutral: {neutral} | Conflicted: {conflicted}",
+        ])
+        for uid, item in ui.items():
+            context = (snapshot.get("underlying_context", {}).get("instruments") or {}).get(uid) or {}
+            lines.append(
+                f"پایه {context.get('instrument_id', uid)} | Bias={item.get('bias','N/A')} | "
+                f"Confidence={item.get('confidence','N/A')} | Score={item.get('score','N/A')}"
+            )
+        lines.extend([
+            "این بخش توصیفی است؛ SuperTrend/Bollinger/Ichimoku و یادگیری تطبیقی در مراحل بعدی اضافه می‌شوند.",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ])
+
     lines.extend([
-        "📈 تحلیل جامع ۹ فرصت","━━━━━━━━━━━━━━━━━━━━",
+        f"📈 تحلیل جامع {len(rows)} فرصت","━━━━━━━━━━━━━━━━━━━━",
         "1) نقدشوندگی و فعالیت",
         f"حجم معاملات مجموع: {number(total_volume) if va else 'داده موجود نیست'}",
         f"ارزش معاملات مجموع: {number(total_value) if vala else 'داده موجود نیست'}",
