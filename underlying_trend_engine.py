@@ -252,7 +252,7 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
                 sequence_events.append({"date": date_i, "event": "VOLUME_EXPANSION", "strength": round(vol_ratio_i, 3)})
             if value_ratio_i is not None and value_ratio_i >= 1.20:
                 sequence_events.append({"date": date_i, "event": "VALUE_EXPANSION", "strength": round(value_ratio_i, 3)})
-            if ret_i is not None and ret_i > 0.50 and (prev_return is None or ret_i > prev_return):
+            if ret_i is not None and abs(ret_i) > 0.50 and (prev_return is None or abs(ret_i) > abs(prev_return)):
                 sequence_events.append({"date": date_i, "event": "PRICE_ACCELERATION", "strength": round(ret_i, 3), "direction": "BULLISH" if ret_i > 0 else "BEARISH"})
             momentum_improving = ((macd_i is not None and prev_macd is not None and macd_i > prev_macd)
                                  or (rsi_i is not None and prev_rsi is not None and rsi_i > prev_rsi + 0.5))
