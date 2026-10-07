@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.0"
+ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.1-EARLY-MOVE"
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 
@@ -134,6 +134,87 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         if _sma(values, 5) is not None and _sma(values, 20) not in (None, 0)
         else None
     )
+    # Early-move evidence is deliberately shadow-only. It measures change and
+    # sequence from retained TSETMC daily history; it does not generate a
+    # BUY/SELL signal and does not alter Stage-1 direction eligibility.
+    prev_closes = closes[:-1]
+    price_change_1 = (
+        (closes[-1] / closes[-2] - 1.0) * 100.0
+        if len(closes) >= 2 and closes[-2] else None
+    )
+    price_change_3 = (
+        (closes[-1] / closes[-4] - 1.0) * 100.0
+        if len(closes) >= 4 and closes[-4] else None
+    )
+    sma20_slope_5_pct = (
+        (sma20 / _sma(closes[:-5], 20) - 1.0) * 100.0
+        if len(closes) >= 25 and _sma(closes[:-5], 20) not in (None, 0)
+        else None
+    )
+    rsi_prev = _rsi(prev_closes, 14)
+    rsi_change_1 = rsi14 - rsi_prev if rsi14 is not None and rsi_prev is not None else None
+    ema12_prev = _ema(prev_closes, 12)
+    ema26_prev = _ema(prev_closes, 26)
+    macd_prev = (
+        ema12_prev - ema26_prev
+        if ema12_prev is not None and ema26_prev is not None
+        else None
+    )
+    macd_change = macd - macd_prev if macd is not None and macd_prev is not None else None
+    volume_ratio_prev = (
+        (_sma(volumes[:-1], 5) / _sma(volumes[:-1], 20))
+        if len(volumes) >= 21 and _sma(volumes[:-1], 5) is not None
+        and _sma(volumes[:-1], 20) not in (None, 0)
+        else None
+    )
+    volume_ratio_change = (
+        volume_ratio - volume_ratio_prev
+        if volume_ratio is not None and volume_ratio_prev is not None
+        else None
+    )
+    prior_20_high = max(
+        (_num(row.get("priceMax")) for row in rows[-21:-1] if _num(row.get("priceMax")) is not None),
+        default=None,
+    )
+    breakout_20 = (
+        last_close > prior_20_high
+        if last_close is not None and prior_20_high is not None
+        else None
+    )
+    early_components = []
+    if price_change_1 is not None:
+        early_components.append(1 if price_change_1 > 0 else -1 if price_change_1 < 0 else 0)
+    if price_change_3 is not None:
+        early_components.append(1 if price_change_3 > 0 else -1 if price_change_3 < 0 else 0)
+    if sma20_slope_5_pct is not None:
+        early_components.append(1 if sma20_slope_5_pct > 0.5 else -1 if sma20_slope_5_pct < -0.5 else 0)
+    if rsi_change_1 is not None:
+        early_components.append(1 if rsi_change_1 > 1 else -1 if rsi_change_1 < -1 else 0)
+    if macd_change is not None:
+        early_components.append(1 if macd_change > 0 else -1 if macd_change < 0 else 0)
+    if volume_ratio_change is not None:
+        early_components.append(1 if volume_ratio_change > 0.10 else -1 if volume_ratio_change < -0.10 else 0)
+    if breakout_20 is not None:
+        early_components.append(1 if breakout_20 else 0)
+    early_score = (
+        round(sum(early_components) / len(early_components) * 100.0, 2)
+        if early_components else None
+    )
+    positive_early = sum(1 for x in early_components if x > 0)
+    negative_early = sum(1 for x in early_components if x < 0)
+    if early_score is None:
+        early_state = "INSUFFICIENT_EVIDENCE"
+    elif positive_early >= 4 and positive_early > negative_early:
+        early_state = "EARLY_UPSIDE_CONFIRMATION"
+    elif negative_early >= 4 and negative_early > positive_early:
+        early_state = "EARLY_DOWNSIDE_CONFIRMATION"
+    elif positive_early > negative_early:
+        early_state = "BUILDING_UPSIDE"
+    elif negative_early > positive_early:
+        early_state = "BUILDING_DOWNSIDE"
+    else:
+        early_state = "MIXED_CHANGE"
+
     recent_high = max((_num(row.get("priceMax")) for row in rows[-20:] if _num(row.get("priceMax")) is not None), default=None)
     recent_low = min((_num(row.get("priceMin")) for row in rows[-20:] if _num(row.get("priceMin")) is not None), default=None)
     range_position = (
@@ -201,6 +282,23 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         "volume_ratio_5_to_20": volume_ratio,
         "volume_ratio_5_to_50": volume_ratio_5_to_50,
         "value_ratio_5_to_20": value_ratio,
+        "early_move": {
+            "status": "PASS" if early_components else "UNAVAILABLE",
+            "score": early_score,
+            "state": early_state,
+            "price_change_1_session_pct": price_change_1,
+            "price_change_3_sessions_pct": price_change_3,
+            "sma20_slope_5_sessions_pct": sma20_slope_5_pct,
+            "rsi_change_1_session": rsi_change_1,
+            "macd_change_1_session": macd_change,
+            "volume_ratio_change_1_session": volume_ratio_change,
+            "breakout_above_prior_20_high": breakout_20,
+            "positive_components": positive_early,
+            "negative_components": negative_early,
+            "available_components": len(early_components),
+            "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+            "production_gate": "OFF",
+        },
         "range_position_20": range_position,
         "trend_state": trend_state,
         "upper_limit_price": upper_limit,
@@ -380,7 +478,7 @@ def fetch_underlying_context(instrument_ids: list[str], adapter: TSETMCAdapter |
         "rules": {
             "history_match": "EXACT_INSTRUMENT_ID",
             "history_order": "SORTED_BY_TSETMC_D_EVEN",
-            "technical_features": ["SMA_5", "SMA_10", "SMA_20", "SMA_50", "RSI_14_WILDER", "MACD_12_26", "RETURN_5_20", "VOLUME_VALUE_RATIO_5_20"],
+            "technical_features": ["SMA_5", "SMA_10", "SMA_20", "SMA_50", "RSI_14_WILDER", "MACD_12_26", "RETURN_5_20", "VOLUME_VALUE_RATIO_5_20", "EARLY_MOVE_CHANGE_SEQUENCE"],
             "board_features": ["BEST_LIMITS_5_LEVELS", "CLIENT_TYPE_INDIVIDUAL_LEGAL"],
             "limit_headroom": "ONLY_WHEN_DAILY_HISTORY_DATE_MATCHES_CURRENT_TEHRAN_DATE",
             "retrieval_time_is_not_market_time": True,
