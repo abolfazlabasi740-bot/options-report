@@ -514,7 +514,28 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
 
     mw = snapshot.get("evidence", {}).get("market_watch", {})
     data_mode = snapshot.get("data_mode") or "UNKNOWN"
-    basis_timestamp = market_state["latest_source_market_timestamp"] or "داده موجود نیست"
+    basis_timestamp = (
+        market_state["latest_source_market_timestamp"]
+        or mw.get("retrieved_at")
+        or snapshot.get("closed_capture_at")
+        or snapshot.get("generated_at")
+        or "داده موجود نیست"
+    )
+    basis_date = None
+    for _ts in (
+        market_state.get("latest_source_market_timestamp"),
+        mw.get("retrieved_at"),
+        snapshot.get("closed_capture_at"),
+        snapshot.get("generated_at"),
+    ):
+        if _ts:
+            try:
+                basis_date = datetime.fromisoformat(str(_ts).replace("Z", "+00:00")).astimezone(TEHRAN).date()
+                break
+            except (TypeError, ValueError):
+                pass
+    if basis_date is None:
+        basis_date = datetime.now(TEHRAN).date()
 
     ranking_rows = ranking.get("ranking_rows") or []
     ranking_by_id = {str(x.get("instrument_id")): x for x in ranking_rows if x.get("instrument_id") is not None}
@@ -523,7 +544,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         if not value: return "داده موجود نیست"
         try:
             expiry=datetime.strptime(str(value)[:8],"%Y%m%d").date()
-            return str(max(0,(expiry-datetime.now(TEHRAN).date()).days))
+            return str(max(0,(expiry-basis_date).days))
         except (TypeError,ValueError): return "داده موجود نیست"
 
     def leverage(row):
@@ -579,6 +600,12 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         bias=str(context.get("bias") or "داده موجود نیست")
         confidence=str(context.get("confidence") or "داده موجود نیست")
         score_parts=", ".join(f"{k}={float(v):.1f}" for k,v in block_scores.items() if v is not None) or "داده موجود نیست"
+        evidence_list=context.get("evidence") or []
+        evidence_text=" | ".join(
+            f"{e.get('family')}: {e.get('detail')}"
+            for e in evidence_list[:4]
+            if isinstance(e, dict) and e.get("detail")
+        ) or "داده موجود نیست"
         why_direction = (
             "CALL با Bias صعودی سهم پایه تأیید شده"
             if ident.get("contract_type") == "CALL" and bias == "BULLISH"
@@ -611,6 +638,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"امتیاز: {score_text}/100",
             f"شواهد امتیاز: {score_parts}",
             f"پایه: {ident.get('underlying_symbol') or 'داده موجود نیست'} | Bias={bias} | Confidence={confidence}",
+            f"شواهد سهم پایه: {evidence_text}",
             f"چرا انتخاب شد: {why_direction}؛ سپس امتیاز اقتصادی و گیت کیفیت معاملاتی اعمال شده است.",
             "━━━━━━━━━━━━━━━━━━━━",
         ])
