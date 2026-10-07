@@ -289,8 +289,6 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     else:
         sequence_label = "NO_CONFIRMED_SEQUENCE"
     latest_sequence_return = next((x.get("return_pct") for x in reversed(session_observations) if x.get("return_pct") is not None), None)
-    prelock_distance = None
-
     recent_high = max((_num(row.get("priceMax")) for row in rows[-20:] if _num(row.get("priceMax")) is not None), default=None)
     recent_low = min((_num(row.get("priceMin")) for row in rows[-20:] if _num(row.get("priceMin")) is not None), default=None)
     range_position = (
@@ -322,6 +320,8 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         if limit_date_matches and upper_limit is not None and latest_last not in (None, 0)
         else None
     )
+    prelock_distance = headroom
+
     touched_upper = (
         _num(latest.get("priceMax")) >= upper_limit
         if limit_date_matches and upper_limit is not None and _num(latest.get("priceMax")) is not None
