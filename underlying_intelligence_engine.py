@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-ENGINE_VERSION = "TSETMC-UNDERLYING-INTELLIGENCE-1.1-EARLY-MOVE"
+ENGINE_VERSION = "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK"
 
 def _num(v: Any) -> float | None:
     try:
@@ -62,11 +62,36 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
 
     prelock = context.get("early_move", {}).get("pre_lock_sequence") or {}
     if prelock.get("status") == "PASS":
+        raw_direction = str(prelock.get("sequence_direction") or "UNAVAILABLE").upper()
+        bias_hint = str(context.get("trend_state") or "").upper()
+        if raw_direction == "BULLISH":
+            sequence_alignment = "BULLISH_SEQUENCE"
+        elif raw_direction == "BEARISH":
+            sequence_alignment = "BEARISH_SEQUENCE"
+        elif raw_direction == "MIXED":
+            sequence_alignment = "CONFLICTED_SEQUENCE"
+        else:
+            sequence_alignment = "DIRECTION_UNAVAILABLE"
         evidence.append((
             "PRE_LOCK_SEQUENCE",
-            1 if prelock.get("state") in {"EARLY", "DEVELOPING", "WATCH"} else 0,
+            0,
             f"وضعیت پیش‌قفلی={prelock.get('state', 'N/A')} | توالی={prelock.get('sequence', 'N/A')} | "
+            f"جهت توالی={raw_direction} | اعتبارسنجی={sequence_alignment} | "
             f"اعتماد={prelock.get('confidence', 'N/A')} | دانه‌بندی={prelock.get('data_granularity', 'N/A')}"
+        ))
+
+    # Correction is a separate state from primary direction.
+    correction_state = str(context.get("correction_state") or "")
+    correction_confidence = str(context.get("correction_confidence") or "")
+    correction_active = bool(context.get("correction_active"))
+    correction_from_peak = _num(context.get("correction_from_prior_peak_pct"))
+    if correction_active:
+        evidence.append((
+            "CORRECTION", 0,
+            f"وضعیت پایه={correction_state} | اعتماد={correction_confidence} | "
+            f"افت از سقف اخیر={correction_from_peak:.2f}%"
+            if correction_from_peak is not None
+            else f"وضعیت پایه={correction_state} | اعتماد={correction_confidence}"
         ))
 
     trend = str(context.get("trend_state") or "")
@@ -222,7 +247,8 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
             "adaptive_learning": "NOT_IN_STAGE_1",
             "additional_indicators": "DEFERRED_TO_LATER_STAGE",
             "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
-            "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_NOT_A_GATE",
+            "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+            "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS",
         },
         "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL",
     }
