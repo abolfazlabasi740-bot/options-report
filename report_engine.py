@@ -581,7 +581,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"کاندیدهای مجاز جهت: {ranking.get('ranking_scope_row_count','داده موجود نیست')}",
         f"تعداد قراردادهای نهایی: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
-        f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
+        f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.1-EARLY-MOVE",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
         f"گیت کیفیت معاملات: {(snapshot.get('tradability_gate') or {}).get('status', 'داده موجود نیست')} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف",
         "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
@@ -673,7 +673,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 f"Confidence={item.get('confidence','N/A')} | Score={item.get('score','N/A')}"
             )
         lines.extend([
-            "این بخش توصیفی است؛ SuperTrend/Bollinger/Ichimoku و یادگیری تطبیقی در مراحل بعدی اضافه می‌شوند.",
+            "این بخش توصیفی است؛ Early-Move به‌صورت Shadow از Change+Sequence محاسبه شده و هنوز گیت رتبه‌بندی نیست. SuperTrend/Bollinger/Ichimoku و یادگیری تطبیقی در مراحل بعدی اضافه می‌شوند.",
             "━━━━━━━━━━━━━━━━━━━━",
         ])
 
@@ -693,7 +693,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"بیشترین تمرکز: {conc_text or 'داده موجود نیست'}",
         "تمرکز چند قرارداد روی یک پایه، تنوع واقعی سبد را کاهش می‌دهد.","",
         "4) چرایی انتخاب رتبه‌ها",
-        "هر قرارداد ابتدا از گیت کیفیت عبور کرده، سپس جهت آن با تحلیل سهم پایه کنترل شده و در نهایت با امتیاز اقتصادی TSETMC رتبه گرفته است.",
+        "هر قرارداد ابتدا از گیت کیفیت عبور کرده، سپس جهت آن با تحلیل سهم پایه کنترل شده و در نهایت با امتیاز اقتصادی TSETMC رتبه گرفته است. Early-Move فعلاً فقط شواهد تغییر و توالی را گزارش می‌کند و در رتبه‌بندی دخالت ندارد.",
         "امتیازهای بلوکی نمایش‌داده‌شده شواهد عددی رتبه‌بندی هستند؛ داده‌های غایب صفر فرض نشده‌اند.","",
         "5) جمع‌بندی",
         "فرصت‌ها: قراردادهای با امتیاز اقتصادی و شواهد فعالیت TSETMC در صدر فهرست قرار گرفته‌اند.",
