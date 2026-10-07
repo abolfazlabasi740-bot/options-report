@@ -582,6 +582,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"تعداد قراردادهای نهایی: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
         f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.1-EARLY-MOVE",
+        "پیش‌قفلی / PRE-LOCK: Shadow | تشخیص توالی حجم→قیمت→مومنتوم در جلسه‌های روزانه؛ وارد رتبه‌بندی نشده است.",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
         f"گیت کیفیت معاملات: {(snapshot.get('tradability_gate') or {}).get('status', 'داده موجود نیست')} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف",
         "ℹ️ فیلد فاقد شواهد مستقیم TSETMC = «داده موجود نیست». این گزارش سیگنال خرید/فروش نیست.",
@@ -672,8 +673,15 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 f"پایه {context.get('instrument_id', uid)} | Bias={item.get('bias','N/A')} | "
                 f"Confidence={item.get('confidence','N/A')} | Score={item.get('score','N/A')}"
             )
+            prelock = context.get("early_move", {}).get("pre_lock_sequence") or {}
+            if prelock.get("status") == "PASS":
+                lines.append(
+                    f"پیش‌قفلی {context.get('instrument_id', uid)} | وضعیت={prelock.get('state','N/A')} | "
+                    f"Sequence={prelock.get('sequence','N/A')} | Confidence={prelock.get('confidence','N/A')} | "
+                    f"فاصله تا سقف={percent(prelock.get('distance_to_upper_limit_pct'))}"
+                )
         lines.extend([
-            "این بخش توصیفی است؛ Early-Move به‌صورت Shadow از Change+Sequence محاسبه شده و هنوز گیت رتبه‌بندی نیست. SuperTrend/Bollinger/Ichimoku و یادگیری تطبیقی در مراحل بعدی اضافه می‌شوند.",
+            "این بخش توصیفی است؛ Early-Move و PRE-LOCK/Sequence به‌صورت Shadow محاسبه شده‌اند و هنوز گیت رتبه‌بندی نیستند. توالی فقط در سطح جلسه‌های روزانه است و ادعای ترتیب درون‌روزی یا پیش‌بینی قطعی قفل‌شدن نمی‌کند.",
             "━━━━━━━━━━━━━━━━━━━━",
         ])
 
