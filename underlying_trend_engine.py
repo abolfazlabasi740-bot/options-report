@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.1-EARLY-MOVE"
+ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.2-CORRECTION-PRELOCK"
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 
@@ -253,11 +253,11 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
             if value_ratio_i is not None and value_ratio_i >= 1.20:
                 sequence_events.append({"date": date_i, "event": "VALUE_EXPANSION", "strength": round(value_ratio_i, 3)})
             if ret_i is not None and ret_i > 0.50 and (prev_return is None or ret_i > prev_return):
-                sequence_events.append({"date": date_i, "event": "PRICE_ACCELERATION", "strength": round(ret_i, 3)})
+                sequence_events.append({"date": date_i, "event": "PRICE_ACCELERATION", "strength": round(ret_i, 3), "direction": "BULLISH" if ret_i > 0 else "BEARISH"})
             momentum_improving = ((macd_i is not None and prev_macd is not None and macd_i > prev_macd)
                                  or (rsi_i is not None and prev_rsi is not None and rsi_i > prev_rsi + 0.5))
             if momentum_improving:
-                sequence_events.append({"date": date_i, "event": "MOMENTUM_IMPROVEMENT", "strength": 1.0})
+                sequence_events.append({"date": date_i, "event": "MOMENTUM_IMPROVEMENT", "strength": 1.0, "direction": "BULLISH" if ((macd_i is not None and prev_macd is not None and macd_i > prev_macd) or (rsi_i is not None and prev_rsi is not None and rsi_i > prev_rsi + 0.5)) else "BEARISH"})
             if volume_i is not None: prior_volumes.append(volume_i)
             if value_i is not None: prior_values.append(value_i)
             prev_return, prev_rsi, prev_macd = ret_i, rsi_i, macd_i
@@ -289,6 +289,23 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     else:
         sequence_label = "NO_CONFIRMED_SEQUENCE"
     latest_sequence_return = next((x.get("return_pct") for x in reversed(session_observations) if x.get("return_pct") is not None), None)
+    signed_price_events = [
+        x.get("direction") for x in sequence_events
+        if x.get("event") == "PRICE_ACCELERATION" and x.get("direction") in {"BULLISH", "BEARISH"}
+    ]
+    signed_momentum_events = [
+        x.get("direction") for x in sequence_events
+        if x.get("event") == "MOMENTUM_IMPROVEMENT" and x.get("direction") in {"BULLISH", "BEARISH"}
+    ]
+    signed_sequence = signed_price_events + signed_momentum_events
+    if signed_sequence and all(x == "BULLISH" for x in signed_sequence):
+        sequence_direction = "BULLISH"
+    elif signed_sequence and all(x == "BEARISH" for x in signed_sequence):
+        sequence_direction = "BEARISH"
+    elif signed_sequence:
+        sequence_direction = "MIXED"
+    else:
+        sequence_direction = "UNAVAILABLE"
     recent_high = max((_num(row.get("priceMax")) for row in rows[-20:] if _num(row.get("priceMax")) is not None), default=None)
     recent_low = min((_num(row.get("priceMin")) for row in rows[-20:] if _num(row.get("priceMin")) is not None), default=None)
     range_position = (
@@ -296,6 +313,27 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         if last_close is not None and recent_high is not None and recent_low is not None and recent_high > recent_low
         else None
     )
+
+    # Correction / counter-trend state: descriptive only. A stock can remain in a
+    # primary uptrend while undergoing a meaningful pullback; do not collapse this
+    # state into BULLISH. Thresholds are deliberately conservative and use retained
+    # TSETMC daily history only.
+    prior_peak = max(closes[-11:-1], default=None) if len(closes) >= 3 else None
+    correction_from_peak_pct = (
+        (last_close / prior_peak - 1.0) * 100.0
+        if last_close is not None and prior_peak not in (None, 0) else None
+    )
+    correction_return_3 = price_change_3
+    correction_state = "NO_CORRECTION_EVIDENCE"
+    correction_confidence = "LOW"
+    if correction_from_peak_pct is not None and correction_return_3 is not None:
+        if correction_from_peak_pct <= -1.0 and correction_return_3 <= -0.5:
+            correction_state = "CORRECTION_IN_UPTREND" if (sma20 is not None and sma50 is not None and sma20 > sma50) else "CORRECTION"
+            correction_confidence = "HIGH" if correction_from_peak_pct <= -3.0 and correction_return_3 <= -1.5 else "MEDIUM"
+        elif correction_from_peak_pct >= 1.0 and correction_return_3 >= 0.5:
+            correction_state = "COUNTERTREND_BOUNCE_IN_DOWNTREND" if (sma20 is not None and sma50 is not None and sma20 < sma50) else "RECOVERY_BOUNCE"
+            correction_confidence = "HIGH" if correction_from_peak_pct >= 3.0 and correction_return_3 >= 1.5 else "MEDIUM"
+    correction_active = correction_state in {"CORRECTION_IN_UPTREND", "CORRECTION"}
 
     if sma50 is not None and sma20 is not None and last_close is not None:
         if last_close > sma20 and sma20 > sma50:
@@ -383,6 +421,7 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
                 "events": sequence_events,
                 "sessions_evaluated": len(session_observations),
                 "latest_session_return_pct": latest_sequence_return,
+                "sequence_direction": sequence_direction,
                 "distance_to_upper_limit_pct": prelock_distance,
                 "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
                 "production_gate": "OFF",
@@ -390,6 +429,11 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         },
         "range_position_20": range_position,
         "trend_state": trend_state,
+        "correction_state": correction_state,
+        "correction_confidence": correction_confidence,
+        "correction_active": correction_active,
+        "correction_from_prior_peak_pct": correction_from_peak_pct,
+        "correction_return_3_sessions_pct": correction_return_3,
         "upper_limit_price": upper_limit,
         "lower_limit_price": lower_limit,
         "upper_limit_headroom_pct": headroom,
