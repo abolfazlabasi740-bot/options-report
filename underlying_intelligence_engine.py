@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-ENGINE_VERSION = "TSETMC-UNDERLYING-INTELLIGENCE-1.0"
+ENGINE_VERSION = "TSETMC-UNDERLYING-INTELLIGENCE-1.1-EARLY-MOVE"
 
 def _num(v: Any) -> float | None:
     try:
@@ -39,6 +39,26 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
     evidence = []
     score = 0.0
     available = 0
+
+    # Early-move is a shadow analytical layer: it describes CHANGE + SEQUENCE
+    # but does not alter the Stage-1 direction score or gate.
+    early = context.get("early_move") or {}
+    early_score = _num(early.get("score"))
+    early_state = str(early.get("state") or "")
+    if early_score is not None:
+        if early_score > 0:
+            early_direction = 1
+        elif early_score < 0:
+            early_direction = -1
+        else:
+            early_direction = 0
+        evidence.append((
+            "EARLY_MOVE",
+            early_direction,
+            f"امتیاز تغییرات زودهنگام={early_score:.1f} | وضعیت={early_state} | "
+            f"تغییر 1 جلسه={early.get('price_change_1_session_pct', 'N/A')}% | "
+            f"شیب SMA20 در 5 جلسه={early.get('sma20_slope_5_sessions_pct', 'N/A')}%"
+        ))
 
     trend = str(context.get("trend_state") or "")
     if trend == "UP_TREND_STRUCTURE":
@@ -192,6 +212,7 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
             "buy_sell_signal": "NOT_GENERATED",
             "adaptive_learning": "NOT_IN_STAGE_1",
             "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+            "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
         },
         "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL",
     }
