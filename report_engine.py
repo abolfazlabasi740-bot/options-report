@@ -581,7 +581,7 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"کاندیدهای مجاز جهت: {ranking.get('ranking_scope_row_count','داده موجود نیست')}",
         f"تعداد قراردادهای نهایی: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
-        f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.1-EARLY-MOVE",
+        f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
         "پیش‌قفلی / PRE-LOCK: Shadow | تشخیص توالی حجم→قیمت→مومنتوم در جلسه‌های روزانه؛ وارد رتبه‌بندی نشده است.",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
         f"گیت کیفیت معاملات: {(snapshot.get('tradability_gate') or {}).get('status', 'داده موجود نیست')} | OTM حذف | قیمت < ۱۰ ریال حذف | اهرم > 20x حذف",
@@ -639,6 +639,8 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"امتیاز: {score_text}/100",
             f"شواهد امتیاز: {score_parts}",
             f"پایه: {ident.get('underlying_symbol') or 'داده موجود نیست'} | Bias={bias} | Confidence={confidence}",
+            f"وضعیت اصلاح پایه: {(context.get('correction_state') or 'داده موجود نیست')} | "
+            f"افت از سقف اخیر={percent(context.get('correction_from_prior_peak_pct'))}",
             f"شواهد سهم پایه: {evidence_text}",
             f"چرا انتخاب شد: {why_direction}؛ سپس امتیاز اقتصادی و گیت کیفیت معاملاتی اعمال شده است.",
             "━━━━━━━━━━━━━━━━━━━━",
@@ -673,15 +675,33 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
                 f"پایه {context.get('instrument_id', uid)} | Bias={item.get('bias','N/A')} | "
                 f"Confidence={item.get('confidence','N/A')} | Score={item.get('score','N/A')}"
             )
+            correction_state = context.get("correction_state") or "داده موجود نیست"
+            correction_confidence = context.get("correction_confidence") or "داده موجود نیست"
+            correction_peak = percent(context.get("correction_from_prior_peak_pct"))
+            lines.append(
+                f"اصلاح {context.get('instrument_id', uid)} | وضعیت={correction_state} | "
+                f"اعتماد={correction_confidence} | افت از سقف اخیر={correction_peak}"
+            )
+            touched = context.get("touched_upper_limit_today")
+            if touched is True:
+                lock_state = "LOCKED_TODAY"
+            elif touched is False:
+                lock_state = "NOT_LOCKED_EVIDENCE"
+            else:
+                lock_state = "UNAVAILABLE"
+            lines.append(
+                f"وضعیت قفلی {context.get('instrument_id', uid)} | {lock_state}"
+            )
             prelock = context.get("early_move", {}).get("pre_lock_sequence") or {}
             if prelock.get("status") == "PASS":
                 lines.append(
                     f"پیش‌قفلی {context.get('instrument_id', uid)} | وضعیت={prelock.get('state','N/A')} | "
-                    f"Sequence={prelock.get('sequence','N/A')} | Confidence={prelock.get('confidence','N/A')} | "
+                    f"Sequence={prelock.get('sequence','N/A')} | جهت={prelock.get('sequence_direction','N/A')} | "
+                    f"Confidence={prelock.get('confidence','N/A')} | "
                     f"فاصله تا سقف={percent(prelock.get('distance_to_upper_limit_pct'))}"
                 )
         lines.extend([
-            "این بخش توصیفی است؛ Early-Move و PRE-LOCK/Sequence به‌صورت Shadow محاسبه شده‌اند و هنوز گیت رتبه‌بندی نیستند. توالی فقط در سطح جلسه‌های روزانه است و ادعای ترتیب درون‌روزی یا پیش‌بینی قطعی قفل‌شدن نمی‌کند.",
+            "این بخش توصیفی است؛ اصلاح، Early-Move، PRE-LOCK و LOCKED به‌صورت Shadow/شواهد توصیفی محاسبه می‌شوند و هنوز گیت رتبه‌بندی نیستند. جهت توالی قبل از اعلام PRE-LOCK اعتبارسنجی می‌شود؛ توالی فقط در سطح جلسه‌های روزانه است و ادعای ترتیب درون‌روزی یا پیش‌بینی قطعی قفل‌شدن نمی‌کند.",
             "━━━━━━━━━━━━━━━━━━━━",
         ])
 
