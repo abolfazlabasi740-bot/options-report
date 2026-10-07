@@ -555,7 +555,10 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"وضعیت بازار: {market_state['status']}",
         f"مبنای رتبه‌بندی: امتیاز اقتصادی TSETMC | وضعیت: {ranking.get('status','داده موجود نیست')}",
         f"دامنه رتبه‌بندی: {ranking.get('ranking_scope','داده موجود نیست')}" + (" | تکمیل از ردیف‌های دارای قیمت صریح TSETMC" if ranking.get("eligibility_fallback_used") else ""),
-        f"تعداد قراردادهای مبنا: {snapshot.get('row_count',0)}",
+        f"Universe TSETMC: {snapshot.get('universe_row_count',0)} قرارداد",
+        f"کاندیدهای گیت کیفیت: {ranking.get('quality_gate_row_count','داده موجود نیست')}",
+        f"کاندیدهای مجاز جهت: {ranking.get('ranking_scope_row_count','داده موجود نیست')}",
+        f"تعداد قراردادهای نهایی: {snapshot.get('row_count',0)}",
         f"آخرین timestamp منبع: {basis_timestamp}",
         f"تحلیل سهم پایه: {snapshot.get('underlying_intelligence', {}).get('status', 'داده موجود نیست')} | موتور: TSETMC-UNDERLYING-INTELLIGENCE-1.0",
         f"گیت جهت: {(snapshot.get('direction_gate') or {}).get('status', 'داده موجود نیست')} | Bullish→CALL | Bearish→PUT | Neutral/Conflicted→عدم تأیید",
@@ -564,10 +567,25 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         "━━━━━━━━━━━━━━━━━━━━",
     ]
 
+    ui = snapshot.get("underlying_intelligence", {}).get("instruments") or {}
     for idx,item in enumerate(rows,1):
         c0=item.get("canonical") or {}; ident=item.get("identity") or {}
         score=item.get("_economic_score")
         score_text=f"{float(score):.2f}" if score is not None else "داده موجود نیست"
+        rid=str(ident.get("instrument_id") or "")
+        rank_item=ranking_by_id.get(rid) or {}
+        block_scores=rank_item.get("block_scores") or {}
+        context=ui.get(str(ident.get("underlying_id") or "")) or {}
+        bias=str(context.get("bias") or "داده موجود نیست")
+        confidence=str(context.get("confidence") or "داده موجود نیست")
+        score_parts=", ".join(f"{k}={float(v):.1f}" for k,v in block_scores.items() if v is not None) or "داده موجود نیست"
+        why_direction = (
+            "CALL با Bias صعودی سهم پایه تأیید شده"
+            if ident.get("contract_type") == "CALL" and bias == "BULLISH"
+            else "PUT با Bias نزولی سهم پایه تأیید شده"
+            if ident.get("contract_type") == "PUT" and bias == "BEARISH"
+            else "جهت از گیت سهم پایه تأیید نشده"
+        )
         model=item.get("option_model") or {}
         delta_text=(
             f"{float(model.get('delta')):.4f}"
@@ -590,7 +608,11 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
             f"اهرم: {leverage(item)}",
             f"دلتا: {delta_text}",
             f"بلک‌شولز: {bs_text}",
-            f"امتیاز: {score_text}/100","━━━━━━━━━━━━━━━━━━━━",
+            f"امتیاز: {score_text}/100",
+            f"شواهد امتیاز: {score_parts}",
+            f"پایه: {ident.get('underlying_symbol') or 'داده موجود نیست'} | Bias={bias} | Confidence={confidence}",
+            f"چرا انتخاب شد: {why_direction}؛ سپس امتیاز اقتصادی و گیت کیفیت معاملاتی اعمال شده است.",
+            "━━━━━━━━━━━━━━━━━━━━",
         ])
 
     bases={}; total_volume=0.0; total_value=0.0; va=False; vala=False; days=[]
@@ -642,7 +664,10 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         f"تعداد پایه‌های متمایز: {len(bases)}",
         f"بیشترین تمرکز: {conc_text or 'داده موجود نیست'}",
         "تمرکز چند قرارداد روی یک پایه، تنوع واقعی سبد را کاهش می‌دهد.","",
-        "4) جمع‌بندی",
+        "4) چرایی انتخاب رتبه‌ها",
+        "هر قرارداد ابتدا از گیت کیفیت عبور کرده، سپس جهت آن با تحلیل سهم پایه کنترل شده و در نهایت با امتیاز اقتصادی TSETMC رتبه گرفته است.",
+        "امتیازهای بلوکی نمایش‌داده‌شده شواهد عددی رتبه‌بندی هستند؛ داده‌های غایب صفر فرض نشده‌اند.","",
+        "5) جمع‌بندی",
         "فرصت‌ها: قراردادهای با امتیاز اقتصادی و شواهد فعالیت TSETMC در صدر فهرست قرار گرفته‌اند.",
         "ریسک‌ها: سررسید نزدیک، اهرم، تمرکز روی پایه و تفاوت بین ارزش Black-Scholes مدل و قیمت بازار.",
         "پایش جلسه بعد: آخرین/پایانی، حجم، ارزش معاملات، عمق بازار، تغییرات نوسان تاریخی و اختلاف قیمت مدل با بازار.",
