@@ -215,6 +215,82 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     else:
         early_state = "MIXED_CHANGE"
 
+    # PRE-LOCK / SESSION-SEQUENCE is a shadow evidence layer. Because the
+    # retained TSETMC source is daily history, it measures session-to-session
+    # ordering, not intraday tick ordering.
+    sequence_rows = rows[-7:]
+    sequence_events = []
+    session_observations = []
+    if len(sequence_rows) >= 4:
+        prior_volumes = []
+        prior_values = []
+        prev_return = None
+        prev_rsi = None
+        prev_macd = None
+        for row in sequence_rows:
+            close_i = _num(row.get("pClosing"))
+            volume_i = _num(row.get("qTotTran5J"))
+            value_i = _num(row.get("qTotCap"))
+            date_i = _record_date(row)
+            ret_i = None
+            if len(session_observations) > 0:
+                prev_close = _num(sequence_rows[len(session_observations) - 1].get("pClosing"))
+                if close_i is not None and prev_close not in (None, 0):
+                    ret_i = (close_i / prev_close - 1.0) * 100.0
+            vol_base = sum(prior_volumes[-5:]) / len(prior_volumes[-5:]) if prior_volumes else None
+            val_base = sum(prior_values[-5:]) / len(prior_values[-5:]) if prior_values else None
+            vol_ratio_i = volume_i / vol_base if volume_i is not None and vol_base not in (None, 0) else None
+            value_ratio_i = value_i / val_base if value_i is not None and val_base not in (None, 0) else None
+            prefix_closes = [_num(x.get("pClosing")) for x in rows if _record_date(x) <= date_i]
+            prefix_closes = [x for x in prefix_closes if x is not None]
+            rsi_i = _rsi(prefix_closes, 14)
+            ema12_i = _ema(prefix_closes, 12)
+            ema26_i = _ema(prefix_closes, 26)
+            macd_i = ema12_i - ema26_i if ema12_i is not None and ema26_i is not None else None
+            session_observations.append({"date": date_i, "return_pct": ret_i, "volume_ratio": vol_ratio_i, "value_ratio": value_ratio_i, "rsi": rsi_i, "macd": macd_i})
+            if vol_ratio_i is not None and vol_ratio_i >= 1.20:
+                sequence_events.append({"date": date_i, "event": "VOLUME_EXPANSION", "strength": round(vol_ratio_i, 3)})
+            if value_ratio_i is not None and value_ratio_i >= 1.20:
+                sequence_events.append({"date": date_i, "event": "VALUE_EXPANSION", "strength": round(value_ratio_i, 3)})
+            if ret_i is not None and ret_i > 0.50 and (prev_return is None or ret_i > prev_return):
+                sequence_events.append({"date": date_i, "event": "PRICE_ACCELERATION", "strength": round(ret_i, 3)})
+            momentum_improving = ((macd_i is not None and prev_macd is not None and macd_i > prev_macd)
+                                 or (rsi_i is not None and prev_rsi is not None and rsi_i > prev_rsi + 0.5))
+            if momentum_improving:
+                sequence_events.append({"date": date_i, "event": "MOMENTUM_IMPROVEMENT", "strength": 1.0})
+            if volume_i is not None: prior_volumes.append(volume_i)
+            if value_i is not None: prior_values.append(value_i)
+            prev_return, prev_rsi, prev_macd = ret_i, rsi_i, macd_i
+
+    event_first = {}
+    for event_name in ("VOLUME_EXPANSION", "VALUE_EXPANSION", "PRICE_ACCELERATION", "MOMENTUM_IMPROVEMENT"):
+        dates = [x["date"] for x in sequence_events if x.get("event") == event_name and x.get("date")]
+        if dates:
+            event_first[event_name] = min(dates)
+    canonical_chain = ["VOLUME_EXPANSION", "PRICE_ACCELERATION", "MOMENTUM_IMPROVEMENT"]
+    chain_dates = [event_first[x] for x in canonical_chain if x in event_first]
+    sequence_matches = len(chain_dates) >= 2 and chain_dates == sorted(chain_dates)
+    if sequence_matches and all(x in event_first for x in canonical_chain):
+        prelock_state, prelock_confidence = "EARLY", "HIGH"
+    elif sequence_matches:
+        prelock_state, prelock_confidence = "EARLY", "MEDIUM"
+    elif "PRICE_ACCELERATION" in event_first and "MOMENTUM_IMPROVEMENT" in event_first:
+        prelock_state, prelock_confidence = "DEVELOPING", "LOW"
+    elif "VOLUME_EXPANSION" in event_first or "VALUE_EXPANSION" in event_first:
+        prelock_state, prelock_confidence = "WATCH", "LOW"
+    else:
+        prelock_state, prelock_confidence = "NO_SEQUENCE_EVIDENCE", "LOW"
+    if all(x in event_first for x in canonical_chain):
+        sequence_label = "VOLUME → PRICE → MOMENTUM"
+    elif "PRICE_ACCELERATION" in event_first and "MOMENTUM_IMPROVEMENT" in event_first:
+        sequence_label = "PRICE → MOMENTUM"
+    elif "VOLUME_EXPANSION" in event_first or "VALUE_EXPANSION" in event_first:
+        sequence_label = "VOLUME/VALUE_ONLY"
+    else:
+        sequence_label = "NO_CONFIRMED_SEQUENCE"
+    latest_sequence_return = next((x.get("return_pct") for x in reversed(session_observations) if x.get("return_pct") is not None), None)
+    prelock_distance = None
+
     recent_high = max((_num(row.get("priceMax")) for row in rows[-20:] if _num(row.get("priceMax")) is not None), default=None)
     recent_low = min((_num(row.get("priceMin")) for row in rows[-20:] if _num(row.get("priceMin")) is not None), default=None)
     range_position = (
@@ -298,6 +374,19 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
             "available_components": len(early_components),
             "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
             "production_gate": "OFF",
+            "pre_lock_sequence": {
+                "status": "PASS" if session_observations else "UNAVAILABLE",
+                "state": prelock_state,
+                "confidence": prelock_confidence,
+                "sequence": sequence_label,
+                "event_first_dates": event_first,
+                "events": sequence_events,
+                "sessions_evaluated": len(session_observations),
+                "latest_session_return_pct": latest_sequence_return,
+                "distance_to_upper_limit_pct": prelock_distance,
+                "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+                "production_gate": "OFF",
+            },
         },
         "range_position_20": range_position,
         "trend_state": trend_state,
