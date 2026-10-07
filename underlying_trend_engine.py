@@ -241,7 +241,7 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
             val_base = sum(prior_values[-5:]) / len(prior_values[-5:]) if prior_values else None
             vol_ratio_i = volume_i / vol_base if volume_i is not None and vol_base not in (None, 0) else None
             value_ratio_i = value_i / val_base if value_i is not None and val_base not in (None, 0) else None
-            prefix_closes = [_num(x.get("pClosing")) for x in rows if _record_date(x) <= date_i]
+            prefix_closes = [_num(x.get("pClosing")) for x in rows if date_i is not None and _record_date(x) is not None and _record_date(x) <= date_i]
             prefix_closes = [x for x in prefix_closes if x is not None]
             rsi_i = _rsi(prefix_closes, 14)
             ema12_i = _ema(prefix_closes, 12)
@@ -273,7 +273,7 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     if sequence_matches and all(x in event_first for x in canonical_chain):
         prelock_state, prelock_confidence = "EARLY", "HIGH"
     elif sequence_matches:
-        prelock_state, prelock_confidence = "EARLY", "MEDIUM"
+        prelock_state, prelock_confidence = "DEVELOPING", "LOW"
     elif "PRICE_ACCELERATION" in event_first and "MOMENTUM_IMPROVEMENT" in event_first:
         prelock_state, prelock_confidence = "DEVELOPING", "LOW"
     elif "VOLUME_EXPANSION" in event_first or "VALUE_EXPANSION" in event_first:
