@@ -60,6 +60,15 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
             f"شیب SMA20 در 5 جلسه={early.get('sma20_slope_5_sessions_pct', 'N/A')}%"
         ))
 
+    prelock = context.get("early_move", {}).get("pre_lock_sequence") or {}
+    if prelock.get("status") == "PASS":
+        evidence.append((
+            "PRE_LOCK_SEQUENCE",
+            1 if prelock.get("state") in {"EARLY", "DEVELOPING", "WATCH"} else 0,
+            f"وضعیت پیش‌قفلی={prelock.get('state', 'N/A')} | توالی={prelock.get('sequence', 'N/A')} | "
+            f"اعتماد={prelock.get('confidence', 'N/A')} | دانه‌بندی={prelock.get('data_granularity', 'N/A')}"
+        ))
+
     trend = str(context.get("trend_state") or "")
     if trend == "UP_TREND_STRUCTURE":
         score += 20
@@ -213,6 +222,7 @@ def analyze_underlying(context: dict[str, Any]) -> dict[str, Any]:
             "adaptive_learning": "NOT_IN_STAGE_1",
             "additional_indicators": "DEFERRED_TO_LATER_STAGE",
             "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+            "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_NOT_A_GATE",
         },
         "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL",
     }
