@@ -1,8 +1,0 @@
-{
-  "command_id": "zzzz_base_share_stage1_report_retry",
-  "argv": [
-    "python",
-    "base_share_stage1_report.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
