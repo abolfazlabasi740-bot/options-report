@@ -2,17 +2,17 @@
   "command_id": "00000_priority_snapshot_report_20261008",
   "status": "SUCCESS",
   "exit_code": 0,
-  "started_at": "2026-10-08T14:36:30.177753+00:00",
-  "finished_at": "2026-10-08T14:36:30.348099+00:00",
+  "started_at": "2026-10-08T14:37:04.237452+00:00",
+  "finished_at": "2026-10-08T14:37:04.416375+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
     "scripts/run_base_share_async.py"
   ],
-  "stdout": "ASYNC_STARTED\nPID= 14813\nLOG= /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/async_run.log\n",
+  "stdout": "ASYNC_STARTED\nPID= 15274\nLOG= /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/async_run.log\n",
   "stderr": "",
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/00000_priority_snapshot_report_20261008.json",
   "project_head": "0747e226d896115b8d600f336ee62224a2532094",
-  "result_sha256": "d3a0691d9b037cb11339aaaf4cca14d89d02a8cb4fa1604278a16b11ac22590f"
+  "result_sha256": "dd362839ec49dd65ad7e58372ec85f701295fffba902c016492d4ba443f7d7f9"
 }
