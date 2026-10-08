@@ -1,0 +1,18 @@
+{
+  "command_id": "00000_direct_base_share_async_20261008",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T13:53:16.246172+00:00",
+  "finished_at": "2026-10-08T13:53:16.453309+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/run_base_share_async.py"
+  ],
+  "stdout": "ASYNC_STARTED\nPID= 11764\nLOG= /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/async_run.log\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00000_direct_base_share_async_20261008.json",
+  "project_head": "07d93aadbd38a2078f680de45e185861b70a1b4b",
+  "result_sha256": "3b58ded7be0bcdc532ae68e5ebf554333dea8a90e9513dcac88b195332d6cb96"
+}
