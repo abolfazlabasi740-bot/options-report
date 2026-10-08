@@ -1,9 +1,0 @@
-{
-  "command_id": "chatgpt-bridge-test-20261007-002",
-  "argv": [
-    "python",
-    "-c",
-    "print('BRIDGE_ROUND_TRIP_OK')"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
