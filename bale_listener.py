@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 import time
 import requests
@@ -10,7 +12,9 @@ from bale_transport import send_message as transport_send
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
+        [{"text": "⚡ فرصت لحظه آخری آپشن", "callback_data": "report_last_minute_option_opportunity"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
+        [{"text": "🔎 انتخاب نماد", "callback_data": "symbols_page:0"}],
         [{"text": "📋 وضعیت سیستم", "callback_data": "system_status"}],
     ]
 }
@@ -18,8 +22,10 @@ MENU_MARKUP = {
 REPLY_MENU_MARKUP = {
     "keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر"}],
+        [{"text": "⚡ فرصت لحظه آخری آپشن"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال"}],
         [{"text": "🔎 انتخاب نماد"}],
+        [{"text": "🧩 استراتژی‌ها"}],
         [{"text": "📋 وضعیت سیستم"}],
     ],
     "resize_keyboard": True,
@@ -28,6 +34,7 @@ REPLY_MENU_MARKUP = {
 
 REPLY_MENU_COMMANDS = {
     "📊 گزارش ۱۵ فرصت برتر": "گزارش",
+    "⚡ فرصت لحظه آخری آپشن": "فرصت‌لحظه‌آخری‌آپشن",
     "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
     "🔎 انتخاب نماد": "نمادها",
     "📋 وضعیت سیستم": "وضعیت",
@@ -60,13 +67,27 @@ PREFERRED_UNDERLYINGS = (
 CALLBACK_COMMANDS = {
     "report_ranked_15": "گزارش",
     "report_activity_15": "فعالیت",
+    "report_last_minute_option_opportunity": "فرصت‌لحظه‌آخری‌آپشن",
     "system_status": "وضعیت",
+}
+
+STRATEGY_CALLBACKS = {
+    "strategy_bull_call_spread": "BULL_CALL_SPREAD",
+}
+
+STRATEGY_MENU_MARKUP = {
+    "inline_keyboard": [
+        [{"text": "📈 Bull Call Spread", "callback_data": "strategy_bull_call_spread"}],
+    ]
 }
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
+from last_minute_profit_engine import build_last_minute_ranking, analyze_underlying_context
+from underlying_trend_engine import fetch_underlying_context
+from bull_call_spread_engine import build_strategy_report
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -166,9 +187,180 @@ def system_status():
     return "\n".join(lines)
 
 
+def _gregorian_to_jalali(gy, gm, gd):
+    """Convert Gregorian date to Jalali without external dependencies."""
+    g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29]
+    gy2 = gy - 1600
+    gm2 = gm - 1
+    gd2 = gd - 1
+    g_day_no = 365 * gy2 + (gy2 + 3) // 4 - (gy2 + 99) // 100 + (gy2 + 399) // 400
+    for i in range(gm2):
+        g_day_no += g_days_in_month[i]
+    if gm2 > 1 and ((gy % 4 == 0 and gy % 100 != 0) or (gy % 400 == 0)):
+        g_day_no += 1
+    g_day_no += gd2
+    j_day_no = g_day_no - 79
+    j_np = j_day_no // 12053
+    j_day_no %= 12053
+    jy = 979 + 33 * j_np + 4 * (j_day_no // 1461)
+    j_day_no %= 1461
+    if j_day_no >= 366:
+        jy += (j_day_no - 1) // 365
+        j_day_no = (j_day_no - 1) % 365
+    i = 0
+    while i < 11 and j_day_no >= j_days_in_month[i]:
+        j_day_no -= j_days_in_month[i]
+        i += 1
+    return jy, i + 1, j_day_no + 1
+
+
+def _snapshot_datetime_label(snapshot):
+    evidence = snapshot.get("evidence") or {}
+    market_watch = evidence.get("market_watch") or {}
+    raw = market_watch.get("latest_source_market_timestamp")
+    if not raw:
+        rows = snapshot.get("rows") or []
+        timestamps = [r.get("source_market_timestamp") for r in rows if r.get("source_market_timestamp")]
+        raw = max(timestamps) if timestamps else None
+    if not raw:
+        raw = snapshot.get("generated_at") or market_watch.get("retrieved_at")
+    if not raw:
+        return "داده موجود نیست"
+    try:
+        text = str(raw).replace("Z", "+00:00")
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(ZoneInfo("Asia/Tehran"))
+        jy, jm, jd = _gregorian_to_jalali(dt.year, dt.month, dt.day)
+        return f"{jy:04d}/{jm:02d}/{jd:02d} {dt:%H:%M:%S}"
+    except (TypeError, ValueError, OverflowError):
+        return str(raw)
+
+
+def _base_discovery_report(underlying_context):
+    """Rank base stocks separately from option contracts for opportunity discovery."""
+    candidates = []
+    for underlying_id, raw in (underlying_context or {}).items():
+        if not isinstance(raw, dict) or raw.get("status") == "UNAVAILABLE":
+            continue
+        analysis = analyze_underlying_context(raw)
+        available = []
+        for key in ("momentum_score", "board_score", "volume_score"):
+            value = analysis.get(key)
+            if isinstance(value, (int, float)) and value > 0:
+                available.append(float(value))
+        if not available:
+            continue
+        base_score = sum(available) / len(available)
+        early = raw.get("early_move") or {}
+        prelock = early.get("pre_lock_sequence") or {}
+        candidates.append({
+            "underlying_id": underlying_id,
+            "symbol": raw.get("underlying_symbol") or raw.get("symbol") or "",
+            "score": round(base_score, 2),
+            "momentum": round(float(analysis.get("momentum_score") or 0), 1),
+            "board": round(float(analysis.get("board_score") or 0), 1),
+            "volume": round(float(analysis.get("volume_score") or 0), 1),
+            "trend": raw.get("trend_state") or "داده موجود نیست",
+            "early_state": early.get("state") or "داده موجود نیست",
+            "prelock_state": prelock.get("state") or "داده موجود نیست",
+            "prelock_sequence": prelock.get("sequence") or "داده موجود نیست",
+            "headroom": raw.get("upper_limit_headroom_pct"),
+            "touched_upper": raw.get("touched_upper_limit_today"),
+        })
+    candidates.sort(key=lambda x: (x["score"], x["momentum"], x["volume"], x["symbol"]), reverse=True)
+    return candidates[:10]
+
+
 def generate_report(command):
     if command in ("رفتار", "تغییرات", "behavior"):
         return format_behavior_report(build_behavior_report(ROOT))
+    if command in ("فرصت‌لحظه‌آخری‌آپشن", "فرصت لحظه آخری آپشن", "last_minute_option_opportunity"):
+        snapshot = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
+
+        # Live data is preferred during market hours, but it is NOT required.
+        # Outside market hours, the latest valid TSETMC snapshot is an accepted
+        # data basis and must be clearly labeled in the report.
+        source_rows = snapshot.get("rows", [])
+        underlying_symbol_by_id = {}
+        for row in source_rows:
+            identity = row.get("identity") or {}
+            underlying_id = str(identity.get("underlying_id") or "").strip()
+            underlying_symbol = str(identity.get("underlying_symbol") or "").strip()
+            if underlying_id and underlying_symbol:
+                underlying_symbol_by_id[underlying_id] = underlying_symbol
+
+        underlying_ids = sorted(underlying_symbol_by_id)
+        underlying_context = fetch_underlying_context(underlying_ids)
+
+        # Preserve the canonical underlying identity from the option snapshot.
+        # The technical engine is keyed by instrument_id and may not carry the
+        # display symbol forward. Base Discovery must never emit a blank symbol
+        # when TSETMC supplied an explicit underlying_symbol.
+        instruments = underlying_context.get("instruments", {})
+        for underlying_id, raw in instruments.items():
+            if isinstance(raw, dict):
+                raw["underlying_id"] = underlying_id
+                canonical_symbol = underlying_symbol_by_id.get(str(underlying_id).strip())
+                if canonical_symbol:
+                    raw["underlying_symbol"] = canonical_symbol
+
+        result = build_last_minute_ranking(
+            source_rows,
+            top_count=15,
+            underlying_context=underlying_context.get("instruments", {}),
+            snapshot=snapshot,
+        )
+
+        snapshot_label = _snapshot_datetime_label(snapshot)
+        base_watch = _base_discovery_report(underlying_context.get("instruments", {}))
+        selected_symbols = {str(item.get("underlying_symbol") or "").strip() for item in result.get("ranking_rows", [])}
+        lines = [
+            "⚡ فرصت لحظه آخری آپشن",
+            "TSETMC-ONLY | CURRENT-EVIDENCE OPTION OPPORTUNITY",
+            "━━━━━━━━━━━━━━━━━━━━",
+            f"📅 تاریخ/زمان دیتای Snapshot: {snapshot_label}",
+            f"📊 وضعیت داده: {snapshot.get('data_mode') or 'داده موجود نیست'} | Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}",
+            "مبنای گزارش: ابتدا کشف سهم پایه قوی، سپس ارزیابی زنجیره آپشن همان سهم.",
+            "انتخاب نهایی آپشن: امتیاز جهانی + سقف حداکثر ۳ قرارداد از هر سهم پایه؛ سقف ۳ سهم پایه را مجبور به پر کردن سهمیه نمی‌کند.",
+            f"تعداد کاندیداهای معتبر آپشن: {result.get('candidate_count', 0)}",
+            f"تعداد نمایش: {result.get('display_count', 0)}",
+            "━━━━━━━━━━━━━━━━━━━━",
+            "🔎 پایش سهم‌های پایه برتر",
+        ]
+        if base_watch:
+            for index, base in enumerate(base_watch, 1):
+                headroom = base.get("headroom")
+                headroom_text = f"{headroom:.2f}%" if isinstance(headroom, (int, float)) else "داده موجود نیست"
+                option_state = "آپشن در ۱۵ گزینه نهایی دارد" if base["symbol"] in selected_symbols else "در ۱۵ گزینه نهایی آپشن ندارد"
+                lines.extend([
+                    f"{index}. {base['symbol'] or 'داده موجود نیست'} | قدرت پایه: {base['score']:.1f} | روند: {base['trend']}",
+                    f"   مومنتوم: {base['momentum']:.1f} | تابلو: {base['board']:.1f} | حجم/ارزش: {base['volume']:.1f} | فاصله سقف: {headroom_text}",
+                    f"   توالی: {base['prelock_sequence']} | وضعیت پیش‌قفلی: {base['prelock_state']} | {option_state}",
+                ])
+        else:
+            lines.append("داده کافی برای کشف سهم پایه موجود نیست.")
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
+
+        if not result.get("ranking_rows"):
+            lines.append("در این لحظه فرصت معتبر با شواهد کافی پیدا نشد.")
+        else:
+            for item in result["ranking_rows"]:
+                components = item.get("score_components") or {}
+                analysis = item.get("underlying_analysis") or {}
+                lines.extend([
+                    f"🔹 {item['rank']}. {item.get('symbol') or 'داده موجود نیست'} | امتیاز فرصت: {item.get('score')}",
+                    f"پایه: {item.get('underlying_symbol') or 'داده موجود نیست'} | نوع: {item.get('contract_type') or 'داده موجود نیست'} | جهت: {item.get('direction') or 'داده موجود نیست'}",
+                    f"قیمت پایه: {item.get('underlying_price')} | اعمال: {item.get('strike')} | قیمت آپشن: {item.get('current_option_price')}",
+                    f"فاصله اعمال: {item.get('moneyness_pct'):.2f}% | روز باقی‌مانده: {item.get('days_to_expiry')}",
+                    f"اهرم خام: {item.get('raw_leverage'):.2f}x | امتیاز نقدشوندگی: {components.get('option_liquidity'):.1f}",
+                    f"قدرت پایه: {components.get('underlying_momentum'):.1f} | تابلو: {components.get('board_strength'):.1f} | حجم/ارزش: {components.get('volume_value'):.1f}",
+                    f"فاصله تا سقف: {item.get('underlying_analysis', {}).get('upper_limit_headroom_pct') if item.get('underlying_analysis') else 'داده موجود نیست'}%",
+                    f"شواهد پایه: {', '.join(analysis.get('evidence') or []) or 'داده موجود نیست'}",
+                    "━━━━━━━━━━━━━━━━━━━━",
+                ])
+        return "\n".join(lines)
     if command in ("گزارش", "همه", "کل"):
         report, snapshot = build_tsetmc_report(
             top_count=15,
@@ -189,11 +381,40 @@ def generate_report(command):
             report_mode="RANKED",
         )
 
+    # Fail closed for every RANKED route, including symbol-specific Top-5.
+    # A symbol report must use the same TSETMC economic ranking as the global
+    # Top-15 report; only the universe is narrowed to the selected underlying.
+    if snapshot.get("report_mode") == "RANKED":
+        ranking = snapshot.get("ranking") or {}
+        if ranking.get("mode") != "TSETMC_ECONOMIC_SCORING":
+            raise RuntimeError(
+                "REPORT_RANKING_MODE_MISMATCH: expected=TSETMC_ECONOMIC_SCORING; "
+                f"actual={ranking.get('mode')}"
+            )
+        if ranking.get("status") != "PASS":
+            raise RuntimeError(
+                "REPORT_RANKING_STATUS_BLOCKED: "
+                f"status={ranking.get('status')}"
+            )
+        if command not in ("گزارش", "همه", "کل") and snapshot.get("underlying_symbol") != command:
+            raise RuntimeError(
+                "REPORT_SYMBOL_ROUTE_MISMATCH: "
+                f"expected={command}; actual={snapshot.get('underlying_symbol')}"
+            )
+
+    # Every Bale report must expose the exact data snapshot date/time before
+    # the analytical body. The date belongs to the data, not the report request.
+    snapshot_label = _snapshot_datetime_label(snapshot)
+    report = (
+        f"📅 تاریخ/زمان دیتای Snapshot: {snapshot_label}\\n"
+        f"📊 وضعیت داده: {snapshot.get('data_mode') or 'داده موجود نیست'} | Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}\\n"
+        "━━━━━━━━━━━━━━━━━━━━\\n"
+        + report
+    )
+
+    # Evidence publication is deliberately kept out of the Bale response path.
+    # The user must receive the report first; audit publication is non-critical.
     save_tsetmc_report(report, snapshot)
-    try:
-        publish_latest_evidence()
-    except Exception as exc:
-        print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
     return report
 
 
@@ -265,8 +486,89 @@ def send_symbol_menu(chat_id, page=0):
     if navigation:
         keyboard.append(navigation)
     keyboard.append([{"text": "🏠 منوی اصلی"}])
-    markup = {"keyboard": keyboard, "resize_keyboard": True, "one_time_keyboard": False}
-    send_message(chat_id, f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر آن نماد بر اساس Ranking شش‌بلوک نمایش داده می‌شود:", reply_markup=markup)
+    # Use Bale inline (glass) buttons for symbol selection so the user can
+    # tap a symbol directly. Reply-keyboard support remains available through
+    # the existing "🔎 انتخاب نماد" command.
+    inline_keyboard = []
+    for index in range(0, len(page_symbols), 2):
+        inline_keyboard.append([
+            {"text": symbol, "callback_data": f"symbol:{symbol}"}
+            for symbol in page_symbols[index:index + 2]
+        ])
+    navigation = []
+    if page > 0:
+        navigation.append({"text": "◀️ صفحه قبل", "callback_data": f"symbols_page:{page - 1}"})
+    if page < total_pages - 1:
+        navigation.append({"text": "صفحه بعد ▶️", "callback_data": f"symbols_page:{page + 1}"})
+    if navigation:
+        inline_keyboard.append(navigation)
+    inline_keyboard.append([{"text": "🏠 منوی اصلی", "callback_data": "main_menu"}])
+    markup = {"inline_keyboard": inline_keyboard}
+    send_message(
+        chat_id,
+        f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر همان نماد بر اساس Ranking اقتصادی TSETMC نمایش داده می‌شود:",
+        reply_markup=markup,
+    )
+
+
+def send_strategy_menu(chat_id):
+    send_message(
+        chat_id,
+        "🧩 استراتژی‌ها\n\nاستراتژی موردنظر را انتخاب کنید:",
+        reply_markup=STRATEGY_MENU_MARKUP,
+    )
+
+
+def generate_strategy_report(strategy):
+    if strategy != "BULL_CALL_SPREAD":
+        raise RuntimeError("UNKNOWN_STRATEGY: " + str(strategy))
+
+    snapshot = build_tsetmc_snapshot(
+        flow=None,
+        max_instruments=None,
+        symbol_prefix=None,
+    )
+    rows = snapshot.get("rows") or []
+    result = build_strategy_report(rows, top_count=15)
+
+    lines = [
+        "📈 Bull Call Spread",
+        "TSETMC-ONLY",
+        "📅 تاریخ/زمان دیتای Snapshot: " + _snapshot_datetime_label(snapshot),
+        "📊 وضعیت داده: " + str(snapshot.get("data_mode") or "داده موجود نیست") + " | Refresh: " + str(snapshot.get("live_refresh_status") or "داده موجود نیست"),
+        "━━━━━━━━━━━━━━━━━━━━",
+        "وضعیت موتور: " + str(result.get("status") or "داده موجود نیست"),
+        "تعداد کاندیدا: " + str(result.get("candidate_count", 0)),
+        "Snapshot SHA: " + str(snapshot.get("snapshot_sha256") or "داده موجود نیست"),
+        "━━━━━━━━━━━━━━━━━━━━",
+    ]
+
+    results = result.get("results") or []
+    if not results:
+        lines.append("کاندیدای معتبر Bull Call Spread پیدا نشد.")
+        return "\n".join(lines)
+
+    for index, item in enumerate(results, 1):
+        lines.extend([
+            "🔹 Spread " + str(index),
+            "پایه: " + str(item.get("underlying_symbol") or "داده موجود نیست"),
+            "سررسید: " + str(item.get("expiry") or "داده موجود نیست"),
+            "Call خرید: " + str(item.get("long_call_symbol") or "داده موجود نیست") + " | Strike: " + str(item.get("lower_strike")),
+            "Call فروش: " + str(item.get("short_call_symbol") or "داده موجود نیست") + " | Strike: " + str(item.get("higher_strike")),
+            "Premium خرید: " + str(item.get("long_premium")),
+            "Premium فروش: " + str(item.get("short_premium")),
+            "Net Debit: " + str(item.get("net_debit")),
+            "حداکثر زیان: " + str(item.get("max_loss")),
+            "حداکثر سود: " + str(item.get("max_profit")),
+            "نقطه سربه‌سر: " + str(item.get("breakeven")),
+            "Liquidity Evidence: " + str(item.get("liquidity_evidence")),
+            "Profit/Loss Efficiency: " + str(item.get("profit_loss_efficiency")),
+            "سیگنال اجرا: False",
+            "توصیه خرید/فروش: False",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ])
+
+    return "\n".join(lines)
 
 
 def send_report_menu(chat_id):
@@ -275,7 +577,6 @@ def send_report_menu(chat_id):
         "📋 منوی گزارش‌های OptimusAI V4.1\n\nاز منوی پایین، گزارش موردنظر را انتخاب کنید:",
         reply_markup=REPLY_MENU_MARKUP,
     )
-
 
 def main():
     if not TOKEN or not CHAT_ID:
@@ -317,20 +618,59 @@ def main():
                         offset = next_offset
                         continue
 
+                    # Callback acknowledgement is best-effort. Bale may reject
+                    # an old callback with HTTP 400 after its short response window;
+                    # that must never prevent the requested report from executing.
                     try:
                         answer_callback_query(callback.get("id"))
-                        command = CALLBACK_COMMANDS.get(
-                            str(callback.get("data") or "").strip()
+                    except Exception as ack_error:
+                        response = getattr(ack_error, "response", None)
+                        status_code = getattr(response, "status_code", None)
+                        print(
+                            "CALLBACK_ACK_ERROR "
+                            f"type={type(ack_error).__name__} "
+                            f"http_status={status_code}"
                         )
-                        if not command:
-                            raise RuntimeError("UNKNOWN_CALLBACK")
 
-                        if command == "وضعیت":
+                    try:
+                        callback_data = str(callback.get("data") or "").strip()
+                        command = CALLBACK_COMMANDS.get(callback_data)
+                        strategy = STRATEGY_CALLBACKS.get(callback_data)
+
+                        if callback_data.startswith("symbols_page:"):
+                            page = int(callback_data.split(":", 1)[1])
+                            send_symbol_menu(chat_id, page)
+                        elif callback_data.startswith("symbol:"):
+                            symbol = normalize_command(callback_data.split(":", 1)[1])
+                            if not symbol:
+                                raise RuntimeError("EMPTY_SYMBOL_CALLBACK")
+                            report = generate_report(symbol)
+                            send_message(chat_id, report)
+                            try:
+                                publish_latest_evidence()
+                            except Exception as exc:
+                                print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
+                            send_report_menu(chat_id)
+                        elif callback_data == "main_menu":
+                            send_report_menu(chat_id)
+                        elif strategy:
+                            report = generate_strategy_report(strategy)
+                            send_message(chat_id, report)
+                            send_strategy_menu(chat_id)
+                            send_report_menu(chat_id)
+                        elif command == "وضعیت":
                             send_message(chat_id, system_status())
+                            send_report_menu(chat_id)
+                        elif command:
+                            report = generate_report(command)
+                            send_message(chat_id, report)
+                            try:
+                                publish_latest_evidence()
+                            except Exception as exc:
+                                print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
+                            send_report_menu(chat_id)
                         else:
-                            send_message(chat_id, generate_report(command))
-
-                        send_report_menu(chat_id)
+                            raise RuntimeError("UNKNOWN_CALLBACK")
                         print(
                             f"REPORT_OK callback={callback.get('data')}"
                         )
@@ -374,6 +714,8 @@ def main():
                 try:
                     if text in ("منو", "menu", "/start", "/menu", "🏠 منوی اصلی"):
                         send_report_menu(chat_id)
+                    elif text in ("استراتژی‌ها", "استراتژی ها", "استراتژی"):
+                        send_strategy_menu(chat_id)
                     elif text in ("رفتار", "تغییرات", "behavior"):
                         send_message(chat_id, generate_report("رفتار"))
                         send_report_menu(chat_id)
@@ -395,6 +737,10 @@ def main():
                     else:
                         report = generate_report(text)
                         send_message(chat_id, report)
+                        try:
+                            publish_latest_evidence()
+                        except Exception as exc:
+                            print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
                         send_report_menu(chat_id)
 
                     print(
