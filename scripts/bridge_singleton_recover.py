@@ -60,4 +60,12 @@ subprocess.Popen(
     close_fds=True,
 )
 
+time.sleep(3)
 print("BRIDGE_RECOVERY_STARTED")
+log_path = WORK / "bridge_agent.log"
+if log_path.exists():
+    try:
+        lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+        print("\n".join(lines[-40:]))
+    except Exception as exc:
+        print(f"BRIDGE_LOG_READ_ERROR={type(exc).__name__}: {exc}")
