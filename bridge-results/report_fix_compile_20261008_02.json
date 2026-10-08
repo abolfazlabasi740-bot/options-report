@@ -1,0 +1,21 @@
+{
+  "command_id": "report_fix_compile_20261008_02",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T05:06:48.072021+00:00",
+  "finished_at": "2026-10-08T05:06:48.176123+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "py_compile",
+    "last_minute_profit_engine.py",
+    "bale_listener.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/report_fix_compile_20261008_02.json",
+  "project_head": "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+  "result_sha256": "fabb90fc9525124991165b4abdb4173d0ff39e166bc0b5dbedbae62b99da450b"
+}
