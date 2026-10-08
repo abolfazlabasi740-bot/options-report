@@ -283,12 +283,29 @@ def generate_report(command):
         # Outside market hours, the latest valid TSETMC snapshot is an accepted
         # data basis and must be clearly labeled in the report.
         source_rows = snapshot.get("rows", [])
-        underlying_ids = sorted({
-            str((row.get("identity") or {}).get("underlying_id") or "").strip()
-            for row in source_rows
-            if str((row.get("identity") or {}).get("underlying_id") or "").strip()
-        })
+        underlying_symbol_by_id = {}
+        for row in source_rows:
+            identity = row.get("identity") or {}
+            underlying_id = str(identity.get("underlying_id") or "").strip()
+            underlying_symbol = str(identity.get("underlying_symbol") or "").strip()
+            if underlying_id and underlying_symbol:
+                underlying_symbol_by_id[underlying_id] = underlying_symbol
+
+        underlying_ids = sorted(underlying_symbol_by_id)
         underlying_context = fetch_underlying_context(underlying_ids)
+
+        # Preserve the canonical underlying identity from the option snapshot.
+        # The technical engine is keyed by instrument_id and may not carry the
+        # display symbol forward. Base Discovery must never emit a blank symbol
+        # when TSETMC supplied an explicit underlying_symbol.
+        instruments = underlying_context.get("instruments", {})
+        for underlying_id, raw in instruments.items():
+            if isinstance(raw, dict):
+                raw["underlying_id"] = underlying_id
+                canonical_symbol = underlying_symbol_by_id.get(str(underlying_id).strip())
+                if canonical_symbol:
+                    raw["underlying_symbol"] = canonical_symbol
+
         result = build_last_minute_ranking(
             source_rows,
             top_count=15,
