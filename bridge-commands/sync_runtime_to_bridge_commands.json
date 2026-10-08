@@ -1,0 +1,9 @@
+{
+  "command_id": "sync_runtime_to_bridge_commands",
+  "argv": [
+    "git",
+    "fetch",
+    "origin",
+    "bridge-commands"
+  ]
+}
