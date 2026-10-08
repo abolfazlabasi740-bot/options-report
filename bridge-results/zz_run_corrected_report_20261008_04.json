@@ -1,0 +1,18 @@
+{
+  "command_id": "zz_run_corrected_report_20261008_04",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-08T06:50:06.887640+00:00",
+  "finished_at": "2026-10-08T06:50:08.218899+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/run_corrected_last_minute_report.py"
+  ],
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/run_corrected_last_minute_report.py\", line 5, in <module>\n    from bale_listener import generate_report\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/bale_listener.py\", line 88, in <module>\n    from last_minute_profit_engine import build_last_minute_ranking, analyze_underlying_context\nModuleNotFoundError: No module named 'last_minute_profit_engine'\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_run_corrected_report_20261008_04.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "75d8619196213d6656b460e195ca931344b85a53589fb71685cd121225dd94aa"
+}
