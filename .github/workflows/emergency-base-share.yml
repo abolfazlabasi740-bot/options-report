@@ -1,0 +1,28 @@
+name: emergency-base-share
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/emergency-base-share.yml'
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run snapshot-only report
+        run: python base_share_opportunity_score_v1_report.py
+      - name: Commit report output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/base_share/latest_opportunity_report.txt output/base_share/latest_opportunity_report.json output/tsetmc_first/latest_snapshot.json output/tsetmc_first/closed_snapshot.json
+          git diff --cached --quiet || git commit -m "report: emergency base-share snapshot ranking"
+          git push
