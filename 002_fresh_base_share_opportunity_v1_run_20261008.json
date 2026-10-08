@@ -2,8 +2,8 @@
   "command_id": "002_fresh_base_share_opportunity_v1_run_20261008",
   "status": "TIMEOUT",
   "exit_code": 124,
-  "started_at": "2026-10-08T13:50:01.900900+00:00",
-  "finished_at": "2026-10-08T13:52:02.004212+00:00",
+  "started_at": "2026-10-08T13:59:41.813027+00:00",
+  "finished_at": "2026-10-08T14:01:41.931196+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
@@ -14,5 +14,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/002_fresh_base_share_opportunity_v1_run_20261008.json",
   "project_head": "07d93aadbd38a2078f680de45e185861b70a1b4b",
-  "result_sha256": "ee71a30e2d41f84607759e0c9c8b584bff8f8a3c26a56d21e5944dee0da51589"
+  "result_sha256": "59e833ef19c7a15ad61d51dfda34d74d07fd52a7c1cd45c2bc22478a4e6c6024"
 }
