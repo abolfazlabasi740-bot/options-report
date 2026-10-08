@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import time
+import fcntl
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -96,7 +97,7 @@ def publish_result(result):
         raise RuntimeError("result commit failed")
     last = "unknown"
     for attempt in range(4):
-        push = run("git", "push", "--atomic", "origin",
+        push = run("git", "push", "origin",
                    f"{RESULT_BRANCH}:{RESULT_BRANCH}",
                    cwd=RESULTS, check=False, timeout=90)
         if push.returncode == 0:
@@ -216,10 +217,26 @@ def _daemonize():
     print(f"BRIDGE_LOG={log_path}", flush=True)
     return True
 
+def acquire_singleton():
+    global _LOCK_FD
+    WORK.mkdir(parents=True, exist_ok=True)
+    lock_path = WORK / "bridge_agent.lock"
+    _LOCK_FD = lock_path.open("a+")
+    try:
+        fcntl.flock(_LOCK_FD.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        log("BRIDGE_ALREADY_RUNNING")
+        return False
+    _LOCK_FD.write(str(os.getpid()))
+    _LOCK_FD.flush()
+    return True
+
 def main():
     if _daemonize():
         return
     WORK.mkdir(parents=True, exist_ok=True)
+    if not acquire_singleton():
+        return
     QUEUE_REPO.mkdir(exist_ok=True)
     RESULTS.mkdir(exist_ok=True)
     log("BRIDGE_STATUS=STARTING")
