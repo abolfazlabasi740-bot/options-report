@@ -1,0 +1,9 @@
+{
+  "command_id": "003_bridge_root_diagnostic_20261008",
+  "argv": [
+    "python",
+    "-c",
+    "from pathlib import Path; p=Path.home()/'.termux_command_bridge/bridge_agent.log'; print(p.read_text(errors='replace')[-12000:])"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
