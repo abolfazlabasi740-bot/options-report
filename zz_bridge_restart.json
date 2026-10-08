@@ -1,8 +1,0 @@
-{
-  "command_id": "zz_bridge_restart",
-  "argv": [
-    "python",
-    "scripts/restart_bridge_after_update.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
