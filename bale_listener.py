@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 import time
 import requests
@@ -83,7 +85,7 @@ from report_engine import build_tsetmc_report, save_tsetmc_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
-from last_minute_profit_engine import build_last_minute_ranking
+from last_minute_profit_engine import build_last_minute_ranking, analyze_underlying_context
 from underlying_trend_engine import fetch_underlying_context
 from bull_call_spread_engine import build_strategy_report
 
@@ -185,6 +187,92 @@ def system_status():
     return "\n".join(lines)
 
 
+def _gregorian_to_jalali(gy, gm, gd):
+    """Convert Gregorian date to Jalali without external dependencies."""
+    g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29]
+    gy2 = gy - 1600
+    gm2 = gm - 1
+    gd2 = gd - 1
+    g_day_no = 365 * gy2 + (gy2 + 3) // 4 - (gy2 + 99) // 100 + (gy2 + 399) // 400
+    for i in range(gm2):
+        g_day_no += g_days_in_month[i]
+    if gm2 > 1 and ((gy % 4 == 0 and gy % 100 != 0) or (gy % 400 == 0)):
+        g_day_no += 1
+    g_day_no += gd2
+    j_day_no = g_day_no - 79
+    j_np = j_day_no // 12053
+    j_day_no %= 12053
+    jy = 979 + 33 * j_np + 4 * (j_day_no // 1461)
+    j_day_no %= 1461
+    if j_day_no >= 366:
+        jy += (j_day_no - 1) // 365
+        j_day_no = (j_day_no - 1) % 365
+    i = 0
+    while i < 11 and j_day_no >= j_days_in_month[i]:
+        j_day_no -= j_days_in_month[i]
+        i += 1
+    return jy, i + 1, j_day_no + 1
+
+
+def _snapshot_datetime_label(snapshot):
+    evidence = snapshot.get("evidence") or {}
+    market_watch = evidence.get("market_watch") or {}
+    raw = market_watch.get("latest_source_market_timestamp")
+    if not raw:
+        rows = snapshot.get("rows") or []
+        timestamps = [r.get("source_market_timestamp") for r in rows if r.get("source_market_timestamp")]
+        raw = max(timestamps) if timestamps else None
+    if not raw:
+        raw = snapshot.get("generated_at") or market_watch.get("retrieved_at")
+    if not raw:
+        return "داده موجود نیست"
+    try:
+        text = str(raw).replace("Z", "+00:00")
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(ZoneInfo("Asia/Tehran"))
+        jy, jm, jd = _gregorian_to_jalali(dt.year, dt.month, dt.day)
+        return f"{jy:04d}/{jm:02d}/{jd:02d} {dt:%H:%M:%S}"
+    except (TypeError, ValueError, OverflowError):
+        return str(raw)
+
+
+def _base_discovery_report(underlying_context):
+    """Rank base stocks separately from option contracts for opportunity discovery."""
+    candidates = []
+    for underlying_id, raw in (underlying_context or {}).items():
+        if not isinstance(raw, dict) or raw.get("status") == "UNAVAILABLE":
+            continue
+        analysis = analyze_underlying_context(raw)
+        available = []
+        for key in ("momentum_score", "board_score", "volume_score"):
+            value = analysis.get(key)
+            if isinstance(value, (int, float)) and value > 0:
+                available.append(float(value))
+        if not available:
+            continue
+        base_score = sum(available) / len(available)
+        early = raw.get("early_move") or {}
+        prelock = early.get("pre_lock_sequence") or {}
+        candidates.append({
+            "underlying_id": underlying_id,
+            "symbol": raw.get("underlying_symbol") or raw.get("symbol") or "",
+            "score": round(base_score, 2),
+            "momentum": round(float(analysis.get("momentum_score") or 0), 1),
+            "board": round(float(analysis.get("board_score") or 0), 1),
+            "volume": round(float(analysis.get("volume_score") or 0), 1),
+            "trend": raw.get("trend_state") or "داده موجود نیست",
+            "early_state": early.get("state") or "داده موجود نیست",
+            "prelock_state": prelock.get("state") or "داده موجود نیست",
+            "prelock_sequence": prelock.get("sequence") or "داده موجود نیست",
+            "headroom": raw.get("upper_limit_headroom_pct"),
+            "touched_upper": raw.get("touched_upper_limit_today"),
+        })
+    candidates.sort(key=lambda x: (x["score"], x["momentum"], x["volume"], x["symbol"]), reverse=True)
+    return candidates[:10]
+
+
 def generate_report(command):
     if command in ("رفتار", "تغییرات", "behavior"):
         return format_behavior_report(build_behavior_report(ROOT))
@@ -208,16 +296,35 @@ def generate_report(command):
             snapshot=snapshot,
         )
 
+        snapshot_label = _snapshot_datetime_label(snapshot)
+        base_watch = _base_discovery_report(underlying_context.get("instruments", {}))
+        selected_symbols = {str(item.get("underlying_symbol") or "").strip() for item in result.get("ranking_rows", [])}
         lines = [
             "⚡ فرصت لحظه آخری آپشن",
             "TSETMC-ONLY | CURRENT-EVIDENCE OPTION OPPORTUNITY",
             "━━━━━━━━━━━━━━━━━━━━",
-            "مبنای انتخاب: قدرت و شتاب سهم پایه + تابلو/سفارش + حجم/ارزش + کیفیت معامله‌پذیری آپشن",
-            "سررسید فقط عامل زمینه‌ای است؛ شرط یک‌روزه و سناریوی ثابت ۳٪ حذف شده است.",
-            f"تعداد کاندیداهای معتبر: {result.get('candidate_count', 0)}",
+            f"📅 تاریخ/زمان دیتای Snapshot: {snapshot_label}",
+            f"📊 وضعیت داده: {snapshot.get('data_mode') or 'داده موجود نیست'} | Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}",
+            "مبنای گزارش: ابتدا کشف سهم پایه قوی، سپس ارزیابی زنجیره آپشن همان سهم.",
+            "انتخاب نهایی آپشن: امتیاز جهانی + سقف حداکثر ۳ قرارداد از هر سهم پایه؛ سقف ۳ سهم پایه را مجبور به پر کردن سهمیه نمی‌کند.",
+            f"تعداد کاندیداهای معتبر آپشن: {result.get('candidate_count', 0)}",
             f"تعداد نمایش: {result.get('display_count', 0)}",
             "━━━━━━━━━━━━━━━━━━━━",
+            "🔎 پایش سهم‌های پایه برتر",
         ]
+        if base_watch:
+            for index, base in enumerate(base_watch, 1):
+                headroom = base.get("headroom")
+                headroom_text = f"{headroom:.2f}%" if isinstance(headroom, (int, float)) else "داده موجود نیست"
+                option_state = "آپشن در ۱۵ گزینه نهایی دارد" if base["symbol"] in selected_symbols else "در ۱۵ گزینه نهایی آپشن ندارد"
+                lines.extend([
+                    f"{index}. {base['symbol'] or 'داده موجود نیست'} | قدرت پایه: {base['score']:.1f} | روند: {base['trend']}",
+                    f"   مومنتوم: {base['momentum']:.1f} | تابلو: {base['board']:.1f} | حجم/ارزش: {base['volume']:.1f} | فاصله سقف: {headroom_text}",
+                    f"   توالی: {base['prelock_sequence']} | وضعیت پیش‌قفلی: {base['prelock_state']} | {option_state}",
+                ])
+        else:
+            lines.append("داده کافی برای کشف سهم پایه موجود نیست.")
+        lines.append("━━━━━━━━━━━━━━━━━━━━")
 
         if not result.get("ranking_rows"):
             lines.append("در این لحظه فرصت معتبر با شواهد کافی پیدا نشد.")
