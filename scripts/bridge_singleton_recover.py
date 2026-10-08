@@ -8,19 +8,27 @@ from pathlib import Path
 
 PROJECT = Path.home() / "OptimusAI_V41_LIVE"
 SCRIPT = PROJECT / "scripts" / "termux_command_bridge_agent.py"
+WORK = Path.home() / ".termux_command_bridge"
 ME = os.getpid()
 
+pull = subprocess.run(
+    ["git", "pull", "--ff-only", "origin", "main"],
+    cwd=str(PROJECT), text=True, capture_output=True
+)
+if pull.returncode != 0:
+    print(pull.stdout[-4000:])
+    print(pull.stderr[-4000:])
+    raise SystemExit(pull.returncode)
+
 procs = subprocess.run(
-    ["python", "-c",
-     "import subprocess; print(subprocess.check_output(['ps','-A','-o','pid=,args='],text=True))"],
-    text=True,
-    capture_output=True,
+    ["ps", "-A", "-o", "pid=,args="],
+    text=True, capture_output=True
 )
 targets = []
 if procs.returncode == 0:
     for line in procs.stdout.splitlines():
         line = line.strip()
-        if "termux_command_bridge_agent.py" in line and "bridge_singleton_recover.py" not in line:
+        if "termux_command_bridge_agent.py" in line:
             try:
                 pid = int(line.split(None, 1)[0])
                 if pid != ME:
@@ -31,12 +39,16 @@ if procs.returncode == 0:
 for pid in sorted(set(targets)):
     try:
         os.kill(pid, signal.SIGTERM)
-    except ProcessLookupError:
-        pass
-    except PermissionError:
+    except (ProcessLookupError, PermissionError):
         pass
 
 time.sleep(1)
+
+lock_path = WORK / "bridge_agent.lock"
+try:
+    lock_path.unlink()
+except FileNotFoundError:
+    pass
 
 subprocess.Popen(
     [sys.executable, str(SCRIPT)],
@@ -48,4 +60,4 @@ subprocess.Popen(
     close_fds=True,
 )
 
-print("BRIDGE_SINGLETON_RECOVERED")
+print("BRIDGE_RECOVERY_STARTED")
