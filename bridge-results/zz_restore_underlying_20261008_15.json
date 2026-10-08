@@ -1,0 +1,20 @@
+{
+  "command_id": "zz_restore_underlying_20261008_15",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:25:31.741018+00:00",
+  "finished_at": "2026-10-08T07:25:33.520898+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "fetch",
+    "origin",
+    "377d323027a2a40c233adf844e50a32d7cf18a98"
+  ],
+  "stdout": "",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            377d323027a2a40c233adf844e50a32d7cf18a98 -> FETCH_HEAD\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_restore_underlying_20261008_15.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "1be68d3f2fe118e48e9152d008d5b0d581043665e9a1b7b9c666a2f8bb8306a4"
+}
