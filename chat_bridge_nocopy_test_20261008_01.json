@@ -1,0 +1,19 @@
+{
+  "command_id": "chat_bridge_nocopy_test_20261008_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T02:31:29.691505+00:00",
+  "finished_at": "2026-10-08T02:31:29.829311+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('CHAT_BRIDGE_NO_COPY_TEST_OK')"
+  ],
+  "stdout": "CHAT_BRIDGE_NO_COPY_TEST_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/chat_bridge_nocopy_test_20261008_01.json",
+  "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
+  "result_sha256": "62b52a5f60cc98c1dbcee68b93ea906a4831f2673d27da90e5053fb5a4058706"
+}
