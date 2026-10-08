@@ -1,0 +1,18 @@
+{
+  "command_id": "bridge_restart_latest_20261008_01",
+  "status": "TIMEOUT",
+  "exit_code": 124,
+  "started_at": "2026-10-08T03:50:25.850196+00:00",
+  "finished_at": "2026-10-08T03:52:29.349232+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/termux_command_bridge_agent.py"
+  ],
+  "stdout": "",
+  "stderr": "command timeout",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/bridge_restart_latest_20261008_01.json",
+  "project_head": "4492ddaa3cf19aa95ff25bb8f529bfcec728ed01",
+  "result_sha256": "75355aec73025e267e79fd91b5e4cd735fe3f24c6a6a1e9ee23408bbad76e0df"
+}
