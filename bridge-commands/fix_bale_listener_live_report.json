@@ -1,0 +1,7 @@
+{
+  "command_id": "fix_bale_listener_live_report",
+  "argv": [
+    "python",
+    "scripts/run_corrected_last_minute_report.py"
+  ]
+}
