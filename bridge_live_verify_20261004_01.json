@@ -1,0 +1,17 @@
+{
+  "command_id": "bridge_live_verify_20261004_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T02:15:09.164193+00:00",
+  "finished_at": "2026-10-08T02:15:09.198865+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "pwd"
+  ],
+  "stdout": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/bridge_live_verify_20261004_01.json",
+  "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
+  "result_sha256": "d55e91792a70e7c072184fab002250040928e7f2e79953f6136d097c91c3a8fe"
+}
