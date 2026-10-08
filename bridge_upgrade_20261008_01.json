@@ -1,0 +1,7 @@
+{
+  "command_id": "bridge_upgrade_20261008_01",
+  "status": "REJECTED",
+  "error": "Command '['git', 'reset', '--hard', 'origin/bridge-results']' returned non-zero exit status 128.",
+  "queue_path": "bridge-commands/bridge_upgrade_20261008_01.json",
+  "finished_at": "2026-10-08T02:47:56.603726+00:00"
+}
