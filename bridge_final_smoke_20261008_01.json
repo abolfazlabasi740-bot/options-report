@@ -2,8 +2,8 @@
   "command_id": "bridge_final_smoke_20261008_01",
   "status": "SUCCESS",
   "exit_code": 0,
-  "started_at": "2026-10-08T02:46:51.733255+00:00",
-  "finished_at": "2026-10-08T02:46:51.789121+00:00",
+  "started_at": "2026-10-08T02:46:56.389604+00:00",
+  "finished_at": "2026-10-08T02:46:56.491871+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
@@ -15,5 +15,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/bridge_final_smoke_20261008_01.json",
   "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
-  "result_sha256": "c1cb95a2395699b45cd846ee7fbbb092718ac23e444347538504998198fd7b11"
+  "result_sha256": "b9f9066b25eacf3c56bb227ff68fc3104a8173b26ecce389f16f3f9c0941122e"
 }
