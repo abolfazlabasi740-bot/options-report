@@ -2,8 +2,8 @@
   "command_id": "001_fresh_base_share_opportunity_v1_sync_20261008",
   "status": "SUCCESS",
   "exit_code": 0,
-  "started_at": "2026-10-08T13:54:29.988470+00:00",
-  "finished_at": "2026-10-08T13:54:32.182524+00:00",
+  "started_at": "2026-10-08T14:05:29.036812+00:00",
+  "finished_at": "2026-10-08T14:05:33.684911+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "git",
@@ -16,6 +16,6 @@
   "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\n",
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/001_fresh_base_share_opportunity_v1_sync_20261008.json",
-  "project_head": "07d93aadbd38a2078f680de45e185861b70a1b4b",
-  "result_sha256": "e759cf0c8ba78980d2888557387fd507eb8f2f70712a277186fbe609596f2782"
+  "project_head": "0747e226d896115b8d600f336ee62224a2532094",
+  "result_sha256": "c4487b3877291f835601bd77d3a79d3d6dcf6503cd3f6426003e64b6af479fba"
 }
