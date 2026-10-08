@@ -1,0 +1,18 @@
+{
+  "command_id": "zz_bale_delivery_20261008_26",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:55:06.705792+00:00",
+  "finished_at": "2026-10-08T07:55:09.760632+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "bale_runtime_verification.py"
+  ],
+  "stdout": "{\n  \"status\": \"SUCCESS\",\n  \"generated_at_utc\": \"2026-10-08T07:55:07.673475+00:00\",\n  \"report_file\": \"latest_report.txt\",\n  \"report_sha256\": \"0aeabbc1b7c64be32b63903d93e13cc0c24a2ab4a828603524dbbd1db046763b\",\n  \"source_file\": null,\n  \"source_sha256\": \"6d2cabdcb5f74e92a23c878010487c6e4dd7584ef265c6e14e337c8ffaf75b8b\",\n  \"source_hash_verified\": true,\n  \"report_generated_at\": \"2026-10-07T09:00:14.055327+00:00\",\n  \"audit_report_sha256\": \"0aeabbc1b7c64be32b63903d93e13cc0c24a2ab4a828603524dbbd1db046763b\",\n  \"audit_integrity\": \"PASS\",\n  \"chunks\": 4,\n  \"receipts\": [\n    {\n      \"message_id\": 1495,\n      \"chat_id\": 770429773\n    },\n    {\n      \"message_id\": 1496,\n      \"chat_id\": 770429773\n    },\n    {\n      \"message_id\": 1497,\n      \"chat_id\": 770429773\n    },\n    {\n      \"message_id\": 1498,\n      \"chat_id\": 770429773\n    }\n  ],\n  \"environment_presence_only\": {\n    \"BALE_BOT_TOKEN\": true,\n    \"BALE_CHAT_ID\": true\n  },\n  \"secrets_recorded\": false\n}\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_bale_delivery_20261008_26.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "784f228106a24a25ed99fb684cb951cdbc50b8df9752fab5231908c5b480d43a"
+}
