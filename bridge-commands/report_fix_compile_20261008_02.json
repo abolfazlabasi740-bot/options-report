@@ -1,0 +1,11 @@
+{
+  "command_id": "report_fix_compile_20261008_02",
+  "argv": [
+    "python",
+    "-m",
+    "py_compile",
+    "last_minute_profit_engine.py",
+    "bale_listener.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
