@@ -1,0 +1,16 @@
+{
+  "command_id": "003_bridge_root_diagnostic_20261008",
+  "status": "INVALID_COMMAND",
+  "exit_code": 65,
+  "started_at": "2026-10-08T12:52:10.847680+00:00",
+  "finished_at": "2026-10-08T12:52:10.847793+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [],
+  "stdout": "",
+  "stderr": "ValueError: shell operators are not allowed",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/003_bridge_root_diagnostic_20261008.json",
+  "project_head": "613520a3b083bb15957f369598d2195f92e7f094",
+  "raw_queue_sha256": "ba7dea756dccdab408fa276fe3951bf62e5b01785442c54094e1335fc1d8e0ca",
+  "result_sha256": "c187141bd92b54cc5f9980539c0aabfc18ae7ffb46eea940ae75c706608821d4"
+}
