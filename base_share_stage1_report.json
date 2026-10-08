@@ -2,8 +2,8 @@
   "command_id": "base_share_stage1_report",
   "status": "FAILED",
   "exit_code": 1,
-  "started_at": "2026-10-08T09:41:45.410904+00:00",
-  "finished_at": "2026-10-08T09:41:47.966813+00:00",
+  "started_at": "2026-10-08T09:42:54.954632+00:00",
+  "finished_at": "2026-10-08T09:42:57.666052+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
@@ -14,5 +14,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/base_share_stage1_report.json",
   "project_head": "446dab646a4f7acd70754bc06d173ae07ad806b2",
-  "result_sha256": "b53e0d4d5208226dbe20c1ce1c8a858cddd879575205d4e525d27b1539367240"
+  "result_sha256": "9fdda35de70357b86c8d39b7871d302c6166d35fa6bf197a42f1bec887186c35"
 }
