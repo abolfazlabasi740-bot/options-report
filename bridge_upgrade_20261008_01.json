@@ -1,7 +1,18 @@
 {
   "command_id": "bridge_upgrade_20261008_01",
-  "status": "REJECTED",
-  "error": "Command '['git', 'reset', '--hard', 'origin/bridge-results']' returned non-zero exit status 128.",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-08T02:47:59.686941+00:00",
+  "finished_at": "2026-10-08T02:48:01.134348+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/bridge_upgrade.py"
+  ],
+  "stdout": "Updating c4ce198..3da03a5\n\nFrom https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\nerror: Your local changes to the following files would be overwritten by merge:\n\tscripts/termux_command_bridge_agent.py\nPlease commit your changes or stash them before you merge.\nAborting\n\n",
+  "stderr": "",
+  "timeout_seconds": 120,
   "queue_path": "bridge-commands/bridge_upgrade_20261008_01.json",
-  "finished_at": "2026-10-08T02:47:56.603726+00:00"
+  "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
+  "result_sha256": "1d0e08822f4bdfb4b465af0988fce4a0e9f5e0796c61c7db83ac65c8473b4e46"
 }
