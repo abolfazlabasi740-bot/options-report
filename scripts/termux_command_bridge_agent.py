@@ -123,17 +123,28 @@ def gh_delete_file(path, branch, message):
 
 
 def sync_queue():
-    QUEUE_REPO.mkdir(parents=True, exist_ok=True)
-    if not (QUEUE_REPO / ".git").exists():
-        run("git", "clone", "--branch", QUEUE_BRANCH,
-            f"https://github.com/{REPO}.git", str(QUEUE_REPO),
-            cwd=WORK, timeout=90)
-        return
-    run("git", "fetch", "--prune", "origin", QUEUE_BRANCH,
-        cwd=QUEUE_REPO, timeout=90)
-    run("git", "reset", "--hard", f"origin/{QUEUE_BRANCH}",
-        cwd=QUEUE_REPO, timeout=30)
-    run("git", "clean", "-fd", cwd=QUEUE_REPO, timeout=30)
+    # Read the queue directly from GitHub API. This avoids stale/misaligned
+    # local queue clones and makes the bridge authoritative on QUEUE_BRANCH.
+    QUEUE.mkdir(parents=True, exist_ok=True)
+    remote = gh_api(f"repos/{REPO}/contents/?ref={QUEUE_BRANCH}")
+    remote_names = set()
+    for item in remote if isinstance(remote, list) else []:
+        if item.get("type") != "file" or not item.get("name", "").endswith(".json"):
+            continue
+        name = item["name"]
+        remote_names.add(name)
+        raw = gh_api(f"repos/{REPO}/contents/{name}?ref={QUEUE_BRANCH}")
+        encoded = raw.get("content", "")
+        if not encoded:
+            continue
+        try:
+            content = base64.b64decode(encoded.replace("\\n", "").encode("ascii")).decode("utf-8")
+        except Exception as exc:
+            raise RuntimeError(f"queue decode failed for {name}: {exc}")
+        (QUEUE / name).write_text(content, encoding="utf-8")
+    for local in QUEUE.glob("*.json"):
+        if local.name not in remote_names:
+            local.unlink(missing_ok=True)
 
 
 def validate_argv(argv):
