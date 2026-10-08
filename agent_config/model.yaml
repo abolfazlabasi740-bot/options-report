@@ -1,0 +1,6 @@
+provider: openai
+model: gpt-6-luna
+max_output_tokens: 6000
+temperature: 0.1
+
+# Set OPENAI_API_KEY in the Termux environment. Never commit the key.
