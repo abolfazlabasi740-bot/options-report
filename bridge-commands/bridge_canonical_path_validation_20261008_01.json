@@ -1,0 +1,9 @@
+{
+  "command_id": "bridge_canonical_path_validation_20261008_01",
+  "argv": [
+    "git",
+    "rev-parse",
+    "--show-toplevel"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
