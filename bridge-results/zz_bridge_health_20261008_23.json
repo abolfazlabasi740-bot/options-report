@@ -1,0 +1,17 @@
+{
+  "command_id": "zz_bridge_health_20261008_23",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:43:56.803787+00:00",
+  "finished_at": "2026-10-08T07:43:56.843281+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "pwd"
+  ],
+  "stdout": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_bridge_health_20261008_23.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "6943ee938e5156e38b8747e01eb8f55f1a58d63ad62e3365f48860cd0f45f52d"
+}
