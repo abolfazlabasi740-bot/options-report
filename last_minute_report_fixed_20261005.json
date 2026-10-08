@@ -1,0 +1,19 @@
+{
+  "command_id": "last_minute_report_fixed_20261005",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-08T02:15:17.132636+00:00",
+  "finished_at": "2026-10-08T02:15:20.294982+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "bash",
+    "-lc",
+    "set -e; git pull --ff-only origin main; python -m py_compile bale_listener.py last_minute_profit_engine.py; python -c 'from pathlib import Path; from bale_listener import generate_report, CHAT_ID, send_message; report=generate_report(\"سودلحظهآخری\"); send_message(CHAT_ID, report); Path(\"output/last_minute_profit_manual_run.json\").write_text(\"{\\\"status\\\":\\\"SUCCESS\\\",\\\"report_type\\\":\\\"LAST_MINUTE_PROFIT\\\",\\\"sent_to_bale\\\":true}\\n\", encoding=\"utf-8\"); print(\"REPORT_SENT\")'"
+  ],
+  "stdout": "Already up to date.\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    from pathlib import Path; from bale_listener import generate_report, CHAT_ID, send_message; report=generate_report(\"سودلحظهآخری\"); send_message(CHAT_ID, report); Path(\"output/last_minute_profit_manual_run.json\").write_text(\"{\\\"status\\\":\\\"SUCCESS\\\",\\\"report_type\\\":\\\"LAST_MINUTE_PROFIT\\\",\\\"sent_to_bale\\\":true}\\n\", encoding=\"utf-8\"); print(\"REPORT_SENT\")\n                                                                                                       ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/bale_listener.py\", line 253, in generate_report\n    report, snapshot = build_tsetmc_report(\n                       ~~~~~~~~~~~~~~~~~~~^\n        top_count=5,\n        ^^^^^^^^^^^^\n    ...<2 lines>...\n        report_mode=\"RANKED\",\n        ^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/report_engine.py\", line 296, in build_tsetmc_report\n    raise ValueError(f\"نماد پایه {requested} در Universe فعلی TSETMC پیدا نشد\")\nValueError: نماد پایه سودلحظهآخری در Universe فعلی TSETMC پیدا نشد\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/last_minute_report_fixed_20261005.json",
+  "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
+  "result_sha256": "bf5519570f9aaa5d3fa4861c7d29fe7a0ea6b4e2041ae41982fe97ec0684fd81"
+}
