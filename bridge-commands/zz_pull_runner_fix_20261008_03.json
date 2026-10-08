@@ -1,0 +1,1 @@
+{"command_id":"zz_pull_runner_fix_20261008_03","argv":["git","pull","--ff-only","origin","bridge-commands"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE","timeout_seconds":120}
