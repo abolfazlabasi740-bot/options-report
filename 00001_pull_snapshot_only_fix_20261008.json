@@ -2,8 +2,8 @@
   "command_id": "00001_pull_snapshot_only_fix_20261008",
   "status": "SUCCESS",
   "exit_code": 0,
-  "started_at": "2026-10-08T14:11:44.702560+00:00",
-  "finished_at": "2026-10-08T14:11:48.038404+00:00",
+  "started_at": "2026-10-08T14:20:41.206460+00:00",
+  "finished_at": "2026-10-08T14:20:47.078521+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "git",
@@ -17,5 +17,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/00001_pull_snapshot_only_fix_20261008.json",
   "project_head": "0747e226d896115b8d600f336ee62224a2532094",
-  "result_sha256": "924dd9597f3da126f61877a85d5455394a7a55b3093fb100a241ae99aa636b3c"
+  "result_sha256": "0b837f7982db8ac3d815b9ab610cc0bf6aadfe4db136cdf1f4e52e6863d863db"
 }
