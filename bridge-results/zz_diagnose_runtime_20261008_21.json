@@ -1,0 +1,16 @@
+{
+  "command_id": "zz_diagnose_runtime_20261008_21",
+  "status": "INVALID_COMMAND",
+  "exit_code": 65,
+  "started_at": "2026-10-08T07:41:53.059930+00:00",
+  "finished_at": "2026-10-08T07:41:53.059963+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [],
+  "stdout": "",
+  "stderr": "ValueError: shell operators are not allowed",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_diagnose_runtime_20261008_21.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "raw_queue_sha256": "6b2604d0495b0966d0a5d379704288efc2fa6e0fe34cbd0a32ec2078646da2cf",
+  "result_sha256": "66f76a6a7d3acfbc27aad4360952aa68204e923b83a98ce81f11d071c9bc1221"
+}
