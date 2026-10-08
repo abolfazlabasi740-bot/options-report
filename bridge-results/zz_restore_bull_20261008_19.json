@@ -1,0 +1,22 @@
+{
+  "command_id": "zz_restore_bull_20261008_19",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:38:09.147234+00:00",
+  "finished_at": "2026-10-08T07:38:09.190178+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "restore",
+    "--source",
+    "377d323027a2a40c233adf844e50a32d7cf18a98",
+    "--",
+    "bull_call_spread_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_restore_bull_20261008_19.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "2658f56394d3cd5365547dae3502d598b659950e2e7f02da7b4e04f8cdeb5688"
+}
