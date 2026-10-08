@@ -1,0 +1,10 @@
+{
+  "command_id": "00000_priority_snapshot_report_20261008",
+  "argv": [
+    "python",
+    "scripts/run_base_share_async.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 30,
+  "requested_at": "2026-10-08T14:33:08.523Z"
+}
