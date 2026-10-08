@@ -1,0 +1,19 @@
+{
+  "command_id": "chatgpt-bridge-test-20261007-002",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T02:09:19.000493+00:00",
+  "finished_at": "2026-10-08T02:09:19.060001+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_ROUND_TRIP_OK')"
+  ],
+  "stdout": "BRIDGE_ROUND_TRIP_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "commands/chatgpt-bridge-test-20261007-002.json",
+  "project_head": "c4ce198a2aa9e7af841d7e01378d2f2014bc11d4",
+  "result_sha256": "3395ab46b9da3ff0d069c66f2a80b3df1522bf41f4bdf9c85479e0c23d247d24"
+}
