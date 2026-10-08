@@ -1,0 +1,10 @@
+{
+  "command_id": "zz_pull_corrected_bridge_runtime",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "bridge-commands"
+  ]
+}
