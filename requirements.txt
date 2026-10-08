@@ -3,4 +3,3 @@ numpy
 openpyxl
 requests
 tzdata
-openai
