@@ -1,7 +1,0 @@
-{
-  "command_id": "zz_run_corrected_report_20261008_13",
-  "argv": [
-    "python",
-    "scripts/run_corrected_last_minute_report.py"
-  ]
-}
