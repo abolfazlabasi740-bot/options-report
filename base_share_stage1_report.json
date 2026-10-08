@@ -1,0 +1,18 @@
+{
+  "command_id": "base_share_stage1_report",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-08T09:00:19.416601+00:00",
+  "finished_at": "2026-10-08T09:00:20.396786+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "base_share_stage1_report.py"
+  ],
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/base_share_stage1_report.py\", line 12, in <module>\n    from underlying_context_shadow import fetch_underlying_context\nImportError: cannot import name 'fetch_underlying_context' from 'underlying_context_shadow' (/data/data/com.termux/files/home/OptimusAI_V41_LIVE/underlying_context_shadow.py). Did you mean: 'attach_underlying_context'?\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/base_share_stage1_report.json",
+  "project_head": "446dab646a4f7acd70754bc06d173ae07ad806b2",
+  "result_sha256": "46d27501f177bf00ef30aad0c9635f2fcccc875dda9a6f201e07398dc06fee68"
+}
