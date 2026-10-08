@@ -1,8 +1,0 @@
-{
-  "command_id": "base_share_stage1_report",
-  "argv": [
-    "python",
-    "base_share_stage1_report.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
