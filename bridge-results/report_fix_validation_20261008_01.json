@@ -1,0 +1,16 @@
+{
+  "command_id": "report_fix_validation_20261008_01",
+  "status": "INVALID_COMMAND",
+  "exit_code": 65,
+  "started_at": "2026-10-08T05:07:02.505056+00:00",
+  "finished_at": "2026-10-08T05:07:02.505144+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [],
+  "stdout": "",
+  "stderr": "ValueError: shell operators are not allowed",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/report_fix_validation_20261008_01.json",
+  "project_head": "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+  "raw_queue_sha256": "2e050955d6225cbe89cd6ac067a1fe3f446e5f9703dd42398076ea52c1db52b4",
+  "result_sha256": "e836b246a38f92d43f06586e6243a93214cbaee35e79094da5ddf349fa3a2bb9"
+}
