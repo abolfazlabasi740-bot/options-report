@@ -1,6 +1,9 @@
-provider: openai
-model: gpt-6-luna
+provider: local
+model: local
+api_base: http://127.0.0.1:8080/v1
+api_key_env: OPTIMUSAI_API_KEY
 max_output_tokens: 6000
 temperature: 0.1
 
-# Set OPENAI_API_KEY in the Termux environment. Never commit the key.
+# Local llama.cpp OpenAI-compatible server.
+# No cloud API key and no VPN are required.
