@@ -1,0 +1,22 @@
+{
+  "command_id": "zz_restore_engine_direct_20261008_09",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:11:01.314719+00:00",
+  "finished_at": "2026-10-08T07:11:01.377432+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "restore",
+    "--source",
+    "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+    "--",
+    "last_minute_profit_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_restore_engine_direct_20261008_09.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "2b41bc361ea9326c861148cdd4e8032576a3d02b0f960a6fa4d6faf29fdc7053"
+}
