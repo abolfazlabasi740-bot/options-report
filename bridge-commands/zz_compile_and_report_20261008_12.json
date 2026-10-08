@@ -1,9 +1,0 @@
-{
-  "command_id": "zz_compile_and_report_20261008_12",
-  "argv": [
-    "python",
-    "-m",
-    "py_compile",
-    "last_minute_profit_engine.py"
-  ]
-}
