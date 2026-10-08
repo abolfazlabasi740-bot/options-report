@@ -1,0 +1,22 @@
+{
+  "command_id": "zz_restore_underlying_20261008_14",
+  "status": "FAILED",
+  "exit_code": 128,
+  "started_at": "2026-10-08T07:25:18.129514+00:00",
+  "finished_at": "2026-10-08T07:25:18.168805+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "restore",
+    "--source",
+    "377d323027a2a40c233adf844e50a32d7cf18a98",
+    "--",
+    "underlying_trend_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "fatal: unable to read tree (377d323027a2a40c233adf844e50a32d7cf18a98)\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_restore_underlying_20261008_14.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "2f254fb1258c08f8c4fedc426ebcdc25853672b8e773b8a74bd8611fb8a3618b"
+}
