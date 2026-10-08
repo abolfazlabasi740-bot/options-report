@@ -8,15 +8,16 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from openai import OpenAI
+import requests
 
 ROOT = Path(os.environ.get("OPTIMUSAI_ROOT", Path.home() / "OptimusAI_V41_LIVE")).expanduser().resolve()
 PROVIDER = os.environ.get("OPTIMUSAI_PROVIDER", "local").strip().lower()
 MODEL = os.environ.get("OPTIMUSAI_LLM_MODEL", "local").strip()
-API_BASE = os.environ.get("OPTIMUSAI_API_BASE", "http://127.0.0.1:8080/v1").strip()
+API_BASE = os.environ.get("OPTIMUSAI_API_BASE", "http://127.0.0.1:8080/v1").strip().rstrip("/")
 API_KEY = os.environ.get("OPTIMUSAI_API_KEY", "local").strip()
 MAX_OUTPUT = int(os.environ.get("OPTIMUSAI_MAX_OUTPUT_TOKENS", "6000"))
 MAX_TURNS = int(os.environ.get("OPTIMUSAI_MAX_TURNS", "24"))
+HTTP_TIMEOUT = int(os.environ.get("OPTIMUSAI_HTTP_TIMEOUT", "300"))
 
 SYSTEM = """You are the senior execution agent inside the OptimusAI_V41_LIVE project.
 ChatGPT is the project manager. You execute the assigned task locally and return evidence.
@@ -131,87 +132,15 @@ def git_commit(message: str) -> dict:
         capture_output=True,
         timeout=60,
     )
-    return {
-        "returncode": commit.returncode,
-        "stdout": commit.stdout,
-        "stderr": commit.stderr,
-    }
+    return {"returncode": commit.returncode, "stdout": commit.stdout, "stderr": commit.stderr}
 
 TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "read_file",
-            "description": "Read a project file. Use before modifying code.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "path": {"type": "string"},
-                    "start": {"type": "integer", "minimum": 1},
-                    "end": {"type": "integer", "minimum": 1},
-                },
-                "required": ["path"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "write_file",
-            "description": "Write a complete project file for an intentional change.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "path": {"type": "string"},
-                    "content": {"type": "string"},
-                },
-                "required": ["path", "content"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "run_command",
-            "description": "Run an approved project command for tests, scripts, or diagnostics.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "command": {"type": "string"},
-                    "timeout": {"type": "integer", "minimum": 1, "maximum": 300},
-                },
-                "required": ["command"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "git_status",
-            "description": "Inspect repository state.",
-            "parameters": {"type": "object", "properties": {}},
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "git_diff",
-            "description": "Inspect the current diff before committing.",
-            "parameters": {"type": "object", "properties": {}},
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "git_commit",
-            "description": "Commit verified project changes.",
-            "parameters": {
-                "type": "object",
-                "properties": {"message": {"type": "string"}},
-                "required": ["message"],
-            },
-        },
-    },
+    {"type": "function", "function": {"name": "read_file", "description": "Read a project file. Use before modifying code.", "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "start": {"type": "integer", "minimum": 1}, "end": {"type": "integer", "minimum": 1}}, "required": ["path"]}}},
+    {"type": "function", "function": {"name": "write_file", "description": "Write a complete project file for an intentional change.", "parameters": {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}, "required": ["path", "content"]}}},
+    {"type": "function", "function": {"name": "run_command", "description": "Run an approved project command for tests, scripts, or diagnostics.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}, "timeout": {"type": "integer", "minimum": 1, "maximum": 300}}, "required": ["command"]}}},
+    {"type": "function", "function": {"name": "git_status", "description": "Inspect repository state.", "parameters": {"type": "object", "properties": {}}}},
+    {"type": "function", "function": {"name": "git_diff", "description": "Inspect the current diff before committing.", "parameters": {"type": "object", "properties": {}}}},
+    {"type": "function", "function": {"name": "git_commit", "description": "Commit verified project changes.", "parameters": {"type": "object", "properties": {"message": {"type": "string"}}, "required": ["message"]}}},
 ]
 
 FN = {
@@ -223,60 +152,70 @@ FN = {
     "git_commit": git_commit,
 }
 
-def _client() -> OpenAI:
-    if PROVIDER in {"local", "local_openai", "openai_compatible"}:
-        return OpenAI(base_url=API_BASE, api_key=API_KEY)
-    raise RuntimeError(
-        f"Unsupported provider '{PROVIDER}'. "
-        "Use local/local_openai/openai_compatible with an OpenAI-compatible endpoint."
+def _headers() -> dict[str, str]:
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}",
+    }
+
+def _chat(messages: list[dict[str, Any]]) -> dict[str, Any]:
+    if PROVIDER not in {"local", "local_openai", "openai_compatible"}:
+        raise RuntimeError(f"Unsupported provider '{PROVIDER}'")
+    response = requests.post(
+        f"{API_BASE}/chat/completions",
+        headers=_headers(),
+        json={
+            "model": MODEL,
+            "messages": messages,
+            "tools": TOOLS,
+            "tool_choice": "auto",
+            "temperature": 0.1,
+            "max_tokens": MAX_OUTPUT,
+        },
+        timeout=HTTP_TIMEOUT,
     )
+    response.raise_for_status()
+    return response.json()
 
 def main() -> None:
     task = os.environ.get("OPTIMUSAI_TASK", "").strip()
     if not task:
         raise SystemExit("OPTIMUSAI_TASK is required")
 
-    client = _client()
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": SYSTEM},
         {"role": "user", "content": task},
     ]
 
     for _ in range(MAX_TURNS):
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-            temperature=0.1,
-            max_tokens=MAX_OUTPUT,
-        )
-
-        message = response.choices[0].message
-        tool_calls = message.tool_calls or []
+        data = _chat(messages)
+        choice = data["choices"][0]
+        message = choice["message"]
+        tool_calls = message.get("tool_calls") or []
 
         if not tool_calls:
-            print(message.content or "")
+            print(message.get("content") or "")
             return
 
-        messages.append(message.model_dump(exclude_none=True))
+        messages.append(message)
 
         for call in tool_calls:
-            name = call.function.name
-            args = json.loads(call.function.arguments or "{}")
-            try:
-                result = FN[name](**args)
-                payload = {"ok": True, "result": result}
-            except Exception as exc:
-                payload = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+            function = call.get("function") or {}
+            name = function.get("name")
+            args = json.loads(function.get("arguments") or "{}")
+            if name not in FN:
+                payload = {"ok": False, "error": f"unknown tool: {name}"}
+            else:
+                try:
+                    payload = {"ok": True, "result": FN[name](**args)}
+                except Exception as exc:
+                    payload = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
-            messages.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": call.id,
-                    "content": json.dumps(payload, ensure_ascii=False),
-                }
-            )
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.get("id", ""),
+                "content": json.dumps(payload, ensure_ascii=False),
+            })
 
     raise RuntimeError(f"agent tool loop exceeded {MAX_TURNS} turns")
 
