@@ -9,14 +9,12 @@ API_BASE="http://127.0.0.1:${PORT}/v1"
 LOG_DIR="$ROOT/output/local_llm"
 PID_FILE="$LOG_DIR/llama-server.pid"
 LOG_FILE="$LOG_DIR/llama-server.log"
+MODELS_FILE="$LOG_DIR/models.json"
 
 mkdir -p "$LOG_DIR"
 command -v pkg >/dev/null 2>&1 || { echo "FAIL: Termux required"; exit 1; }
 cd "$ROOT"
 
-# Termux's official documentation lists multiple package mirrors and explicitly notes
-# that mirror availability can vary by network/country. Probe several official mirrors
-# and select the first reachable one instead of assuming packages.termux.dev is reachable.
 MIRRORS=(
   "https://packages-cf.termux.dev/apt/termux-main"
   "https://mirror.rinarin.dev/termux/termux-main"
@@ -40,7 +38,6 @@ done
 
 if [ -z "$SELECTED" ]; then
   echo "FAIL: no official Termux mirror is reachable."
-  echo "The original packages.termux.dev connection is unavailable from this network."
   exit 1
 fi
 
@@ -71,7 +68,7 @@ LLAMA_SERVER="$LLAMA_ROOT/build/bin/llama-server"
 [ -x "$LLAMA_SERVER" ] || { echo "FAIL: llama-server build missing"; exit 1; }
 
 echo "[5/6] Checking RAM and starting local server..."
-awk '/MemTotal/ {printf "RAM_MB=%d\\n", $2/1024}' /proc/meminfo || true
+awk '/MemTotal/ {printf "RAM_MB=%d\n", $2/1024}' /proc/meminfo || true
 
 if [ -f "$PID_FILE" ]; then
   PID="$(cat "$PID_FILE" 2>/dev/null || true)"
@@ -96,8 +93,9 @@ fi
 
 echo "[6/6] Waiting for local API..."
 READY=0
+rm -f "$MODELS_FILE"
 for i in $(seq 1 120); do
-  if curl -fsS "$API_BASE/models" >/tmp/optimusai_llm_models.json 2>/dev/null; then
+  if curl -fsS "$API_BASE/models" >"$MODELS_FILE" 2>/dev/null; then
     READY=1
     break
   fi
