@@ -572,7 +572,27 @@ def build_last_minute_ranking(
         reverse=True,
     )
 
-    ranked = candidates[: max(1, int(top_count))]
+    # Global score remains the primary ordering, but the final display is
+    # diversified so one underlying cannot consume the entire report.
+    # This is a hard ceiling, not a quota: a base with fewer eligible contracts
+    # contributes fewer than the ceiling and the selector continues down the
+    # global ranking to fill the remaining slots.
+    requested_count = max(1, int(top_count))
+    max_per_underlying = 3
+    ranked = []
+    underlying_counts = {}
+    selection_pool_scanned = 0
+    for item in candidates:
+        selection_pool_scanned += 1
+        key = str(item.get("underlying_id") or item.get("underlying_symbol") or "").strip()
+        if not key:
+            key = f"OPTION:{item.get('instrument_id') or len(ranked)}"
+        if underlying_counts.get(key, 0) >= max_per_underlying:
+            continue
+        ranked.append(item)
+        underlying_counts[key] = underlying_counts.get(key, 0) + 1
+        if len(ranked) >= requested_count:
+            break
 
     for rank, item in enumerate(ranked, 1):
         item["rank"] = rank
@@ -588,6 +608,11 @@ def build_last_minute_ranking(
         "excluded_counts": excluded,
         "weights": WEIGHTS,
         "rules": {
+            "selection_policy": "GLOBAL_SCORE_THEN_MAX_3_PER_UNDERLYING",
+            "max_contracts_per_underlying": 3,
+            "diversity_is_a_hard_ceiling_not_a_quota": True,
+            "selection_pool_scanned": selection_pool_scanned,
+            "selected_underlying_counts": underlying_counts,
             "expiry_is_not_a_primary_selector": True,
             "fixed_underlying_scenario": False,
             "one_day_expiry_requirement": False,
