@@ -1,0 +1,21 @@
+{
+  "command_id": "zz_pull_corrected_bridge_runtime",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T06:40:21.846946+00:00",
+  "finished_at": "2026-10-08T06:40:23.383126+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "bridge-commands"
+  ],
+  "stdout": "Updating 0e3ee1d..3c8c04b\nFast-forward\n bale_listener.py                                   | 376 ++++++++++++++++++++-\n .../bridge_real_20261001_report_help.json          |   9 -\n .../zz_pull_corrected_bridge_runtime.json          |  10 +\n run_economic_validation_real_20261001.json         |   1 -\n run_economic_validation_real_20261001_v2.json      |   1 -\n scripts/run_corrected_last_minute_report.py        |   6 +\n 6 files changed, 377 insertions(+), 26 deletions(-)\n delete mode 100644 bridge-commands/bridge_real_20261001_report_help.json\n create mode 100644 bridge-commands/zz_pull_corrected_bridge_runtime.json\n delete mode 100644 run_economic_validation_real_20261001.json\n delete mode 100644 run_economic_validation_real_20261001_v2.json\n create mode 100644 scripts/run_corrected_last_minute_report.py\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            bridge-commands -> FETCH_HEAD\n   2b831e0..3c8c04b  bridge-commands -> origin/bridge-commands\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_pull_corrected_bridge_runtime.json",
+  "project_head": "3c8c04b6478c3723ea6c3a5a88f1ff26912b959a",
+  "result_sha256": "ecd5335a1205ff914440ca78a881d0ec9489a5031370cc38a770076267f2d559"
+}
