@@ -1,0 +1,20 @@
+{
+  "command_id": "fix_bale_listener_compile_retry",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T06:39:39.410997+00:00",
+  "finished_at": "2026-10-08T06:39:39.752403+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "py_compile",
+    "bale_listener.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/fix_bale_listener_compile_retry.json",
+  "project_head": "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+  "result_sha256": "13f92c5936b9757f6301e5e1f29819d2e51dda30faf0253242672d41e786909f"
+}
