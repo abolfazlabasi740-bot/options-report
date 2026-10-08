@@ -1,0 +1,9 @@
+{
+  "command_id": "report_fix_validation_20261008_01",
+  "argv": [
+    "python",
+    "-c",
+    "import sys; sys.path.insert(0,'.'); import last_minute_profit_engine as e; rows=[]; ctx={};\nfor i in range(20):\n u=str(i//4); oid='o'+str(i); rows.append({'identity':{'instrument_id':oid,'underlying_id':u,'underlying_symbol':'U'+u,'contract_type':'CALL'},'canonical':{'قیمت سهم پایه':100,'قیمت اعمال':100,'آخرین قیمت':10,'حجم معاملات':100,'تعداد معاملات':10,'ارزش معاملات':1000,'قیمت پایانی':10,'حجم بهترین تقاضا':10,'قیمت بهترین تقاضا':9.9,'حجم بهترین عرضه':10,'قیمت بهترین عرضه':10.1,'روزهای تقویمی':20}}); ctx[u]={'status':'PASS','return_5_sessions_pct':5,'return_20_sessions_pct':10,'rsi_14':60,'macd_12_26':1,'last_price':100,'sma_5':90,'sma_10':90,'sma_20':90,'sma_50':80,'orderbook_imbalance_5':0.8,'bid_ask_volume_ratio_5':2,'individual_power_ratio':2,'legal_power_ratio':1.2,'upper_limit_headroom_pct':2,'touched_upper_limit_today':False,'volume_ratio_5_to_20':2,'volume_ratio_5_to_50':2,'value_ratio_5_to_20':2}; r=e.build_last_minute_ranking(rows,top_count=15,underlying_context=ctx,snapshot={'data_mode':'TEST'}); counts={}; [counts.__setitem__(x['underlying_id'],counts.get(x['underlying_id'],0)+1) for x in r['ranking_rows']]; assert len(r['ranking_rows'])==15 and max(counts.values())<=3 and len(counts)>=5; print('DIVERSITY_TEST_OK',counts)"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
