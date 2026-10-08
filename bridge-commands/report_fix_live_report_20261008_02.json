@@ -1,0 +1,9 @@
+{
+  "command_id": "report_fix_live_report_20261008_02",
+  "argv": [
+    "python",
+    "-c",
+    "import bale_listener; print(bale_listener.generate_report('فرصت‌لحظه‌آخری‌آپشن'))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
