@@ -1,0 +1,20 @@
+{
+  "command_id": "zz_compile_underlying_20261008_17",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:33:14.442008+00:00",
+  "finished_at": "2026-10-08T07:33:14.917996+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-m",
+    "py_compile",
+    "underlying_trend_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_compile_underlying_20261008_17.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "3a1d8fc13d5c42f34650075245deb91903ea8ad03d9733152ba05ed5f07e96b6"
+}
