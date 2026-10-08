@@ -2,8 +2,8 @@
   "command_id": "001_fresh_base_share_opportunity_v1_sync_20261008",
   "status": "SUCCESS",
   "exit_code": 0,
-  "started_at": "2026-10-08T14:23:23.998335+00:00",
-  "finished_at": "2026-10-08T14:23:28.962024+00:00",
+  "started_at": "2026-10-08T14:30:12.401756+00:00",
+  "finished_at": "2026-10-08T14:30:15.265543+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "git",
@@ -17,5 +17,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/001_fresh_base_share_opportunity_v1_sync_20261008.json",
   "project_head": "0747e226d896115b8d600f336ee62224a2532094",
-  "result_sha256": "8b6eb6378a4179710933e681d44d6afb82572c98f915aa19b72e4d5bb91f398b"
+  "result_sha256": "e891c59620fa8ccf3aa06b4b7eec7d37ba95d565a5ff0ff5c6d8ecb79c0a1cd3"
 }
