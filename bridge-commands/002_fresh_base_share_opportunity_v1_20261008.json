@@ -1,0 +1,9 @@
+{
+  "command_id": "fresh_base_share_opportunity_v1_20261008",
+  "argv": [
+    "bash",
+    "-lc",
+    "git pull --ff-only origin main && python base_share_opportunity_score_v1_report.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
