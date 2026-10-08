@@ -1,44 +1,70 @@
-# OptimusAI Local LLM
+# OptimusAI in-project LLM
 
-The Agent uses a local OpenAI-compatible endpoint and does not require a cloud API.
+The project uses a **local LLM inside Termux**. There is no cloud model API, no API billing, and no VPN dependency for the Agent runtime.
 
-Recommended runtime:
-- llama.cpp
-- Termux on Android
-- local endpoint: http://127.0.0.1:8080/v1
-- no VPN
-- no API billing
+## Architecture
 
-The official llama.cpp documentation confirms Termux/Android support and an OpenAI-compatible server.
+ChatGPT Project Manager
+-> OptimusAI in-project Agent
+-> local llama.cpp server
+-> GGUF model
+-> local filesystem / Python / Git / TSETMC
+-> verification and evidence
 
-## Runtime contract
+Runtime endpoint:
 
-Start the local server with a GGUF model:
+    http://127.0.0.1:8080/v1
 
-    llama-server -m ~/models/<MODEL>.gguf --host 127.0.0.1 --port 8080
+The server is localhost-only and must not be exposed externally.
 
-The Agent then uses:
+## Model
 
-    OPTIMUSAI_PROVIDER=local
-    OPTIMUSAI_API_BASE=http://127.0.0.1:8080/v1
-    OPTIMUSAI_API_KEY=local
-    OPTIMUSAI_LLM_MODEL=<server-model-name>
+The first production-capable runtime target is:
 
-Do not expose the server beyond localhost.
+    Qwen/Qwen3-4B-GGUF:Q4_K_M
 
-## Model selection
+The Qwen model card identifies Qwen3-4B as a 4B-parameter model, lists Q4_K_M at about 2.5 GB, and documents llama.cpp plus agent/tool capabilities. citeturn0search0turn0search5
 
-Model size must be selected after checking the phone's available RAM and CPU/GPU capabilities. Do not download a large model blindly.
+## One-time bootstrap
 
-For the first smoke test, prefer a small instruct/coder GGUF (roughly 1B–4B parameters, quantized) and increase only after stability is demonstrated.
+From Termux:
 
-## Verification
+    cd ~/OptimusAI_V41_LIVE
+    bash scripts/setup_local_llm.sh
 
-The first runtime check must verify:
-1. llama-server exists and starts.
-2. localhost /v1/models responds.
-3. the Agent can complete one tool-calling task.
+The script installs build prerequisites, builds llama.cpp, starts the local server, waits for /v1/models, and compiles the Agent entrypoints.
+
+Android/Termux execution of llama.cpp does not require root; the Android build documentation describes Termux installation and CMake compilation. citeturn0search4
+
+## Agent environment
+
+    export OPTIMUSAI_PROVIDER=local
+    export OPTIMUSAI_API_BASE=http://127.0.0.1:8080/v1
+    export OPTIMUSAI_API_KEY=local
+    export OPTIMUSAI_LLM_MODEL='Qwen/Qwen3-4B-GGUF:Q4_K_M'
+
+The `openai` Python package is used only as an OpenAI-compatible client library against localhost. It does not send the Agent traffic to OpenAI.
+
+## Operating rules
+
+- ChatGPT remains Project Manager.
+- The in-project Agent performs controlled execution.
+- TSETMC is the Single Source of Truth for market data.
+- Never invent or impute missing market data.
+- Outside TSETMC live hours, use the latest valid snapshot.
+- Do not mix old and canonical scoring models.
+- Evidence is required before any production trading signal.
+- Destructive shell/Git operations remain blocked.
+
+## Verification gate
+
+Setup is not considered complete until:
+
+1. llama-server is running on 127.0.0.1:8080.
+2. /v1/models responds.
+3. Agent tool-calling completes successfully.
 4. Python compilation passes.
-5. Git status/diff are captured as evidence.
+5. Git status/diff evidence is captured.
+6. A real project task is executed and its result is verified.
 
-No production signal is authorized by this setup alone.
+No production buy/sell authorization is granted by installation alone.
