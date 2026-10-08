@@ -1,0 +1,18 @@
+{
+  "command_id": "fix_bale_listener_live_report_retry",
+  "status": "FAILED",
+  "exit_code": 2,
+  "started_at": "2026-10-08T06:39:52.782914+00:00",
+  "finished_at": "2026-10-08T06:39:52.892211+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/run_corrected_last_minute_report.py"
+  ],
+  "stdout": "",
+  "stderr": "python: can't open file '/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/run_corrected_last_minute_report.py': [Errno 2] No such file or directory\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/fix_bale_listener_live_report_retry.json",
+  "project_head": "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+  "result_sha256": "3b5a011fd363906ec62cd51f660d7847c98abb408debdba54eeb3abe7c92f6de"
+}
