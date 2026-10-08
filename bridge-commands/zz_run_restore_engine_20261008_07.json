@@ -1,0 +1,7 @@
+{
+  "command_id": "zz_run_restore_engine_20261008_07",
+  "argv": [
+    "bash",
+    "scripts/zz_run_restore_engine.sh"
+  ]
+}
