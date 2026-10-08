@@ -2,8 +2,8 @@
   "command_id": "002_fix_base_score_run_20261008",
   "status": "TIMEOUT",
   "exit_code": 124,
-  "started_at": "2026-10-08T13:47:24.851787+00:00",
-  "finished_at": "2026-10-08T13:49:24.987782+00:00",
+  "started_at": "2026-10-08T13:57:16.990005+00:00",
+  "finished_at": "2026-10-08T13:59:17.141072+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
@@ -14,5 +14,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/002_fix_base_score_run_20261008.json",
   "project_head": "07d93aadbd38a2078f680de45e185861b70a1b4b",
-  "result_sha256": "2e7c87798ff27fc897e5821686586f9b3ce53621b2403f0da78819e560f641b8"
+  "result_sha256": "bf454daedef2013b8e436ffe823c8e4ad10151694a4f49133380c873253951ec"
 }
