@@ -82,9 +82,11 @@ fi
 if [ ! -f "$PID_FILE" ]; then
   nohup "$LLAMA_SERVER" \
     -hf "$MODEL_REF" \
+    --jinja \
+    --reasoning off \
     --host 127.0.0.1 \
     --port "$PORT" \
-    -c 8192 \
+    -c "${OPTIMUSAI_CONTEXT:-4096}" \
     -t "${OPTIMUSAI_THREADS:-6}" \
     --parallel 1 \
     >"$LOG_FILE" 2>&1 &
@@ -94,7 +96,7 @@ fi
 echo "[6/6] Waiting for local API..."
 READY=0
 rm -f "$MODELS_FILE"
-for i in $(seq 1 120); do
+for i in $(seq 1 300); do
   if curl -fsS "$API_BASE/models" >"$MODELS_FILE" 2>/dev/null; then
     READY=1
     break
