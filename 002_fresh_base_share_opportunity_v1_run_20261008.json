@@ -1,0 +1,8 @@
+{
+  "command_id": "002_fresh_base_share_opportunity_v1_run_20261008",
+  "argv": [
+    "python",
+    "base_share_opportunity_score_v1_report.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
