@@ -2,8 +2,8 @@
   "command_id": "fresh_zero_to_hundred_base_share_20261008",
   "status": "TIMEOUT",
   "exit_code": 124,
-  "started_at": "2026-10-08T14:06:03.448398+00:00",
-  "finished_at": "2026-10-08T14:08:03.601984+00:00",
+  "started_at": "2026-10-08T14:14:51.068307+00:00",
+  "finished_at": "2026-10-08T14:16:51.227207+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
@@ -14,5 +14,5 @@
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/001_fresh_zero_to_hundred_base_share_20261008.json",
   "project_head": "0747e226d896115b8d600f336ee62224a2532094",
-  "result_sha256": "6a0ac005128b4758c91be2bee8f220b43b7398f80ef151e9b6bd7f47ef20a962"
+  "result_sha256": "8e5340af5ddd0dd4a07616accffec3f86dd0b74b7dcf9c919de2518563865748"
 }
