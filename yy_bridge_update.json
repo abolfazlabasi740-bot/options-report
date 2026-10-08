@@ -1,0 +1,11 @@
+{
+  "command_id": "yy_bridge_update",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
