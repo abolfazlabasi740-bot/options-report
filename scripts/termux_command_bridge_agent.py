@@ -15,7 +15,8 @@ PROJECT = Path.home() / "OptimusAI_V41_LIVE"
 QUEUE_BRANCH = "bridge-commands"
 RESULT_BRANCH = "bridge-results"
 WORK = Path.home() / ".termux_command_bridge"
-QUEUE = WORK / "queue"
+QUEUE_REPO = WORK / "queue"
+QUEUE = QUEUE_REPO / "bridge-commands"
 RESULTS = WORK / "results"
 POLL_SECONDS = int(os.environ.get("BRIDGE_POLL_SECONDS", "5"))
 COMMAND_TIMEOUT_SECONDS = int(os.environ.get("BRIDGE_COMMAND_TIMEOUT_SECONDS", "120"))
@@ -148,9 +149,9 @@ def remove_queue_item(path):
     if not path.exists():
         return
 
-    ensure_commit_identity(QUEUE)
+    ensure_commit_identity(QUEUE_REPO)
 
-    result = run("git", "rm", "-f", "--", path.relative_to(QUEUE).as_posix(), cwd=QUEUE, check=False)
+    result = run("git", "rm", "-f", "--", path.relative_to(QUEUE_REPO).as_posix(), cwd=QUEUE_REPO, check=False)
     if result.returncode != 0:
         if "pathspec" in (result.stderr or "").lower():
             return
@@ -172,15 +173,15 @@ def remove_queue_item(path):
         )
 
     for attempt in range(3):
-        push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False)
+        push = run("git", "push", "origin", QUEUE_BRANCH, cwd=QUEUE_REPO, check=False)
         if push.returncode == 0:
             return
-        sync = run("git", "fetch", "origin", QUEUE_BRANCH, cwd=QUEUE, check=False, timeout=90)
+        sync = run("git", "fetch", "origin", QUEUE_BRANCH, cwd=QUEUE_REPO, check=False, timeout=90)
         if sync.returncode != 0:
             break
-        rebase = run("git", "rebase", f"origin/{QUEUE_BRANCH}", cwd=QUEUE, check=False, timeout=90)
+        rebase = run("git", "rebase", f"origin/{QUEUE_BRANCH}", cwd=QUEUE_REPO, check=False, timeout=90)
         if rebase.returncode != 0:
-            run("git", "rebase", "--abort", cwd=QUEUE, check=False)
+            run("git", "rebase", "--abort", cwd=QUEUE_REPO, check=False)
             break
     raise RuntimeError(
         "queue consume push failed after rebase retries: "
@@ -252,6 +253,7 @@ def main():
     if _daemonize():
         return
     WORK.mkdir(parents=True, exist_ok=True)
+    QUEUE_REPO.mkdir(exist_ok=True)
     QUEUE.mkdir(exist_ok=True)
     RESULTS.mkdir(exist_ok=True)
 
@@ -264,7 +266,7 @@ def main():
     while True:
         try:
             print("BRIDGE_LOOP_TICK", flush=True)
-            sync_branch(QUEUE_BRANCH, QUEUE)
+            sync_branch(QUEUE_BRANCH, QUEUE_REPO)
             print("BRIDGE_QUEUE_SYNCED", flush=True)
             for path in sorted(QUEUE.glob("*.json")):
                 try:
