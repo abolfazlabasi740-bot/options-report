@@ -1,0 +1,18 @@
+{
+  "command_id": "zz_bridge_restart_20261008_25",
+  "status": "FAILED",
+  "exit_code": 2,
+  "started_at": "2026-10-08T07:46:43.423243+00:00",
+  "finished_at": "2026-10-08T07:46:43.531276+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/bridge_upgrade.py"
+  ],
+  "stdout": "",
+  "stderr": "python: can't open file '/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/bridge_upgrade.py': [Errno 2] No such file or directory\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_bridge_restart_20261008_25.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "d4f9a371d2e8e54ebdc50a6ce66a5aab7fabdf5f8b23c72e70e94348357b3551"
+}
