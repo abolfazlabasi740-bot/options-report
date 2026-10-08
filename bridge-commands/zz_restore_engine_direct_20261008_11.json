@@ -1,0 +1,11 @@
+{
+  "command_id": "zz_restore_engine_direct_20261008_11",
+  "argv": [
+    "git",
+    "restore",
+    "--source",
+    "3837a4d5a215abf4defcccf66b28daf99bb99e3b",
+    "--",
+    "last_minute_profit_engine.py"
+  ]
+}
