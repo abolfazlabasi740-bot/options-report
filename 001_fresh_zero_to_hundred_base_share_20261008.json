@@ -1,8 +1,0 @@
-{
-  "command_id": "fresh_zero_to_hundred_base_share_20261008",
-  "argv": [
-    "python",
-    "base_share_stage1_report.py"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
