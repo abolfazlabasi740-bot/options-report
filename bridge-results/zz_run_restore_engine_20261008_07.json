@@ -1,0 +1,18 @@
+{
+  "command_id": "zz_run_restore_engine_20261008_07",
+  "status": "FAILED",
+  "exit_code": 127,
+  "started_at": "2026-10-08T07:05:23.756671+00:00",
+  "finished_at": "2026-10-08T07:05:23.785963+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "bash",
+    "scripts/zz_run_restore_engine.sh"
+  ],
+  "stdout": "",
+  "stderr": "bash: scripts/zz_run_restore_engine.sh: No such file or directory\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_run_restore_engine_20261008_07.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "730b22d3836fed43a5b533f980862ee3fc9f0c48ab396f7a15c5d7168a01fdf7"
+}
