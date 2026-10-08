@@ -1,0 +1,17 @@
+project_root: ~/OptimusAI_V41_LIVE
+mode: controlled
+allow_shell: true
+allow_git_write: true
+allow_network: true
+fail_closed_on_unknown_command: true
+never_invent_missing_data: true
+tsetmc_single_source_of_truth: true
+require_evidence_before_production_signal: true
+blocked_commands:
+  - rm -rf
+  - shutdown
+  - reboot
+  - mkfs
+  - dd
+  - git reset --hard
+  - git push --force
