@@ -104,76 +104,140 @@ def classification(score):
     if score >= 55: return "B"
     return "C"
 
-def main():
-    snap=build_tsetmc_snapshot(flow=None,max_instruments=None,symbol_prefix=None)
-    rows=list(snap.get("rows") or [])
-    under={}
-    for row in rows:
+def _snapshot_underlyings(snap):
+    """Build one immutable underlying view from the single TSETMC snapshot.
+    No per-underlying network calls are allowed here.
+    """
+    out={}
+    for row in snap.get("rows") or []:
+        if not isinstance(row,dict): continue
         ident=row.get("identity") or {}
         uid=str(ident.get("underlying_id") or "").strip()
         sym=str(ident.get("underlying_symbol") or "").strip()
-        if uid and sym: under[uid]=sym
-    ctx=fetch_underlying_context(sorted(under),include_board=True)
+        if not uid or not sym or uid in out: continue
+        mf=row.get("underlying_market_watch_fields") or {}
+        # The canonical snapshot keeps the underlying market-watch fields in
+        # raw_market_watch. Prefer that immutable evidence when present.
+        raw=row.get("raw_market_watch") or {}
+        if not isinstance(mf,dict):
+            mf={}
+        out[uid]={
+            "symbol":sym,
+            "last_price":n(mf.get("last_price")),
+            "last_close":n(mf.get("close_price")),
+            "low_price":n(mf.get("low_price")),
+            "high_price":n(mf.get("high_price")),
+            "volume":n(mf.get("volume")),
+            "trade_count":n(mf.get("trade_count")),
+            "trade_value":n(mf.get("trade_value")),
+            "bid_quantity":n(mf.get("bid_quantity")),
+            "bid_price":n(mf.get("bid_price")),
+            "ask_quantity":n(mf.get("ask_quantity")),
+            "ask_price":n(mf.get("ask_price")),
+            "snapshot_market_fields":mf,
+            "snapshot_raw":raw,
+        }
+    return out
+
+def _snapshot_price_score(a):
+    vals=[]
+    last=a.get("last_price"); close=a.get("last_close")
+    low=a.get("low_price"); high=a.get("high_price")
+    if last is not None and close not in (None,0):
+        vals.append((clamp((last/close-0.95)/0.10),5))
+    if last is not None and low is not None and high is not None and high>low:
+        vals.append((clamp((last-low)/(high-low)),5))
+    total=sum(w for _,w in vals)
+    return sum(s*w for s,w in vals)/total*20 if total else None
+
+def _snapshot_technical_score(a):
+    # Do not manufacture technical indicators from a closed option snapshot.
+    return None
+
+def _snapshot_tape_score(a):
+    # Underlying client-type/order-flow fields are not present in the
+    # canonical option MarketWatch snapshot; using option order flow here
+    # would contaminate the base-share model.
+    return None
+
+def _snapshot_early_score(a):
+    return None
+
+def main():
+    # ONE snapshot for the whole universe. After market close this resolves
+    # to the frozen final TSETMC snapshot and MUST NOT refresh each underlying.
+    snap=build_tsetmc_snapshot(flow=None,max_instruments=None,symbol_prefix=None)
+    if snap.get("source_of_truth")!="TSETMC":
+        raise RuntimeError("TSETMC_SOURCE_OF_TRUTH_REQUIRED")
+    under=_snapshot_underlyings(snap)
     ranked=[]
-    for uid,a in (ctx.get("instruments") or {}).items():
-        if not isinstance(a,dict): continue
-        t,p,tech,em=tape(a),price_score(a),technical(a),early(a)
+    for uid,a in under.items():
+        t=_snapshot_tape_score(a)
+        p=_snapshot_price_score(a)
+        tech=_snapshot_technical_score(a)
+        em=_snapshot_early_score(a)
         components=[("tape",t,30),("price_momentum",p,20),("technical",tech,20),("early_move",em,10)]
         available_weight=sum(w for _,v,w in components if v is not None)
         available_points=sum(v for _,v,w in components if v is not None)
-        # FIX: components are already point scores; do not multiply by their weights again.
         final=available_points/available_weight*100 if available_weight else None
-        latest=n(a.get("last_price")); close=n(a.get("last_close"))
-        bc=n(a.get("individual_buy_count")); sc=n(a.get("individual_sell_count"))
-        bi=n(a.get("individual_buy_volume")); si=n(a.get("individual_sell_volume"))
+        last=a.get("last_price"); close=a.get("last_close")
+        intraday=(last/close-1)*100 if last is not None and close not in (None,0) else None
+        range_pos=((last-a["low_price"])/(a["high_price"]-a["low_price"])) if last is not None and a.get("low_price") is not None and a.get("high_price") is not None and a["high_price"]>a["low_price"] else None
         ranked.append({
-            "instrument_id":uid,"symbol":under.get(uid),
+            "instrument_id":uid,"symbol":a["symbol"],
             "final_score_live":round(final,2) if final is not None else None,
             "classification":classification(final),
-            "tape_score":round(t,2) if t is not None else None,
+            "tape_score":None,
             "price_momentum_score":round(p,2) if p is not None else None,
-            "technical_score":round(tech,2) if tech is not None else None,
-            "early_move_score":round(em,2) if em is not None else None,
+            "technical_score":None,
+            "early_move_score":None,
             "strategy_fit_score":"DATA_UNAVAILABLE",
             "fundamental_context_score":"DATA_UNAVAILABLE",
-            "daily_change_last_pct":round((latest/close-1)*100,3) if latest is not None and close not in (None,0) else None,
-            "last_price":latest,"last_close":close,
-            "upper_limit_headroom_pct":a.get("upper_limit_headroom_pct"),
-            "touched_upper_limit_today":a.get("touched_upper_limit_today"),
-            "real_buyer_power":a.get("individual_power_ratio"),
-            "real_buy_per_capita":a.get("individual_buy_power"),
-            "real_buyer_count":bc,"real_seller_count":sc,
-            "real_buyer_seller_count_ratio":bc/sc if sc not in (None,0) else None,
-            "real_buy_sell_volume_ratio":bi/si if si not in (None,0) else None,
-            "volume_ratio_5_to_20":a.get("volume_ratio_5_to_20"),
-            "orderbook_imbalance_5":a.get("orderbook_imbalance_5"),
-            "trend_state":a.get("trend_state"),"rsi_14":a.get("rsi_14"),"macd_12_26":a.get("macd_12_26"),
-            "return_5_sessions_pct":a.get("return_5_sessions_pct"),"return_20_sessions_pct":a.get("return_20_sessions_pct"),
-            "early_move_state":(a.get("early_move") or {}).get("state"),
-            "prelock_state":(a.get("early_move") or {}).get("pre_lock_sequence",{}).get("state"),
-            "source":"TSETMC"
+            "snapshot_last_price":last,"snapshot_close_price":close,
+            "intraday_last_vs_close_pct":round(intraday,3) if intraday is not None else None,
+            "daily_range_position":round(range_pos,4) if range_pos is not None else None,
+            "snapshot_low":a.get("low_price"),"snapshot_high":a.get("high_price"),
+            "snapshot_volume":a.get("volume"),"snapshot_trade_count":a.get("trade_count"),
+            "snapshot_trade_value":a.get("trade_value"),
+            "source":"TSETMC","source_snapshot_sha256":snap.get("snapshot_sha256"),
+            "data_mode":snap.get("data_mode"),"selection_reason":snap.get("selection_reason"),
         })
     ranked.sort(key=lambda x:(x["final_score_live"] is None,-(x["final_score_live"] or -1e9)))
     report=[
-        "📊 گزارش امتیازدهی سهم‌های پایه — BASE SHARE OPPORTUNITY SCORE V1",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","Source of Truth: TSETMC",
-        "Universe: سهم‌های پایه دارای قرارداد اختیار در Universe فعلی",
-        "مدل: BASE SHARE OPPORTUNITY SCORING MODEL V1 — پروژه جدید",
-        "⚠️ این گزارش با مدل‌های قبلی پروژه مخلوط نشده است.",
-        "⚠️ Strategy Fit تاریخی و Fundamental فعلاً DATA_UNAVAILABLE هستند و امتیاز مصنوعی نگرفته‌اند.",
-        "⚠️ داده مفقود صفرگذاری نشده؛ وزن مؤلفه‌های دارای شواهد نرمال‌سازی می‌شود.",
-        "⚠️ امتیاز نهایی در مقیاس ۰ تا ۱۰۰ است.",
-        f"تعداد سهم‌ها: {len(ranked)}","━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","🏆 رتبه‌بندی","━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        "📊 گزارش رتبه‌بندی سهم‌های پایه — BASE SHARE OPPORTUNITY SCORE V1",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "Source of Truth: TSETMC",
+        "اجرای داده‌ای: یک Snapshot مشترک برای کل Universe",
+        f"Data mode: {snap.get('data_mode')}",
+        f"Snapshot SHA256: {snap.get('snapshot_sha256')}",
+        "قانون خارج از بازار: استفاده از آخرین Snapshot معتبر؛ بدون Fetch جداگانه برای هر سهم پایه.",
+        "⚠️ مؤلفه‌های فاقد شواهد در Snapshot صفرگذاری یا حدس زده نشده‌اند.",
+        "⚠️ Tape / Technical / Early-Move در این اجرای Snapshot-only فقط در صورت وجود داده صریح قابل امتیازدهی هستند.",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━","🏆 رتبه‌بندی","━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ]
     for i,x in enumerate(ranked,1):
         report.append(f"#{i} {x['symbol']} | امتیاز {x['final_score_live'] if x['final_score_live'] is not None else 'داده موجود نیست'} | کلاس {x['classification']}")
-        report.append(f"   تابلو {x['tape_score'] if x['tape_score'] is not None else 'داده موجود نیست'}/30 | قیمت/مومنتوم {x['price_momentum_score'] if x['price_momentum_score'] is not None else 'داده موجود نیست'}/20 | تکنیکال {x['technical_score'] if x['technical_score'] is not None else 'داده موجود نیست'}/20 | Early-Move {x['early_move_score'] if x['early_move_score'] is not None else 'داده موجود نیست'}/10")
-        report.append(f"   تغییر روزانه={x['daily_change_last_pct'] if x['daily_change_last_pct'] is not None else 'داده موجود نیست'}% | سقف روز={x['touched_upper_limit_today']} | فاصله سقف={x['upper_limit_headroom_pct'] if x['upper_limit_headroom_pct'] is not None else 'داده موجود نیست'}% | قدرت حقیقی={x['real_buyer_power'] if x['real_buyer_power'] is not None else 'داده موجود نیست'} | نسبت تعداد حقیقی={round(x['real_buyer_seller_count_ratio'],2) if x['real_buyer_seller_count_ratio'] is not None else 'داده موجود نیست'}")
-        report.append(f"   حجم 5/20={x['volume_ratio_5_to_20'] if x['volume_ratio_5_to_20'] is not None else 'داده موجود نیست'} | روند={x['trend_state'] or 'داده موجود نیست'} | RSI={x['rsi_14'] if x['rsi_14'] is not None else 'داده موجود نیست'} | MACD={x['macd_12_26'] if x['macd_12_26'] is not None else 'داده موجود نیست'}")
+        report.append(f"   قیمت/مومنتوم {x['price_momentum_score'] if x['price_momentum_score'] is not None else 'داده موجود نیست'}/20 | آخرین/پایانی={x['intraday_last_vs_close_pct'] if x['intraday_last_vs_close_pct'] is not None else 'داده موجود نیست'}% | موقعیت در دامنه={x['daily_range_position'] if x['daily_range_position'] is not None else 'داده موجود نیست'}")
+        report.append("   تابلو=داده موجود نیست | تکنیکال=داده موجود نیست | Early-Move=داده موجود نیست | Strategy Fit=داده موجود نیست | بنیادی=داده موجود نیست")
         report.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     out=ROOT/"output"/"base_share"; out.mkdir(parents=True,exist_ok=True)
     txt="\n".join(report)
-    payload={"report_version":"BASE-SHARE-OPPORTUNITY-SCORE-V1-LIVE","generated_at":datetime.now(TEHRAN).isoformat(),"source_of_truth":"TSETMC","underlying_count":len(ranked),"rows":ranked,"source_snapshot_sha256":snap.get("snapshot_sha256"),"model_doc":"docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md","missing_policy":"NO_IMPUTATION","score_scale":"0-100","score_formula":"sum(available_component_points) / sum(available_component_weights) * 100"}
+    payload={
+        "report_version":"BASE-SHARE-OPPORTUNITY-SCORE-V1-SNAPSHOT-ONLY",
+        "generated_at":datetime.now(TEHRAN).isoformat(),
+        "source_of_truth":"TSETMC",
+        "underlying_count":len(ranked),
+        "rows":ranked,
+        "source_snapshot_sha256":snap.get("snapshot_sha256"),
+        "data_mode":snap.get("data_mode"),
+        "selection_reason":snap.get("selection_reason"),
+        "model_doc":"docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md",
+        "missing_policy":"NO_IMPUTATION",
+        "score_scale":"0-100",
+        "execution_rule":"ONE_SHARED_TSETMC_SNAPSHOT_FOR_ALL_UNDERLYINGS",
+        "network_rule":"NO_PER_UNDERLYING_FETCH_AFTER_SNAPSHOT",
+        "score_formula":"sum(available_component_points) / sum(available_component_weights) * 100",
+    }
     (out/"latest_opportunity_report.txt").write_text(txt,encoding="utf-8")
     (out/"latest_opportunity_report.json").write_text(json.dumps(payload,ensure_ascii=False,indent=2,allow_nan=False),encoding="utf-8")
     print(txt)
