@@ -1,0 +1,22 @@
+{
+  "command_id": "zz_restore_underlying_20261008_16",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T07:32:11.531939+00:00",
+  "finished_at": "2026-10-08T07:32:11.582721+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "restore",
+    "--source",
+    "FETCH_HEAD",
+    "--",
+    "underlying_trend_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_restore_underlying_20261008_16.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "4e759b2630219a5ad12247caeaa46ed42131a884b76a7ebbc28d4847e6bf6c8b"
+}
