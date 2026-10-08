@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Stage-1 Base Shares report: option-enabled underlyings only, TSETMC evidence."""
+"""Fresh Stage-1 Base Shares report: option-enabled underlyings only, TSETMC evidence."""
 from __future__ import annotations
 import json
 import hashlib
@@ -9,7 +9,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from tsetmc_first_source import build_tsetmc_snapshot
-from underlying_context_shadow import fetch_underlying_context
+from underlying_trend_engine import fetch_underlying_context
 from underlying_intelligence_engine import build_underlying_intelligence
 
 ROOT = Path(__file__).resolve().parent
