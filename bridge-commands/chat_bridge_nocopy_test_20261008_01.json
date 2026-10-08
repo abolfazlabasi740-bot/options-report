@@ -1,0 +1,9 @@
+{
+  "command_id": "chat_bridge_nocopy_test_20261008_01",
+  "argv": [
+    "python",
+    "-c",
+    "print('CHAT_BRIDGE_NO_COPY_TEST_OK')"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
