@@ -1,1 +1,0 @@
-{"command_id":"bridge_activation_verify_20261008_01","argv":["python","-c","import pathlib,hashlib; p=pathlib.Path("scripts/termux_command_bridge_agent.py"); print("BRIDGE_ACTIVE_HEAD_OK"); print("SCRIPT_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest())"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE"}
