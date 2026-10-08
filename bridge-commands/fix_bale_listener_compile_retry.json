@@ -1,9 +1,0 @@
-{
-  "command_id": "fix_bale_listener_compile_retry",
-  "argv": [
-    "python",
-    "-m",
-    "py_compile",
-    "bale_listener.py"
-  ]
-}
