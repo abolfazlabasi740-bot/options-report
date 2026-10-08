@@ -1,0 +1,19 @@
+{
+  "command_id": "bridge_rebuild_smoke_20261008_06",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-08T04:18:17.539016+00:00",
+  "finished_at": "2026-10-08T04:18:17.581882+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print(\"BRIDGE_REBUILD_OK\")"
+  ],
+  "stdout": "BRIDGE_REBUILD_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/bridge_rebuild_smoke_20261008_06.json",
+  "project_head": "f6edd7f4d9c666c304ead8d04d104ae05c4c1aa9",
+  "result_sha256": "84e474d30ec403f53a6941581d827f27ac25324c5deda643aeea3fe2bae83c07"
+}
