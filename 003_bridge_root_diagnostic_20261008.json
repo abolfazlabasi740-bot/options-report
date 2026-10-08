@@ -2,8 +2,8 @@
   "command_id": "003_bridge_root_diagnostic_20261008",
   "status": "INVALID_COMMAND",
   "exit_code": 65,
-  "started_at": "2026-10-08T13:52:27.919731+00:00",
-  "finished_at": "2026-10-08T13:52:27.919809+00:00",
+  "started_at": "2026-10-08T14:02:02.789212+00:00",
+  "finished_at": "2026-10-08T14:02:02.789503+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [],
   "stdout": "",
@@ -12,5 +12,5 @@
   "queue_path": "bridge-commands/003_bridge_root_diagnostic_20261008.json",
   "project_head": "07d93aadbd38a2078f680de45e185861b70a1b4b",
   "raw_queue_sha256": "ba7dea756dccdab408fa276fe3951bf62e5b01785442c54094e1335fc1d8e0ca",
-  "result_sha256": "43d00b8258dffb38d5d776516996f21745885c016559a0f4efc3f8df73d480c4"
+  "result_sha256": "89e828b4cc5537fce450aa1d32ebbd26513039f4f96776763ed1fe18a5a0cfb6"
 }
