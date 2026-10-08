@@ -1,0 +1,12 @@
+{
+  "command_id": "003_async_runner_pull_20261008",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 60
+}
