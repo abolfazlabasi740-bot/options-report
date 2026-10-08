@@ -1,18 +1,18 @@
 {
   "command_id": "bridge_restart_latest_20261008_01",
-  "status": "TIMEOUT",
-  "exit_code": 124,
-  "started_at": "2026-10-08T03:50:29.790641+00:00",
-  "finished_at": "2026-10-08T03:52:33.295029+00:00",
+  "status": "FAILED",
+  "exit_code": -15,
+  "started_at": "2026-10-08T03:53:02.031932+00:00",
+  "finished_at": "2026-10-08T03:53:08.219946+00:00",
   "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
   "argv": [
     "python",
     "scripts/termux_command_bridge_agent.py"
   ],
-  "stdout": "",
-  "stderr": "command timeout",
+  "stdout": "BRIDGE_STATUS=STARTING\nBRIDGE_PROJECT=/data/data/com.termux/files/home/OptimusAI_V41_LIVE\nBRIDGE_QUEUE_REPO=/data/data/com.termux/files/home/.termux_command_bridge/queue\nBRIDGE_QUEUE=/data/data/com.termux/files/home/.termux_command_bridge/queue/bridge-commands\nBRIDGE_RESULTS=/data/data/com.termux/files/home/.termux_command_bridge/results\nBRIDGE_POLL_SECONDS=5\nBRIDGE_AUTH=OK\nBRIDGE_STATUS=READY\nBRIDGE_LOOP_TICK\nBRIDGE_QUEUE_SYNCED\nBRIDGE_COMMAND_START=bridge_activation_verify_20261008_01\nBRIDGE_COMMAND_ERROR=bridge_activation_verify_20261008_01: JSONDecodeError: Expecting ',' delimiter: line 1 column 117 (char 116)\nBRIDGE_COMMAND_START=bridge_final_delivery_20261008_02\nBRIDGE_COMMAND_ERROR=bridge_final_delivery_20261008_02: JSONDecodeError: Expecting ',' delimiter: line 1 column 81 (char 80)\nBRIDGE_COMMAND_START=bridge_hot_upgrade_20261008_03\n",
+  "stderr": "",
   "timeout_seconds": 120,
   "queue_path": "bridge-commands/bridge_restart_latest_20261008_01.json",
-  "project_head": "4492ddaa3cf19aa95ff25bb8f529bfcec728ed01",
-  "result_sha256": "6f453868797d44d9ccb9ecd542d670769c2b55c7d9118e608e312df120ee3ff8"
+  "project_head": "a6dca0531540966a6ab157da4238dce739e0aa7a",
+  "result_sha256": "22c49018d35de4de89105800fffee51793ba5edac80fabcd68da77d40d93b43a"
 }
