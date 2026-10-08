@@ -161,7 +161,7 @@ def publish_result(result):
     last_error = None
     for attempt in range(1, 4):
         try:
-            gh_put_file(f"{RESULT_BRANCH}/{rel}", RESULT_BRANCH, content,
+            gh_put_file(rel, RESULT_BRANCH, content,
                         f"bridge: result {result['command_id']}")
             verify = gh_get_file(f"{RESULT_BRANCH}/{rel}", RESULT_BRANCH)
             if verify.get("sha"):
