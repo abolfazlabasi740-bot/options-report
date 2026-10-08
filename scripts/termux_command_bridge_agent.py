@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Resilient OptimusAI Termux Command Bridge."""
+import base64
+import fcntl
 import hashlib
 import json
 import os
@@ -7,7 +10,6 @@ import shutil
 import subprocess
 import sys
 import time
-import fcntl
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,186 +20,263 @@ RESULT_BRANCH = "bridge-results"
 WORK = Path.home() / ".termux_command_bridge"
 QUEUE_REPO = WORK / "queue"
 QUEUE = QUEUE_REPO / QUEUE_BRANCH
-RESULTS = WORK / "results"
 POLL_SECONDS = int(os.environ.get("BRIDGE_POLL_SECONDS", "5"))
 COMMAND_TIMEOUT_SECONDS = int(os.environ.get("BRIDGE_COMMAND_TIMEOUT_SECONDS", "120"))
+GH_TIMEOUT_SECONDS = int(os.environ.get("BRIDGE_GH_TIMEOUT_SECONDS", "60"))
+MAX_OUTPUT = 20000
 
 ALLOWED = {"python", "python3", "git", "bash", "sh", "printf", "pwd", "ls"}
 BLOCKED_TOKENS = {
-    "r" + "m", "rmdir", "mkfs", "dd", "reboot", "shutdown",
+    "rm", "rmdir", "mkfs", "dd", "reboot", "shutdown",
     "su", "sudo", "curl", "wget", "nc", "ncat", "ssh", "scp",
-    "ch" + "mod", "ch" + "own"
+    "chmod", "chown"
 }
 BRIDGE_GIT_NAME = "Termux Command Bridge"
 BRIDGE_GIT_EMAIL = "termux-command-bridge@users.noreply.github.com"
+_LOCK_FD = None
 
-def run(*args, cwd=None, check=True, timeout=None):
-    return subprocess.run(list(args), cwd=str(cwd or PROJECT),
-                          text=True, capture_output=True,
-                          check=check, timeout=timeout)
+
+def utc_now():
+    return datetime.now(timezone.utc).isoformat()
+
 
 def log(message):
     print(message, flush=True)
+
+
+def run(*args, cwd=None, check=True, timeout=None, input_text=None):
+    return subprocess.run(
+        list(args), cwd=str(cwd or PROJECT), text=True,
+        input=input_text, capture_output=True, check=check, timeout=timeout
+    )
+
 
 def ensure_git_auth():
     gh = shutil.which("gh")
     if not gh:
         raise RuntimeError("GitHub CLI is not installed")
-    status = run(gh, "auth", "status", check=False)
+    status = run(gh, "auth", "status", check=False, timeout=30)
     if status.returncode != 0:
-        raise RuntimeError("GitHub CLI authentication failed")
-    setup = run(gh, "auth", "setup-git", check=False)
+        raise RuntimeError("GitHub CLI authentication failed: " +
+                           (status.stderr.strip() or status.stdout.strip()))
+    setup = run(gh, "auth", "setup-git", check=False, timeout=30)
     if setup.returncode != 0:
         raise RuntimeError("Git credential setup failed: " +
                            (setup.stderr.strip() or setup.stdout.strip()))
 
-def ensure_commit_identity(repo_dir):
-    for key, value in (("user.name", BRIDGE_GIT_NAME),
-                        ("user.email", BRIDGE_GIT_EMAIL)):
-        result = run("git", "config", key, value, cwd=repo_dir, check=False)
-        if result.returncode != 0:
-            raise RuntimeError("Git identity setup failed")
 
-def sync_branch(branch, dest):
-    dest.mkdir(parents=True, exist_ok=True)
-    if not (dest / ".git").exists():
-        run("git", "clone", "--branch", branch,
-            f"https://github.com/{REPO}.git", str(dest),
+def gh_api(endpoint, method="GET", payload=None):
+    gh = shutil.which("gh")
+    if not gh:
+        raise RuntimeError("gh executable not found")
+    args = [gh, "api", endpoint, "--method", method]
+    input_text = None
+    if payload is not None:
+        args += ["--input", "-"]
+        input_text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    proc = run(*args, check=False, timeout=GH_TIMEOUT_SECONDS, input_text=input_text)
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"gh api {method} {endpoint} failed: " +
+            (proc.stderr.strip() or proc.stdout.strip() or "unknown error")
+        )
+    if not proc.stdout.strip():
+        return {}
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"GitHub API returned invalid JSON: {exc}") from exc
+
+
+def gh_get_file(path, branch):
+    return gh_api(f"repos/{REPO}/contents/{path}?ref={branch}")
+
+
+def gh_put_file(path, branch, content, message):
+    existing = None
+    try:
+        existing = gh_get_file(path, branch)
+    except Exception as exc:
+        if "404" not in str(exc):
+            raise
+    payload = {
+        "message": message,
+        "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
+        "branch": branch,
+        "committer": {"name": BRIDGE_GIT_NAME, "email": BRIDGE_GIT_EMAIL},
+    }
+    if existing and existing.get("sha"):
+        payload["sha"] = existing["sha"]
+    return gh_api(f"repos/{REPO}/contents/{path}", "PUT", payload)
+
+
+def gh_delete_file(path, branch, message):
+    existing = gh_get_file(path, branch)
+    sha = existing.get("sha")
+    if not sha:
+        raise RuntimeError(f"GitHub file SHA unavailable for {path}")
+    payload = {
+        "message": message, "sha": sha, "branch": branch,
+        "committer": {"name": BRIDGE_GIT_NAME, "email": BRIDGE_GIT_EMAIL},
+    }
+    return gh_api(f"repos/{REPO}/contents/{path}", "DELETE", payload)
+
+
+def sync_queue():
+    QUEUE_REPO.mkdir(parents=True, exist_ok=True)
+    if not (QUEUE_REPO / ".git").exists():
+        run("git", "clone", "--branch", QUEUE_BRANCH,
+            f"https://github.com/{REPO}.git", str(QUEUE_REPO),
             cwd=WORK, timeout=90)
         return
-    run("git", "fetch", "--prune", "origin", branch,
-        cwd=dest, timeout=90)
-    run("git", "reset", "--hard", f"origin/{branch}",
-        cwd=dest, timeout=30)
-    run("git", "clean", "-fd", cwd=dest, timeout=30)
+    run("git", "fetch", "--prune", "origin", QUEUE_BRANCH,
+        cwd=QUEUE_REPO, timeout=90)
+    run("git", "reset", "--hard", f"origin/{QUEUE_BRANCH}",
+        cwd=QUEUE_REPO, timeout=30)
+    run("git", "clean", "-fd", cwd=QUEUE_REPO, timeout=30)
+
 
 def validate_argv(argv):
     if not isinstance(argv, list) or not argv or not all(isinstance(x, str) for x in argv):
         raise ValueError("argv must be a non-empty string list")
     if Path(argv[0]).name not in ALLOWED:
         raise ValueError(f"program not allowed: {argv[0]}")
-    if any(x in argv for x in ["&&", "||", ";", "|", ">", ">>", "<", "$(", "BACKTICK"]):
+    if any(op in " ".join(argv) for op in ("&&", "||", ";", "|", ">", ">>", "<", "$(", chr(96))):
         raise ValueError("shell operators are not allowed")
-    tokens = " ".join(argv).lower().split()
-    if any(token in tokens for token in BLOCKED_TOKENS):
+    if any(token in " ".join(argv).lower().split() for token in BLOCKED_TOKENS):
         raise ValueError("blocked command token")
     return argv
 
-def publish_result(result):
-    sync_branch(RESULT_BRANCH, RESULTS)
-    ensure_commit_identity(RESULTS)
-    rel = f"{result['command_id']}.json"
-    path = RESULTS / rel
-    path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    run("git", "add", "--", rel, cwd=RESULTS)
-    commit = run("git", "commit", "-m",
-                 f"bridge: result {result['command_id']}",
-                 cwd=RESULTS, check=False)
-    if commit.returncode != 0:
-        raise RuntimeError("result commit failed")
-    last = "unknown"
-    for attempt in range(4):
-        push = run("git", "push", "origin",
-                   f"{RESULT_BRANCH}:{RESULT_BRANCH}",
-                   cwd=RESULTS, check=False, timeout=90)
-        if push.returncode == 0:
-            verify = run("git", "fetch", "origin", RESULT_BRANCH,
-                         cwd=RESULTS, check=False, timeout=90)
-            if verify.returncode == 0:
-                tree = run("git", "ls-tree", "-r", "--name-only",
-                           f"origin/{RESULT_BRANCH}", "--", rel,
-                           cwd=RESULTS, check=False, timeout=30)
-                if tree.returncode == 0 and rel in tree.stdout.splitlines():
-                    return
-            last = "remote verification failed"
-        else:
-            last = push.stderr.strip() or push.stdout.strip() or "push failed"
-        if attempt < 3:
-            sync_branch(RESULT_BRANCH, RESULTS)
-            ensure_commit_identity(RESULTS)
-            path = RESULTS / rel
-            path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-            run("git", "add", "--", rel, cwd=RESULTS)
-            retry = run("git", "commit", "-m",
-                        f"bridge: result {result['command_id']}",
-                        cwd=RESULTS, check=False)
-            if retry.returncode != 0:
-                last = retry.stderr.strip() or retry.stdout.strip() or "retry commit failed"
-    raise RuntimeError("result publish failed: " + last)
 
-def consume_queue_item(path):
-    if not path.exists():
-        return
-    rel = path.relative_to(QUEUE_REPO).as_posix()
-    ensure_commit_identity(QUEUE_REPO)
-    path.unlink()
-    run("git", "add", "-u", "--", rel, cwd=QUEUE_REPO)
-    commit = run("git", "commit", "-m",
-                 f"bridge: consume {path.stem}",
-                 cwd=QUEUE_REPO, check=False)
-    if commit.returncode != 0:
-        raise RuntimeError("queue consume commit failed")
-    last = "push failed"
-    for attempt in range(4):
-        push = run("git", "push", "--atomic", "origin",
-                   f"{QUEUE_BRANCH}:{QUEUE_BRANCH}",
-                   cwd=QUEUE_REPO, check=False, timeout=90)
-        if push.returncode == 0:
-            return
-        last = push.stderr.strip() or push.stdout.strip() or last
-        if attempt < 3:
-            sync_branch(QUEUE_BRANCH, QUEUE_REPO)
-            if not path.exists():
+def safe_project_head():
+    try:
+        return run("git", "rev-parse", "HEAD", cwd=PROJECT, check=False).stdout.strip()
+    except Exception:
+        return ""
+
+
+def publish_result(result):
+    rel = f"{result['command_id']}.json"
+    content = json.dumps(result, ensure_ascii=False, indent=2)
+    last_error = None
+    for attempt in range(1, 4):
+        try:
+            gh_put_file(f"{RESULT_BRANCH}/{rel}", RESULT_BRANCH, content,
+                        f"bridge: result {result['command_id']}")
+            verify = gh_get_file(f"{RESULT_BRANCH}/{rel}", RESULT_BRANCH)
+            if verify.get("sha"):
+                log(f"BRIDGE_RESULT_PUBLISHED={result['command_id']}")
                 return
-            ensure_commit_identity(QUEUE_REPO)
-            path.unlink()
-            run("git", "add", "-u", "--", rel, cwd=QUEUE_REPO)
-            retry = run("git", "commit", "-m",
-                        f"bridge: consume {path.stem}",
-                        cwd=QUEUE_REPO, check=False)
-            if retry.returncode != 0:
-                last = retry.stderr.strip() or retry.stdout.strip() or "retry commit failed"
-    raise RuntimeError("queue consume failed: " + last)
+            raise RuntimeError("result verification returned no sha")
+        except Exception as exc:
+            last_error = exc
+            log(f"BRIDGE_RESULT_RETRY={result['command_id']} attempt={attempt}: {type(exc).__name__}: {exc}")
+            if attempt < 3:
+                time.sleep(2)
+    raise RuntimeError(f"result publish failed: {last_error}")
+
+
+def acknowledge_queue(path):
+    rel = path.relative_to(QUEUE_REPO).as_posix()
+    last = None
+    for attempt in range(1, 4):
+        try:
+            gh_delete_file(rel, QUEUE_BRANCH, f"bridge: acknowledge {path.stem}")
+            log(f"BRIDGE_QUEUE_ACK={path.stem}")
+            return
+        except Exception as exc:
+            last = exc
+            log(f"BRIDGE_ACK_RETRY={path.stem} attempt={attempt}: {type(exc).__name__}: {exc}")
+            if attempt < 3:
+                time.sleep(2)
+    raise RuntimeError(f"queue acknowledgement failed: {last}")
+
+
+def build_invalid_result(path, error):
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    result = {
+        "command_id": path.stem,
+        "status": "INVALID_COMMAND",
+        "exit_code": 65,
+        "started_at": utc_now(),
+        "finished_at": utc_now(),
+        "cwd": str(PROJECT),
+        "argv": [],
+        "stdout": "",
+        "stderr": str(error),
+        "timeout_seconds": COMMAND_TIMEOUT_SECONDS,
+        "queue_path": path.relative_to(QUEUE_REPO).as_posix(),
+        "project_head": safe_project_head(),
+        "raw_queue_sha256": hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+    }
+    result["result_sha256"] = hashlib.sha256(
+        json.dumps(result, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return result
+
 
 def process_file(path):
-    data = json.loads(path.read_text(encoding="utf-8"))
-    command_id = str(data["command_id"])
-    argv = validate_argv(data["argv"])
-    cwd = Path(data.get("cwd", str(PROJECT))).expanduser().resolve()
-    project = PROJECT.resolve()
-    if cwd != project and project not in cwd.parents:
-        raise ValueError("cwd outside project is not allowed")
-    started = datetime.now(timezone.utc).isoformat()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError("queue item must be a JSON object")
+        command_id = str(data["command_id"])
+        argv = validate_argv(data["argv"])
+        cwd = Path(data.get("cwd", str(PROJECT))).expanduser().resolve()
+        project = PROJECT.resolve()
+        if cwd != project and project not in cwd.parents:
+            raise ValueError("cwd outside project is not allowed")
+    except Exception as exc:
+        result = build_invalid_result(path, f"{type(exc).__name__}: {exc}")
+        publish_result(result)
+        acknowledge_queue(path)
+        return
+
+    started = utc_now()
+    log(f"BRIDGE_EXECUTE={command_id}")
     try:
         proc = run(*argv, cwd=cwd, check=False, timeout=COMMAND_TIMEOUT_SECONDS)
         status = "SUCCESS" if proc.returncode == 0 else "FAILED"
         exit_code = proc.returncode
-        stdout = proc.stdout[-20000:]
-        stderr = proc.stderr[-20000:]
+        stdout = (proc.stdout or "")[-MAX_OUTPUT:]
+        stderr = (proc.stderr or "")[-MAX_OUTPUT:]
     except subprocess.TimeoutExpired as exc:
         status = "TIMEOUT"
         exit_code = 124
-        stdout = exc.stdout[-20000:] if isinstance(exc.stdout, str) else ""
-        stderr = exc.stderr[-20000:] if isinstance(exc.stderr, str) else "command timeout"
+        stdout = (exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes)
+                  else (exc.stdout or ""))[-MAX_OUTPUT:]
+        stderr = "command timeout\n" + (
+            exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes)
+            else (exc.stderr or "")
+        )[-MAX_OUTPUT:]
+    except Exception as exc:
+        status = "ERROR"
+        exit_code = 1
+        stdout = ""
+        stderr = f"{type(exc).__name__}: {exc}"
+
     result = {
         "command_id": command_id,
         "status": status,
         "exit_code": exit_code,
         "started_at": started,
-        "finished_at": datetime.now(timezone.utc).isoformat(),
+        "finished_at": utc_now(),
         "cwd": str(cwd),
         "argv": argv,
         "stdout": stdout,
         "stderr": stderr,
         "timeout_seconds": COMMAND_TIMEOUT_SECONDS,
         "queue_path": path.relative_to(QUEUE_REPO).as_posix(),
-        "project_head": run("git", "rev-parse", "HEAD", cwd=PROJECT).stdout.strip(),
+        "project_head": safe_project_head(),
     }
     result["result_sha256"] = hashlib.sha256(
-        json.dumps(result, sort_keys=True, ensure_ascii=False).encode()
+        json.dumps(result, sort_keys=True, ensure_ascii=False).encode("utf-8")
     ).hexdigest()
+
+    # Result MUST be visible on GitHub before queue acknowledgement.
     publish_result(result)
-    consume_queue_item(path)
+    acknowledge_queue(path)
+
 
 def _daemonize():
     if os.environ.get("BRIDGE_DAEMON_CHILD") == "1":
@@ -207,7 +286,7 @@ def _daemonize():
     env = os.environ.copy()
     env["BRIDGE_DAEMON_CHILD"] = "1"
     with log_path.open("a", encoding="utf-8") as f:
-        f.write(f"\n[{datetime.now(timezone.utc).isoformat()}] BRIDGE_DAEMON_SPAWN\n")
+        f.write(f"\n[{utc_now()}] BRIDGE_DAEMON_SPAWN\n")
         f.flush()
         subprocess.Popen([sys.executable, str(Path(__file__).resolve())],
                          cwd=str(PROJECT), stdin=subprocess.DEVNULL,
@@ -217,47 +296,56 @@ def _daemonize():
     print(f"BRIDGE_LOG={log_path}", flush=True)
     return True
 
+
 def acquire_singleton():
     global _LOCK_FD
     WORK.mkdir(parents=True, exist_ok=True)
-    lock_path = WORK / "bridge_agent.lock"
-    _LOCK_FD = lock_path.open("a+")
+    _LOCK_FD = (WORK / "bridge_agent.lock").open("a+")
     try:
         fcntl.flock(_LOCK_FD.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         log("BRIDGE_ALREADY_RUNNING")
         return False
+    _LOCK_FD.seek(0)
+    _LOCK_FD.truncate()
     _LOCK_FD.write(str(os.getpid()))
     _LOCK_FD.flush()
     return True
 
+
 def main():
     if _daemonize():
         return
-    WORK.mkdir(parents=True, exist_ok=True)
     if not acquire_singleton():
         return
-    QUEUE_REPO.mkdir(exist_ok=True)
-    RESULTS.mkdir(exist_ok=True)
+
+    QUEUE_REPO.mkdir(parents=True, exist_ok=True)
     log("BRIDGE_STATUS=STARTING")
     log(f"BRIDGE_PROJECT={PROJECT}")
     log(f"BRIDGE_QUEUE_REPO={QUEUE_REPO}")
     log(f"BRIDGE_QUEUE={QUEUE}")
-    log(f"BRIDGE_RESULTS={RESULTS}")
+    log(f"BRIDGE_RESULT_BRANCH={RESULT_BRANCH}")
     log(f"BRIDGE_POLL_SECONDS={POLL_SECONDS}")
+    log(f"BRIDGE_COMMAND_TIMEOUT_SECONDS={COMMAND_TIMEOUT_SECONDS}")
+
     try:
         ensure_git_auth()
         log("BRIDGE_AUTH=OK")
     except Exception as exc:
         log(f"BRIDGE_FATAL_AUTH={type(exc).__name__}: {exc}")
-        raise
+        return
+
     log("BRIDGE_STATUS=READY")
     while True:
         try:
             log("BRIDGE_LOOP_TICK")
-            sync_branch(QUEUE_BRANCH, QUEUE_REPO)
+            sync_queue()
             log("BRIDGE_QUEUE_SYNCED")
-            for path in sorted(QUEUE.glob("*.json")):
+            items = sorted(QUEUE.glob("*.json"))
+            log(f"BRIDGE_QUEUE_ITEMS={len(items)}")
+            for path in items:
+                if not path.exists():
+                    continue
                 try:
                     log(f"BRIDGE_COMMAND_START={path.stem}")
                     process_file(path)
@@ -265,8 +353,9 @@ def main():
                 except Exception as exc:
                     log(f"BRIDGE_COMMAND_ERROR={path.stem}: {type(exc).__name__}: {exc}")
         except Exception as exc:
-            log(f"BRIDGE_LOOP_ERROR: {type(exc).__name__}: {exc}")
+            log(f"BRIDGE_LOOP_ERROR={type(exc).__name__}: {exc}")
         time.sleep(POLL_SECONDS)
+
 
 if __name__ == "__main__":
     main()
