@@ -1,9 +1,0 @@
-{
-  "command_id": "reset_runtime_to_bridge_commands",
-  "argv": [
-    "git",
-    "reset",
-    "--hard",
-    "origin/bridge-commands"
-  ]
-}
