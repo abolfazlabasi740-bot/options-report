@@ -1,0 +1,1 @@
+{"command_id":"bridge_preserve_local_20261008_01","argv":["git","stash","push","-m","bridge_pre_upgrade_20261008_01","--","scripts/termux_command_bridge_agent.py"],"cwd":"/data/data/com.termux/files/home/OptimusAI_V41_LIVE"}
