@@ -385,6 +385,16 @@ def generate_report(command):
                 f"expected={command}; actual={snapshot.get('underlying_symbol')}"
             )
 
+    # Every Bale report must expose the exact data snapshot date/time before
+    # the analytical body. The date belongs to the data, not the report request.
+    snapshot_label = _snapshot_datetime_label(snapshot)
+    report = (
+        f"📅 تاریخ/زمان دیتای Snapshot: {snapshot_label}\\n"
+        f"📊 وضعیت داده: {snapshot.get('data_mode') or 'داده موجود نیست'} | Refresh: {snapshot.get('live_refresh_status') or 'داده موجود نیست'}\\n"
+        "━━━━━━━━━━━━━━━━━━━━\\n"
+        + report
+    )
+
     # Evidence publication is deliberately kept out of the Bale response path.
     # The user must receive the report first; audit publication is non-critical.
     save_tsetmc_report(report, snapshot)
@@ -507,6 +517,8 @@ def generate_strategy_report(strategy):
     lines = [
         "📈 Bull Call Spread",
         "TSETMC-ONLY",
+        "📅 تاریخ/زمان دیتای Snapshot: " + _snapshot_datetime_label(snapshot),
+        "📊 وضعیت داده: " + str(snapshot.get("data_mode") or "داده موجود نیست") + " | Refresh: " + str(snapshot.get("live_refresh_status") or "داده موجود نیست"),
         "━━━━━━━━━━━━━━━━━━━━",
         "وضعیت موتور: " + str(result.get("status") or "داده موجود نیست"),
         "تعداد کاندیدا: " + str(result.get("candidate_count", 0)),
