@@ -1,1 +1,0 @@
-{"command_id":"zz_diagnose_runtime_20261008_21","argv":["python","-c","import sys,importlib.util as u; print(sys.executable); print(u.find_spec('bull_call_spread_engine')); print(u.find_spec('underlying_trend_engine')); print(u.find_spec('last_minute_profit_engine'))"]}
