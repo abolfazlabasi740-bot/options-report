@@ -1,0 +1,19 @@
+{
+  "command_id": "zz_sync_engine_20261008_06",
+  "status": "FAILED",
+  "exit_code": 128,
+  "started_at": "2026-10-08T06:53:02.694802+00:00",
+  "finished_at": "2026-10-08T06:53:02.736585+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "show",
+    "main:last_minute_profit_engine.py"
+  ],
+  "stdout": "",
+  "stderr": "fatal: path 'last_minute_profit_engine.py' does not exist in 'main'\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_sync_engine_20261008_06.json",
+  "project_head": "cba8092ad0f49346508369974862c4fedf5b344c",
+  "result_sha256": "cc1c4ab9eefe6ee4379d05fb3ed94ab750e30fef6caeaceab1f80a39b4131d9c"
+}
