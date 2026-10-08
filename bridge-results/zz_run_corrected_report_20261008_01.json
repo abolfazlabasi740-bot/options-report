@@ -1,0 +1,18 @@
+{
+  "command_id": "zz_run_corrected_report_20261008_01",
+  "status": "FAILED",
+  "exit_code": 1,
+  "started_at": "2026-10-08T06:48:17.048811+00:00",
+  "finished_at": "2026-10-08T06:48:17.307848+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/run_corrected_last_minute_report.py"
+  ],
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/run_corrected_last_minute_report.py\", line 2, in <module>\n    from bale_listener import generate_report\nModuleNotFoundError: No module named 'bale_listener'\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/zz_run_corrected_report_20261008_01.json",
+  "project_head": "3c8c04b6478c3723ea6c3a5a88f1ff26912b959a",
+  "result_sha256": "934783d48e73dce24ff9c35dfe6cb7652e068f13187eb95c22cce8f791e0a44a"
+}
