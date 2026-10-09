@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="${OPTIMUSAI_ROOT:-$HOME/OptimusAI_V41_LIVE}"
 PORT="${OPTIMUSAI_LLM_PORT:-8080}"
 API_BASE="http://127.0.0.1:${PORT}/v1"
-MODEL="${OPTIMUSAI_LLM_MODEL:-Qwen/Qwen3-4B-GGUF:Q4_K_M}"
+MODEL="${OPTIMUSAI_LLM_MODEL:-Qwen/Qwen3-0.6B-GGUF:Q8_0}"
 SETUP="$ROOT/scripts/setup_local_llm.sh"
 
 cd "$ROOT"
