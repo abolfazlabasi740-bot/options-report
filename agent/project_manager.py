@@ -175,7 +175,12 @@ def _chat(messages: list[dict[str, Any]]) -> dict[str, Any]:
         },
         timeout=HTTP_TIMEOUT,
     )
-    response.raise_for_status()
+    if not response.ok:
+        detail = response.text[:4000]
+        raise requests.exceptions.HTTPError(
+            f"HTTP {response.status_code} from local LLM API: {detail}",
+            response=response,
+        )
     return response.json()
 
 def _run_readonly_tool_task(task: str) -> bool:
