@@ -9,13 +9,13 @@ SETUP="$ROOT/scripts/setup_local_llm.sh"
 
 cd "$ROOT"
 
-if ! curl -fsS "$API_BASE/models" >/dev/null 2>&1; then
+if ! curl --connect-timeout 2 --max-time 5 -fsS "$API_BASE/models" >/dev/null 2>&1; then
   echo "LOCAL_LLM_NOT_READY"
   echo "Starting local LLM..."
   bash "$SETUP"
 fi
 
-if ! curl -fsS "$API_BASE/models" >/dev/null 2>&1; then
+if ! curl --connect-timeout 2 --max-time 5 -fsS "$API_BASE/models" >/dev/null 2>&1; then
   echo "FAIL: local LLM API is not reachable at $API_BASE"
   exit 1
 fi
@@ -32,11 +32,14 @@ if [ -z "${OPTIMUSAI_TASK:-}" ]; then
   exit 1
 fi
 
-echo "Checking Python dependencies..."
-if ! python -c 'import openai' >/dev/null 2>&1; then
-  echo "Installing project Python dependencies..."
-  python -m pip install -r requirements.txt
-fi
+echo "Checking required local Python module..."
+python -c 'import requests' || {
+  echo "FAIL: Python module requests is unavailable; no network package installation was attempted."
+  exit 1
+}
 
+echo "Checking Agent syntax..."
 python -m py_compile agent/project_manager.py scripts/run_project_manager.py
-exec python scripts/run_project_manager.py
+
+echo "Starting local Project Manager..."
+exec python -u scripts/run_project_manager.py
