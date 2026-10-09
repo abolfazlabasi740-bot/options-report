@@ -1,0 +1,12 @@
+{
+  "command_id": "llm_recovery_small_model_20261009_1318",
+  "argv": [
+    "python",
+    "-c",
+    "import os,subprocess,sys; e=os.environ.copy(); e.update({'OPTIMUSAI_LLM_MODEL':'Qwen/Qwen3-0.6B-GGUF:Q8_0','OPTIMUSAI_LLM_MODEL_REF':'Qwen/Qwen3-0.6B-GGUF:Q8_0','OPTIMUSAI_CONTEXT':'1024','OPTIMUSAI_THREADS':'4','OPTIMUSAI_HTTP_TIMEOUT':'120','OPTIMUSAI_MAX_OUTPUT_TOKENS':'128','OPTIMUSAI_MAX_TURNS':'3'}); p=subprocess.Popen([sys.executable,'scripts/llm_recovery_async.py'],cwd=os.getcwd(),env=e,stdin=subprocess.DEVNULL,stdout=open('output/local_llm/recovery_launch_20261009.log','a'),stderr=subprocess.STDOUT,start_new_session=True); print('LLM_RECOVERY_WORKER_LAUNCHED pid='+str(p.pid)+' model=Qwen/Qwen3-0.6B-GGUF:Q8_0 context=1024')"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 30,
+  "requested_at": "2026-10-09T09:18:00Z",
+  "purpose": "Recover local LLM with the already-configured small Qwen3-0.6B model instead of the failed 4B model; launch recovery asynchronously and verify through receipt."
+}
