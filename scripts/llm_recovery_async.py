@@ -119,11 +119,12 @@ def worker() -> int:
                 write_status("INFERENCE_RETRY_WAIT", attempt=inference_attempt, error=f"{type(exc).__name__}: {exc}", log=str(LOG))
                 time.sleep(min(60, 5 + inference_attempt * 5))
 
+        # This prompt deliberately avoids the deterministic read-only shortcut in
+        # project_manager.py. The recovery loop must verify actual LLM-issued tool calls.
         task = (
-            "Use the git_status tool to inspect the local repository, then use read_file "
-            "to read lines 1 through 20 of docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md. "
-            "Do not write, edit, commit, or delete any file. After both real tool calls, "
-            "report the tool results and any errors concisely."
+            "Use the git_status function to inspect the local repository. Then use the "
+            "read_file function to read lines 1 through 20 of "
+            "docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md. Summarize both tool results."
         )
         agent_attempt = 0
         while True:
