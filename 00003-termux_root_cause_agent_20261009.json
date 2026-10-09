@@ -1,0 +1,10 @@
+{
+  "command_id": "termux_root_cause_agent_20261009",
+  "argv": [
+    "python",
+    "scripts/termux_root_cause_agent.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120,
+  "requested_at": "2026-10-09T06:48:06.789Z"
+}
