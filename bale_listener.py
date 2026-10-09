@@ -72,6 +72,7 @@ CALLBACK_COMMANDS = {
     "base_stocks": "سهم‌های پایه",
     "report_activity_15": "فعالیت",
     "report_last_minute_option_opportunity": "فرصت‌لحظه‌آخری‌آپشن",
+    "option_base_cards": "سهم‌های پایه دارای آپشن",
     "system_status": "وضعیت",
 }
 
@@ -92,6 +93,7 @@ from behavior_engine import build_behavior_report, format_behavior_report
 from last_minute_profit_engine import build_last_minute_ranking, analyze_underlying_context
 from underlying_trend_engine import fetch_underlying_context
 from bull_call_spread_engine import build_strategy_report
+from bale_base_share_option_cards import render_page as render_option_base_cards
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -581,6 +583,12 @@ def send_report_menu(chat_id):
         "📋 منوی گزارش‌های OptimusAI V4.1\n\nاز منوی پایین، گزارش موردنظر را انتخاب کنید:",
         reply_markup=REPLY_MENU_MARKUP,
     )
+    send_message(
+        chat_id,
+        "📌 رتبه‌بندی سهم‌های پایه دارای آپشن؛ هر سهم با امتیاز و دلایل امتیاز به‌صورت کارت نمایش داده می‌شود:",
+        reply_markup={"inline_keyboard": [[{"text": "📊 کارت‌های سهم پایه آپشن‌دار", "callback_data": "option_base_cards:0"}]]},
+    )
+
 
 def main():
     if not TOKEN or not CHAT_ID:
@@ -641,7 +649,11 @@ def main():
                         command = CALLBACK_COMMANDS.get(callback_data)
                         strategy = STRATEGY_CALLBACKS.get(callback_data)
 
-                        if callback_data.startswith("symbols_page:"):
+                        if callback_data.startswith("option_base_cards:"):
+                            page = int(callback_data.split(":", 1)[1])
+                            report, markup, count, current_page, total_pages = render_option_base_cards(page)
+                            send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data.startswith("symbols_page:"):
                             page = int(callback_data.split(":", 1)[1])
                             send_symbol_menu(chat_id, page)
                         elif callback_data.startswith("symbol:"):
