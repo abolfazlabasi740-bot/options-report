@@ -1,0 +1,18 @@
+{
+  "command_id": "bridge_reset_reinstall_watchdog_20261009_1320",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:55:20.220316+00:00",
+  "finished_at": "2026-10-09T09:55:23.200113+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "bash",
+    "scripts/install_termux_bridge_watchdog.sh"
+  ],
+  "stdout": "BOOT_WATCHDOG_INSTALLED=/data/data/com.termux/files/home/.termux/boot/optimusai_bridge_watchdog.sh\nTERMUX_BOOT_APP_NOTE=The Termux:Boot Android add-on must be installed and allowed to run at device startup.\nWAKE_LOCK_AVAILABLE=yes\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00001-bridge_reset_reinstall_watchdog_20261009_1320.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "c440be4786127740000636ff2abb417b097a0df1c4a02fa981ab431faaee4888"
+}
