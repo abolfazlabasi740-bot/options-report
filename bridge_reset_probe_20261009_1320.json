@@ -1,0 +1,19 @@
+{
+  "command_id": "bridge_reset_probe_20261009_1320",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:55:13.072812+00:00",
+  "finished_at": "2026-10-09T09:55:13.191366+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_RESET_PROBE_OK')"
+  ],
+  "stdout": "BRIDGE_RESET_PROBE_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00001-bridge_reset_probe_20261009_1320.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "7164891044cd25681fa0f89baa1e1b787b44e48d19242805b59a332a6a79b2e9"
+}
