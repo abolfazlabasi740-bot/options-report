@@ -1,9 +1,0 @@
-{
-  "command_id": "chatgpt_remote_bridge_check_20261009_01",
-  "argv": [
-    "python",
-    "-c",
-    "import os\nprint('REMOTE_EXECUTION_OK')\nprint(os.getcwd())"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
