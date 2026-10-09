@@ -1,0 +1,13 @@
+{
+  "command_id": "bridge_reset_pull_main_20261009_1320",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120,
+  "requested_at": "2026-10-09T10:20:00Z"
+}
