@@ -1,5 +1,5 @@
 provider: local
-model: local
+model: Qwen/Qwen3-4B-GGUF:Q4_K_M
 api_base: http://127.0.0.1:8080/v1
 api_key_env: OPTIMUSAI_API_KEY
 max_output_tokens: 6000
