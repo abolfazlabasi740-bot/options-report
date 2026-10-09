@@ -1,0 +1,18 @@
+{
+  "command_id": "00000-bridge_upgrade_20261009_0945",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T06:59:03.779434+00:00",
+  "finished_at": "2026-10-09T06:59:04.996026+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/bridge_upgrade.py"
+  ],
+  "stdout": "BRIDGE_UPGRADE_SCHEDULED\nFINALIZER_PID=16525\nAlready up to date.\n\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00000-bridge_upgrade_20261009_0945.json",
+  "project_head": "49157883f704792d13f5140c9ac18bb7ce639fec",
+  "result_sha256": "13ae6ee166a56da0e58b091a390685422dd6d058ad6b3067349a4a4f16b53ab2"
+}
