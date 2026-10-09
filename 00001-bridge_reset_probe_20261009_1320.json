@@ -1,0 +1,11 @@
+{
+  "command_id": "bridge_reset_probe_20261009_1320",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_RESET_PROBE_OK')"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 30,
+  "requested_at": "2026-10-09T10:20:02Z"
+}
