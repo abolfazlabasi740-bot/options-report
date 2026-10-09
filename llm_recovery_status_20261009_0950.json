@@ -1,0 +1,18 @@
+{
+  "command_id": "llm_recovery_status_20261009_0950",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:56:33.757355+00:00",
+  "finished_at": "2026-10-09T09:56:34.215747+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/llm_recovery_status.py"
+  ],
+  "stdout": "{\n  \"state\": \"RUNNING_REAL_AGENT_TOOL_CALL_TEST\",\n  \"updated_at\": \"2026-10-09T09:56:10.732661+00:00\",\n  \"api_base\": \"http://127.0.0.1:8080/v1\",\n  \"model\": \"Qwen/Qwen3-4B-GGUF:Q4_K_M\",\n  \"attempt\": 1,\n  \"inference_answer\": \"LLM_READY\",\n  \"log\": \"/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/local_llm/recovery_worker.log\",\n  \"worker_pid\": 24532,\n  \"log_tail\": \"\\n[2026-10-09T09:56:08.711865+00:00] WORKER_START pid=24532\\nLLM_RECOVERY_STATE=SERVER_READY_RETRYING_INFERENCE\\n\\n[2026-10-09T09:56:10.731232+00:00] INFERENCE_ATTEMPT=1 HTTP=200 ANSWER='LLM_READY'\\nLLM_RECOVERY_STATE=INFERENCE_OK_TESTING_AGENT_TOOLS\\nLLM_RECOVERY_STATE=RUNNING_REAL_AGENT_TOOL_CALL_TEST\\n\\n[2026-10-09T09:56:10.733186+00:00] AGENT_TOOL_TEST_ATTEMPT=1\\nChecking required local Python module...\\nChecking Agent syntax...\\nStarting local Project Manager...\"\n}\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/llm_recovery_status_20261009_0950.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "26c2bcde9662343405d6c62de56ef54a9e3b14434729124a7a019c7ffcda22f9"
+}
