@@ -23,9 +23,9 @@
 - RSI above 70 reduces entry quality; above 80 is flagged as extreme overbought. A strong existing trend cannot erase this entry-risk warning.
 - A strong 5-session price run without supporting volume lowers entry quality.
 - Current order-book/BestLimits fields are excluded until the independent semantic-evidence gate is passed. The existence of raw fields alone is not enough.
-- Live board/client-type collection runs only during the TSETMC market window (Saturday–Wednesday, 09:00–12:30 Tehran time). Outside that window the report uses retained daily history and does not refresh live board data.
+- Live board/client-type collection runs only during the TSETMC market window (Saturday–Wednesday, 09:00–12:30 Tehran time). Outside that window the report uses retained daily history and does not refresh live board data. Report-generation time is kept separate from the latest market date evidenced by the underlying histories; the report prints the latest evidenced date, date coverage, snapshot mode, selection reason, and source snapshot hash. A missing date is displayed as unavailable, never inferred from the generation date.
 - Fundamental/industry context and historical Strategy Fit are explicitly marked unavailable/not scored in this version because they are not yet joined to this report with validated, comparable evidence.
-- The report universe is currently limited to underlying shares explicitly linked to the current TSETMC options universe. It does not claim to rank the entire stock market.
+- The report universe is currently limited to underlying shares explicitly linked to the current TSETMC options universe. It does not claim to rank the entire stock market. Full-market stock discovery remains a separate required work item; it must use a validated TSETMC instrument-universe endpoint rather than assume option underlyings represent all listed stocks.
 - The score is a relative evidence score, not an expected return, calibrated probability, or trading signal.
 
 ## Output
