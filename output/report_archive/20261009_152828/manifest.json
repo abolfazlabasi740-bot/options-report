@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-10-09T15:29:20.998317+03:30",
+  "engine": "ORIGINAL_DETERMINISTIC_TSETMC",
+  "production_buy_sell": false,
+  "successful_reports": [
+    {
+      "name": "options_top15",
+      "file": "output/report_archive/20261009_152828/options_top15.txt",
+      "sha256": "05da4fc3412c4841f30de9c6777943fb9094a3677297ea1da48d8cef7f12bd3b",
+      "characters": 21823
+    },
+    {
+      "name": "options_activity15",
+      "file": "output/report_archive/20261009_152828/options_activity15.txt",
+      "sha256": "d8d083ba1052779b39b91cfeee3cbfb3ea1e9d0a53752142f5bf09fd048b064d",
+      "characters": 10065
+    },
+    {
+      "name": "options_last_minute",
+      "file": "output/report_archive/20261009_152828/options_last_minute.txt",
+      "sha256": "32959d1ead173f4efa908c68b2961e94351523e73bc7293291db5715b5586c3a",
+      "characters": 9464
+    },
+    {
+      "name": "base_shares_stage1.txt",
+      "file": "output/report_archive/20261009_152828/base_shares_stage1.txt",
+      "sha256": "760ff0f5e03dad05964acb9b8a0752d677ee4e0c4adfe11538b1911f56da9668",
+      "bytes": 15341
+    },
+    {
+      "name": "base_shares_stage1.json",
+      "file": "output/report_archive/20261009_152828/base_shares_stage1.json",
+      "sha256": "c04f2429fe26be02dc6715fe2c8148cbf5c9ef899e01797de003480d3b945b0e",
+      "bytes": 177405
+    }
+  ],
+  "failed_reports": []
+}
