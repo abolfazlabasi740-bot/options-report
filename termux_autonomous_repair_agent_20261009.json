@@ -1,0 +1,18 @@
+{
+  "command_id": "termux_autonomous_repair_agent_20261009",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T06:59:25.832082+00:00",
+  "finished_at": "2026-10-09T06:59:26.088569+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/termux_repair_agent.py"
+  ],
+  "stdout": "REPAIR_AGENT_LAUNCHED pid=16841\nREPAIR_AGENT_LOG=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/termux_root_cause/repair_agent.log\nREPAIR_AGENT_STATUS=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/termux_root_cause/repair_status.json\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00000-z-termux_autonomous_repair_agent_20261009.json",
+  "project_head": "49157883f704792d13f5140c9ac18bb7ce639fec",
+  "result_sha256": "2637bd498b010839dbeef4f7434b5e9a49722c1db811bed9baa2f1fc950a537b"
+}
