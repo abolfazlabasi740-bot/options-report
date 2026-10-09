@@ -66,7 +66,7 @@ def main():
 
     ranked.sort(key=lambda x: (x.get("final_score") is None, -(x.get("final_score") or 0.0)))
     report = [
-        "گزارش فرصت‌یابی سهم پایه — BASE SHARE OPPORTUNITY V2",
+        "گزارش فرصت‌یابی سهم پایه — BASE SHARE OPPORTUNITY V2.1",
         "=" * 62,
         "منبع حقیقت: TSETMC | نسخه موتور: " + ENGINE_VERSION,
         "دامنه: سهم‌های پایه‌ای که در Universe فعلی اختیار معامله شناسایی شده‌اند؛ نه کل بازار سهام.",
@@ -106,7 +106,7 @@ def main():
         report.append("-" * 62)
 
     payload = {
-        "report_version": "BASE-SHARE-OPPORTUNITY-V2",
+        "report_version": "BASE-SHARE-OPPORTUNITY-V2.1",
         "engine_version": ENGINE_VERSION,
         "generated_at": datetime.now(TEHRAN).isoformat(),
         "source_of_truth": "TSETMC",
