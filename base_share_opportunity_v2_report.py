@@ -65,12 +65,30 @@ def main():
         })
 
     ranked.sort(key=lambda x: (x.get("final_score") is None, -(x.get("final_score") or 0.0)))
+    # Report the actual latest market date evidenced by the retained daily histories.
+    # Do not equate report-generation time with market-data time.
+    history_dates = sorted({
+        str(row.get("latest_market_date"))
+        for row in ranked
+        if row.get("latest_market_date") not in (None, "")
+    })
+    latest_history_date = history_dates[-1] if history_dates else None
+    history_date_coverage = sum(1 for row in ranked if row.get("latest_market_date") not in (None, ""))
+    source_mode = str(snap.get("data_mode") or "DATA_MODE_UNAVAILABLE")
+    selection_reason = str(snap.get("selection_reason") or "SELECTION_REASON_UNAVAILABLE")
+    source_hash = str(snap.get("snapshot_sha256") or "SNAPSHOT_HASH_UNAVAILABLE")
     report = [
         "گزارش فرصت‌یابی سهم پایه — BASE SHARE OPPORTUNITY V2.1",
         "=" * 62,
         "منبع حقیقت: TSETMC | نسخه موتور: " + ENGINE_VERSION,
+        "زمان تولید گزارش: " + datetime.now(TEHRAN).isoformat(),
+        "آخرین تاریخ بازار در تاریخچه سهم‌های بررسی‌شده: " + (latest_history_date or "اطلاعات موجود نیست"),
+        f"پوشش تاریخچه: {history_date_coverage}/{len(ranked)} سهم دارای تاریخ آخرین داده",
+        "حالت داده منبع اختیار: " + source_mode,
+        "دلیل انتخاب snapshot: " + selection_reason,
+        "هش snapshot منبع: " + source_hash,
         "دامنه: سهم‌های پایه‌ای که در Universe فعلی اختیار معامله شناسایی شده‌اند؛ نه کل بازار سهام.",
-        f"داده تابلو زنده: {'فعال در بازه مجاز بازار' if board_live_window else 'دریافت زنده انجام نشد؛ خارج از بازه بازار'}",
+        f"تابلوی زنده: {'در بازه مجاز بازار درخواست می‌شود' if board_live_window else 'به‌روزرسانی نشده؛ از تاریخچه معتبر موجود استفاده می‌شود'}",
         "امتیاز: 0 تا 100 | خروجی توصیفی است و سیگنال خرید/فروش نیست.",
         "داده مفقود نه صفرگذاری شده و نه با حدس جایگزین شده؛ وزن مؤلفه‌های موجود نرمال شده است.",
         "RSI بالای 70 و به‌ویژه بالای 80، رشد شدید بدون تأیید حجم و وضعیت اصلاح در کیفیت نقطه ورود اثر منفی دارند.",
