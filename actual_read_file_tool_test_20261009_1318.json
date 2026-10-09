@@ -1,0 +1,10 @@
+{
+  "command_id": "actual_read_file_tool_test_20261009_1318",
+  "argv": [
+    "python",
+    "-c",
+    "import os, runpy, io, contextlib, pathlib, json\nroot = pathlib.Path.home() / \"OptimusAI_V41_LIVE\"\nos.chdir(root)\nos.environ[\"OPTIMUSAI_ROOT\"] = str(root)\nos.environ[\"OPTIMUSAI_PROVIDER\"] = \"local\"\nos.environ[\"OPTIMUSAI_LLM_MODEL\"] = \"Qwen/Qwen3-4B-GGUF:Q4_K_M\"\nos.environ[\"OPTIMUSAI_API_BASE\"] = \"http://127.0.0.1:8080/v1\"\nos.environ[\"OPTIMUSAI_MAX_OUTPUT_TOKENS\"] = \"512\"\nos.environ[\"OPTIMUSAI_MAX_TURNS\"] = \"3\"\nos.environ[\"OPTIMUSAI_HTTP_TIMEOUT\"] = \"70\"\nos.environ[\"OPTIMUSAI_TASK\"] = \"با استنتاج واقعی مدل محلی، ابزار read_file را واقعاً فراخوانی کن و فایل docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md را از خط 1 تا 100 بخوان. فقط بر اساس محتوای برگشتی همان ابزار، هدف مدل، شش معیار و وزن دقیق هرکدام، و قاعده داده مفقود را خلاصه کن. فقط ادعای استفاده از ابزار کافی نیست؛ محتوای واقعی فایل باید وارد نتیجه شود. هیچ فایلی را تغییر نده و ابزار نوشتن یا اجرای فرمان را فراخوانی نکن. This task requires actual inference and an actual tool call.\"\nlog = root / \"output\" / \"local_llm\" / \"actual_tool_call_test.log\"\nlog.parent.mkdir(parents=True, exist_ok=True)\nbuf = io.StringIO()\ntry:\n    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):\n        runpy.run_path(str(root / \"agent\" / \"project_manager.py\"), run_name=\"__main__\")\nexcept BaseException as exc:\n    print(\"HARNESS_EXCEPTION=\" + type(exc).__name__ + \": \" + str(exc), file=buf)\nlog.write_text(buf.getvalue(), encoding=\"utf-8\")\nprint(\"TEST_LOG_PATH=\" + str(log))\nprint(\"----- ACTUAL TOOL-CALL LOG BEGIN -----\")\nprint(log.read_text(encoding=\"utf-8\")[-14000:])\nprint(\"----- ACTUAL TOOL-CALL LOG END -----\")"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120
+}
