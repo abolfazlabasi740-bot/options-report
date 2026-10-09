@@ -225,7 +225,7 @@ def main():
         lines.append(
             f"{i} | {item['symbol']} | {item.get('final_score') if item.get('final_score') is not None else 'اطلاعات موجود نیست'}"
             f" | {item.get('classification')} | {item.get('evidence_coverage_pct')}%"
-            f" | {item.get('latest_market_date') or 'اطلاعات موجود نیست'}"
+            f" | {item.get('latest_market_date') or 'اطلاعات موجود نیست'} / {item.get('latest_market_date_jalali') or 'اطلاعات موجود نیست'}"
             f" | {item.get('return_5_sessions_pct')}/{item.get('return_20_sessions_pct')}"
             f" | {item.get('rsi_14')} | {warnings}"
         )
