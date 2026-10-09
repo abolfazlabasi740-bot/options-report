@@ -49,7 +49,7 @@ def finalize(parent_pid: int) -> int:
                 payload = json.loads(base64.b64decode(encoded).decode("utf-8"))
                 argv = payload.get("argv", [])
                 if isinstance(argv, list) and "scripts/bridge_upgrade.py" in argv:
-                    own_name = name
+                    candidate_name = name
                     command_id = str(payload.get("command_id", Path(name).stem))
                     try:
                         receipt = gh_api(
@@ -63,11 +63,12 @@ def finalize(parent_pid: int) -> int:
                             sha = raw.get("sha")
                             if sha:
                                 gh_api(
-                                    f"repos/{REPO}/contents/{name}",
+                                    f"repos/{REPO}/contents/{candidate_name}",
                                     "DELETE",
                                     {"message": f"bridge: acknowledge {command_id} after receipt",
                                      "sha": sha, "branch": QUEUE_BRANCH}
                                 )
+                                own_name = candidate_name
                                 print(f"BRIDGE_UPGRADE_QUEUE_ACK={command_id}", flush=True)
                             break
                     except Exception:
