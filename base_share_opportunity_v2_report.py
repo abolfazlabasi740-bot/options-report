@@ -4,7 +4,7 @@
 from __future__ import annotations
 import hashlib, json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, time
 from zoneinfo import ZoneInfo
 
 from tsetmc_first_source import build_tsetmc_snapshot
@@ -29,7 +29,12 @@ def main():
         if uid and symbol:
             underlyings[uid] = symbol
 
-    context_result = fetch_underlying_context(sorted(underlyings), include_board=True)
+    now = datetime.now(TEHRAN)
+    is_trading_day = now.weekday() in {5, 6, 0, 1, 2}
+    board_live_window = is_trading_day and time(9, 0) <= now.time() <= time(12, 30)
+    # Current client/order-book fields are fetched only during the live TSETMC session.
+    # Outside that window, score retained daily history and report board coverage as unavailable.
+    context_result = fetch_underlying_context(sorted(underlyings), include_board=board_live_window)
     contexts = context_result.get("instruments") or {}
     ranked = []
     for uid, symbol in underlyings.items():
@@ -65,6 +70,7 @@ def main():
         "=" * 62,
         "منبع حقیقت: TSETMC | نسخه موتور: " + ENGINE_VERSION,
         "دامنه: سهم‌های پایه‌ای که در Universe فعلی اختیار معامله شناسایی شده‌اند؛ نه کل بازار سهام.",
+        f"داده تابلو زنده: {'فعال در بازه مجاز بازار' if board_live_window else 'دریافت زنده انجام نشد؛ خارج از بازه بازار'}",
         "امتیاز: 0 تا 100 | خروجی توصیفی است و سیگنال خرید/فروش نیست.",
         "داده مفقود نه صفرگذاری شده و نه با حدس جایگزین شده؛ وزن مؤلفه‌های موجود نرمال شده است.",
         "RSI بالای 70 و به‌ویژه بالای 80، رشد شدید بدون تأیید حجم و وضعیت اصلاح در کیفیت نقطه ورود اثر منفی دارند.",
