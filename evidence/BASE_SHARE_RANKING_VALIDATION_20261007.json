@@ -1,0 +1,136 @@
+{
+  "evidence_type": "BASE_SHARE_RANKING_VALIDATION",
+  "evidence_version": "1.0",
+  "status": "VALIDATION_PASSED",
+  "project": "OptimusAI_V41_LIVE",
+  "repository": "abolfazlabasi740-bot/options-report",
+  "report_path": "output/base_share/latest_plain_symbol_trend_report.json",
+  "source_of_truth": "TSETMC",
+  "model": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.1",
+  "latest_market_date": "20261007",
+  "latest_history_date_jalali": "1405/07/15",
+  "validation": {
+    "total_shares": 753,
+    "scored_shares": 753,
+    "missing_scores": 0,
+    "duplicate_symbols": 0,
+    "descending_score_order": true,
+    "checks_based_on_user_supplied_termux_output": true
+  },
+  "report_sha256_field": "d8f65859767c706d2078a8b4b2669f986e52df53d973708204badb37d812fd53",
+  "top_20": [
+    [
+      "سغدير",
+      93.12
+    ],
+    [
+      "غصينو",
+      93.07
+    ],
+    [
+      "ثاخت",
+      92.22
+    ],
+    [
+      "حپترو",
+      91.91
+    ],
+    [
+      "وحافظ",
+      91.17
+    ],
+    [
+      "دقاضي",
+      90.85
+    ],
+    [
+      "خودرو",
+      90.74
+    ],
+    [
+      "وتوكا",
+      90.44
+    ],
+    [
+      "ولكار",
+      89.79
+    ],
+    [
+      "دسبحا",
+      89.12
+    ],
+    [
+      "غگل",
+      89.04
+    ],
+    [
+      "كايتا",
+      89.03
+    ],
+    [
+      "غديس",
+      88.85
+    ],
+    [
+      "دسينا",
+      88.81
+    ],
+    [
+      "شمس",
+      88.59
+    ],
+    [
+      "ددانا",
+      88.56
+    ],
+    [
+      "كيمازي",
+      88.47
+    ],
+    [
+      "كرازي",
+      88.37
+    ],
+    [
+      "ساربيل",
+      88.1
+    ],
+    [
+      "وامير",
+      87.59
+    ]
+  ],
+  "bottom_5": [
+    [
+      "آ س پ",
+      38.66
+    ],
+    [
+      "پلاست",
+      37.68
+    ],
+    [
+      "غشوكو",
+      37.46
+    ],
+    [
+      "تكنو",
+      33.1
+    ],
+    [
+      "مبين",
+      32.05
+    ]
+  ],
+  "policy": {
+    "weights_changed": false,
+    "buy_sell_signal_generated": false,
+    "fundamental_data_scored": false,
+    "order_book_coverage_included": false
+  },
+  "limitations": [
+    "Validation is based on the Termux output provided in the conversation.",
+    "Market data is historical through 2026-10-07; this is not a live-market ranking.",
+    "This evidence records validation results; it does not claim that the local Termux report file was independently read by GitHub."
+  ]
+}
