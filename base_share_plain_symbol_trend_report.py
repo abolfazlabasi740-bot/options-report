@@ -91,7 +91,7 @@ def main():
             f" | {row.get('final_score') if row.get('final_score') is not None else 'اطلاعات موجود نیست'}"
             f" | {row.get('classification') or 'اطلاعات موجود نیست'}"
             f" | {row.get('evidence_coverage_pct') if row.get('evidence_coverage_pct') is not None else 'اطلاعات موجود نیست'}%"
-            f" | {row.get('latest_market_date') or 'اطلاعات موجود نیست'}"
+            f" | {row.get('latest_market_date') or 'اطلاعات موجود نیست'} / {gregorian_to_jalali(row.get('latest_market_date')) or 'اطلاعات موجود نیست'}"
             f" | {row.get('return_5_sessions_pct') if row.get('return_5_sessions_pct') is not None else 'اطلاعات موجود نیست'}"
             f" | {row.get('return_20_sessions_pct') if row.get('return_20_sessions_pct') is not None else 'اطلاعات موجود نیست'}"
             f" | {row.get('rsi_14') if row.get('rsi_14') is not None else 'اطلاعات موجود نیست'}"
