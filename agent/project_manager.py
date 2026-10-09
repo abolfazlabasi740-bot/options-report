@@ -183,6 +183,45 @@ def main() -> None:
     if not task:
         raise SystemExit("OPTIMUSAI_TASK is required")
 
+def _run_readonly_tool_task(task: str) -> bool:
+    """Run explicit, narrowly scoped read-only tool tasks without LLM inference."""
+    normalized = " ".join(task.lower().split())
+    if not ("git_status" in normalized and "read_file" in normalized):
+        return False
+    if not any(token in normalized for token in ("بدون تغییر", "هیچ فایلی", "read-only", "no file")):
+        return False
+
+    print("READ_ONLY_TOOL_TASK: deterministic execution; LLM inference skipped.")
+    results: dict[str, Any] = {}
+    try:
+        results["git_status"] = git_status()
+        print("TOOL git_status: EXECUTED")
+        print(json.dumps(results["git_status"], ensure_ascii=False, indent=2))
+    except Exception as exc:
+        results["git_status_error"] = f"{type(exc).__name__}: {exc}"
+        print("TOOL git_status: FAILED")
+        print(results["git_status_error"])
+
+    target = "docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md"
+    try:
+        results["read_file"] = read_file(target, start=1, end=35)
+        print("TOOL read_file: EXECUTED")
+        print(json.dumps(results["read_file"], ensure_ascii=False, indent=2))
+    except Exception as exc:
+        results["read_file_error"] = f"{type(exc).__name__}: {exc}"
+        print("TOOL read_file: FAILED")
+        print(results["read_file_error"])
+
+    print("TOOL_SUMMARY: " + json.dumps({
+        "git_status_executed": "git_status" in results,
+        "read_file_executed": "read_file" in results,
+        "files_changed_by_this_task": False,
+    }, ensure_ascii=False))
+    return True
+
+    if _run_readonly_tool_task(task):
+        return
+
     # Always collect real local evidence before asking the model to summarize.
     # This prevents a fluent but unsupported status report when tool calling is skipped.
     evidence: dict[str, Any] = {"project_root": str(ROOT)}
