@@ -1,0 +1,19 @@
+{
+  "command_id": "bridge_fresh_receipt_20261009_1330",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:57:57.317029+00:00",
+  "finished_at": "2026-10-09T09:57:57.562426+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_FRESH_RECEIPT_OK')"
+  ],
+  "stdout": "BRIDGE_FRESH_RECEIPT_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00000-bridge_fresh_receipt_20261009_1330.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "81d30e54195bf53c979077c6ad1d10cf3cf2716e378ae046c9667b9d65845d2a"
+}
