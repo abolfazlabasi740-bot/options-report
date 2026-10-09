@@ -1,0 +1,10 @@
+{
+  "command_id": "termux_bridge_watchdog_install_20261009",
+  "argv": [
+    "bash",
+    "scripts/install_termux_bridge_watchdog.sh"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120,
+  "requested_at": "2026-10-09T06:25:00Z"
+}
