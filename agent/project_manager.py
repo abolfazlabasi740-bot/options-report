@@ -15,9 +15,10 @@ PROVIDER = os.environ.get("OPTIMUSAI_PROVIDER", "local").strip().lower()
 MODEL = os.environ.get("OPTIMUSAI_LLM_MODEL", "local").strip()
 API_BASE = os.environ.get("OPTIMUSAI_API_BASE", "http://127.0.0.1:8080/v1").strip().rstrip("/")
 API_KEY = os.environ.get("OPTIMUSAI_API_KEY", "local").strip()
-MAX_OUTPUT = int(os.environ.get("OPTIMUSAI_MAX_OUTPUT_TOKENS", "6000"))
-MAX_TURNS = int(os.environ.get("OPTIMUSAI_MAX_TURNS", "24"))
-HTTP_TIMEOUT = int(os.environ.get("OPTIMUSAI_HTTP_TIMEOUT", "300"))
+# Keep local mobile inference bounded; callers may explicitly raise these limits.
+MAX_OUTPUT = int(os.environ.get("OPTIMUSAI_MAX_OUTPUT_TOKENS", "1200"))
+MAX_TURNS = int(os.environ.get("OPTIMUSAI_MAX_TURNS", "8"))
+HTTP_TIMEOUT = int(os.environ.get("OPTIMUSAI_HTTP_TIMEOUT", "120"))
 
 SYSTEM = """You are the senior execution agent inside the OptimusAI_V41_LIVE project.
 ChatGPT is the project manager. You execute the assigned task locally and return evidence.
@@ -283,7 +284,18 @@ def main() -> None:
     ]
 
     for _ in range(MAX_TURNS):
-        data = _chat(messages)
+        try:
+            data = _chat(messages)
+        except requests.exceptions.Timeout:
+            print(
+                "AGENT_TIMEOUT: Local LLM did not finish within "
+                f"{HTTP_TIMEOUT} seconds. No task result is being claimed. "
+                "Reduce task scope or inspect local LLM performance."
+            )
+            return
+        except requests.exceptions.RequestException as exc:
+            print(f"AGENT_API_ERROR: {type(exc).__name__}: {exc}")
+            return
         choice = data["choices"][0]
         message = choice["message"]
         tool_calls = message.get("tool_calls") or []
