@@ -1,0 +1,10 @@
+{
+  "command_id": "actual_read_file_tool_test_20261009_1319",
+  "argv": [
+    "python",
+    "-c",
+    "import os\nimport runpy\nimport io\nimport contextlib\nimport pathlib\nroot = pathlib.Path.home() / \"OptimusAI_V41_LIVE\"\nos.chdir(root)\nos.environ.update({\"OPTIMUSAI_ROOT\": str(root), \"OPTIMUSAI_PROVIDER\": \"local\", \"OPTIMUSAI_LLM_MODEL\": \"Qwen/Qwen3-4B-GGUF:Q4_K_M\", \"OPTIMUSAI_API_BASE\": \"http://127.0.0.1:8080/v1\", \"OPTIMUSAI_MAX_OUTPUT_TOKENS\": \"512\", \"OPTIMUSAI_MAX_TURNS\": \"3\", \"OPTIMUSAI_HTTP_TIMEOUT\": \"70\", \"OPTIMUSAI_TASK\": \"با استنتاج واقعی مدل محلی ابزار read_file را فراخوانی کن و فایل docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md را بخوان. بر اساس محتوای واقعی برگشتی از ابزار، هدف مدل، شش معیار و وزن دقیق آنها و قاعده داده مفقود را خلاصه کن. صرف ادعای اجرای ابزار پذیرفته نیست. هیچ فایلی را تغییر نده. Actual inference and an actual tool call are required.\"})\nbuf = io.StringIO()\ntry:\n    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):\n        runpy.run_path(str(root / \"agent\" / \"project_manager.py\"), run_name=\"__main__\")\nexcept Exception as exc:\n    buf.write(\"HARNESS_EXCEPTION \" + type(exc).__name__ + \" \" + str(exc))\nlog = root / \"output\" / \"local_llm\" / \"actual_tool_call_test.log\"\nlog.parent.mkdir(parents=True, exist_ok=True)\nlog.write_text(buf.getvalue(), encoding=\"utf-8\")\nprint(\"TEST_LOG_PATH \" + str(log))\nprint(\"ACTUAL_TOOL_CALL_LOG\")\nprint(log.read_text(encoding=\"utf-8\"))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120
+}
