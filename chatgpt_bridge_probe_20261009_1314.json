@@ -1,9 +1,0 @@
-{
-  "command_id": "chatgpt_bridge_probe_20261009_1314",
-  "argv": [
-    "python",
-    "-c",
-    "import os,sys,json; print(json.dumps({'probe':'OPTIMUSAI_BRIDGE_OK','python':sys.version.split()[0],'cwd':os.getcwd()},ensure_ascii=False))"
-  ],
-  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
-}
