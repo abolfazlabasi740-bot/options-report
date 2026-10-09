@@ -1,0 +1,16 @@
+{
+  "command_id": "llm_recovery_small_model_20261009_1318",
+  "status": "INVALID_COMMAND",
+  "exit_code": 65,
+  "started_at": "2026-10-09T09:56:25.572013+00:00",
+  "finished_at": "2026-10-09T09:56:25.572067+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [],
+  "stdout": "",
+  "stderr": "ValueError: shell operators are not allowed",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/llm_recovery_small_model_20261009_1318.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "raw_queue_sha256": "749d6f665d1f9627755fdcfe0b736a511db5324e999ea0aec206c7008b377d03",
+  "result_sha256": "e02a15b1dc1a32cb29681fd6b23b237ab78a2db1af9e9cee8d614fc7e1474044"
+}
