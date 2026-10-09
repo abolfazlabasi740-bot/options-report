@@ -1,0 +1,10 @@
+{
+  "command_id": "llm_recovery_launch_20261009_0946",
+  "argv": [
+    "python",
+    "scripts/llm_recovery_async.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120,
+  "requested_at": "2026-10-09T06:13:22.326Z"
+}
