@@ -58,9 +58,15 @@ def worker() -> int:
             "OPTIMUSAI_MAX_OUTPUT_TOKENS": "512",
             "OPTIMUSAI_MAX_TURNS": "5",
         })
-        try:
-            if not api_ready():
-                write_status("BOOTSTRAPPING_SERVER", log=str(LOG))
+
+        # Keep recovering until the local server is actually reachable.
+        setup_attempt = 0
+        while not api_ready():
+            setup_attempt += 1
+            write_status("BOOTSTRAPPING_SERVER_RETRY", attempt=setup_attempt, log=str(LOG))
+            log.write(f"\n[{now()}] SETUP_ATTEMPT={setup_attempt}\n")
+            log.flush()
+            try:
                 setup = subprocess.run(
                     ["bash", "scripts/setup_local_llm.sh"],
                     cwd=str(ROOT), env=env, stdout=log, stderr=subprocess.STDOUT,
@@ -69,68 +75,91 @@ def worker() -> int:
                 log.write(f"\n[{now()}] SETUP_EXIT={setup.returncode}\n")
                 log.flush()
                 if setup.returncode != 0:
-                    write_status("SETUP_FAILED", setup_exit=setup.returncode, log=str(LOG))
-                    return setup.returncode
+                    write_status("SETUP_RETRY_WAIT", attempt=setup_attempt, setup_exit=setup.returncode, log=str(LOG))
+            except Exception as exc:
+                log.write(f"\n[{now()}] SETUP_EXCEPTION={type(exc).__name__}: {exc}\n")
+                log.flush()
+                write_status("SETUP_RETRY_WAIT", attempt=setup_attempt, error=f"{type(exc).__name__}: {exc}", log=str(LOG))
             if not api_ready():
-                write_status("API_UNREACHABLE_AFTER_SETUP", log=str(LOG))
-                return 20
+                time.sleep(min(60, 10 + setup_attempt * 5))
 
-            write_status("SERVER_READY_TESTING_INFERENCE", log=str(LOG))
-            import requests
-            response = requests.post(
-                API + "/chat/completions",
-                headers={"Authorization": "Bearer local", "Content-Type": "application/json"},
-                json={
-                    "model": MODEL,
-                    "messages": [
-                        {"role": "system", "content": "You are a local inference smoke test. Reply with exactly LLM_READY."},
-                        {"role": "user", "content": "Reply with exactly LLM_READY."}
-                    ],
-                    "temperature": 0,
-                    "max_tokens": 16
-                },
-                timeout=300
-            )
-            response.raise_for_status()
-            inference = response.json()
-            answer = str(inference.get("choices", [{}])[0].get("message", {}).get("content", "")).strip()
-            log.write(f"\n[{now()}] INFERENCE_HTTP={response.status_code} ANSWER={answer[:500]!r}\n")
-            log.flush()
-            if not answer:
-                write_status("INFERENCE_EMPTY", inference_response=inference, log=str(LOG))
-                return 21
-            write_status("INFERENCE_OK_TESTING_AGENT_TOOLS", inference_answer=answer, log=str(LOG))
+        write_status("SERVER_READY_RETRYING_INFERENCE", log=str(LOG))
+        import requests
+        inference_attempt = 0
+        answer = ""
+        while not answer:
+            inference_attempt += 1
+            try:
+                response = requests.post(
+                    API + "/chat/completions",
+                    headers={"Authorization": "Bearer local", "Content-Type": "application/json"},
+                    json={
+                        "model": MODEL,
+                        "messages": [
+                            {"role": "system", "content": "You are a local inference smoke test. Reply with exactly LLM_READY."},
+                            {"role": "user", "content": "Reply with exactly LLM_READY."}
+                        ],
+                        "temperature": 0,
+                        "max_tokens": 16
+                    },
+                    timeout=300
+                )
+                response.raise_for_status()
+                inference = response.json()
+                answer = str(inference.get("choices", [{}])[0].get("message", {}).get("content", "")).strip()
+                log.write(f"\n[{now()}] INFERENCE_ATTEMPT={inference_attempt} HTTP={response.status_code} ANSWER={answer[:500]!r}\n")
+                log.flush()
+                if not answer:
+                    raise RuntimeError("inference returned an empty message")
+                write_status("INFERENCE_OK_TESTING_AGENT_TOOLS", attempt=inference_attempt, inference_answer=answer, log=str(LOG))
+            except Exception as exc:
+                answer = ""
+                log.write(f"\n[{now()}] INFERENCE_RETRY={inference_attempt} ERROR={type(exc).__name__}: {exc}\n")
+                log.flush()
+                write_status("INFERENCE_RETRY_WAIT", attempt=inference_attempt, error=f"{type(exc).__name__}: {exc}", log=str(LOG))
+                time.sleep(min(60, 5 + inference_attempt * 5))
 
-            task = (
-                "Use the git_status tool to inspect the local repository, then use read_file "
-                "to read lines 1 through 20 of docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md. "
-                "Do not write, edit, commit, or delete any file. After both real tool calls, "
-                "report the tool results and any errors concisely."
-            )
-            agent = subprocess.run(
-                ["bash", "scripts/run_local_agent.sh"],
-                cwd=str(ROOT), env={**env, "OPTIMUSAI_TASK": task},
-                stdout=log, stderr=subprocess.STDOUT, text=True, check=False,
-                timeout=1200
-            )
-            log.write(f"\n[{now()}] AGENT_TOOL_TEST_EXIT={agent.returncode}\n")
+        task = (
+            "Use the git_status tool to inspect the local repository, then use read_file "
+            "to read lines 1 through 20 of docs/BASE_SHARE_OPPORTUNITY_SCORING_MODEL_V1.md. "
+            "Do not write, edit, commit, or delete any file. After both real tool calls, "
+            "report the tool results and any errors concisely."
+        )
+        agent_attempt = 0
+        while True:
+            agent_attempt += 1
+            write_status("RUNNING_REAL_AGENT_TOOL_CALL_TEST", attempt=agent_attempt, inference_answer=answer, log=str(LOG))
+            log.write(f"\n[{now()}] AGENT_TOOL_TEST_ATTEMPT={agent_attempt}\n")
             log.flush()
-            tail = LOG.read_text(encoding="utf-8", errors="replace")[-12000:]
+            try:
+                agent = subprocess.run(
+                    ["bash", "scripts/run_local_agent.sh"],
+                    cwd=str(ROOT), env={**env, "OPTIMUSAI_TASK": task},
+                    stdout=log, stderr=subprocess.STDOUT, text=True, check=False,
+                    timeout=1200
+                )
+                log.write(f"\n[{now()}] AGENT_TOOL_TEST_EXIT={agent.returncode}\n")
+                log.flush()
+            except subprocess.TimeoutExpired as exc:
+                log.write(f"\n[{now()}] AGENT_TOOL_TEST_TIMEOUT={exc}\n")
+                log.flush()
+                write_status("AGENT_TOOL_TEST_RETRY_WAIT", attempt=agent_attempt, error="agent test exceeded 1200 seconds", log=str(LOG))
+                time.sleep(min(60, 10 + agent_attempt * 5))
+                continue
+            except Exception as exc:
+                log.write(f"\n[{now()}] AGENT_TOOL_TEST_EXCEPTION={type(exc).__name__}: {exc}\n")
+                log.flush()
+                write_status("AGENT_TOOL_TEST_RETRY_WAIT", attempt=agent_attempt, error=f"{type(exc).__name__}: {exc}", log=str(LOG))
+                time.sleep(min(60, 10 + agent_attempt * 5))
+                continue
+
+            tail = LOG.read_text(encoding="utf-8", errors="replace")[-16000:]
             if agent.returncode == 0 and "LLM_TOOL_CALL=git_status" in tail and "LLM_TOOL_CALL=read_file" in tail and tail.count("LLM_TOOL_RESULT=") >= 2:
-                write_status("LLM_AND_AGENT_TOOL_CALLS_VERIFIED", agent_exit=agent.returncode, inference_answer=answer, log=str(LOG), evidence_tail=tail[-6000:])
+                write_status("LLM_AND_AGENT_TOOL_CALLS_VERIFIED", agent_exit=agent.returncode, attempt=agent_attempt, inference_answer=answer, log=str(LOG), evidence_tail=tail[-8000:])
                 return 0
-            write_status("AGENT_TOOL_TEST_FAILED", agent_exit=agent.returncode, inference_answer=answer, log=str(LOG), evidence_tail=tail[-6000:])
-            return 22
-        except subprocess.TimeoutExpired as exc:
-            log.write(f"\n[{now()}] WORKER_TIMEOUT: {exc}\n")
-            log.flush()
-            write_status("WORKER_TIMEOUT", error=str(exc), log=str(LOG))
-            return 124
-        except Exception as exc:
-            log.write(f"\n[{now()}] WORKER_ERROR={type(exc).__name__}: {exc}\n")
-            log.flush()
-            write_status("WORKER_ERROR", error=f"{type(exc).__name__}: {exc}", log=str(LOG))
-            return 1
+
+            write_status("AGENT_TOOL_TEST_RETRY_WAIT", agent_exit=agent.returncode, attempt=agent_attempt, inference_answer=answer, log=str(LOG), evidence_tail=tail[-8000:])
+            time.sleep(min(60, 10 + agent_attempt * 5))
 
 
 def main() -> int:
