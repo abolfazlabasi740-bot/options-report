@@ -1,7 +1,7 @@
-# Base Share Opportunity Scoring Model V2
+# Base Share Opportunity Scoring Model V2.1
 
 ## Status
-- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.0
+- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.1.1
 - Source of truth: TSETMC only
 - Purpose: rank evidence for an emerging/continuing move while separately penalizing poor entry quality
 - Output is descriptive ranking only; it does not create a buy/sell instruction or enable automated trading.
@@ -34,6 +34,13 @@ Engine: `base_share_opportunity_engine_v2.py`
 Files: `output/base_share/latest_opportunity_v2_report.txt` and `output/base_share/latest_opportunity_v2_report.json`
 
 ## Release notes
-- V2 adds separate component scores, evidence coverage, warning flags and missing-family disclosure.
-- V2 prevents overbought RSI from automatically receiving a higher technical score.
-- V2 keeps BestLimits quarantined and prevents after-hours live-board refresh.
+- V2.1 adds separate component scores, evidence coverage, warning flags and missing-family disclosure.
+- V2.1 prevents overbought RSI from automatically receiving a higher technical score.
+- V2.1 keeps BestLimits quarantined and prevents after-hours live-board refresh.
+
+
+## V2.1 changes after the first live report
+- Raises Early-Move from 15% to 20% and Entry Quality from 10% to 15%; reduces generic trend weight to 15% and raw momentum weight to 10%.
+- Penalizes already mature moves in the Early-Move component, especially strong 5- and 20-session returns combined with RSI above 80 or weak volume confirmation.
+- Class A requires RSI no higher than 68, entry-quality score at least 70, volume/value score at least 40, and early-move score at least 50, in addition to total score threshold.
+- Adds warnings when trend score is high but entry timing is poor, or when the move appears mature rather than early.
