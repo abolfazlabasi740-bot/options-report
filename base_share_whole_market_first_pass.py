@@ -151,8 +151,8 @@ def main():
             "subsector_code": norm(ident.get("subsector_code")),
             "subsector_name": norm(ident.get("subsector_name")),
             "market_title": norm(ident.get("cgrValCotTitle")),
-            "classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
             **scored,
+            "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
             "history_status": ctx.get("status"),
             "history_count": ctx.get("history_count"),
             "latest_market_date": ctx.get("latest_market_date"),
@@ -233,7 +233,7 @@ def main():
     print("TEXT_REPORT =", txt_path, flush=True)
     print("JSON_REPORT =", json_path, flush=True)
     print("TOP_15 =", json.dumps([
-        {"rank": i + 1, "symbol": x["symbol"], "score": x.get("final_score"), "class": x.get("classification"),
+        {"rank": i + 1, "symbol": x["symbol"], "score": x.get("final_score"), "class": x.get("classification"), "instrument_classification": x.get("instrument_classification"),
          "coverage": x.get("evidence_coverage_pct"), "date": x.get("latest_market_date"), "warnings": x.get("warnings")}
         for i, x in enumerate(ranked[:15])
     ], ensure_ascii=False), flush=True)
