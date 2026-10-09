@@ -188,7 +188,10 @@ def publish_result(result):
 
 
 def acknowledge_queue(path):
-    rel = path.relative_to(QUEUE_REPO).as_posix()
+    # Queue JSON files live at the root of the bridge-commands branch.
+    # path.relative_to(QUEUE_REPO) incorrectly prepends "bridge-commands/"
+    # and causes every acknowledgement to 404, replaying old commands forever.
+    rel = path.name
     last = None
     for attempt in range(1, 4):
         try:
