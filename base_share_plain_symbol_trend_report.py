@@ -15,6 +15,8 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from persian_date_utils import gregorian_to_jalali
+
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "output" / "base_share"
 SOURCE = OUT / "latest_whole_market_opportunity_report.json"
@@ -52,6 +54,7 @@ def main():
         "source_report": str(SOURCE),
         "source_report_sha256": source.get("report_sha256"),
         "latest_history_date": source.get("latest_history_date"),
+        "latest_history_date_jalali": gregorian_to_jalali(source.get("latest_history_date")),
         "source_row_count": len(all_rows),
         "eligible_plain_symbol_count": len(eligible),
         "filter": "SYMBOL_MUST_NOT_END_WITH_ASCII_PERSIAN_OR_ARABIC_INDIC_DIGIT",
@@ -72,7 +75,8 @@ def main():
         "گزارش اولیه روند سهام — فقط نمادهای بدون عدد در انتهای نماد",
         "=" * 92,
         "منبع: TSETMC | مبنا: گزارش تاریخی موجود، بدون دریافت مجدد تاریخچه",
-        "آخرین تاریخ داده تاریخی: " + str(source.get("latest_history_date") or "اطلاعات موجود نیست"),
+        "آخرین تاریخ داده تاریخی (میلادی): " + str(source.get("latest_history_date") or "اطلاعات موجود نیست"),
+        "آخرین تاریخ داده تاریخی (شمسیِ محاسبه‌شده): " + str(gregorian_to_jalali(source.get("latest_history_date")) or "اطلاعات موجود نیست"),
         f"تعداد ردیف‌های گزارش مبنا: {len(all_rows)} | نمادهای واجد فیلتر: {len(eligible)}",
         "فیلتر: نمادهایی که آخرین نویسه آن‌ها عدد انگلیسی، فارسی یا عربی باشد حذف شده‌اند.",
         "امتیازها همان امتیازهای گزارش مبنا هستند؛ هیچ داده‌ای جایگزین یا ساخته نشده است.",
@@ -98,7 +102,8 @@ def main():
     print("STATUS = PLAIN_SYMBOL_TREND_REPORT_COMPLETE")
     print("SOURCE_REPORT_ROWS =", len(all_rows))
     print("ELIGIBLE_PLAIN_SYMBOLS =", len(eligible))
-    print("LATEST_HISTORY_DATE =", source.get("latest_history_date") or "UNAVAILABLE")
+    print("LATEST_HISTORY_DATE_GREGORIAN =", source.get("latest_history_date") or "UNAVAILABLE")
+    print("LATEST_HISTORY_DATE_JALALI =", gregorian_to_jalali(source.get("latest_history_date")) or "UNAVAILABLE")
     print("TEXT_REPORT =", txt_path)
     print("JSON_REPORT =", json_path)
     print("TOP_15 =")
