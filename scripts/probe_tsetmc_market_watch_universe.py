@@ -41,6 +41,27 @@ def main():
         if isinstance(raw, dict):
             raw_fields.update(raw.keys())
 
+    # Enrich a tiny, deterministic sample through the explicit identity endpoint.
+    # This is diagnostic only; it does not classify the entire universe or score it.
+    identity_samples = []
+    adapter = TSETMCAdapter(timeout=3.0, retries=0)
+    for row in rows[:5]:
+        instrument_id = row.get("instrument_id")
+        item = {"market_watch_record": row, "identity_status": "NOT_ATTEMPTED"}
+        if instrument_id:
+            try:
+                identity = adapter.instrument_identity(str(instrument_id))
+                item["identity_status"] = "SUCCESS"
+                item["identity_endpoint"] = identity.get("endpoint")
+                item["identity_payload"] = identity.get("data")
+                payload = identity.get("data")
+                item["identity_payload_keys"] = sorted(payload.keys()) if isinstance(payload, dict) else None
+            except Exception as exc:
+                item["identity_status"] = "FAILED"
+                item["identity_error_type"] = type(exc).__name__
+                item["identity_error"] = str(exc)[:300]
+        identity_samples.append(item)
+
     evidence = {
         "generated_at": datetime.now(TEHRAN).isoformat(),
         "source_of_truth": "TSETMC",
@@ -56,6 +77,8 @@ def main():
         "paper_type_distribution": counter_for(rows, "paper_type"),
         "market_status_distribution": counter_for(rows, "market_status"),
         "sample_records": rows[:12],
+        "identity_enrichment_sample_count": len(identity_samples),
+        "identity_enrichment_samples": identity_samples,
         "records": rows,
         "classification_status": "NOT_CLASSIFIED_UNTIL_SOURCE_FIELDS_ARE_VERIFIED",
     }
@@ -79,6 +102,7 @@ def main():
         "توزیع paper_type: " + json.dumps(evidence["paper_type_distribution"], ensure_ascii=False),
         "توزیع وضعیت بازار: " + json.dumps(evidence["market_status_distribution"], ensure_ascii=False),
         "فیلدهای مشاهده‌شده: " + ", ".join(evidence["field_presence_count"]),
+        "نمونه‌های هویت‌سنجی: " + json.dumps([{"id": x.get("market_watch_record", {}).get("instrument_id"), "status": x.get("identity_status"), "keys": x.get("identity_payload_keys"), "error": x.get("identity_error_type")} for x in identity_samples], ensure_ascii=False),
         "وضعیت طبقه‌بندی: هنوز تأیید نشده؛ در امتیازدهی استفاده نمی‌شود.",
         "فایل شواهد JSON: " + str(json_path),
     ]
