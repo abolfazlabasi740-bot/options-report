@@ -186,7 +186,8 @@ def _run_readonly_tool_task(task: str) -> bool:
     # deterministic read-only shortcut, even when the task also forbids edits.
     if any(token in normalized for token in (
         "واقعاً استنتاج کن", "استنتاج واقعی", "llm inference",
-        "actual inference", "test real inference",
+        "actual inference", "test real inference", "آزمون واقعی llm",
+        "استنتاج خودت", "با استنتاج خودت",
     )):
         return False
 
