@@ -1,0 +1,18 @@
+{
+  "command_id": "llm_recovery_launch_20261009_0946",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:56:08.294443+00:00",
+  "finished_at": "2026-10-09T09:56:08.560979+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "scripts/llm_recovery_async.py"
+  ],
+  "stdout": "LLM_RECOVERY_STATE=WORKER_LAUNCHING\nLLM_RECOVERY_STARTED pid=24532\nLLM_RECOVERY_LOG=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/local_llm/recovery_worker.log\nLLM_RECOVERY_STATUS=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/local_llm/recovery_status.json\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/llm_recovery_launch_20261009_0946.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "3335c943d7dfa9c80bceeecbbc5b9a6852affe9668514457c6fa68320d496c2d"
+}
