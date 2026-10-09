@@ -116,11 +116,8 @@ def worker() -> int:
             log.write(f"\n[{now()}] AGENT_TOOL_TEST_EXIT={agent.returncode}\n")
             log.flush()
             tail = LOG.read_text(encoding="utf-8", errors="replace")[-12000:]
-            if agent.returncode == 0 and "TOOL " in tail and "tool results" in tail.lower():
+            if agent.returncode == 0 and "LLM_TOOL_CALL=git_status" in tail and "LLM_TOOL_CALL=read_file" in tail and tail.count("LLM_TOOL_RESULT=") >= 2:
                 write_status("LLM_AND_AGENT_TOOL_CALLS_VERIFIED", agent_exit=agent.returncode, inference_answer=answer, log=str(LOG), evidence_tail=tail[-6000:])
-                return 0
-            if agent.returncode == 0 and ("TOOL read_file" in tail or "TOOL git_status" in tail):
-                write_status("AGENT_RETURNED_WITH_TOOL_EVIDENCE", agent_exit=agent.returncode, inference_answer=answer, log=str(LOG), evidence_tail=tail[-6000:])
                 return 0
             write_status("AGENT_TOOL_TEST_FAILED", agent_exit=agent.returncode, inference_answer=answer, log=str(LOG), evidence_tail=tail[-6000:])
             return 22
