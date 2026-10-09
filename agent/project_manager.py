@@ -359,6 +359,7 @@ def main() -> None:
                     "content": json.dumps({"ok": False, "error": f"invalid tool arguments: {exc}"}, ensure_ascii=False),
                 })
                 continue
+            print(f"LLM_TOOL_CALL={name}", flush=True)
             if name not in FN:
                 payload = {"ok": False, "error": f"unknown tool: {name}"}
             else:
@@ -366,6 +367,14 @@ def main() -> None:
                     payload = {"ok": True, "result": FN[name](**args)}
                 except Exception as exc:
                     payload = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+            print(
+                "LLM_TOOL_RESULT=" + json.dumps({
+                    "name": name,
+                    "ok": payload.get("ok", False),
+                    "error": payload.get("error"),
+                }, ensure_ascii=False),
+                flush=True,
+            )
 
             messages.append({
                 "role": "tool",
