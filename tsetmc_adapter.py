@@ -403,6 +403,60 @@ class TSETMCAdapter:
             "retrieved_at": successful[-1].get("retrieved_at") if successful else None,
         }
 
+    def market_watch_universe_raw(self, *, with_best_limits: bool = False) -> dict[str, Any]:
+        """Fetch the broad TSETMC market-watch payload for universe discovery.
+
+        This deliberately returns raw TSETMC records without classifying
+        ordinary shares, funds, bonds, or derivatives. Classification must be
+        based on verified source fields, not symbol-name heuristics.
+        """
+        paper_types = "&".join(f"paperTypes%5B{i}%5D={i + 1}" for i in range(9))
+        path = (
+            "ClosingPrice/GetMarketWatch?market=0&industrialGroup="
+            f"&{paper_types}"
+            f"&withBestLimits={'true' if with_best_limits else 'false'}"
+            "&hEven=0&RefID=0"
+        )
+        response = self._request(path, timeout=max(self.timeout, 5.0), retries=1)
+        payload = response.payload
+        if not isinstance(payload, dict):
+            raise TSETMCError("unexpected TSETMC market-watch payload type")
+        records = payload.get("marketwatch")
+        if not isinstance(records, list):
+            raise TSETMCError("TSETMC market-watch response has no list-valued 'marketwatch' field")
+        normalized = []
+        seen = set()
+        for row in records:
+            if not isinstance(row, dict):
+                continue
+            instrument_id = row.get("insCode") or row.get("ins_code") or row.get("insCode")
+            if instrument_id not in (None, ""):
+                instrument_id = str(instrument_id)
+                if instrument_id in seen:
+                    continue
+                seen.add(instrument_id)
+            normalized.append({
+                "instrument_id": instrument_id,
+                "symbol": row.get("lVal18AFC") or row.get("l18"),
+                "name": row.get("lVal30") or row.get("l30"),
+                "flow": row.get("flow"),
+                "paper_type": row.get("paperType") or row.get("paper_type"),
+                "market_status": row.get("cs"),
+                "source_market_date": row.get("dEven") or row.get("date"),
+                "source_market_time": row.get("hEven") or row.get("time"),
+                "raw": row,
+            })
+        return {
+            "source": "TSETMC",
+            "endpoint": response.endpoint,
+            "retrieved_at": response.retrieved_at,
+            "snapshot_sha256": response.sha256,
+            "raw_record_count": len(records),
+            "record_count": len(normalized),
+            "records": normalized,
+            "raw_payload_keys": sorted(payload.keys()),
+        }
+
     def market_overview(self, flow: int = 0) -> dict[str, Any]:
         if int(flow) < 0:
             raise ValueError("flow must be non-negative")
