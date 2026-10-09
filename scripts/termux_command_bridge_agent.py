@@ -174,7 +174,7 @@ def publish_result(result):
         try:
             gh_put_file(rel, RESULT_BRANCH, content,
                         f"bridge: result {result['command_id']}")
-            verify = gh_get_file(f"{RESULT_BRANCH}/{rel}", RESULT_BRANCH)
+            verify = gh_get_file(rel, RESULT_BRANCH)
             if verify.get("sha"):
                 log(f"BRIDGE_RESULT_PUBLISHED={result['command_id']}")
                 return
