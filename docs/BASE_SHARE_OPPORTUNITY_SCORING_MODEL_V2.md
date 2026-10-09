@@ -1,7 +1,7 @@
 # Base Share Opportunity Scoring Model V2.1
 
 ## Status
-- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.1.1
+- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.1
 - Source of truth: TSETMC only
 - Purpose: rank evidence for an emerging/continuing move while separately penalizing poor entry quality
 - Output is descriptive ranking only; it does not create a buy/sell instruction or enable automated trading.
