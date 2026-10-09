@@ -1,0 +1,10 @@
+{
+  "command_id": "00000-bridge_upgrade_20261009_0945",
+  "argv": [
+    "python",
+    "scripts/bridge_upgrade.py"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "timeout_seconds": 120,
+  "requested_at": "2026-10-09T06:13:16.156Z"
+}
