@@ -1,0 +1,19 @@
+{
+  "command_id": "chatgpt_remote_bridge_check_20261009_01",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:56:01.223620+00:00",
+  "finished_at": "2026-10-09T09:56:01.337776+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "import os\nprint('REMOTE_EXECUTION_OK')\nprint(os.getcwd())"
+  ],
+  "stdout": "REMOTE_EXECUTION_OK\n/data/data/com.termux/files/home/OptimusAI_V41_LIVE\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/chatgpt_remote_bridge_check_20261009_01.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "1b08e34d82fcf338d04613facf97071f8f57a815eac418c6cf6f3e1b0a195639"
+}
