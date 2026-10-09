@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Bale cards for ranked option-enabled underlying shares. TSETMC-only."""
+"""Compact Bale cards for ranked option-enabled underlying shares. TSETMC-only."""
 from __future__ import annotations
 
 import json
@@ -23,30 +23,44 @@ def _load(path):
 
 def _fmt(value, suffix=""):
     if value is None or value == "":
-        return "اطلاعات موجود نیست"
+        return "نامشخص"
     if isinstance(value, (int, float)):
-        return f"{value:.2f}{suffix}"
+        return f"{value:.1f}{suffix}"
     return str(value)
 
 
-def _score_reason(row):
-    parts = row.get("components") or {}
-    labels = (
-        ("trend", "روند"),
-        ("momentum", "مومنتوم"),
-        ("technical", "تکنیکال"),
-        ("volume_value", "حجم و ارزش"),
-        ("early_move", "شروع حرکت"),
-        ("board", "تابلو"),
-        ("entry_quality", "کیفیت نقطه ورود"),
-    )
-    out = []
-    for key, label in labels:
-        item = parts.get(key) or {}
-        score = item.get("score")
-        if score is not None:
-            out.append(f"{label} {_fmt(score)}/100")
-    return " | ".join(out) if out else "جزئیات اجزای امتیاز در گزارش موجود نیست"
+def _component_score(components, *keys):
+    """Return a score only when the source report explicitly provides one."""
+    for key in keys:
+        item = components.get(key)
+        if isinstance(item, dict):
+            value = item.get("score")
+            if isinstance(value, (int, float)):
+                return float(value)
+        elif isinstance(item, (int, float)):
+            return float(item)
+    return None
+
+
+def _analysis(row, scores):
+    available = [(name, value) for name, value in scores.items() if value is not None]
+    if not available:
+        return "امتیازهای جزئی کافی نیست؛ نتیجه‌گیری معتبر ممکن نیست."
+    strongest = max(available, key=lambda item: item[1])
+    weakest = min(available, key=lambda item: item[1])
+    trend = str(row.get("trend_state") or "").strip()
+    warnings = row.get("warnings") or []
+    notes = [f"قوی‌ترین بخش: {strongest[0]} ({strongest[1]:.1f})"]
+    if len(available) > 1:
+        notes.append(f"ضعیف‌ترین بخش: {weakest[0]} ({weakest[1]:.1f})")
+    if trend:
+        notes.append(f"وضعیت روند: {trend}")
+    if warnings:
+        notes.append("ریسک/هشدار: " + "، ".join(str(x) for x in warnings[:2]))
+    else:
+        notes.append("هشدار ثبت‌شده‌ای در گزارش نیست")
+    notes.append("این جمع‌بندی توصیفی است و به‌تنهایی سیگنال خرید نیست.")
+    return "؛ ".join(notes)
 
 
 def _build_rows():
@@ -79,42 +93,38 @@ def render_page(page=0):
     base, snapshot, rows = _build_rows()
     total_pages = max(1, (len(rows) + PAGE_SIZE - 1) // PAGE_SIZE)
     page = max(0, min(int(page), total_pages - 1))
-    data_mode = snapshot.get("data_mode") or "اطلاعات موجود نیست"
-    generated = snapshot.get("generated_at") or "اطلاعات موجود نیست"
+    data_mode = snapshot.get("data_mode") or "نامشخص"
+    generated = snapshot.get("generated_at") or "نامشخص"
     lines = [
-        "📌 رتبه‌بندی سهم‌های پایه دارای آپشن",
-        "مبنای ترتیب: امتیاز اصلی مدل سهم پایه؛ امتیازها بازنویسی نشده‌اند.",
-        f"منبع: TSETMC | حالت داده: {data_mode}",
-        f"زمان Snapshot: {generated}",
-        f"تعداد سهم پایه دارای آپشن و رتبه‌بندی‌شده: {len(rows)}",
-        f"صفحه {page + 1}/{total_pages} | نمایش {PAGE_SIZE} سهم در هر صفحه",
+        "📌 سهم‌های پایه دارای آپشن",
+        f"مرتب‌سازی: امتیاز اصلی مدل سهم پایه | تعداد: {len(rows)}",
+        f"داده: {data_mode} | زمان Snapshot: {generated}",
+        f"صفحه {page + 1}/{total_pages}",
         "━━━━━━━━━━━━━━━━━━━━",
     ]
     subset = rows[page * PAGE_SIZE:(page + 1) * PAGE_SIZE]
     for idx, row in enumerate(subset, page * PAGE_SIZE + 1):
-        symbol = str(row.get("symbol") or "اطلاعات موجود نیست")
-        score = _fmt(row.get("final_score"))
-        classification = str(row.get("classification") or "اطلاعات موجود نیست")
-        coverage = _fmt(row.get("evidence_coverage_pct"), "%")
-        r5 = _fmt(row.get("return_5_sessions_pct"), "%")
-        r20 = _fmt(row.get("return_20_sessions_pct"), "%")
-        rsi = _fmt(row.get("rsi_14"))
-        trend = str(row.get("trend_state") or "اطلاعات موجود نیست")
-        warnings = "، ".join(str(x) for x in (row.get("warnings") or [])) or "هشدار ثبت نشده"
+        symbol = str(row.get("symbol") or "نامشخص")
+        components = row.get("components") or {}
+        scores = {
+            "تابلوخوانی": _component_score(components, "board"),
+            "پرایس‌اکشن": _component_score(components, "momentum", "early_move"),
+            "تکنیکال": _component_score(components, "technical", "trend"),
+            "کندل‌استیک": _component_score(components, "candlestick", "candle", "candles", "candlestick_pattern"),
+        }
         lines.extend([
-            f"🟦 کارت {idx} | {symbol}",
-            f"امتیاز: {score}/100 | طبقه: {classification} | پوشش شواهد: {coverage}",
-            f"دلایل امتیاز: {_score_reason(row)}",
-            f"روند: {trend} | بازده ۵ جلسه: {r5} | بازده ۲۰ جلسه: {r20} | RSI14: {rsi}",
-            f"محدودیت/هشدار: {warnings}",
+            f"🟦 {idx}. {symbol} | امتیاز کل: {_fmt(row.get('final_score'))}/100",
+            f"۱) تابلوخوانی: {_fmt(scores['تابلوخوانی'])}/100",
+            f"۲) پرایس‌اکشن: {_fmt(scores['پرایس‌اکشن'])}/100",
+            f"۳) تکنیکال: {_fmt(scores['تکنیکال'])}/100",
+            f"۴) کندل‌استیک: {_fmt(scores['کندل‌استیک'])}/100",
+            "تحلیل: " + _analysis(row, scores),
             "━━━━━━━━━━━━━━━━━━━━",
         ])
     if not subset:
         lines.append("سهم پایه دارای آپشن در داده‌های فعلی پیدا نشد.")
-    lines.extend([
-        "رتبه‌بندی توصیفی است؛ سیگنال خرید/فروش نیست.",
-        "تابلو/BestLimits تا عبور از دروازه شواهد در این امتیاز وارد نشده است.",
-    ])
+    lines.append("امتیاز کندل‌استیک فقط در صورت وجود خروجی صریح در گزارش نمایش داده می‌شود؛ داده مفقود حدس زده نمی‌شود.")
+    lines.append("رتبه‌بندی توصیفی است؛ سیگنال خرید/فروش نیست. شواهد BestLimits تا عبور از دروازه مربوطه وارد نشده‌اند.")
     markup = []
     if page > 0:
         markup.append({"text": "◀️ قبلی", "callback_data": f"option_base_cards:{page - 1}"})
