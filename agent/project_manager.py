@@ -181,6 +181,15 @@ def _chat(messages: list[dict[str, Any]]) -> dict[str, Any]:
 def _run_readonly_tool_task(task: str) -> bool:
     """Run explicit, narrowly scoped read-only tool tasks without LLM inference."""
     normalized = " ".join(task.lower().split())
+
+    # An explicit request to test real inference must never be diverted to the
+    # deterministic read-only shortcut, even when the task also forbids edits.
+    if any(token in normalized for token in (
+        "واقعاً استنتاج کن", "استنتاج واقعی", "llm inference",
+        "actual inference", "test real inference",
+    )):
+        return False
+
     if not ("git_status" in normalized and "read_file" in normalized):
         return False
     if not any(token in normalized for token in ("بدون تغییر", "هیچ فایلی", "read-only", "no file")):
