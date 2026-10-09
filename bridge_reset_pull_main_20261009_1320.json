@@ -1,0 +1,21 @@
+{
+  "command_id": "bridge_reset_pull_main_20261009_1320",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:54:52.333386+00:00",
+  "finished_at": "2026-10-09T09:54:53.564644+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ],
+  "stdout": "Already up to date.\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/00000-bridge_reset_pull_main_20261009_1320.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "ee4760b3f42e52fead7f9ed1b1b550547b9aa8c807b01f0f3c1cff74a41fc9be"
+}
