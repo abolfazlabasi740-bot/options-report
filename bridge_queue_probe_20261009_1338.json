@@ -1,0 +1,19 @@
+{
+  "command_id": "bridge_queue_probe_20261009_1338",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T10:03:39.140494+00:00",
+  "finished_at": "2026-10-09T10:03:39.351121+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "python",
+    "-c",
+    "print('BRIDGE_QUEUE_PROBE_OK')"
+  ],
+  "stdout": "BRIDGE_QUEUE_PROBE_OK\n",
+  "stderr": "",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/bridge_queue_probe_20261009_1338.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "7859f32d15c2451540ef30c0d6ca6711e34c2afd4474da68dd50bcafc334ea26"
+}
