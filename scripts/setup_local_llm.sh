@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="${OPTIMUSAI_ROOT:-$HOME/OptimusAI_V41_LIVE}"
 LLAMA_ROOT="${OPTIMUSAI_LLAMA_ROOT:-$HOME/llama.cpp}"
 # Start small to verify local inference and tool-call plumbing on Android.
-MODEL_REF="${OPTIMUSAI_LLM_MODEL_REF:-Qwen/Qwen3-0.6B-GGUF:Q4_K_M}"
+MODEL_REF="${OPTIMUSAI_LLM_MODEL_REF:-Qwen/Qwen3-0.6B-GGUF:Q8_0}"
 PORT="${OPTIMUSAI_LLM_PORT:-8080}"
 CONTEXT="${OPTIMUSAI_CONTEXT:-2048}"
 THREADS="${OPTIMUSAI_THREADS:-4}"
