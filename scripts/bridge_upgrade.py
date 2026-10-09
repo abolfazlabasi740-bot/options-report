@@ -21,8 +21,18 @@ if pull.returncode != 0:
     print(pull.stderr[-4000:])
     raise SystemExit(pull.returncode)
 
+# Terminate the old bridge before acquiring its singleton lock in the new process.
+# A detached delayed starter avoids racing the still-running parent lock.
+starter = (
+    "import subprocess,sys,time; "
+    "time.sleep(3); "
+    "subprocess.Popen([sys.executable, 'scripts/termux_command_bridge_agent.py'], "
+    "cwd=" + repr(str(PROJECT)) + ", stdin=subprocess.DEVNULL, "
+    "stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, "
+    "start_new_session=True, close_fds=True)"
+)
 subprocess.Popen(
-    [sys.executable, str(SCRIPT)],
+    [sys.executable, "-c", starter],
     cwd=str(PROJECT),
     stdin=subprocess.DEVNULL,
     stdout=subprocess.DEVNULL,
@@ -30,7 +40,6 @@ subprocess.Popen(
     start_new_session=True,
     close_fds=True,
 )
-time.sleep(1)
 try:
     os.kill(parent_pid, signal.SIGTERM)
 except ProcessLookupError:
