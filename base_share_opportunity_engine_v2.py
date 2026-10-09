@@ -143,9 +143,8 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
         board_vals.append((clamp(((buy_count / sell_count) - 0.5) / 1.5), 0.75))
     if buy_vol is not None and sell_vol not in (None, 0):
         board_vals.append((clamp(((buy_vol / sell_vol) - 0.5) / 1.5), 0.75))
-    # BestLimits remains quarantined until its evidence gate passes.
-    if imbalance is not None:
-        board_vals.append((clamp((imbalance + 1.0) / 2.0), 0.5))
+    # BestLimits is intentionally excluded: raw capture is not sufficient
+    # to unlock semantic use, and its scoring evidence gate has not passed.
     board = component(board_vals)
 
     # Entry quality penalizes late/extended moves even when the primary trend is strong.
