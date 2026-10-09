@@ -12,7 +12,7 @@ import requests
 
 ROOT = Path(os.environ.get("OPTIMUSAI_ROOT", Path.home() / "OptimusAI_V41_LIVE")).expanduser().resolve()
 PROVIDER = os.environ.get("OPTIMUSAI_PROVIDER", "local").strip().lower()
-MODEL = os.environ.get("OPTIMUSAI_LLM_MODEL", "Qwen/Qwen3-4B-GGUF:Q4_K_M").strip()
+MODEL = os.environ.get("OPTIMUSAI_LLM_MODEL", "Qwen/Qwen3-0.6B-GGUF:Q8_0").strip()
 API_BASE = os.environ.get("OPTIMUSAI_API_BASE", "http://127.0.0.1:8080/v1").strip().rstrip("/")
 API_KEY = os.environ.get("OPTIMUSAI_API_KEY", "local").strip()
 # Keep local mobile inference bounded; callers may explicitly raise these limits.
