@@ -1,0 +1,16 @@
+{
+  "command_id": "chatgpt_bridge_probe_20261009_1314",
+  "status": "INVALID_COMMAND",
+  "exit_code": 65,
+  "started_at": "2026-10-09T09:55:54.237666+00:00",
+  "finished_at": "2026-10-09T09:55:54.237739+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [],
+  "stdout": "",
+  "stderr": "ValueError: shell operators are not allowed",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/chatgpt_bridge_probe_20261009_1314.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "raw_queue_sha256": "0d766b384d1e9a57d8e8e94ef1c7f8a6380f00248e2a8f44093aa51686e5f9ad",
+  "result_sha256": "44c33f770f6fbf546b1a1d35d6e41be860ab70a9cb9570e800f23038352558c9"
+}
