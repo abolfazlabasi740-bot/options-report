@@ -178,11 +178,6 @@ def _chat(messages: list[dict[str, Any]]) -> dict[str, Any]:
     response.raise_for_status()
     return response.json()
 
-def main() -> None:
-    task = os.environ.get("OPTIMUSAI_TASK", "").strip()
-    if not task:
-        raise SystemExit("OPTIMUSAI_TASK is required")
-
 def _run_readonly_tool_task(task: str) -> bool:
     """Run explicit, narrowly scoped read-only tool tasks without LLM inference."""
     normalized = " ".join(task.lower().split())
@@ -219,6 +214,11 @@ def _run_readonly_tool_task(task: str) -> bool:
     }, ensure_ascii=False))
     return True
 
+
+def main() -> None:
+    task = os.environ.get("OPTIMUSAI_TASK", "").strip()
+    if not task:
+        raise SystemExit("OPTIMUSAI_TASK is required")
     if _run_readonly_tool_task(task):
         return
 
