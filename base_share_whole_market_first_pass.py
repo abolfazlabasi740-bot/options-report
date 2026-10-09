@@ -25,6 +25,7 @@ if str(ROOT) not in sys.path:
 from tsetmc_adapter import TSETMCAdapter
 from underlying_trend_engine import analyze_history
 from base_share_opportunity_engine_v2 import score_opportunity, ENGINE_VERSION
+from persian_date_utils import gregorian_to_jalali
 
 TEHRAN = ZoneInfo("Asia/Tehran")
 CATALOG = ROOT / "output" / "base_share" / "market_watch_identity_catalog.json"
@@ -156,6 +157,7 @@ def main():
             "history_status": ctx.get("status"),
             "history_count": ctx.get("history_count"),
             "latest_market_date": ctx.get("latest_market_date"),
+            "latest_market_date_jalali": gregorian_to_jalali(ctx.get("latest_market_date")),
             "last_price": ctx.get("last_price"),
             "last_close": ctx.get("last_close"),
             "sma_5": ctx.get("sma_5"),
@@ -187,6 +189,7 @@ def main():
         "excluded_counts": dict(excluded),
         "history_status_counts": dict(statuses),
         "latest_history_date": dates[-1] if dates else None,
+        "latest_history_date_jalali": gregorian_to_jalali(dates[-1]) if dates else None,
         "score_engine": ENGINE_VERSION,
         "classification_policy": "CONSERVATIVE_HEURISTIC; UNKNOWN_OR_CONFLICTING_IDENTITY_EXCLUDED; MANUAL_REVIEW_REQUIRED",
         "data_mode": "TSETMC_DAILY_HISTORY_ONLY; NO_IMPUTATION",
@@ -205,7 +208,8 @@ def main():
         "=" * 78,
         "منبع: TSETMC | موتور امتیازدهی: " + ENGINE_VERSION,
         "زمان تولید: " + now.isoformat(),
-        "آخرین تاریخ داده تاریخی: " + (dates[-1] if dates else "اطلاعات موجود نیست"),
+        "آخرین تاریخ داده تاریخی (میلادی): " + (dates[-1] if dates else "اطلاعات موجود نیست"),
+        "آخرین تاریخ داده تاریخی (شمسیِ محاسبه‌شده): " + (gregorian_to_jalali(dates[-1]) if dates else "اطلاعات موجود نیست"),
         f"کل کاتالوگ: {len(catalog['records'])} | نامزدهای بررسی: {len(candidates)}",
         "وضعیت تاریخچه: " + json.dumps(dict(statuses), ensure_ascii=False),
         "حذف‌ها: " + json.dumps(dict(excluded), ensure_ascii=False),
@@ -229,7 +233,8 @@ def main():
     txt_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("STATUS = WHOLE_MARKET_FIRST_PASS_COMPLETE", flush=True)
     print("HISTORY_STATUS_COUNTS =", json.dumps(dict(statuses), ensure_ascii=False), flush=True)
-    print("LATEST_HISTORY_DATE =", dates[-1] if dates else "UNAVAILABLE", flush=True)
+    print("LATEST_HISTORY_DATE_GREGORIAN =", dates[-1] if dates else "UNAVAILABLE", flush=True)
+    print("LATEST_HISTORY_DATE_JALALI =", gregorian_to_jalali(dates[-1]) if dates else "UNAVAILABLE", flush=True)
     print("TEXT_REPORT =", txt_path, flush=True)
     print("JSON_REPORT =", json_path, flush=True)
     print("TOP_15 =", json.dumps([
