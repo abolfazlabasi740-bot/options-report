@@ -1,0 +1,21 @@
+{
+  "command_id": "llm_recovery_pull_main_20261009_0941",
+  "status": "SUCCESS",
+  "exit_code": 0,
+  "started_at": "2026-10-09T09:56:15.276443+00:00",
+  "finished_at": "2026-10-09T09:56:16.649686+00:00",
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE",
+  "argv": [
+    "git",
+    "pull",
+    "--ff-only",
+    "origin",
+    "main"
+  ],
+  "stdout": "Already up to date.\n",
+  "stderr": "From https://github.com/abolfazlabasi740-bot/options-report\n * branch            main       -> FETCH_HEAD\n",
+  "timeout_seconds": 120,
+  "queue_path": "bridge-commands/llm_recovery_pull_main_20261009_0941.json",
+  "project_head": "aef9f197a9bc3d7345f435a1141f3547050c76b4",
+  "result_sha256": "fe6fa8cb9e42ae9f6f7eddda879aef1d84e795f4832258e117759d0344a6de6b"
+}
