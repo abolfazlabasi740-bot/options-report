@@ -58,7 +58,9 @@ def main():
         "source_row_count": len(all_rows),
         "eligible_plain_symbol_count": len(eligible),
         "filter": "SYMBOL_MUST_NOT_END_WITH_ASCII_PERSIAN_OR_ARABIC_INDIC_DIGIT",
-        "rows": eligible[:15],
+        "ranked_symbol_count": len(eligible),
+        "displayed_top_n": 15,
+        "rows": eligible,
         "buy_sell_signal": "NOT_GENERATED",
         "limitations": [
             "This is a preliminary historical-trend shortlist, not a buy/sell signal.",
@@ -85,7 +87,7 @@ def main():
         "رتبه | نماد | امتیاز | کلاس | پوشش شواهد | تاریخ داده | بازده ۵ جلسه (%) | بازده ۲۰ جلسه (%) | RSI14 | هشدار",
         "-" * 92,
     ]
-    for i, row in enumerate(eligible[:15], 1):
+    for i, row in enumerate(eligible, 1):
         lines.append(
             f"{i} | {row.get('symbol') or 'اطلاعات موجود نیست'}"
             f" | {row.get('final_score') if row.get('final_score') is not None else 'اطلاعات موجود نیست'}"
@@ -106,6 +108,7 @@ def main():
     print("LATEST_HISTORY_DATE_JALALI =", gregorian_to_jalali(source.get("latest_history_date")) or "UNAVAILABLE")
     print("TEXT_REPORT =", txt_path)
     print("JSON_REPORT =", json_path)
+    print("RANKED_SYMBOL_COUNT =", len(eligible))
     print("TOP_15 =")
     for i, row in enumerate(eligible[:15], 1):
         print(
