@@ -37,6 +37,9 @@ REPLY_MENU_MARKUP = {
 REPLY_MENU_COMMANDS = {
     "📊 گزارش ۱۵ فرصت برتر": "گزارش",
     "📌 سهم‌های پایه": "سهم‌های پایه",
+    "📌 سهمهای پایه": "سهم‌های پایه",
+    "سهم‌های پایه": "سهم‌های پایه",
+    "سهمهای پایه": "سهم‌های پایه",
     "⚡ فرصت لحظه آخری آپشن": "فرصت‌لحظه‌آخری‌آپشن",
     "📈 گزارش ۱۵ قرارداد فعال": "فعالیت",
     "🔎 انتخاب نماد": "نمادها",
@@ -669,6 +672,9 @@ def main():
                             send_report_menu(chat_id)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
+                        elif callback_data == "base_stocks":
+                            report, markup, count, current_page, total_pages = render_option_base_cards(0)
+                            send_message(chat_id, report, reply_markup=markup)
                         elif strategy:
                             report = generate_strategy_report(strategy)
                             send_message(chat_id, report)
@@ -735,6 +741,9 @@ def main():
                     elif text in ("رفتار", "تغییرات", "behavior"):
                         send_message(chat_id, generate_report("رفتار"))
                         send_report_menu(chat_id)
+                    elif text in ("سهم‌های پایه", "سهمهای پایه", "base_stocks"):
+                        report, markup, count, current_page, total_pages = render_option_base_cards(0)
+                        send_message(chat_id, report, reply_markup=markup)
                     elif text == "نمادها":
                         send_symbol_menu(chat_id, 0)
                     elif text.startswith(SYMBOL_PAGE_PREFIX):
