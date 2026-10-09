@@ -9,16 +9,16 @@ from __future__ import annotations
 import math
 from typing import Any
 
-ENGINE_VERSION = "BASE-SHARE-OPPORTUNITY-ENGINE-V2.0"
+ENGINE_VERSION = "BASE-SHARE-OPPORTUNITY-ENGINE-V2.1"
 
 WEIGHTS = {
-    "trend": 20.0,
-    "momentum": 15.0,
+    "trend": 15.0,
+    "momentum": 10.0,
     "technical": 15.0,
     "volume_value": 15.0,
-    "early_move": 15.0,
+    "early_move": 20.0,
     "board": 10.0,
-    "entry_quality": 10.0,
+    "entry_quality": 15.0,
 }
 
 def num(value: Any) -> float | None:
@@ -122,17 +122,31 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
         vv_vals.append((1.0 if vr >= 1.0 and valr >= 1.0 else 0.0 if vr < 0.8 and valr < 0.8 else 0.5, 0.5))
     volume_value = component(vv_vals)
 
-    # Early move prioritizes sequence and a confirmed breakout, but does not reward
-    # a mature price run simply because historical returns are already high.
+    # Early-move score must favor developing moves, not merely stocks that already surged.
     early_vals = []
-    if early_score is not None: early_vals.append((clamp((early_score + 100.0) / 200.0), 1.0))
+    if early_score is not None:
+        early_vals.append((clamp((early_score + 100.0) / 200.0), 0.75))
     if breakout is True: early_vals.append((1.0, 1.0))
     elif breakout is False: early_vals.append((0.35, 1.0))
     state = str(prelock.get("state") or "")
-    if state == "EARLY": early_vals.append((1.0, 1.5))
-    elif state == "DEVELOPING": early_vals.append((0.75, 1.5))
-    elif state == "WATCH": early_vals.append((0.55, 1.5))
-    elif state == "NO_SEQUENCE_EVIDENCE": early_vals.append((0.25, 1.5))
+    if state == "EARLY": early_vals.append((1.0, 2.0))
+    elif state == "DEVELOPING": early_vals.append((0.8, 2.0))
+    elif state == "WATCH": early_vals.append((0.55, 2.0))
+    elif state == "NO_SEQUENCE_EVIDENCE": early_vals.append((0.25, 2.0))
+    # Explicitly penalize a mature/overextended move in the early-opportunity component.
+    if r5 is not None and r20 is not None:
+        if r5 >= 8 and r20 >= 25:
+            early_vals.append((0.10, 2.0))
+        elif r5 >= 8 or r20 >= 20:
+            early_vals.append((0.35, 1.5))
+        elif 0 <= r5 <= 5 and 0 <= r20 <= 15:
+            early_vals.append((0.90, 1.0))
+    if rsi is not None and rsi > 80:
+        early_vals.append((0.10, 1.5))
+    elif rsi is not None and rsi > 70:
+        early_vals.append((0.35, 1.0))
+    if r5 is not None and vr is not None and r5 >= 8 and vr < 0.8:
+        early_vals.append((0.10, 1.5))
     early_component = component(early_vals)
 
     # Board signals are usable only when explicit underlying client-type/order-book
@@ -192,13 +206,21 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
     else: confidence = "LOW_EVIDENCE_COVERAGE"
 
     if final_score is None: category = "C"
-    elif final_score >= 75 and (rsi is None or rsi <= 75): category = "A"
-    elif final_score >= 55: category = "B"
+    elif (final_score >= 75 and (rsi is None or rsi <= 68)
+          and (entry_quality["score"] is not None and entry_quality["score"] >= 70)
+          and (volume_value["score"] is not None and volume_value["score"] >= 40)
+          and (early_component["score"] is not None and early_component["score"] >= 50)):
+        category = "A"
+    elif final_score >= 50: category = "B"
     else: category = "C"
 
     warnings = []
     if rsi is not None and rsi > 70: warnings.append("RSI_OVERBOUGHT_ENTRY_PENALTY")
     if rsi is not None and rsi > 80: warnings.append("RSI_EXTREME_OVERBOUGHT")
+    if rsi is not None and rsi > 80 and final_score is not None and final_score >= 70:
+        warnings.append("HIGH_TREND_SCORE_BUT_POOR_ENTRY_TIMING")
+    if r5 is not None and r20 is not None and r5 >= 8 and r20 >= 25:
+        warnings.append("MATURE_MOVE_NOT_EARLY_ENTRY")
     if r5 is not None and r5 >= 8 and vr is not None and vr < 0.8:
         warnings.append("PRICE_RUN_WITH_WEAK_VOLUME")
     if correction in {"CORRECTION", "COUNTERTREND_BOUNCE_IN_DOWNTREND"}:
