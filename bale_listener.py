@@ -740,7 +740,7 @@ def main():
                     elif text in ("رفتار", "تغییرات", "behavior"):
                         send_message(chat_id, generate_report("رفتار"))
                         send_report_menu(chat_id)
-                    elif text in ("سهم‌های پایه", "سهمهای پایه", "base_stocks"):
+                    elif text in ("سهم‌های پایه", "سهمهای پایه", "پایه آپشن‌دار", "پایه آپشن دار", "base_stocks"):
                         report, markup, count, current_page, total_pages = render_option_base_cards(0)
                         send_message(chat_id, report, reply_markup=markup)
                     elif text == "نمادها":
