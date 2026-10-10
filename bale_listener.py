@@ -103,16 +103,20 @@ from bull_call_spread_engine import build_strategy_report
 from bale_market_share_cards import render_page as render_market_share_cards
 from bale_base_share_option_cards import render_page as render_option_base_cards
 
-# The active Bale surface is intentionally reduced to one glass-button entry.
+# The active Bale surface has only the two market-ranking glass buttons.
 # Legacy menu definitions remain above for compatibility with old persisted
 # updates, but they are no longer sent to users.
 MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
+OPTION_SHARES_LABEL = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
 MENU_MARKUP = {
-    "inline_keyboard": [[{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}]]
+    "inline_keyboard": [
+        [{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}],
+        [{"text": OPTION_SHARES_LABEL, "callback_data": "option_shares"}],
+    ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
-REPLY_MENU_COMMANDS = {MARKET_SHARES_LABEL: "market_shares"}
-CALLBACK_COMMANDS = {"market_shares": "market_shares"}
+REPLY_MENU_COMMANDS = {MARKET_SHARES_LABEL: "market_shares", OPTION_SHARES_LABEL: "option_shares"}
+CALLBACK_COMMANDS = {"market_shares": "market_shares", "option_shares": "option_shares"}
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -611,7 +615,7 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("MENU -> market shares glass button")
+    print("MENU -> market shares and option-enabled shares glass buttons")
     print("MARKET SHARES -> whole-market ranked report")
     print("PAGINATION -> 10 rows per page")
     print("SOURCE -> TSETMC")
@@ -666,6 +670,11 @@ def main():
                         if callback_data.startswith("market_shares_page:"):
                             page = int(callback_data.split(":", 1)[1])
                             report, markup, count, current_page, total_pages = render_market_share_cards(page)
+                            send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data == "option_shares" or callback_data.startswith("option_shares_page:"):
+                            opening = callback_data == "option_shares"
+                            page = 0 if opening else int(callback_data.split(":", 1)[1])
+                            report, markup, count, current_page, total_pages = render_option_base_cards(page, refresh=opening)
                             send_message(chat_id, report, reply_markup=markup)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
@@ -742,6 +751,9 @@ def main():
                         send_symbol_menu(chat_id, 0)
                     elif text in ("market_shares", MARKET_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_market_share_cards(0)
+                        send_message(chat_id, report, reply_markup=markup)
+                    elif text in ("option_shares", OPTION_SHARES_LABEL):
+                        report, markup, count, current_page, total_pages = render_option_base_cards(0, refresh=True)
                         send_message(chat_id, report, reply_markup=markup)
                     elif text.startswith(SYMBOL_PAGE_PREFIX):
                         page_number = int(text[len(SYMBOL_PAGE_PREFIX):].strip()) - 1

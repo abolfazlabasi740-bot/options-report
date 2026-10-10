@@ -1,135 +1,92 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Compact Bale cards for ranked option-enabled underlying shares. TSETMC-only."""
+"""Filter the existing whole-market ranking, never rescore option underlyings."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
+import bale_market_share_cards as market
+from tsetmc_first_source import build_tsetmc_snapshot
+
 ROOT = Path(__file__).resolve().parent
-BASE_REPORT = ROOT / "output" / "base_share" / "latest_opportunity_v2_report.json"
-OPTION_SNAPSHOT = ROOT / "output" / "tsetmc_first" / "latest_universe_snapshot.json"
-PAGE_SIZE = 5
+REPORT_PATH = ROOT / "output" / "base_share" / "latest_option_enabled_market_report.json"
+TITLE = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
 
 
-def _load(path):
-    if not path.exists():
-        raise RuntimeError("REQUIRED_REPORT_NOT_FOUND: " + str(path))
+def _symbol(value):
+    return str(value or "").strip().replace("\u064a", "\u06cc").replace("\u0643", "\u06a9")
+
+
+def filter_market_rows(base, snapshot):
+    if snapshot.get("source_of_truth") != "TSETMC":
+        raise RuntimeError("OPTION_SNAPSHOT_SOURCE_NOT_TSETMC")
+    if not isinstance(snapshot.get("rows"), list):
+        raise RuntimeError("OPTION_SNAPSHOT_ROWS_INVALID")
+    ids, symbols = set(), set()
+    for row in snapshot["rows"]:
+        identity = row.get("identity") or {}
+        underlying_id = str(identity.get("underlying_id") or "").strip()
+        symbol = _symbol(identity.get("underlying_symbol"))
+        if underlying_id:
+            ids.add(underlying_id)
+        if symbol:
+            symbols.add(symbol)
+    rows = []
+    for rank, row in enumerate(market.ranked_rows(base), 1):
+        instrument_id = str(row.get("instrument_id") or "").strip()
+        symbol = _symbol(row.get("symbol"))
+        # Prefer explicit TSETMC identity, falling back to a normalized symbol
+        # only when one side does not supply its instrument ID.
+        if instrument_id:
+            matches = instrument_id in ids or bool(symbol and symbol in symbols)
+        else:
+            matches = bool(symbol and symbol in symbols)
+        if matches:
+            rows.append({**row, "market_rank": rank})
+    return rows
+
+
+def _build_report():
+    # Reuse the exact market report the user saw, even if it has aged. Only
+    # the market button refreshes scores; this button filters that artifact.
+    base = market.ensure_report()
+    snapshot = build_tsetmc_snapshot()
+    payload = {
+        "source_of_truth": "TSETMC",
+        "generated_at": base.get("generated_at"),
+        "latest_history_date": base.get("latest_history_date"),
+        "market_row_count": len(base["rows"]),
+        "option_snapshot_generated_at": snapshot.get("generated_at"),
+        "option_snapshot_sha256": snapshot.get("snapshot_sha256"),
+        "data_mode": snapshot.get("data_mode"),
+        "rows": filter_market_rows(base, snapshot),
+    }
+    # Freeze the filtered list so next-page clicks cannot switch source data.
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = REPORT_PATH.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    temporary.replace(REPORT_PATH)
+    return payload
+
+
+def _load_report():
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError) as exc:
-        raise RuntimeError("REQUIRED_REPORT_INVALID: " + path.name) from exc
-
-
-def _fmt(value, suffix=""):
-    if value is None or value == "":
-        return "نامشخص"
-    if isinstance(value, (int, float)):
-        return f"{value:.1f}{suffix}"
-    return str(value)
-
-
-def _component_score(components, *keys):
-    """Return a score only when the source report explicitly provides one."""
-    for key in keys:
-        item = components.get(key)
-        if isinstance(item, dict):
-            value = item.get("score")
-            if isinstance(value, (int, float)):
-                return float(value)
-        elif isinstance(item, (int, float)):
-            return float(item)
+        payload = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+        if payload.get("source_of_truth") == "TSETMC" and isinstance(payload.get("rows"), list):
+            return payload
+    except (OSError, ValueError, TypeError):
+        pass
     return None
 
 
-def _analysis(row, scores):
-    available = [(name, value) for name, value in scores.items() if value is not None]
-    if not available:
-        return "امتیازهای جزئی کافی نیست؛ نتیجه‌گیری معتبر ممکن نیست."
-    strongest = max(available, key=lambda item: item[1])
-    weakest = min(available, key=lambda item: item[1])
-    trend = str(row.get("trend_state") or "").strip()
-    warnings = row.get("warnings") or []
-    notes = [f"قوی‌ترین بخش: {strongest[0]} ({strongest[1]:.1f})"]
-    if len(available) > 1:
-        notes.append(f"ضعیف‌ترین بخش: {weakest[0]} ({weakest[1]:.1f})")
-    if trend:
-        notes.append(f"وضعیت روند: {trend}")
-    if warnings:
-        notes.append("ریسک/هشدار: " + "، ".join(str(x) for x in warnings[:2]))
-    else:
-        notes.append("هشدار ثبت‌شده‌ای در گزارش نیست")
-    notes.append("این جمع‌بندی توصیفی است و به‌تنهایی سیگنال خرید نیست.")
-    return "؛ ".join(notes)
-
-
-def _build_rows():
-    base = _load(BASE_REPORT)
-    snapshot = _load(OPTION_SNAPSHOT)
-    if base.get("source_of_truth") != "TSETMC":
-        raise RuntimeError("BASE_REPORT_SOURCE_NOT_TSETMC")
-    if not isinstance(base.get("rows"), list):
-        raise RuntimeError("BASE_REPORT_ROWS_INVALID")
-    if not isinstance(snapshot.get("rows"), list):
-        raise RuntimeError("OPTION_SNAPSHOT_ROWS_INVALID")
-
-    option_symbols = set()
-    for row in snapshot["rows"]:
-        ident = row.get("identity") or {}
-        symbol = str(ident.get("underlying_symbol") or "").strip()
-        if symbol:
-            option_symbols.add(symbol)
-
-    rows = [row for row in base["rows"] if str(row.get("symbol") or "").strip() in option_symbols]
-    rows.sort(key=lambda row: (
-        row.get("final_score") is None,
-        -(float(row.get("final_score") or 0)),
-        str(row.get("symbol") or ""),
-    ))
-    return base, snapshot, rows
-
-
-def render_page(page=0):
-    base, snapshot, rows = _build_rows()
-    total_pages = max(1, (len(rows) + PAGE_SIZE - 1) // PAGE_SIZE)
-    page = max(0, min(int(page), total_pages - 1))
-    data_mode = snapshot.get("data_mode") or "نامشخص"
-    generated = snapshot.get("generated_at") or "نامشخص"
-    lines = [
-        "📌 سهم‌های پایه دارای آپشن",
-        f"مرتب‌سازی: امتیاز اصلی مدل سهم پایه | تعداد: {len(rows)}",
-        f"داده: {data_mode} | زمان Snapshot: {generated}",
-        f"صفحه {page + 1}/{total_pages}",
-        "━━━━━━━━━━━━━━━━━━━━",
-    ]
-    subset = rows[page * PAGE_SIZE:(page + 1) * PAGE_SIZE]
-    for idx, row in enumerate(subset, page * PAGE_SIZE + 1):
-        symbol = str(row.get("symbol") or "نامشخص")
-        components = row.get("components") or {}
-        scores = {
-            "تابلوخوانی": _component_score(components, "board"),
-            "پرایس‌اکشن": _component_score(components, "momentum", "early_move"),
-            "تکنیکال": _component_score(components, "technical", "trend"),
-            "کندل‌استیک": _component_score(components, "candlestick", "candle", "candles", "candlestick_pattern"),
-        }
-        lines.extend([
-            f"🟦 {idx}. {symbol} | امتیاز کل: {_fmt(row.get('final_score'))}/100",
-            f"۱) تابلوخوانی: {_fmt(scores['تابلوخوانی'])}/100",
-            f"۲) پرایس‌اکشن: {_fmt(scores['پرایس‌اکشن'])}/100",
-            f"۳) تکنیکال: {_fmt(scores['تکنیکال'])}/100",
-            f"۴) کندل‌استیک: {_fmt(scores['کندل‌استیک'])}/100",
-            "تحلیل: " + _analysis(row, scores),
-            "━━━━━━━━━━━━━━━━━━━━",
-        ])
-    if not subset:
-        lines.append("سهم پایه دارای آپشن در داده‌های فعلی پیدا نشد.")
-    lines.append("امتیاز کندل‌استیک فقط در صورت وجود خروجی صریح در گزارش نمایش داده می‌شود؛ داده مفقود حدس زده نمی‌شود.")
-    lines.append("رتبه‌بندی توصیفی است؛ سیگنال خرید/فروش نیست. شواهد BestLimits تا عبور از دروازه مربوطه وارد نشده‌اند.")
-    markup = []
-    if page > 0:
-        markup.append({"text": "◀️ قبلی", "callback_data": f"option_base_cards:{page - 1}"})
-    if page < total_pages - 1:
-        markup.append({"text": "بعدی ▶️", "callback_data": f"option_base_cards:{page + 1}"})
-    keyboard = [markup] if markup else []
-    keyboard.append([{"text": "🏠 منوی اصلی", "callback_data": "main_menu"}])
-    return "\n".join(lines), {"inline_keyboard": keyboard}, len(rows), page, total_pages
+def render_page(page=0, *, refresh=False):
+    payload = _build_report() if refresh else (_load_report() or _build_report())
+    return market.render_ranked_rows(
+        payload, payload["rows"], page, title=TITLE, callback_prefix="option_shares_page",
+        extra_lines=(
+            "\u062a\u0631\u062a\u06cc\u0628 \u0648 \u0627\u0645\u062a\u06cc\u0627\u0632: \u0628\u062f\u0648\u0646 \u062a\u063a\u06cc\u06cc\u0631 \u0627\u0632 \u06af\u0632\u0627\u0631\u0634 \u06a9\u0644 \u0628\u0627\u0632\u0627\u0631",
+            f"\u0632\u0645\u0627\u0646 \u06af\u0632\u0627\u0631\u0634 \u0628\u0627\u0632\u0627\u0631: {payload.get('generated_at') or 'N/A'}",
+            f"\u0641\u0647\u0631\u0633\u062a \u0622\u067e\u0634\u0646: {payload.get('option_snapshot_generated_at') or 'N/A'} | {payload.get('data_mode') or 'N/A'}",
+        ),
+    )

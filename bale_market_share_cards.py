@@ -79,8 +79,8 @@ def _fmt(value, suffix=""):
     return str(value)
 
 
-def render_page(page=0):
-    payload = ensure_report() if int(page) == 0 else (_load_report() or ensure_report())
+def ranked_rows(payload):
+    """One canonical order shared by market and option-enabled reports."""
     rows = list(payload.get("rows") or [])
     rows.sort(key=lambda row: (
         row.get("final_score") is None,
@@ -88,20 +88,27 @@ def render_page(page=0):
         -(row.get("evidence_coverage_pct") or 0.0),
         str(row.get("symbol") or ""),
     ))
+    return rows
+
+
+def render_ranked_rows(payload, rows, page=0, *, title=TITLE,
+                       callback_prefix="market_shares_page", extra_lines=()):
     total_pages = max(1, (len(rows) + PAGE_SIZE - 1) // PAGE_SIZE)
     page = max(0, min(int(page), total_pages - 1))
     subset = rows[page * PAGE_SIZE:(page + 1) * PAGE_SIZE]
     lines = [
-        TITLE,
+        title,
         f"\u0645\u0646\u0628\u0639: TSETMC | \u062a\u0639\u062f\u0627\u062f \u06a9\u0644: {len(rows)} \u0633\u0647\u0645",
         f"\u0635\u0641\u062d\u0647 {page + 1}/{total_pages} | \u0647\u0631 \u0635\u0641\u062d\u0647 {PAGE_SIZE} \u0633\u0647\u0645",
         f"\u0622\u062e\u0631\u06cc\u0646 \u062f\u0627\u062f\u0647: {payload.get('latest_history_date') or 'N/A'}",
+        *extra_lines,
         "\u2501" * 24,
     ]
     for index, row in enumerate(subset, page * PAGE_SIZE + 1):
         warnings = ", ".join(row.get("warnings") or []) or "-"
+        market_rank = f" | market_rank={row['market_rank']}" if "market_rank" in row else ""
         lines.extend([
-            f"{index}. {row.get('symbol') or 'N/A'} | score={_fmt(row.get('final_score'))} | class={row.get('classification') or 'N/A'}",
+            f"{index}. {row.get('symbol') or 'N/A'} | score={_fmt(row.get('final_score'))} | class={row.get('classification') or 'N/A'}{market_rank}",
             f"   trend={row.get('trend_state') or 'N/A'} | RSI={_fmt(row.get('rsi_14'))} | coverage={_fmt(row.get('evidence_coverage_pct'), '%')}",
             f"   return5/20={_fmt(row.get('return_5_sessions_pct'), '%')}/{_fmt(row.get('return_20_sessions_pct'), '%')} | volume5/20={_fmt(row.get('volume_ratio_5_to_20'))}",
             f"   warnings={warnings}",
@@ -112,9 +119,14 @@ def render_page(page=0):
     lines.append("\u0627\u06cc\u0646 \u0631\u062a\u0628\u0647\u200c\u0628\u0646\u062f\u06cc \u062a\u0648\u0635\u06cc\u0641\u06cc \u0627\u0633\u062a \u0648 \u0633\u06cc\u06af\u0646\u0627\u0644 \u062e\u0631\u06cc\u062f/\u0641\u0631\u0648\u0634 \u0646\u06cc\u0633\u062a.")
     navigation = []
     if page > 0:
-        navigation.append({"text": "\u25c0\ufe0f \u0642\u0628\u0644\u06cc", "callback_data": f"market_shares_page:{page - 1}"})
+        navigation.append({"text": "\u25c0\ufe0f \u0642\u0628\u0644\u06cc", "callback_data": f"{callback_prefix}:{page - 1}"})
     if page < total_pages - 1:
-        navigation.append({"text": "\u0628\u0639\u062f\u06cc \u25b6\ufe0f", "callback_data": f"market_shares_page:{page + 1}"})
+        navigation.append({"text": "\u0628\u0639\u062f\u06cc \u25b6\ufe0f", "callback_data": f"{callback_prefix}:{page + 1}"})
     keyboard = [navigation] if navigation else []
     keyboard.append([{"text": HOME, "callback_data": "main_menu"}])
     return "\n".join(lines), {"inline_keyboard": keyboard}, len(rows), page, total_pages
+
+
+def render_page(page=0):
+    payload = ensure_report() if int(page) == 0 else (_load_report() or ensure_report())
+    return render_ranked_rows(payload, ranked_rows(payload), page)
