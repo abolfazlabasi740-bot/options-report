@@ -8,126 +8,33 @@ import bale_listener
 
 
 class BaleListenerStateTests(unittest.TestCase):
-    def test_reply_menu_mapping_is_deterministic(self):
-        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📊 گزارش ۱۵ فرصت برتر"], "گزارش")
-        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📈 گزارش ۱۵ قرارداد فعال"], "فعالیت")
-        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["📋 وضعیت سیستم"], "وضعیت")
-
-    def test_callback_menu_mapping_is_deterministic(self):
-        self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_ranked_15"], "گزارش")
-        self.assertEqual(bale_listener.CALLBACK_COMMANDS["report_activity_15"], "فعالیت")
-        self.assertEqual(bale_listener.CALLBACK_COMMANDS["system_status"], "وضعیت")
-
-    def test_symbol_menu_uses_tsetmc_underlyings_and_paginates(self):
-        rows = [
-            {"identity": {"underlying_symbol": "وبملت"}},
-            {"identity": {"underlying_symbol": "خودرو"}},
-            {"identity": {"underlying_symbol": "وبملت"}},
-            {"identity": {"underlying_symbol": "شستا"}},
-        ]
-        captured = {}
-
-        def fake_send(chat_id, text, reply_markup=None):
-            captured["chat_id"] = chat_id
-            captured["text"] = text
-            captured["markup"] = reply_markup
-
-        with (
-            patch.object(bale_listener, "build_tsetmc_snapshot", return_value={"rows": rows}),
-            patch.object(bale_listener, "send_message", side_effect=fake_send),
-        ):
-            bale_listener.send_symbol_menu("123", 0)
-
-        self.assertEqual(captured["chat_id"], "123")
-        self.assertIn("تعداد نمادهای دارای اختیار معامله", captured["text"])
-        self.assertIn("صفحه 1 از 1", captured["text"])
-        self.assertIn("inline_keyboard", captured["markup"])
-        buttons = [
-            button
-            for row in captured["markup"]["inline_keyboard"]
-            for button in row
-        ]
-        symbol_callbacks = {
-            button["callback_data"]: button["text"]
-            for button in buttons
-            if "callback_data" in button and button["callback_data"].startswith("symbol:")
-        }
+    def test_active_menu_contains_only_market_shares_glass_button(self):
         self.assertEqual(
-            symbol_callbacks,
+            bale_listener.MENU_MARKUP,
             {
-                "symbol:خودرو": "خودرو",
-                "symbol:شستا": "شستا",
-                "symbol:وبملت": "وبملت",
+                "inline_keyboard": [[{
+                    "text": bale_listener.MARKET_SHARES_LABEL,
+                    "callback_data": "market_shares_page:0",
+                }]]
             },
         )
-        self.assertTrue(
-            any(button.get("callback_data") == "main_menu" for button in buttons)
+        self.assertEqual(
+            bale_listener.REPLY_MENU_COMMANDS[bale_listener.MARKET_SHARES_LABEL],
+            "market_shares",
         )
-
-    def test_symbol_menu_uses_requested_priority_then_alphabetical_remainder(self):
-        rows = [
-            {"identity": {"underlying_symbol": "زملارد"}},
-            {"identity": {"underlying_symbol": "وبصادر"}},
-            {"identity": {"underlying_symbol": "اهرم"}},
-            {"identity": {"underlying_symbol": "وبملت"}},
-            {"identity": {"underlying_symbol": "فملی"}},
-            {"identity": {"underlying_symbol": "شستا"}},
-            {"identity": {"underlying_symbol": "خودرو"}},
-            {"identity": {"underlying_symbol": "الف"}},
-            {"identity": {"underlying_symbol": "تاصیکو"}},
-            {"identity": {"underlying_symbol": "دزاگرس"}},
-            {"identity": {"underlying_symbol": "دارونو"}},
-            {"identity": {"underlying_symbol": "خبهمن"}},
-            {"identity": {"underlying_symbol": "فزر"}},
-            {"identity": {"underlying_symbol": "خساپا"}},
-            {"identity": {"underlying_symbol": "ذوب"}},
-            {"identity": {"underlying_symbol": "شپنا"}},
-            {"identity": {"underlying_symbol": "وتجارت"}},
-        ]
-
-        with patch.object(
-            bale_listener,
-            "build_tsetmc_snapshot",
-            return_value={"rows": rows},
-        ):
-            symbols = bale_listener._underlying_symbols()
-
-        expected_prefix = [
-            "اهرم",
-            "وبملت",
-            "وتجارت",
-            "وبصادر",
-            "فزر",
-            "تاصیکو",
-            "فملی",
-            "شستا",
-            "خودرو",
-            "خساپا",
-            "ذوب",
-            "شپنا",
-            "خبهمن",
-            "دارونو",
-            "دزاگرس",
-        ]
-        self.assertEqual(symbols[:len(expected_prefix)], expected_prefix)
-        self.assertEqual(symbols[len(expected_prefix):], ["الف", "زملارد"])
-
-    def test_symbol_selector_command_is_deterministic(self):
-        self.assertEqual(bale_listener.REPLY_MENU_COMMANDS["🔎 انتخاب نماد"], "نمادها")
-
 
     def test_successful_update_commits_offset(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             state = root / "bale_listener_state.json"
-            update = {"update_id": 41, "message": {"chat": {"id": 123}, "text": "گزارش"}}
+            update = {"update_id": 41, "message": {"chat": {"id": 123}, "text": "market_shares"}}
             with (
                 patch.object(bale_listener, "OUTPUT", root),
                 patch.object(bale_listener, "STATE_FILE", state),
                 patch.object(bale_listener, "TOKEN", "token"),
                 patch.object(bale_listener, "CHAT_ID", "123"),
                 patch.object(bale_listener, "get_updates", side_effect=[[update], KeyboardInterrupt]),
-                patch.object(bale_listener, "generate_report", return_value="REPORT"),
+                patch.object(bale_listener, "render_market_share_cards", return_value=("REPORT", {}, 1, 0, 1)),
                 patch.object(bale_listener, "send_message"),
                 patch.object(bale_listener, "send_report_menu"),
             ):
@@ -138,38 +45,19 @@ class BaleListenerStateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             state = root / "bale_listener_state.json"
-            update = {"update_id": 41, "message": {"chat": {"id": 123}, "text": "گزارش"}}
+            update = {"update_id": 41, "message": {"chat": {"id": 123}, "text": "market_shares"}}
             with (
                 patch.object(bale_listener, "OUTPUT", root),
                 patch.object(bale_listener, "STATE_FILE", state),
                 patch.object(bale_listener, "TOKEN", "token"),
                 patch.object(bale_listener, "CHAT_ID", "123"),
                 patch.object(bale_listener, "get_updates", side_effect=[[update], KeyboardInterrupt]),
-                patch.object(bale_listener, "generate_report", side_effect=RuntimeError("failure")),
+                patch.object(bale_listener, "render_market_share_cards", side_effect=RuntimeError("failure")),
                 patch.object(bale_listener, "send_message", side_effect=RuntimeError("delivery failure")),
                 patch.object(bale_listener, "send_report_menu"),
             ):
                 bale_listener.main()
             self.assertFalse(state.exists())
-
-
-    def test_strategy_button_and_bull_call_spread_submenu_are_available(self):
-        reply_buttons = [
-            button["text"]
-            for row in bale_listener.REPLY_MENU_MARKUP["keyboard"]
-            for button in row
-        ]
-        self.assertIn("🧩 استراتژی‌ها", reply_buttons)
-        self.assertEqual(
-            bale_listener.STRATEGY_CALLBACKS["strategy_bull_call_spread"],
-            "BULL_CALL_SPREAD",
-        )
-        strategy_buttons = [
-            button["text"]
-            for row in bale_listener.STRATEGY_MENU_MARKUP["inline_keyboard"]
-            for button in row
-        ]
-        self.assertEqual(strategy_buttons[0], "📈 Bull Call Spread")
 
 
 if __name__ == "__main__":

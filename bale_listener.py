@@ -100,7 +100,19 @@ from behavior_engine import build_behavior_report, format_behavior_report
 from last_minute_profit_engine import build_last_minute_ranking, analyze_underlying_context
 from underlying_trend_engine import fetch_underlying_context
 from bull_call_spread_engine import build_strategy_report
+from bale_market_share_cards import render_page as render_market_share_cards
 from bale_base_share_option_cards import render_page as render_option_base_cards
+
+# The active Bale surface is intentionally reduced to one glass-button entry.
+# Legacy menu definitions remain above for compatibility with old persisted
+# updates, but they are no longer sent to users.
+MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
+MENU_MARKUP = {
+    "inline_keyboard": [[{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}]]
+}
+REPLY_MENU_MARKUP = MENU_MARKUP
+REPLY_MENU_COMMANDS = {MARKET_SHARES_LABEL: "market_shares"}
+CALLBACK_COMMANDS = {"market_shares": "market_shares"}
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -599,10 +611,10 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("منو -> دکمه‌های شیشه‌ای گزارش‌های از پیش تعریف‌شده")
-    print("گزارش -> 15 فرصت برتر بر اساس رنکینگ 6 بلوکی TSETMC")
-    print("نماد  -> 5 فرصت برتر همان نماد پایه بر اساس رنکینگ 6 بلوکی")
-    print("فعالیت -> 15 قرارداد برتر از نظر فعالیت معاملاتی")
+    print("MENU -> market shares glass button")
+    print("MARKET SHARES -> whole-market ranked report")
+    print("PAGINATION -> 10 rows per page")
+    print("SOURCE -> TSETMC")
     print("====================================")
 
     send_report_menu(CHAT_ID)
@@ -651,29 +663,12 @@ def main():
                         command = CALLBACK_COMMANDS.get(callback_data)
                         strategy = STRATEGY_CALLBACKS.get(callback_data)
 
-                        if callback_data.startswith("option_base_cards:"):
+                        if callback_data.startswith("market_shares_page:"):
                             page = int(callback_data.split(":", 1)[1])
-                            report, markup, count, current_page, total_pages = render_option_base_cards(page)
+                            report, markup, count, current_page, total_pages = render_market_share_cards(page)
                             send_message(chat_id, report, reply_markup=markup)
-                        elif callback_data.startswith("symbols_page:"):
-                            page = int(callback_data.split(":", 1)[1])
-                            send_symbol_menu(chat_id, page)
-                        elif callback_data.startswith("symbol:"):
-                            symbol = normalize_command(callback_data.split(":", 1)[1])
-                            if not symbol:
-                                raise RuntimeError("EMPTY_SYMBOL_CALLBACK")
-                            report = generate_report(symbol)
-                            send_message(chat_id, report)
-                            try:
-                                publish_latest_evidence()
-                            except Exception as exc:
-                                print("GITHUB_EVIDENCE_ERROR:", type(exc).__name__)
-                            send_report_menu(chat_id)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
-                        elif callback_data == "base_stocks":
-                            report, markup, count, current_page, total_pages = render_option_base_cards(0)
-                            send_message(chat_id, report, reply_markup=markup)
                         elif strategy:
                             report = generate_strategy_report(strategy)
                             send_message(chat_id, report)
@@ -745,6 +740,9 @@ def main():
                         send_message(chat_id, report, reply_markup=markup)
                     elif text == "نمادها":
                         send_symbol_menu(chat_id, 0)
+                    elif text in ("market_shares", MARKET_SHARES_LABEL):
+                        report, markup, count, current_page, total_pages = render_market_share_cards(0)
+                        send_message(chat_id, report, reply_markup=markup)
                     elif text.startswith(SYMBOL_PAGE_PREFIX):
                         page_number = int(text[len(SYMBOL_PAGE_PREFIX):].strip()) - 1
                         send_symbol_menu(chat_id, page_number)
