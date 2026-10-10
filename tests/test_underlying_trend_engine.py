@@ -47,6 +47,9 @@ class UnderlyingTrendEngineTests(unittest.TestCase):
         self.assertAlmostEqual(result["sma_20"], 149.5)
         self.assertAlmostEqual(result["sma_50"], 134.5)
         self.assertEqual(result["rsi_14"], 100.0)
+        self.assertIsNotNone(result["atr_14"])
+        self.assertIsNotNone(result["atr_14_pct"])
+        self.assertEqual(result["freshness_status"], "CURRENT")
         self.assertIsNotNone(result["upper_limit_headroom_pct"])
         self.assertFalse(result["touched_upper_limit_today"])
 

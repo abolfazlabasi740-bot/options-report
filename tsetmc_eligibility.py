@@ -158,9 +158,9 @@ def classify_eligibility(row: dict[str, Any], as_of_date: date | None = None) ->
     if expiry is None:
         state = EXPIRY_UNAVAILABLE
         reason = "EXPIRY_EVIDENCE_UNAVAILABLE_OR_INVALID"
-    elif expiry < as_of_date:
+    elif expiry <= as_of_date:
         state = EXPIRED_CONTRACT
-        reason = "EXPIRED_BY_TEHRAN_DATE"
+        reason = "EXPIRED_OR_EXPIRING_TODAY_BY_TEHRAN_DATE"
     elif activity["traded"] or activity["two_sided_depth"]:
         state = OPPORTUNITY_CANDIDATE
         reason = "EXPLICIT_TSETMC_ACTIVITY_OR_TWO_SIDED_DEPTH"

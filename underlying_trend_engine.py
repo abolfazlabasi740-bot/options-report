@@ -5,14 +5,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import statistics
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from tsetmc_adapter import TSETMCAdapter
 
-ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.2-CORRECTION-PRELOCK"
+ENGINE_VERSION = "TSETMC-UNDERLYING-TREND-1.3-ATR-FRESHNESS"
 TEHRAN = ZoneInfo("Asia/Tehran")
 
 
@@ -40,6 +41,41 @@ def _ema(values: list[float], period: int) -> float | None:
     for item in values[period:]:
         value = alpha * item + (1.0 - alpha) * value
     return value
+
+
+def _atr(rows: list[dict[str, Any]], closes: list[float], period: int = 14) -> float | None:
+    """Calculate a simple ATR from explicit TSETMC high/low history."""
+    if len(rows) != len(closes) or len(rows) < period:
+        return None
+    true_ranges = []
+    for index, row in enumerate(rows):
+        high = _num(row.get("priceMax"))
+        low = _num(row.get("priceMin"))
+        if high is None or low is None or high < low:
+            return None
+        previous_close = closes[index - 1] if index else None
+        true_ranges.append(
+            high - low
+            if previous_close is None
+            else max(high - low, abs(high - previous_close), abs(low - previous_close))
+        )
+    return sum(true_ranges[-period:]) / period
+
+
+def _freshness(latest_date: str | None) -> tuple[int | None, str]:
+    if not latest_date or len(latest_date) != 8:
+        return None, "UNAVAILABLE"
+    try:
+        age = (datetime.now(TEHRAN).date() - date.fromisoformat(
+            f"{latest_date[:4]}-{latest_date[4:6]}-{latest_date[6:]}"
+        )).days
+    except ValueError:
+        return None, "UNAVAILABLE"
+    if age <= 0:
+        return age, "CURRENT"
+    if age <= 3:
+        return age, "RECENT"
+    return age, "STALE"
 
 
 def _rsi(values: list[float], period: int = 14) -> float | None:
@@ -110,6 +146,16 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
     ema12 = _ema(closes, 12)
     ema26 = _ema(closes, 26)
     macd = ema12 - ema26 if ema12 is not None and ema26 is not None else None
+    macd_pct = macd / last_close * 100.0 if macd is not None and last_close not in (None, 0) else None
+    atr14 = _atr(rows, closes, 14)
+    atr14_pct = atr14 / last_close * 100.0 if atr14 is not None and last_close not in (None, 0) else None
+    daily_returns = [
+        (closes[i] / closes[i - 1] - 1.0) * 100.0
+        for i in range(1, len(closes))
+        if closes[i - 1] not in (None, 0)
+    ]
+    volatility_20_pct = statistics.pstdev(daily_returns[-20:]) if len(daily_returns) >= 20 else None
+    history_age_days, freshness_status = _freshness(latest_date)
 
     return_5 = (
         (closes[-1] / closes[-6] - 1.0) * 100.0
@@ -393,6 +439,12 @@ def analyze_history(instrument_id: str, history_response: dict[str, Any], info_r
         "return_20_sessions_pct": return_20,
         "rsi_14": rsi14,
         "macd_12_26": macd,
+        "macd_pct": macd_pct,
+        "atr_14": atr14,
+        "atr_14_pct": atr14_pct,
+        "volatility_20_pct": volatility_20_pct,
+        "history_age_days": history_age_days,
+        "freshness_status": freshness_status,
         "volume_ratio_5_to_20": volume_ratio,
         "volume_ratio_5_to_50": volume_ratio_5_to_50,
         "value_ratio_5_to_20": value_ratio,

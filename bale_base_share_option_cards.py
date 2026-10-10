@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-BASE_REPORT = ROOT / "output" / "base_share" / "latest_plain_symbol_trend_report.json"
+BASE_REPORT = ROOT / "output" / "base_share" / "latest_opportunity_v2_report.json"
 OPTION_SNAPSHOT = ROOT / "output" / "tsetmc_first" / "latest_universe_snapshot.json"
 PAGE_SIZE = 5
 

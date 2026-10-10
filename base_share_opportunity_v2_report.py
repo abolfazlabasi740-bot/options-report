@@ -4,7 +4,7 @@
 from __future__ import annotations
 import hashlib, json
 from pathlib import Path
-from datetime import datetime, time
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
 from tsetmc_first_source import build_tsetmc_snapshot
@@ -13,6 +13,73 @@ from base_share_opportunity_engine_v2 import score_opportunity, ENGINE_VERSION
 
 ROOT = Path(__file__).resolve().parent
 TEHRAN = ZoneInfo("Asia/Tehran")
+
+
+def _num(value):
+    try:
+        if value in (None, ""):
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _expiry(value):
+    if value in (None, ""):
+        return None
+    text = str(value).strip()
+    try:
+        if len(text) == 8 and text.isdigit():
+            return datetime.strptime(text, "%Y%m%d").date()
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def _option_quality(rows, underlying_id, as_of):
+    """Aggregate explicit active and liquid option evidence for an underlying."""
+    related = [
+        row for row in rows
+        if str((row.get("identity") or {}).get("underlying_id") or "").strip() == str(underlying_id)
+    ]
+    active = liquid = traded = two_sided = unknown_expiry = 0
+    for row in related:
+        identity = row.get("identity") or {}
+        canonical = row.get("canonical") or {}
+        expiry = _expiry(identity.get("end_date") or canonical.get("تاریخ سررسید"))
+        if expiry is None:
+            unknown_expiry += 1
+            continue
+        if expiry <= as_of:
+            continue
+        active += 1
+        market = row.get("market_watch_fields") or {}
+        volume = _num(market.get("volume"))
+        trades = _num(market.get("trade_count"))
+        bid = _num(market.get("bid_quantity"))
+        ask = _num(market.get("ask_quantity"))
+        is_traded = volume is not None and volume > 0 and trades is not None and trades > 0
+        is_two_sided = bid is not None and bid > 0 and ask is not None and ask > 0
+        traded += int(is_traded)
+        two_sided += int(is_two_sided)
+        liquid += int(is_traded or is_two_sided)
+    if active == 0:
+        status = "UNVERIFIED" if unknown_expiry else "BLOCKED"
+    elif liquid == 0:
+        status = "BLOCKED"
+    else:
+        status = "PASS"
+    return {
+        "status": status,
+        "contracts_total": len(related),
+        "active_contracts": active,
+        "liquid_contracts": liquid,
+        "traded_contracts": traded,
+        "two_sided_contracts": two_sided,
+        "liquidity_coverage_pct": round(liquid / active * 100.0, 2) if active else None,
+        "unknown_expiry_contracts": unknown_expiry,
+        "rule": "ACTIVE_EXPIRY_AND_TRADED_OR_TWO_SIDED_EVIDENCE",
+    }
 
 def main():
     snap = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
@@ -30,6 +97,15 @@ def main():
             underlyings[uid] = symbol
 
     now = datetime.now(TEHRAN)
+    snapshot_rows = [row for row in snap.get("rows") or [] if isinstance(row, dict)]
+    option_quality = {
+        uid: _option_quality(snapshot_rows, uid, now.date())
+        for uid in underlyings
+    }
+    underlyings = {
+        uid: symbol for uid, symbol in underlyings.items()
+        if option_quality[uid]["status"] != "BLOCKED"
+    }
     is_trading_day = now.weekday() in {5, 6, 0, 1, 2}
     board_live_window = is_trading_day and time(9, 0) <= now.time() <= time(12, 30)
     # Current client/order-book fields are fetched only during the live TSETMC session.
@@ -41,6 +117,8 @@ def main():
         ctx = contexts.get(str(uid))
         if not isinstance(ctx, dict):
             ctx = {}
+        ctx = dict(ctx)
+        ctx["option_quality"] = option_quality.get(uid)
         scored = score_opportunity(ctx)
         ranked.append({
             "instrument_id": str(uid),
@@ -57,14 +135,29 @@ def main():
             "sma_20": ctx.get("sma_20"),
             "sma_50": ctx.get("sma_50"),
             "macd_12_26": ctx.get("macd_12_26"),
+            "macd_pct": ctx.get("macd_pct"),
             "volume_ratio_5_to_20": ctx.get("volume_ratio_5_to_20"),
+            "volume_ratio_5_to_50": ctx.get("volume_ratio_5_to_50"),
             "value_ratio_5_to_20": ctx.get("value_ratio_5_to_20"),
             "individual_power_ratio": ctx.get("individual_power_ratio"),
             "orderbook_imbalance_5": ctx.get("orderbook_imbalance_5"),
             "early_move": ctx.get("early_move"),
+            "atr_14": ctx.get("atr_14"),
+            "atr_14_pct": ctx.get("atr_14_pct"),
+            "volatility_20_pct": ctx.get("volatility_20_pct"),
+            "history_age_days": ctx.get("history_age_days"),
+            "freshness_status": ctx.get("freshness_status"),
+            "option_quality": option_quality.get(uid),
         })
 
-    ranked.sort(key=lambda x: (x.get("final_score") is None, -(x.get("final_score") or 0.0)))
+    ranked.sort(key=lambda x: (
+        x.get("final_score") is None,
+        -(x.get("final_score") or 0.0),
+        -(x.get("evidence_coverage_pct") or 0.0),
+        -((x.get("option_quality") or {}).get("liquidity_coverage_pct") or 0.0),
+        -((x.get("components") or {}).get("entry_quality", {}).get("score") or 0.0),
+        x.get("symbol") or "",
+    ))
     # Report the actual latest market date evidenced by the retained daily histories.
     # Do not equate report-generation time with market-data time.
     history_dates = sorted({
@@ -121,10 +214,17 @@ def main():
         )
         report.append("   هشدارها=" + (", ".join(row.get("warnings") or []) or "موردی ثبت نشد"))
         report.append("   مؤلفه‌های فاقد داده=" + (", ".join(row.get("unavailable_families") or []) or "هیچ‌کدام"))
+        quality = row.get("option_quality") or {}
+        report.append(
+            f"OPTION_QUALITY={quality.get('status')}"
+            f" | ACTIVE={quality.get('active_contracts')}"
+            f" | LIQUID={quality.get('liquid_contracts')}"
+            f" | COVERAGE={quality.get('liquidity_coverage_pct')}%"
+        )
         report.append("-" * 62)
 
     payload = {
-        "report_version": "BASE-SHARE-OPPORTUNITY-V2.1",
+        "report_version": "BASE-SHARE-OPPORTUNITY-V2.2",
         "engine_version": ENGINE_VERSION,
         "generated_at": datetime.now(TEHRAN).isoformat(),
         "source_of_truth": "TSETMC",

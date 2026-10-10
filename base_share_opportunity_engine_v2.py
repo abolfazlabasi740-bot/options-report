@@ -9,7 +9,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
-ENGINE_VERSION = "BASE-SHARE-OPPORTUNITY-ENGINE-V2.1"
+ENGINE_VERSION = "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2"
+MIN_EVIDENCE_COVERAGE_PCT = 70.0
 
 WEIGHTS = {
     "trend": 15.0,
@@ -56,13 +57,17 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
     early = a.get("early_move") if isinstance(a.get("early_move"), dict) else {}
     prelock = early.get("pre_lock_sequence") if isinstance(early.get("pre_lock_sequence"), dict) else {}
     rsi = num(a.get("rsi_14"))
+    atr_pct = num(a.get("atr_14_pct"))
+    volatility_pct = num(a.get("volatility_20_pct"))
     r5 = num(a.get("return_5_sessions_pct"))
     r20 = num(a.get("return_20_sessions_pct"))
     last = num(a.get("last_price"))
     sma5, sma10 = num(a.get("sma_5")), num(a.get("sma_10"))
     sma20, sma50 = num(a.get("sma_20")), num(a.get("sma_50"))
     macd = num(a.get("macd_12_26"))
+    macd_pct = num(a.get("macd_pct"))
     vr, valr = num(a.get("volume_ratio_5_to_20")), num(a.get("value_ratio_5_to_20"))
+    vr50 = num(a.get("volume_ratio_5_to_50"))
     power = num(a.get("individual_power_ratio"))
     imbalance = num(a.get("orderbook_imbalance_5"))
     buy_count, sell_count = num(a.get("individual_buy_count")), num(a.get("individual_sell_count"))
@@ -106,7 +111,9 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
         elif rsi <= 80: rsi_score = 0.35
         else: rsi_score = 0.10
         technical_vals.append((rsi_score, 1.0))
-    if macd is not None:
+    if macd_pct is not None:
+        technical_vals.append((scale_signed(macd_pct, -3.0, 3.0), 1.0))
+    elif macd is not None:
         technical_vals.append((1.0 if macd > 0 else 0.0 if macd < 0 else 0.5, 1.0))
     if last is not None and sma5 is not None and sma10 is not None:
         technical_vals.append((1.0 if last > sma5 > sma10 else 0.7 if last > sma5 else 0.25, 0.75))
@@ -120,6 +127,8 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
     if valr is not None: vv_vals.append((clamp((valr - 0.6) / 1.0), 1.0))
     if vr is not None and valr is not None:
         vv_vals.append((1.0 if vr >= 1.0 and valr >= 1.0 else 0.0 if vr < 0.8 and valr < 0.8 else 0.5, 0.5))
+    if vr50 is not None:
+        vv_vals.append((clamp((vr50 - 0.6) / 1.0), 0.75))
     volume_value = component(vv_vals)
 
     # Early-move score must favor developing moves, not merely stocks that already surged.
@@ -180,6 +189,10 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
             entry_vals.append((0.65, 0.5))
         elif correction in {"CORRECTION", "COUNTERTREND_BOUNCE_IN_DOWNTREND"}:
             entry_vals.append((0.25, 0.5))
+    if atr_pct is not None:
+        entry_vals.append((1.0 if atr_pct <= 3.0 else 0.65 if atr_pct <= 6.0 else 0.30, 0.75))
+    if volatility_pct is not None:
+        entry_vals.append((1.0 if volatility_pct <= 2.0 else 0.65 if volatility_pct <= 4.0 else 0.35, 0.50))
     entry_quality = component(entry_vals)
 
     components = {
@@ -214,6 +227,9 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
     elif final_score >= 50: category = "B"
     else: category = "C"
 
+    if coverage < MIN_EVIDENCE_COVERAGE_PCT:
+        category = "C"
+
     warnings = []
     if rsi is not None and rsi > 70: warnings.append("RSI_OVERBOUGHT_ENTRY_PENALTY")
     if rsi is not None and rsi > 80: warnings.append("RSI_EXTREME_OVERBOUGHT")
@@ -226,6 +242,14 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
     if correction in {"CORRECTION", "COUNTERTREND_BOUNCE_IN_DOWNTREND"}:
         warnings.append("CORRECTION_OR_COUNTERTREND_RISK")
     if coverage < 45: warnings.append("LOW_EVIDENCE_COVERAGE")
+    elif coverage < MIN_EVIDENCE_COVERAGE_PCT:
+        warnings.append("PARTIAL_EVIDENCE_COVERAGE")
+    freshness = str(a.get("freshness_status") or "")
+    if freshness == "STALE":
+        warnings.append("STALE_HISTORY")
+        category = "C"
+    elif freshness == "UNAVAILABLE":
+        warnings.append("HISTORY_FRESHNESS_UNAVAILABLE")
 
     return {
         "engine_version": ENGINE_VERSION,
@@ -233,6 +257,7 @@ def score_opportunity(a: dict[str, Any]) -> dict[str, Any]:
         "classification": category,
         "confidence": confidence,
         "evidence_coverage_pct": round(coverage, 2),
+        "minimum_evidence_coverage_pct": MIN_EVIDENCE_COVERAGE_PCT,
         "components": components,
         "weights": WEIGHTS,
         "rsi_14": rsi,

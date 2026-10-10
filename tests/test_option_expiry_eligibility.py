@@ -38,6 +38,11 @@ class ExpiryEligibilityTests(unittest.TestCase):
         self.assertEqual(result["state"], OPPORTUNITY_CANDIDATE)
         self.assertTrue(result["opportunity_eligible"])
 
+    def test_same_day_expiry_is_excluded(self):
+        result = classify_eligibility(row("20261002"), as_of_date=date(2026, 10, 2))
+        self.assertEqual(result["state"], EXPIRED_CONTRACT)
+        self.assertFalse(result["opportunity_eligible"])
+
     def test_missing_expiry_is_excluded(self):
         item = row(None)
         item["canonical"]["تاریخ سررسید"] = None

@@ -1,7 +1,7 @@
-# Base Share Opportunity Scoring Model V2.1
+# Base Share Opportunity Scoring Model V2.2
 
 ## Status
-- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.1
+- Version: BASE-SHARE-OPPORTUNITY-ENGINE-V2.2
 - Source of truth: TSETMC only
 - Purpose: rank evidence for an emerging/continuing move while separately penalizing poor entry quality
 - Output is descriptive ranking only; it does not create a buy/sell instruction or enable automated trading.
@@ -27,6 +27,12 @@
 - Fundamental/industry context and historical Strategy Fit are explicitly marked unavailable/not scored in this version because they are not yet joined to this report with validated, comparable evidence.
 - The report universe is currently limited to underlying shares explicitly linked to the current TSETMC options universe. It does not claim to rank the entire stock market. Full-market stock discovery remains a separate required work item; it must use a validated TSETMC instrument-universe endpoint rather than assume option underlyings represent all listed stocks.
 - The score is a relative evidence score, not an expected return, calibrated probability, or trading signal.
+- A final class above `C` requires at least 70% evidence-weight coverage. Lower coverage is retained for audit visibility but is capped at class `C`.
+- Stale or unavailable history freshness is reported explicitly; stale history is capped at class `C`.
+- Entry quality now includes ATR14 as a percentage of price and 20-session return volatility. These fields describe entry risk and do not create a directional signal.
+- Technical quality uses MACD relative to price when available, and volume confirmation includes both 5/20 and 5/50 session comparisons to reduce score ties caused by raw MACD units or one short baseline.
+- The report applies an option-chain gate before ranking an underlying: at least one future-dated contract must show traded activity or two-sided depth. Underlyings with no active liquid contract are excluded from the ranked report.
+- Bale base-share cards consume `latest_opportunity_v2_report.json`, the same source used by the V2.2 report, so displayed rankings and report rankings cannot silently diverge.
 
 ## Output
 Script: `base_share_opportunity_v2_report.py`
