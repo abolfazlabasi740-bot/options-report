@@ -32,6 +32,12 @@ class BaleOptionShareCardsTests(unittest.TestCase):
         self.assertEqual([row["market_rank"] for row in rows], [2, 4])
         self.assertEqual([row["final_score"] for row in rows], [88, 66])
 
+    def test_explicit_underlying_id_does_not_accept_same_symbol_with_wrong_id(self):
+        base = {"source_of_truth": "TSETMC", "rows": [{"symbol": "SHASTA", "instrument_id": "WRONG", "final_score": 88}]}
+        snapshot = {"source_of_truth": "TSETMC", "rows": [{"identity": {"underlying_id": "RIGHT", "underlying_symbol": "SHASTA"}}]}
+        with patch.object(cards.market, "ranked_rows", return_value=base["rows"]):
+            self.assertEqual(cards.filter_market_rows(base, snapshot), [])
+
     def test_render_uses_ten_rows_and_option_navigation(self):
         with tempfile.TemporaryDirectory() as tmp:
             report = Path(tmp) / "option.json"

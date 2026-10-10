@@ -23,7 +23,7 @@ def filter_market_rows(base, snapshot):
         raise RuntimeError("OPTION_SNAPSHOT_SOURCE_NOT_TSETMC")
     if not isinstance(snapshot.get("rows"), list):
         raise RuntimeError("OPTION_SNAPSHOT_ROWS_INVALID")
-    ids, symbols = set(), set()
+    ids, symbols, symbols_without_id = set(), set(), set()
     for row in snapshot["rows"]:
         identity = row.get("identity") or {}
         underlying_id = str(identity.get("underlying_id") or "").strip()
@@ -32,6 +32,8 @@ def filter_market_rows(base, snapshot):
             ids.add(underlying_id)
         if symbol:
             symbols.add(symbol)
+            if not underlying_id:
+                symbols_without_id.add(symbol)
     rows = []
     for rank, row in enumerate(market.ranked_rows(base), 1):
         instrument_id = str(row.get("instrument_id") or "").strip()
@@ -39,7 +41,7 @@ def filter_market_rows(base, snapshot):
         # Prefer explicit TSETMC identity, falling back to a normalized symbol
         # only when one side does not supply its instrument ID.
         if instrument_id:
-            matches = instrument_id in ids or bool(symbol and symbol in symbols)
+            matches = instrument_id in ids or bool(symbol and symbol in symbols_without_id)
         else:
             matches = bool(symbol and symbol in symbols)
         if matches:
