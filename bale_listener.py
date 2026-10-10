@@ -12,7 +12,7 @@ from bale_transport import send_message as transport_send
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": "📊 گزارش ۱۵ فرصت برتر", "callback_data": "report_ranked_15"}],
-        [{"text": "📌 سهم‌های پایه", "callback_data": "base_stocks"}],
+        [{"text": "📌 پایه آپشن‌دار", "callback_data": "base_stocks"}],
         [{"text": "⚡ فرصت لحظه آخری آپشن", "callback_data": "report_last_minute_option_opportunity"}],
         [{"text": "📈 گزارش ۱۵ قرارداد فعال", "callback_data": "report_activity_15"}],
         [{"text": "🔎 انتخاب نماد", "callback_data": "symbols_page:0"}],
