@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import datetime, time
+from datetime import date, datetime, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -208,9 +208,28 @@ def _attach_canonical_quote_evidence(rows, *, adapter=None, allow_refresh=True):
 
 
 def _tradability_gate(row):
-    """Hard Stage-1 quality gate for tradability and contract structure."""
+    """Hard Stage-1 quality gate for tradability, expiry, and contract structure."""
     canonical = row.get("canonical") or {}
     identity = row.get("identity") or {}
+
+    # Fail closed on contracts expiring today, already expired, or without a
+    # valid TSETMC expiry date. A calendar-day difference of zero must never
+    # enter the ranked shortlist.
+    raw_expiry = canonical.get("تاریخ سررسید")
+    expiry = None
+    if raw_expiry not in (None, ""):
+        expiry_text = str(raw_expiry).strip()
+        try:
+            if len(expiry_text) == 8 and expiry_text.isdigit():
+                expiry = datetime.strptime(expiry_text, "%Y%m%d").date()
+            else:
+                expiry = date.fromisoformat(expiry_text[:10])
+        except ValueError:
+            expiry = None
+    if expiry is None:
+        return False, "EXPIRY_UNAVAILABLE_OR_INVALID"
+    if expiry <= datetime.now(TEHRAN).date():
+        return False, "EXPIRY_TODAY_OR_EXPIRED"
     try:
         underlying = float(canonical.get("قیمت سهم پایه"))
         premium = float(canonical.get("آخرین قیمت"))
@@ -426,6 +445,11 @@ def build_tsetmc_report(*, top_count=None, symbol_prefix=None, underlying_symbol
         }
         ranking["tradability_gate"] = {
             "status": "PASS" if quality_rows else "NO_QUALITY_CANDIDATES",
+            "expiry_rule": "EXCLUDE_EXPIRY_TODAY_OR_EXPIRED; MISSING_OR_INVALID_EXPIRY_FAILS_CLOSED",
+            "expiry_rejection_count": sum(
+                1 for reason in quality_rejections.values()
+                if reason in {"EXPIRY_TODAY_OR_EXPIRED", "EXPIRY_UNAVAILABLE_OR_INVALID"}
+            ),
             "minimum_last_price_irr": 10,
             "maximum_leverage_x": 20,
             "otm_rule": "CALL: underlying < strike => rejected | PUT: underlying > strike => rejected | ATM retained",
