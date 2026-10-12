@@ -32,7 +32,7 @@ case "$weekday" in
 esac
 
 current_minutes=$((10#$hour * 60 + 10#$minute))
-start_minutes=$((9 * 60 + 30))
+start_minutes=$((9 * 60))
 end_minutes=$((12 * 60 + 30))
 
 if [ "$current_minutes" -gt "$end_minutes" ]; then

@@ -94,6 +94,7 @@ STRATEGY_MENU_MARKUP = {
 }
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
+from base_share_trend_report import build_trend_review_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
@@ -108,10 +109,12 @@ from bale_base_share_option_cards import render_page as render_option_base_cards
 # updates, but they are no longer sent to users.
 MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
 OPTION_SHARES_LABEL = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
+TREND_REVIEW_LABEL = "📈 بررسی روند"
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}],
         [{"text": OPTION_SHARES_LABEL, "callback_data": "option_shares"}],
+        [{"text": TREND_REVIEW_LABEL, "callback_data": "trend_review"}],
     ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
@@ -676,6 +679,10 @@ def main():
                             page = 0 if opening else int(callback_data.split(":", 1)[1])
                             report, markup, count, current_page, total_pages = render_option_base_cards(page, refresh=opening)
                             send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data == "trend_review":
+                            report = build_trend_review_report()
+                            send_message(chat_id, report)
+                            send_report_menu(chat_id)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
                         elif strategy:
