@@ -52,6 +52,21 @@ def is_candidate(row):
     instrument_id = norm(row.get("instrument_id"))
     if not symbol or not instrument_id:
         return False, "IDENTITY_INCOMPLETE"
+
+    # Approved base-share suffix policy:
+    # accept a symbol with no terminal digit, or exactly one terminal "1".
+    # Normalize Persian and Arabic-Indic digits before checking the suffix.
+    normalized_symbol = symbol.translate(str.maketrans(
+        "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩",
+        "01234567890123456789",
+    ))
+    if normalized_symbol and normalized_symbol[-1].isdigit():
+        if normalized_symbol.endswith("1"):
+            if len(normalized_symbol) > 1 and normalized_symbol[-2].isdigit():
+                return False, "INVALID_NUMERIC_SUFFIX"
+        else:
+            return False, "INVALID_NUMERIC_SUFFIX"
+
     sector = norm(ident.get("sector_code"))
     market_title = norm(ident.get("cgrValCotTitle"))
     if sector in EXCLUDED_SECTORS:
