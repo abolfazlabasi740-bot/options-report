@@ -8,7 +8,7 @@ import bale_listener
 
 
 class BaleListenerStateTests(unittest.TestCase):
-    def test_active_menu_contains_only_two_ranking_glass_buttons(self):
+    def test_active_menu_contains_three_ranking_glass_buttons(self):
         self.assertEqual(
             bale_listener.MENU_MARKUP,
             {
@@ -18,6 +18,9 @@ class BaleListenerStateTests(unittest.TestCase):
                 }], [{
                     "text": bale_listener.OPTION_SHARES_LABEL,
                     "callback_data": "option_shares",
+                }], [{
+                    "text": bale_listener.TREND_REVIEW_LABEL,
+                    "callback_data": "trend_review",
                 }]]
             },
         )
