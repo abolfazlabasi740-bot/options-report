@@ -1,0 +1,131 @@
+# OptimusAI V4.1 — سند وضعیت پروژه (Source of Truth)
+
+**تاریخ سند:** 1405/07/24 (2026-10-16)
+
+> این سند تک‌مرجع (Single Source of Truth) وضعیت پروژه است تا از بازساختِ کارهای انجام‌شده جلوگیری شود. پیش از هر تغییر، ابتدا این فایل را بخوانید.
+
+---
+
+## بخش ۱ — جهان قفلشدهٔ ۲۶ سهمی (Locked Universe)
+
+نگاشت underlying → پیشوند اختیار معامله، به همین ترتیب:
+
+| # | Underlying | پیشوند اختیار |
+|---|-----------|---------------|
+| 1 | اخابر | ضمخا |
+| 2 | اطلس | ضاطلس |
+| 3 | اهرم | ضهرم |
+| 4 | بساما | ضبساما |
+| 5 | تاپیکو | ضپیک |
+| 6 | توان | ضتوان |
+| 7 | جوانه.ک | ضجوا |
+| 8 | تاپیکو/تاصیکو | ضتاص |
+| 9 | خبهمن | ضهمن |
+| 10 | خساپا | ضسپا |
+| 11 | خودرو | ضخود |
+| 12 | دارونو | ضدرو |
+| 13 | دزاگرس | ضدزاگرس |
+| 14 | ذوب | ضذوب |
+| 15 | شپنا | ضشنا |
+| 16 | شستا | ضستا |
+| 17 | طعام | ضطعام |
+| 18 | فرابورس | ضفرابورس |
+| 19 | فزر | ضفزر |
+| 20 | فملی | ضملی |
+| 21 | کاریس | ضکاریس |
+| 22 | موج | ضموج |
+| 23 | وبصادر | ضصاد |
+| 24 | وبملت | ضملت |
+| 25 | وتجارت | ضجار |
+| 26 | همتراز | ضراز |
+
+---
+
+## بخش ۲ — اینونتوری فایلها و هشهای SHA-256 (نسخهٔ مرجع)
+
+| فایل | SHA-256 | حجم / توضیح |
+|------|---------|-------------|
+| `data/__init__.py` | `3f76d4f0b9506a94216bf32c45776bdd8cc579b6ad4e3c95c7e7a5958ca3b5fa` | 154 bytes |
+| `data/tsetmc.py` | `2b0eecb7cff24c415c12d41db447962eced76e4f056ca00709030958b73a9f7b` | 9,769 bytes |
+| `data/underlying_map.py` | `4bbbbefe484ad9987190f1d0da4455a253ace9ac45b703a34321c2023e9169c4` | 3,562 bytes |
+| `reporting/repository.py` | `56abf33c9139944cab22c11a17c791eead5a05b944dcb56fe311866f125161f7` | 7,226 bytes (178 lines) — نسخهٔ پچشده؛ خط 169: `return '\n'.join(L)` تکخطی |
+| `test_repository.py` | `2dc729399b209facbb162232159e026373ab86e48149631f3f3bae602374abe6` | 5,669 bytes |
+| `test_tsetmc.py` | `0102c1a6a185cc2a2a1b66d8ccb457abf664d7de7da92f7b46121df3fa8cadbc` | 6,622 bytes |
+| `test_underlying_map.py` | `defa96374744911d04f199226da42bf4f946a8de4eefca86cf8231b59908c04e` | 4,528 bytes |
+| `deploy_optimus_modules.sh` | — | 52,953 bytes — اسکریپت استقرار خودکفا (base64 + sha256 verification + compile + tests + ALL_GREEN) |
+| `install_universe_mapping.sh` | `9a8e2611990c8ea77c1525f8f9d0798ba667098ad012c0553e614e611fae3e33` | 371 lines، 15,615 bytes، `bash -n` RC=0 |
+| `patch_snippet.py` | `38f35a438f0825db76a5266e47c39c1c9c335d97b386f064bbdccbbcf3de82ea` | منسوخ/غیراستفاده |
+| `Master_Project_Book_v3.docx` | `71195818d4393f6c2da0d71209d5b5b61208ed3264f13b9a2790fca4a2c57831` | — |
+| `Master Project Book.docx` | `3cba9235181063f040f6df83f18e2b739395528f417d1179ec02eb2ce10f9268` | — |
+| `pasted-text.txt` | `0caef6c43ef10ca342e588f1fe4bb7128e901d32edd02520105f0d4b3558400b` | — |
+
+---
+
+## بخش ۳ — وضعیت تستها (تأییدشده روی LIVE)
+
+| تست فایل | نتیجه | پوشش |
+|----------|-------|------|
+| `test_underlying_map.py` | **79/79 assertions پاس** | نگاشت کامل ۲۶سهمی، نمادهای پسونددار (ضخود5000 → خودرو)، رد نمادهای خارج از جهان (ضفول، ضگل، ضچاد، ضبندر، ضتران، ضفام)، یکپارچگی snapshot |
+| `test_tsetmc.py` | **35/35 assertions پاس** | پارس، تفکیک ض/ط، مخزن latest.json، دریافت، CLI |
+| `test_repository.py` | **همه assertions پاس** | anchorهای روز هفتگی (شنبه-چهارشنبه)، ساعات بازار ۰۹:۰۰-۱۲:۳۰، پارسر زمان (ISO +03:30 / Z / naive / epoch / جلالی)، منطق تازگی، رندر گزارش LMP |
+
+- هر سه تست با **RC=0** در محیط زندهٔ Termux در مسیر `~/OptimusAI_V41_LIVE` اجرا شدند (1405/07/24).
+- هشهای audit نهایی هفت‌فایلی با نسخهٔ مرجع بایتبهبایت مطابقت داشت (**ALL_GREEN**).
+
+---
+
+## بخش ۴ — پوشش قابل بهرهبرداری
+
+**حدود ۸۰٪ پروژه** تکمیل و production-ready است:
+
+- لایهٔ داده: `data/tsetmc.py`، `data/underlying_map.py`، `data/__init__.py`
+- مخزن گزارشدهی: `reporting/repository.py`
+- تمام تستها
+
+همهٔ موارد بالا مستقر روی LIVE هستند. باقیمانده: موتورهای تصمیم/ریسک/یادگیری (منتظر دادهٔ واقعی).
+
+---
+
+## بخش ۵ — رویهٔ استقرار در Termux (تأییدشده)
+
+دستورات دقیق:
+
+```bash
+termux-setup-storage
+find ~/storage/shared -iname 'deploy_optimus_modules.sh'
+cp <مسیر پیدا شده> ~/
+chmod +x ~/deploy_optimus_modules.sh
+bash ~/deploy_optimus_modules.sh
+```
+
+**خروجی مورد انتظار:** 7× `DEPLOYED`، 4× `COMPILE_OK`، 3× `RC=0`، جدول SHA-256، `ALL_GREEN`.
+
+---
+
+## بخش ۶ — کارهای انجامشده (Do-Not-Rebuild List)
+
+- ✅ نگاشت ۲۶سهمی `underlying_map` ساخته و تست شد.
+- ✅ موتور پارس TSETMC (`mw_raw.txt` → stocks/options/others `latest.json` + run_id deterministic).
+- ✅ باگ `reporting/repository.py` خط 169 پیدا و پچ شد (multiline string broken).
+- ✅ اسکریپت استقرار خودکفا `deploy_optimus_modules.sh` ساخته، در محیط شبیهسازیشده ALL_GREEN شد، سپس روی LIVE واقعی اجرا و ALL_GREEN شد (1405/07/24).
+
+---
+
+## بخش ۷ — کارهای باقیمانده (Backlog)
+
+1. **گزارشهای دکمه شیشهای بله** (inline_keyboard + callback_query با polling tapi.bale.ai) — طراحی پیشنهادی آماده؛ نیازمند: بازرسی `reporting/bale.py` موجود در LIVE، توکن ربات، تصمیم قالب خروجی دکمه‌ها.
+   - طبق `Master_Project_Book_v3.docx` بخش ۱۵: گزارش Bale از خروجی deterministic موتور گزارشدهی تولید میشود؛ منطق جدید مستقل ممنوع.
+   - طبق `Master Project Book.docx` بخش ۱۷: ابزارهای Reporting شامل Excel/Markdown/Bale.
+2. اتصال `data/tsetmc.py` به منبع واقعی TSETMC در LIVE و تولید اولین `latest.json` واقعی.
+3. مستندسازی در GitHub (این سند نقطهٔ شروع است).
+4. موتورهای Decision/Risk/Learning پس از رسیدن دادهٔ واقعی.
+
+---
+
+## بخش ۸ — قواعد پروژه (غیرقابل مذاکره)
+
+- هیچ عددی بدون دادهٔ واقعی.
+- هیچ سیگنالی بدون چکلیست کامل.
+- هیچ دادهٔ قدیمی بدون برچسب زمانی.
+- عدم تحلیل در صورت ناقص بودن داده.
+- عدم بازنویسی ماژولهای موجود LIVE بدون بازرسی اول.

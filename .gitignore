@@ -1,9 +1,6 @@
-data/
-output/
-backup_before_github_engine/
-report_engine.py.before_*
+*.bak
+*.bak_*
+*.backup_*
 __pycache__/
 *.pyc
-.env
-latest_opportunity_shadow.json
-case_memory_shadow.json
+.DS_Store
