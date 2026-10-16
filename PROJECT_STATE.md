@@ -129,3 +129,13 @@ bash ~/deploy_optimus_modules.sh
 - هیچ دادهٔ قدیمی بدون برچسب زمانی.
 - عدم تحلیل در صورت ناقص بودن داده.
 - عدم بازنویسی ماژولهای موجود LIVE بدون بازرسی اول.
+
+## بخش ۹ — مستندسازی گیت و کشف bale_listener (۱۴۰۵/۰۷/۲۴)
+- ریپوی رسمی: https://github.com/abolfazlabasi740-bot/options-report.git
+- کامیت مرجع: a7d0be3 — هفت فایل هستهای ALL_GREEN (بایتبهبایت با بخش ۲ مطابق)
+- کشف مهم: bale_listener.py (840 خط، sha256=3597e5869514fdb9556fde3056ad60da863dc737f0f7809857a1c54f3196e49c) زیرساخت کامل دکمههای شیشهای بله را دارد:
+  - منوی اصلی ۶ دکمهای + زیرمنوها + صفحهبندی symbols_page
+  - polling با getUpdates، پاسخ callback با answer_callback_query
+  - callback_dataها: report_ranked_15، base_stocks، report_last_minute_option_opportunity، report_activity_15، symbols_page:N، system_status، strategy_bull_call_spread، market_shares_page:N، option_shares، trend_review، lmp_opportunities، symbol:NAME، main_menu
+- ⚠️ آیتم «ساخت دکمههای شیشهای» از Backlog حذف و به Do-Not-Rebuild منتقل شد
+- باقیماندهٔ این آیتم: فقط راستیآزمایی وجود هندلر برای همهٔ callback_dataها (دکمهٔ مرده)
