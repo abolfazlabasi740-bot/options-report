@@ -103,6 +103,9 @@ from underlying_trend_engine import fetch_underlying_context
 from bull_call_spread_engine import build_strategy_report
 from bale_market_share_cards import render_page as render_market_share_cards
 from bale_base_share_option_cards import render_page as render_option_base_cards
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
+from lmp_report_module import send_lmp_files, send_lmp_cards
 
 # The active Bale surface has only the two market-ranking glass buttons.
 # Legacy menu definitions remain above for compatibility with old persisted
@@ -110,16 +113,18 @@ from bale_base_share_option_cards import render_page as render_option_base_cards
 MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
 OPTION_SHARES_LABEL = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
 TREND_REVIEW_LABEL = "📈 بررسی روند"
+LMP_OPPORTUNITIES_LABEL = "🎯 فرصت‌های اختیار معامله"
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}],
         [{"text": OPTION_SHARES_LABEL, "callback_data": "option_shares"}],
         [{"text": TREND_REVIEW_LABEL, "callback_data": "trend_review"}],
+        [{"text": LMP_OPPORTUNITIES_LABEL, "callback_data": "lmp_opportunities"}],
     ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
 REPLY_MENU_COMMANDS = {MARKET_SHARES_LABEL: "market_shares", OPTION_SHARES_LABEL: "option_shares"}
-CALLBACK_COMMANDS = {"market_shares": "market_shares", "option_shares": "option_shares"}
+# NOTE: redefinition removed — full CALLBACK_COMMANDS at module top (line ~77)
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -679,10 +684,26 @@ def main():
                             page = 0 if opening else int(callback_data.split(":", 1)[1])
                             report, markup, count, current_page, total_pages = render_option_base_cards(page, refresh=opening)
                             send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data.startswith("symbols_page:"):
+                            page = int(callback_data.split(":", 1)[1])
+                            send_symbol_menu(chat_id, page)
+                        elif callback_data.startswith("symbol:"):
+                            symbol = callback_data.split(":", 1)[1].strip()
+                            if not symbol:
+                                raise ValueError("نماد پایه خالی است")
+                            report = generate_report(symbol)
+                            send_message(chat_id, report)
+                            send_report_menu(chat_id)
                         elif callback_data == "trend_review":
                             report = build_trend_review_report()
                             send_message(chat_id, report)
                             send_report_menu(chat_id)
+                        elif callback_data == "lmp_opportunities":
+                            try:
+                                _lmp_chat = str(((callback.get("message") or {}).get("chat") or {}).get("id") or CHAT_ID)
+                                send_lmp_cards(API, _lmp_chat)
+                            except Exception as _lmp_exc:
+                                requests.post(f"{API}/sendMessage", data={"chat_id": CHAT_ID, "text": "LMP_SEND_FAIL: " + str(_lmp_exc)}, timeout=60)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
                         elif strategy:
@@ -759,6 +780,12 @@ def main():
                     elif text in ("market_shares", MARKET_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_market_share_cards(0)
                         send_message(chat_id, report, reply_markup=markup)
+                    elif text in ("lmp_opportunities", LMP_OPPORTUNITIES_LABEL):
+                        try:
+                            _lmp_chat = str(((update.get("message") or {}).get("chat") or {}).get("id") or CHAT_ID)
+                            send_lmp_cards(API, _lmp_chat)
+                        except Exception as _lmp_exc:
+                            requests.post(f"{API}/sendMessage", data={"chat_id": CHAT_ID, "text": "LMP_SEND_FAIL: " + str(_lmp_exc)}, timeout=60)
                     elif text in ("option_shares", OPTION_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_option_base_cards(0, refresh=True)
                         send_message(chat_id, report, reply_markup=markup)

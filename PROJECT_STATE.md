@@ -139,3 +139,12 @@ bash ~/deploy_optimus_modules.sh
   - callback_dataها: report_ranked_15، base_stocks، report_last_minute_option_opportunity، report_activity_15، symbols_page:N، system_status، strategy_bull_call_spread، market_shares_page:N، option_shares، trend_review، lmp_opportunities، symbol:NAME، main_menu
 - ⚠️ آیتم «ساخت دکمههای شیشهای» از Backlog حذف و به Do-Not-Rebuild منتقل شد
 - باقیماندهٔ این آیتم: فقط راستیآزمایی وجود هندلر برای همهٔ callback_dataها (دکمهٔ مرده)
+
+## بخش ۱۰ — راستیآزمایی و ترمیم دکمههای شیشهای (۱۴۰۵/۰۷/۲۴)
+- ممیزی کامل dispatch انجام شد. نتیجهٔ ۱۳ دکمه:
+  - سالم (۷): market_shares_page، option_shares(_page)، trend_review، lmp_opportunities، main_menu، strategy_bull_call_spread
+  - مرده (۶): report_ranked_15، base_stocks، report_activity_15، report_last_minute_option_opportunity، system_status، symbols_page:N، symbol:NAME
+- ریشهٔ باگ ۵ دکمه: تعریف تکراری CALLBACK_COMMANDS در خط ~127 (shadowing نسخهٔ کامل خط ~77) → حذف شد
+- ریشهٔ باگ نمادها: symbols_page:N و symbol:NAME هندلر callback نداشتند → دو elif با استفاده از send_symbol_menu و generate_report موجود افزوده شد
+- راستیآزمایی: py_compile + تأیید AST دیکشنری نهایی؛ هش و خطوط جدید در گام بعدی ثبت شد
+- آیتم دکمههای شیشهای: بسته (۱۳/۱۳) — Do-Not-Rebuild
