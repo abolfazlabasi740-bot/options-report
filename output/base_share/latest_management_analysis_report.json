@@ -1,0 +1,107 @@
+{
+  "report_version": "MANAGEMENT_ANALYSIS-1.1",
+  "title": "تحلیل",
+  "data_time_label": "داده معاملاتی روز 1405/07/25 (بسته شدن بازار — حدود ساعت ۱۲:۳۰ تهران)؛ بازسازی گزارش: 1405/07/25 — ساعت 20:16",
+  "latest_history_date": "20261017",
+  "latest_history_date_jalali": "1405/07/25",
+  "data_type": "EOD — پایان روز معاملاتی؛ ساعت داده = زمان بسته شدن بازار",
+  "generated_at": "2026-10-17T20:16:59.434198",
+  "source_of_truth": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_plain_symbol_trend_report_rolling7.json",
+  "source_report_sha256": "39b583ea246d1853452e151efc2cccda8164e9ca624e597226c8585132a1507c",
+  "universe_size": 756,
+  "window_sessions": null,
+  "top10": [
+    {
+      "symbol": "ومعلم",
+      "final_score": 95.06,
+      "classification": "A",
+      "return_20_sessions_pct": 11.111111111111116,
+      "rsi_14": 67.16027630701299,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "نزدیک اشباع خرید — نیازمند پایش"
+    },
+    {
+      "symbol": "وهامون",
+      "final_score": 92.05,
+      "classification": "B",
+      "return_20_sessions_pct": 8.298507462686565,
+      "rsi_14": 68.80248195785371,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "نزدیک اشباع خرید — نیازمند پایش"
+    },
+    {
+      "symbol": "ختراك",
+      "final_score": 90.98,
+      "classification": "A",
+      "return_20_sessions_pct": 3.544882790165804,
+      "rsi_14": 65.68623999750922,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "حرارت متعادل — فضای ادامه روند"
+    },
+    {
+      "symbol": "ونيكي",
+      "final_score": 89.45,
+      "classification": "A",
+      "return_20_sessions_pct": 9.824561403508781,
+      "rsi_14": 64.98884372843544,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "حرارت متعادل — فضای ادامه روند"
+    },
+    {
+      "symbol": "ساروج",
+      "final_score": 87.87,
+      "classification": "A",
+      "return_20_sessions_pct": 4.051534158331926,
+      "rsi_14": 60.29347561426253,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "حرارت متعادل — فضای ادامه روند"
+    },
+    {
+      "symbol": "سغرب",
+      "final_score": 87.68,
+      "classification": "B",
+      "return_20_sessions_pct": 17.348203221809165,
+      "rsi_14": 68.98860361755663,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "نزدیک اشباع خرید — نیازمند پایش"
+    },
+    {
+      "symbol": "وامير",
+      "final_score": 86.68,
+      "classification": "B",
+      "return_20_sessions_pct": 10.35923141186299,
+      "rsi_14": 69.70541836900992,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "نزدیک اشباع خرید — نیازمند پایش"
+    },
+    {
+      "symbol": "غپونه",
+      "final_score": 86.26,
+      "classification": "A",
+      "return_20_sessions_pct": -0.10834236186348933,
+      "rsi_14": 60.68337893206344,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "حرارت متعادل — فضای ادامه روند"
+    },
+    {
+      "symbol": "همراه",
+      "final_score": 85.93,
+      "classification": "B",
+      "return_20_sessions_pct": 17.835051546391757,
+      "rsi_14": 74.74989119658053,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "اشباع خرید — ریسک اصلاح کوتاه"
+    },
+    {
+      "symbol": "سخاش",
+      "final_score": 85.91,
+      "classification": "B",
+      "return_20_sessions_pct": 16.730621642363786,
+      "rsi_14": 74.30522402639662,
+      "buy_sell_signal": "NOT_GENERATED",
+      "management_note": "اشباع خرید — ریسک اصلاح کوتاه"
+    }
+  ],
+  "fundamental_layer": "داده موجود نیست — لایه Codal هنوز ادغام نشده",
+  "trade_permission": "NOT_PERMITTED — سیگنال قطعی مطابق منشور تولید نمیشود؛ تصمیم با Decision Engine"
+}

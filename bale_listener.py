@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from scripts.management_report_module import send_mgmt_card
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import os
@@ -120,6 +121,7 @@ MENU_MARKUP = {
         [{"text": OPTION_SHARES_LABEL, "callback_data": "option_shares"}],
         [{"text": TREND_REVIEW_LABEL, "callback_data": "trend_review"}],
         [{"text": LMP_OPPORTUNITIES_LABEL, "callback_data": "lmp_opportunities"}],
+        [{"text": "📊 تحلیل مدیریتی", "callback_data": "mgmt_analysis"}],
     ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
@@ -698,6 +700,8 @@ def main():
                             report = build_trend_review_report()
                             send_message(chat_id, report)
                             send_report_menu(chat_id)
+                        elif callback_data == "mgmt_analysis":
+                            send_mgmt_card(API, str(chat_id))
                         elif callback_data == "lmp_opportunities":
                             try:
                                 _lmp_chat = str(((callback.get("message") or {}).get("chat") or {}).get("id") or CHAT_ID)
@@ -730,6 +734,8 @@ def main():
                         save_offset(next_offset)
                         offset = next_offset
                     except Exception as e:
+                        print(f"CALLBACK_HANDLER_ERROR: {type(e).__name__}: {e}", flush=True)
+                        import traceback; traceback.print_exc()
                         print(
                             f"REPORT_ERROR type={type(e).__name__}"
                         )
