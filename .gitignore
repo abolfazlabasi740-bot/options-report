@@ -1,6 +1,22 @@
-*.bak
-*.bak_*
-*.backup_*
+# --- Logs & runtime ---
+nohup.out
+logs/
+output/logs/
+*.log
+*.pid
+
+# --- Backups & temp ---
+*.bak*
+*.before_*
+tmp_*
+_*.sh
+backup_*/
+
+# --- Raw / volatile data ---
+data/raw/
+output/bale_listener_state.json
+output/crond_watchdog.log
+
+# --- Python ---
 __pycache__/
 *.pyc
-.DS_Store
