@@ -490,7 +490,7 @@ def answer_callback_query(callback_query_id):
     r.raise_for_status()
     data = r.json()
     if not data.get("ok"):
-        raise RuntimeError("Bale answerCallbackQuery rejected")
+        print(f"CALLBACK_ACK_REJECTED payload={data}", flush=True)
 
 
 def _underlying_symbols():
