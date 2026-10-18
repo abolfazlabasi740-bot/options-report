@@ -1,9 +1,9 @@
 {
  "report_version": "PLAIN_SYMBOL_TREND_SHORTLIST-1.0",
- "generated_at": "2026-10-17T19:53:17.612289+03:30",
+ "generated_at": "2026-10-18T14:06:07.660285+03:30",
  "source_of_truth": "TSETMC",
  "source_report": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_whole_market_opportunity_report.json",
- "source_report_sha256": "67c7c929c1bbf7cd77512a1862f59b6c06d9ce7957f75b506051578ec507988c",
+ "source_report_sha256": "c0df90e8d0e284a2f0e9c45158a5b9ab091e0bfb6efdc903326760ad3e984a6d",
  "latest_history_date": "20261017",
  "latest_history_date_jalali": "1405/07/25",
  "source_row_count": 762,
@@ -22618,223 +22618,6 @@
    "source": "TSETMC"
   },
   {
-   "instrument_id": "65122215875355555",
-   "symbol": "شفن",
-   "name": "پتروشيمي فناوران",
-   "sector_code": "44",
-   "sector_name": "محصولات شيميايي",
-   "subsector_code": "4411",
-   "subsector_name": "توليد مواد شيميايي پايه به جز كود",
-   "market_title": "بازار اول (تابلوی فرعی) بورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 78.03,
-   "classification": "B",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 95.74,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 74.29,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 100.0,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 50.3,
-     "coverage_weight": 7.25,
-     "available_signals": 5
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 63.0,
-     "coverage_weight": 5.0,
-     "available_signals": 7
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 85.32325191755926,
-   "return_5_sessions_pct": 14.336917562724016,
-   "return_20_sessions_pct": 34.78873239436619,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "RECOVERY_BOUNCE",
-   "warnings": [
-    "RSI_OVERBOUGHT_ENTRY_PENALTY",
-    "RSI_EXTREME_OVERBOUGHT",
-    "HIGH_TREND_SCORE_BUT_POOR_ENTRY_TIMING",
-    "MATURE_MOVE_NOT_EARLY_ENTRY"
-   ],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 9470.0,
-   "last_close": 9570.0,
-   "sma_5": 9118.0,
-   "sma_10": 8528.0,
-   "sma_20": 7999.5,
-   "sma_50": 6667.6,
-   "macd_12_26": 739.2553596697944,
-   "volume_ratio_5_to_20": 2.0426477665474083,
-   "value_ratio_5_to_20": 2.2216277744999466,
-   "early_move": {
-    "status": "PASS",
-    "score": 85.71,
-    "state": "EARLY_UPSIDE_CONFIRMATION",
-    "price_change_1_session_pct": 1.8085106382978777,
-    "price_change_3_sessions_pct": 7.891770011273946,
-    "sma20_slope_5_sessions_pct": 7.088353413654613,
-    "rsi_change_1_session": 0.9797120088858264,
-    "macd_change_1_session": 42.62916810234037,
-    "volume_ratio_change_1_session": 0.4057685640145645,
-    "breakout_above_prior_20_high": true,
-    "positive_components": 6,
-    "negative_components": 0,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "DEVELOPING",
-     "confidence": "LOW",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261011",
-      "VALUE_EXPANSION": "20261011",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.952,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "VOLUME_EXPANSION",
-       "strength": 4.145
-      },
-      {
-       "date": "20261011",
-       "event": "VALUE_EXPANSION",
-       "strength": 4.335
-      },
-      {
-       "date": "20261011",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.987,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.931,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.957,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261017",
-       "event": "VOLUME_EXPANSION",
-       "strength": 2.956
-      },
-      {
-       "date": "20261017",
-       "event": "VALUE_EXPANSION",
-       "strength": 3.207
-      },
-      {
-       "date": "20261017",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": 1.8085106382978777,
-     "sequence_direction": "BULLISH",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
    "instrument_id": "20926459161497908",
    "symbol": "ثتران",
    "name": "سرمايه گذاري مسكن تهران",
@@ -24301,207 +24084,6 @@
    "source": "TSETMC"
   },
   {
-   "instrument_id": "28033133021443774",
-   "symbol": "خفنر",
-   "name": "فنرسازي‌خاور",
-   "sector_code": "34",
-   "sector_name": "خودرو و ساخت قطعات",
-   "subsector_code": "3430",
-   "subsector_name": "قطعات يدكي و جانبي وسايل نقليه موتوري",
-   "market_title": "بازار اول (تابلوی فرعی) بورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 77.7,
-   "classification": "A",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 62.76,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 89.41,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 60.08,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 63.43,
-     "coverage_weight": 3.75,
-     "available_signals": 3
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 90.28,
-     "coverage_weight": 4.5,
-     "available_signals": 6
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 62.699891138216046,
-   "return_5_sessions_pct": 6.77830940988835,
-   "return_20_sessions_pct": 5.474596297755019,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "NO_CORRECTION_EVIDENCE",
-   "warnings": [],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 2672.0,
-   "last_close": 2678.0,
-   "sma_5": 2662.8,
-   "sma_10": 2534.3,
-   "sma_20": 2478.2,
-   "sma_50": 2456.18,
-   "macd_12_26": 60.97745918914961,
-   "volume_ratio_5_to_20": 1.105866231770949,
-   "value_ratio_5_to_20": 1.1820549206049995,
-   "early_move": {
-    "status": "PASS",
-    "score": 14.29,
-    "state": "BUILDING_UPSIDE",
-    "price_change_1_session_pct": -2.7596223674655085,
-    "price_change_3_sessions_pct": 1.747720364741645,
-    "sma20_slope_5_sessions_pct": 1.732348111658455,
-    "rsi_change_1_session": -7.066527042442459,
-    "macd_change_1_session": 6.571374812409886,
-    "volume_ratio_change_1_session": -0.06090863704309735,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 3,
-    "negative_components": 2,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "DEVELOPING",
-     "confidence": "LOW",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261011",
-      "VALUE_EXPANSION": "20261011",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.913,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "VOLUME_EXPANSION",
-       "strength": 2.743
-      },
-      {
-       "date": "20261011",
-       "event": "VALUE_EXPANSION",
-       "strength": 2.838
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.973,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "VALUE_EXPANSION",
-       "strength": 1.222
-      },
-      {
-       "date": "20261013",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261017",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.76,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261017",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -2.7596223674655085,
-     "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
    "instrument_id": "68117765376081366",
    "symbol": "وتوس",
    "name": "توسعه‌شهري‌توس‌گستر",
@@ -24932,6 +24514,207 @@
      ],
      "sessions_evaluated": 7,
      "latest_session_return_pct": -2.8061224489795866,
+     "sequence_direction": "MIXED",
+     "distance_to_upper_limit_pct": null,
+     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+     "production_gate": "OFF"
+    }
+   },
+   "history_reason": null,
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "28033133021443774",
+   "symbol": "خفنر",
+   "name": "فنرسازي‌خاور",
+   "sector_code": "34",
+   "sector_name": "خودرو و ساخت قطعات",
+   "subsector_code": "3430",
+   "subsector_name": "قطعات يدكي و جانبي وسايل نقليه موتوري",
+   "market_title": "بازار اول (تابلوی فرعی) بورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": 77.67,
+   "classification": "A",
+   "confidence": "HIGH_EVIDENCE_COVERAGE",
+   "evidence_coverage_pct": 90.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": 100.0,
+     "coverage_weight": 9.0,
+     "available_signals": 4
+    },
+    "momentum": {
+     "score": 62.76,
+     "coverage_weight": 3.5,
+     "available_signals": 4
+    },
+    "technical": {
+     "score": 89.41,
+     "coverage_weight": 3.5,
+     "available_signals": 4
+    },
+    "volume_value": {
+     "score": 59.93,
+     "coverage_weight": 3.25,
+     "available_signals": 4
+    },
+    "early_move": {
+     "score": 63.43,
+     "coverage_weight": 3.75,
+     "available_signals": 3
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": 90.28,
+     "coverage_weight": 4.5,
+     "available_signals": 6
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": 62.699891138216046,
+   "return_5_sessions_pct": 6.77830940988835,
+   "return_20_sessions_pct": 5.474596297755019,
+   "trend_state": "UP_TREND_STRUCTURE",
+   "correction_state": "NO_CORRECTION_EVIDENCE",
+   "warnings": [],
+   "unavailable_families": [
+    "board"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "PASS",
+   "history_count": 100,
+   "latest_market_date": "20261017",
+   "latest_market_date_jalali": "1405/07/25",
+   "last_price": 2672.0,
+   "last_close": 2678.0,
+   "sma_5": 2662.8,
+   "sma_10": 2534.3,
+   "sma_20": 2478.2,
+   "sma_50": 2456.18,
+   "macd_12_26": 60.97745918914961,
+   "volume_ratio_5_to_20": 1.1042529185405003,
+   "value_ratio_5_to_20": 1.180415869563666,
+   "early_move": {
+    "status": "PASS",
+    "score": 14.29,
+    "state": "BUILDING_UPSIDE",
+    "price_change_1_session_pct": -2.7596223674655085,
+    "price_change_3_sessions_pct": 1.747720364741645,
+    "sma20_slope_5_sessions_pct": 1.732348111658455,
+    "rsi_change_1_session": -7.066527042442459,
+    "macd_change_1_session": 6.571374812409886,
+    "volume_ratio_change_1_session": -0.06100880931677266,
+    "breakout_above_prior_20_high": false,
+    "positive_components": 3,
+    "negative_components": 2,
+    "available_components": 7,
+    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+    "production_gate": "OFF",
+    "pre_lock_sequence": {
+     "status": "PASS",
+     "state": "DEVELOPING",
+     "confidence": "LOW",
+     "sequence": "VOLUME → PRICE → MOMENTUM",
+     "event_first_dates": {
+      "VOLUME_EXPANSION": "20261011",
+      "VALUE_EXPANSION": "20261011",
+      "PRICE_ACCELERATION": "20261010",
+      "MOMENTUM_IMPROVEMENT": "20261010"
+     },
+     "events": [
+      {
+       "date": "20261010",
+       "event": "PRICE_ACCELERATION",
+       "strength": 2.913,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261010",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261011",
+       "event": "VOLUME_EXPANSION",
+       "strength": 2.728
+      },
+      {
+       "date": "20261011",
+       "event": "VALUE_EXPANSION",
+       "strength": 2.822
+      },
+      {
+       "date": "20261011",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261012",
+       "event": "PRICE_ACCELERATION",
+       "strength": 2.973,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261012",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261013",
+       "event": "VALUE_EXPANSION",
+       "strength": 1.225
+      },
+      {
+       "date": "20261013",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261014",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      },
+      {
+       "date": "20261017",
+       "event": "PRICE_ACCELERATION",
+       "strength": -2.76,
+       "direction": "BEARISH"
+      },
+      {
+       "date": "20261017",
+       "event": "MOMENTUM_IMPROVEMENT",
+       "strength": 1.0,
+       "direction": "BULLISH"
+      }
+     ],
+     "sessions_evaluated": 7,
+     "latest_session_return_pct": -2.7596223674655085,
      "sequence_direction": "MIXED",
      "distance_to_upper_limit_pct": null,
      "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
@@ -27470,200 +27253,6 @@
    "source": "TSETMC"
   },
   {
-   "instrument_id": "43781018754867729",
-   "symbol": "شفارس",
-   "name": "صنايع‌ شيميايي‌ فارس‌",
-   "sector_code": "44",
-   "sector_name": "محصولات شيميايي",
-   "subsector_code": "4411",
-   "subsector_name": "توليد مواد شيميايي پايه به جز كود",
-   "market_title": "بازار اول (تابلوی اصلی) بورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 77.03,
-   "classification": "A",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 20.3,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 83.93,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 100.0,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 57.71,
-     "coverage_weight": 3.75,
-     "available_signals": 3
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 87.75,
-     "coverage_weight": 5.0,
-     "available_signals": 7
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 57.29868777822148,
-   "return_5_sessions_pct": -5.219780219780223,
-   "return_20_sessions_pct": 1.5559293523969675,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "CORRECTION_IN_UPTREND",
-   "warnings": [],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 2386.0,
-   "last_close": 2415.0,
-   "sma_5": 2510.8,
-   "sma_10": 2478.6,
-   "sma_20": 2345.6,
-   "sma_50": 2140.66,
-   "macd_12_26": 106.06968471911568,
-   "volume_ratio_5_to_20": 1.6389135019303778,
-   "value_ratio_5_to_20": 1.7310545130724673,
-   "early_move": {
-    "status": "PASS",
-    "score": -42.86,
-    "state": "EARLY_DOWNSIDE_CONFIRMATION",
-    "price_change_1_session_pct": -1.7893452623017447,
-    "price_change_3_sessions_pct": -5.884645362431796,
-    "sma20_slope_5_sessions_pct": 1.8342848459852013,
-    "rsi_change_1_session": -3.971182578945026,
-    "macd_change_1_session": -10.683244480956091,
-    "volume_ratio_change_1_session": -0.07610371476093003,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 1,
-    "negative_components": 4,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "DEVELOPING",
-     "confidence": "LOW",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261011",
-      "VALUE_EXPANSION": "20261011",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 1.798,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "VOLUME_EXPANSION",
-       "strength": 3.212
-      },
-      {
-       "date": "20261011",
-       "event": "VALUE_EXPANSION",
-       "strength": 3.307
-      },
-      {
-       "date": "20261011",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.08,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "VOLUME_EXPANSION",
-       "strength": 2.906
-      },
-      {
-       "date": "20261013",
-       "event": "VALUE_EXPANSION",
-       "strength": 2.841
-      },
-      {
-       "date": "20261013",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.065,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261014",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.149,
-       "direction": "BEARISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -1.7893452623017447,
-     "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
    "instrument_id": "37842793167868642",
    "symbol": "غويتا",
    "name": "ويتانا",
@@ -29054,200 +28643,6 @@
      ],
      "sessions_evaluated": 7,
      "latest_session_return_pct": -2.9927319367251015,
-     "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
-   "instrument_id": "11427387039523955",
-   "symbol": "شفام",
-   "name": "توليدي و صنعتي گوهرفام",
-   "sector_code": "44",
-   "sector_name": "محصولات شيميايي",
-   "subsector_code": "4422",
-   "subsector_name": "توليد رنگ، بتونه، جوهر",
-   "market_title": "بازار اول فرابورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 76.86,
-   "classification": "A",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 18.81,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 83.93,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 100.0,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 57.71,
-     "coverage_weight": 3.75,
-     "available_signals": 3
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 87.75,
-     "coverage_weight": 5.0,
-     "available_signals": 7
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 54.97546961937777,
-   "return_5_sessions_pct": -9.337349397590366,
-   "return_20_sessions_pct": 3.7215713301171682,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "CORRECTION_IN_UPTREND",
-   "warnings": [],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 3010.0,
-   "last_close": 3010.0,
-   "sma_5": 3152.0,
-   "sma_10": 3144.0,
-   "sma_20": 2915.05,
-   "sma_50": 2723.56,
-   "macd_12_26": 136.44462299409224,
-   "volume_ratio_5_to_20": 1.7964200378692246,
-   "value_ratio_5_to_20": 1.908389460654189,
-   "early_move": {
-    "status": "PASS",
-    "score": -42.86,
-    "state": "EARLY_DOWNSIDE_CONFIRMATION",
-    "price_change_1_session_pct": -2.9032258064516148,
-    "price_change_3_sessions_pct": -5.642633228840122,
-    "sma20_slope_5_sessions_pct": 2.0050739217916336,
-    "rsi_change_1_session": -5.456087326537109,
-    "macd_change_1_session": -16.33756159234099,
-    "volume_ratio_change_1_session": -0.09035510776232547,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 1,
-    "negative_components": 4,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "DEVELOPING",
-     "confidence": "LOW",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261011",
-      "VALUE_EXPANSION": "20261011",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.85,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "VOLUME_EXPANSION",
-       "strength": 4.252
-      },
-      {
-       "date": "20261011",
-       "event": "VALUE_EXPANSION",
-       "strength": 4.255
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.446,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261012",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "VOLUME_EXPANSION",
-       "strength": 2.6
-      },
-      {
-       "date": "20261013",
-       "event": "VALUE_EXPANSION",
-       "strength": 2.541
-      },
-      {
-       "date": "20261014",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.821,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261017",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.903,
-       "direction": "BEARISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -2.9032258064516148,
      "sequence_direction": "MIXED",
      "distance_to_upper_limit_pct": null,
      "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
@@ -48979,216 +48374,6 @@
    "source": "TSETMC"
   },
   {
-   "instrument_id": "12387472624849835",
-   "symbol": "داسوه",
-   "name": "داروسازي‌ اسوه‌",
-   "sector_code": "43",
-   "sector_name": "مواد و محصولات دارويي",
-   "subsector_code": "4323",
-   "subsector_name": "توليد داروهاي شيميايي و گياهي",
-   "market_title": "بازار دوم (تابلوی فرعی) بورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 73.12,
-   "classification": "B",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 48.52,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 76.79,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 66.16,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 59.86,
-     "coverage_weight": 5.25,
-     "available_signals": 4
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 83.61,
-     "coverage_weight": 4.5,
-     "available_signals": 6
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 67.293051171971,
-   "return_5_sessions_pct": -3.0794165316045397,
-   "return_20_sessions_pct": 31.14035087719298,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "NO_CORRECTION_EVIDENCE",
-   "warnings": [],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 119500.0,
-   "last_close": 119600.0,
-   "sma_5": 120300.0,
-   "sma_10": 118520.0,
-   "sma_20": 107278.0,
-   "sma_50": 97192.2,
-   "macd_12_26": 8038.574596294551,
-   "volume_ratio_5_to_20": 1.2100626092471838,
-   "value_ratio_5_to_20": 1.3524247272760321,
-   "early_move": {
-    "status": "PASS",
-    "score": -28.57,
-    "state": "EARLY_DOWNSIDE_CONFIRMATION",
-    "price_change_1_session_pct": -2.843216896831846,
-    "price_change_3_sessions_pct": 1.7872340425531874,
-    "sma20_slope_5_sessions_pct": 5.793714189915478,
-    "rsi_change_1_session": -6.6842028625312935,
-    "macd_change_1_session": -247.41795713518513,
-    "volume_ratio_change_1_session": -0.2829042565217341,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 2,
-    "negative_components": 4,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "EARLY",
-     "confidence": "HIGH",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261010",
-      "VALUE_EXPANSION": "20261010",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "VOLUME_EXPANSION",
-       "strength": 77.518
-      },
-      {
-       "date": "20261010",
-       "event": "VALUE_EXPANSION",
-       "strength": 79.761
-      },
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.919,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.973,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261013",
-       "event": "VOLUME_EXPANSION",
-       "strength": 4.39
-      },
-      {
-       "date": "20261013",
-       "event": "VALUE_EXPANSION",
-       "strength": 4.325
-      },
-      {
-       "date": "20261013",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "VOLUME_EXPANSION",
-       "strength": 1.738
-      },
-      {
-       "date": "20261014",
-       "event": "VALUE_EXPANSION",
-       "strength": 1.768
-      },
-      {
-       "date": "20261014",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.413,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261017",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.843,
-       "direction": "BEARISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -2.843216896831846,
-     "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
    "instrument_id": "23374429962331387",
    "symbol": "كتوسعه",
    "name": "توسعه صنايع و معادن كوثر",
@@ -61539,230 +60724,6 @@
      "sessions_evaluated": 7,
      "latest_session_return_pct": -2.967121090617486,
      "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
-   "instrument_id": "5305844922895340",
-   "symbol": "داوه",
-   "name": "داروسازي آوه سينا",
-   "sector_code": "43",
-   "sector_name": "مواد و محصولات دارويي",
-   "subsector_code": "4323",
-   "subsector_name": "توليد داروهاي شيميايي و گياهي",
-   "market_title": "بازار اول فرابورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 70.45,
-   "classification": "B",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 100.0,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 80.51,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 74.29,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 70.45,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 51.96,
-     "coverage_weight": 6.75,
-     "available_signals": 5
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 55.0,
-     "coverage_weight": 4.5,
-     "available_signals": 6
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 87.07039804059403,
-   "return_5_sessions_pct": 4.902506963788311,
-   "return_20_sessions_pct": 44.623655913978496,
-   "trend_state": "UP_TREND_STRUCTURE",
-   "correction_state": "NO_CORRECTION_EVIDENCE",
-   "warnings": [
-    "RSI_OVERBOUGHT_ENTRY_PENALTY",
-    "RSI_EXTREME_OVERBOUGHT",
-    "HIGH_TREND_SCORE_BUT_POOR_ENTRY_TIMING"
-   ],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 18560.0,
-   "last_close": 18830.0,
-   "sma_5": 18524.0,
-   "sma_10": 17734.0,
-   "sma_20": 15748.0,
-   "sma_50": 12594.4,
-   "macd_12_26": 1862.6996893240976,
-   "volume_ratio_5_to_20": 1.1222072463943256,
-   "value_ratio_5_to_20": 1.3767085715299736,
-   "early_move": {
-    "status": "PASS",
-    "score": 28.57,
-    "state": "EARLY_UPSIDE_CONFIRMATION",
-    "price_change_1_session_pct": -1.5682174594877196,
-    "price_change_3_sessions_pct": 4.3791574279379075,
-    "sma20_slope_5_sessions_pct": 8.84334934512907,
-    "rsi_change_1_session": -5.547702603808574,
-    "macd_change_1_session": 0.5918136991440406,
-    "volume_ratio_change_1_session": 0.38273125328430246,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 4,
-    "negative_components": 2,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "EARLY",
-     "confidence": "HIGH",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261010",
-      "VALUE_EXPANSION": "20261010",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261010"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "VOLUME_EXPANSION",
-       "strength": 3.559
-      },
-      {
-       "date": "20261010",
-       "event": "VALUE_EXPANSION",
-       "strength": 3.666
-      },
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.983,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261010",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261011",
-       "event": "VOLUME_EXPANSION",
-       "strength": 5.459
-      },
-      {
-       "date": "20261011",
-       "event": "VALUE_EXPANSION",
-       "strength": 5.521
-      },
-      {
-       "date": "20261011",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261012",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "PRICE_ACCELERATION",
-       "strength": 2.993,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261013",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "VOLUME_EXPANSION",
-       "strength": 1.918
-      },
-      {
-       "date": "20261014",
-       "event": "VALUE_EXPANSION",
-       "strength": 2.034
-      },
-      {
-       "date": "20261014",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261017",
-       "event": "VOLUME_EXPANSION",
-       "strength": 4.577
-      },
-      {
-       "date": "20261017",
-       "event": "VALUE_EXPANSION",
-       "strength": 4.688
-      },
-      {
-       "date": "20261017",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -1.5682174594877196,
-     "sequence_direction": "BULLISH",
      "distance_to_upper_limit_pct": null,
      "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
      "production_gate": "OFF"
@@ -101160,7 +100121,7 @@
      "available_signals": 4
     },
     "volume_value": {
-     "score": 2.1,
+     "score": 2.09,
      "coverage_weight": 3.25,
      "available_signals": 4
     },
@@ -101218,8 +100179,8 @@
    "sma_20": 2431.55,
    "sma_50": 2325.28,
    "macd_12_26": 73.4779130294769,
-   "volume_ratio_5_to_20": 0.5447353152083225,
-   "value_ratio_5_to_20": 0.5483624803576083,
+   "volume_ratio_5_to_20": 0.544489162343448,
+   "value_ratio_5_to_20": 0.5481136006092445,
    "early_move": {
     "status": "PASS",
     "score": -57.14,
@@ -101229,7 +100190,7 @@
     "sma20_slope_5_sessions_pct": 1.924003940225938,
     "rsi_change_1_session": -5.918005181369018,
     "macd_change_1_session": -8.015934593964175,
-    "volume_ratio_change_1_session": -0.22598266067894635,
+    "volume_ratio_change_1_session": -0.2260013834589677,
     "breakout_above_prior_20_high": false,
     "positive_components": 1,
     "negative_components": 5,
@@ -101267,12 +100228,12 @@
       {
        "date": "20261011",
        "event": "VOLUME_EXPANSION",
-       "strength": 1.369
+       "strength": 1.368
       },
       {
        "date": "20261011",
        "event": "VALUE_EXPANSION",
-       "strength": 1.323
+       "strength": 1.322
       },
       {
        "date": "20261012",
@@ -132869,7 +131830,7 @@
    "subsector_name": "مشاوره و تهيه نرم افزار",
    "market_title": "بازار اول (تابلوی فرعی) بورس",
    "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 47.67,
+   "final_score": 47.66,
    "classification": "C",
    "confidence": "HIGH_EVIDENCE_COVERAGE",
    "evidence_coverage_pct": 90.0,
@@ -132891,7 +131852,7 @@
      "available_signals": 4
     },
     "volume_value": {
-     "score": 68.57,
+     "score": 68.56,
      "coverage_weight": 3.25,
      "available_signals": 4
     },
@@ -137922,184 +136883,6 @@
    "source": "TSETMC"
   },
   {
-   "instrument_id": "66450490505950110",
-   "symbol": "ددام",
-   "name": "داروسازي زاگرس فارمد پارس",
-   "sector_code": "43",
-   "sector_name": "مواد و محصولات دارويي",
-   "subsector_code": "4323",
-   "subsector_name": "توليد داروهاي شيميايي و گياهي",
-   "market_title": "بازار دوم (تابلوی اصلی) بورس",
-   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
-   "final_score": 43.82,
-   "classification": "C",
-   "confidence": "HIGH_EVIDENCE_COVERAGE",
-   "evidence_coverage_pct": 90.0,
-   "minimum_evidence_coverage_pct": 70.0,
-   "components": {
-    "trend": {
-     "score": 61.11,
-     "coverage_weight": 9.0,
-     "available_signals": 4
-    },
-    "momentum": {
-     "score": 6.21,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "technical": {
-     "score": 37.54,
-     "coverage_weight": 3.5,
-     "available_signals": 4
-    },
-    "volume_value": {
-     "score": 10.51,
-     "coverage_weight": 3.25,
-     "available_signals": 4
-    },
-    "early_move": {
-     "score": 54.86,
-     "coverage_weight": 3.75,
-     "available_signals": 3
-    },
-    "board": {
-     "score": null,
-     "coverage_weight": 0.0,
-     "available_signals": 0
-    },
-    "entry_quality": {
-     "score": 76.5,
-     "coverage_weight": 5.0,
-     "available_signals": 7
-    }
-   },
-   "weights": {
-    "trend": 15.0,
-    "momentum": 10.0,
-    "technical": 15.0,
-    "volume_value": 15.0,
-    "early_move": 20.0,
-    "board": 10.0,
-    "entry_quality": 15.0
-   },
-   "rsi_14": 43.01812544038364,
-   "return_5_sessions_pct": -8.365910867865523,
-   "return_20_sessions_pct": -14.825581395348841,
-   "trend_state": "MIXED_STRUCTURE",
-   "correction_state": "CORRECTION_IN_UPTREND",
-   "warnings": [],
-   "unavailable_families": [
-    "board"
-   ],
-   "policy": {
-    "source_of_truth": "TSETMC",
-    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
-    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
-    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
-    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
-    "buy_sell_signal": "NOT_GENERATED"
-   },
-   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
-   "history_status": "PASS",
-   "history_count": 100,
-   "latest_market_date": "20261017",
-   "latest_market_date_jalali": "1405/07/25",
-   "last_price": 11720.0,
-   "last_close": 11720.0,
-   "sma_5": 12046.0,
-   "sma_10": 12325.0,
-   "sma_20": 12627.0,
-   "sma_50": 11409.0,
-   "macd_12_26": 53.719416766001814,
-   "volume_ratio_5_to_20": 0.7611564688642961,
-   "value_ratio_5_to_20": 0.7193211281676795,
-   "early_move": {
-    "status": "PASS",
-    "score": -71.43,
-    "state": "EARLY_DOWNSIDE_CONFIRMATION",
-    "price_change_1_session_pct": -2.98013245033113,
-    "price_change_3_sessions_pct": -2.657807308970095,
-    "sma20_slope_5_sessions_pct": -4.217552909049537,
-    "rsi_change_1_session": -3.9776730445407296,
-    "macd_change_1_session": -68.8610415971416,
-    "volume_ratio_change_1_session": -0.07772606365598,
-    "breakout_above_prior_20_high": false,
-    "positive_components": 0,
-    "negative_components": 5,
-    "available_components": 7,
-    "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
-    "production_gate": "OFF",
-    "pre_lock_sequence": {
-     "status": "PASS",
-     "state": "DEVELOPING",
-     "confidence": "LOW",
-     "sequence": "VOLUME → PRICE → MOMENTUM",
-     "event_first_dates": {
-      "VOLUME_EXPANSION": "20261013",
-      "VALUE_EXPANSION": "20261013",
-      "PRICE_ACCELERATION": "20261010",
-      "MOMENTUM_IMPROVEMENT": "20261014"
-     },
-     "events": [
-      {
-       "date": "20261010",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.664,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261011",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.971,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261012",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.981,
-       "direction": "BEARISH"
-      },
-      {
-       "date": "20261013",
-       "event": "VOLUME_EXPANSION",
-       "strength": 2.519
-      },
-      {
-       "date": "20261013",
-       "event": "VALUE_EXPANSION",
-       "strength": 2.359
-      },
-      {
-       "date": "20261014",
-       "event": "PRICE_ACCELERATION",
-       "strength": 0.835,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261014",
-       "event": "MOMENTUM_IMPROVEMENT",
-       "strength": 1.0,
-       "direction": "BULLISH"
-      },
-      {
-       "date": "20261017",
-       "event": "PRICE_ACCELERATION",
-       "strength": -2.98,
-       "direction": "BEARISH"
-      }
-     ],
-     "sessions_evaluated": 7,
-     "latest_session_return_pct": -2.98013245033113,
-     "sequence_direction": "MIXED",
-     "distance_to_upper_limit_pct": null,
-     "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
-     "production_gate": "OFF"
-    }
-   },
-   "history_reason": null,
-   "source": "TSETMC"
-  },
-  {
    "instrument_id": "42690477960659940",
    "symbol": "كشرق",
    "name": "صنعتي و معدني شمال شرق شاهرود",
@@ -142523,7 +141306,7 @@
      "available_signals": 4
     },
     "technical": {
-     "score": 24.52,
+     "score": 24.51,
      "coverage_weight": 3.5,
      "available_signals": 4
     },
@@ -142557,7 +141340,7 @@
     "board": 10.0,
     "entry_quality": 15.0
    },
-   "rsi_14": 36.63889643993573,
+   "rsi_14": 36.63836203688992,
    "return_5_sessions_pct": -5.334914048606998,
    "return_20_sessions_pct": -12.44517543859649,
    "trend_state": "DOWN_TREND_STRUCTURE",
@@ -142586,8 +141369,8 @@
    "sma_5": 1648.4,
    "sma_10": 1700.1,
    "sma_20": 1717.65,
-   "sma_50": 1752.62,
-   "macd_12_26": -36.35914587793377,
+   "sma_50": 1752.64,
+   "macd_12_26": -36.36509488779848,
    "volume_ratio_5_to_20": 1.2168357246103827,
    "value_ratio_5_to_20": 1.168897528906836,
    "early_move": {
@@ -142597,8 +141380,8 @@
     "price_change_1_session_pct": -2.8588807785888126,
     "price_change_3_sessions_pct": -5.222551928783381,
     "sma20_slope_5_sessions_pct": -2.649625935162092,
-    "rsi_change_1_session": -3.564170350854077,
-    "macd_change_1_session": -6.65933611143214,
+    "rsi_change_1_session": -3.564061323009895,
+    "macd_change_1_session": -6.658948466369566,
     "volume_ratio_change_1_session": -0.011686595331228178,
     "breakout_above_prior_20_high": false,
     "positive_components": 0,
@@ -147910,6 +146693,630 @@
    },
    "history_reason": null,
    "source": "TSETMC"
+  },
+  {
+   "instrument_id": "12387472624849835",
+   "symbol": "داسوه",
+   "name": "داروسازي‌ اسوه‌",
+   "sector_code": "43",
+   "sector_name": "مواد و محصولات دارويي",
+   "subsector_code": "4323",
+   "subsector_name": "توليد داروهاي شيميايي و گياهي",
+   "market_title": "بازار دوم (تابلوی فرعی) بورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/12387472624849835/100?__optimusai_ts=1792319708699089528: The read operation timed out",
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "5305844922895340",
+   "symbol": "داوه",
+   "name": "داروسازي آوه سينا",
+   "sector_code": "43",
+   "sector_name": "مواد و محصولات دارويي",
+   "subsector_code": "4323",
+   "subsector_name": "توليد داروهاي شيميايي و گياهي",
+   "market_title": "بازار اول فرابورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/5305844922895340/100?__optimusai_ts=1792319708852985153: HTTP Error 502: Bad Gateway",
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "66450490505950110",
+   "symbol": "ددام",
+   "name": "داروسازي زاگرس فارمد پارس",
+   "sector_code": "43",
+   "sector_name": "مواد و محصولات دارويي",
+   "subsector_code": "4323",
+   "subsector_name": "توليد داروهاي شيميايي و گياهي",
+   "market_title": "بازار دوم (تابلوی اصلی) بورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/66450490505950110/100?__optimusai_ts=1792319709754984879: HTTP Error 502: Bad Gateway",
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "43781018754867729",
+   "symbol": "شفارس",
+   "name": "صنايع‌ شيميايي‌ فارس‌",
+   "sector_code": "44",
+   "sector_name": "محصولات شيميايي",
+   "subsector_code": "4411",
+   "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+   "market_title": "بازار اول (تابلوی اصلی) بورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/43781018754867729/100?__optimusai_ts=1792319727139857496: <urlopen error _ssl.c:1064: The ha",
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "11427387039523955",
+   "symbol": "شفام",
+   "name": "توليدي و صنعتي گوهرفام",
+   "sector_code": "44",
+   "sector_name": "محصولات شيميايي",
+   "subsector_code": "4422",
+   "subsector_name": "توليد رنگ، بتونه، جوهر",
+   "market_title": "بازار اول فرابورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/11427387039523955/100?__optimusai_ts=1792319727812378395: <urlopen error _ssl.c:1064: The ha",
+   "source": "TSETMC"
+  },
+  {
+   "instrument_id": "65122215875355555",
+   "symbol": "شفن",
+   "name": "پتروشيمي فناوران",
+   "sector_code": "44",
+   "sector_name": "محصولات شيميايي",
+   "subsector_code": "4411",
+   "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+   "market_title": "بازار اول (تابلوی فرعی) بورس",
+   "engine_version": "BASE-SHARE-OPPORTUNITY-ENGINE-V2.2",
+   "final_score": null,
+   "classification": "C",
+   "confidence": "INSUFFICIENT_DATA",
+   "evidence_coverage_pct": 0.0,
+   "minimum_evidence_coverage_pct": 70.0,
+   "components": {
+    "trend": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "momentum": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "technical": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "volume_value": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "early_move": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "board": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    },
+    "entry_quality": {
+     "score": null,
+     "coverage_weight": 0.0,
+     "available_signals": 0
+    }
+   },
+   "weights": {
+    "trend": 15.0,
+    "momentum": 10.0,
+    "technical": 15.0,
+    "volume_value": 15.0,
+    "early_move": 20.0,
+    "board": 10.0,
+    "entry_quality": 15.0
+   },
+   "rsi_14": null,
+   "return_5_sessions_pct": null,
+   "return_20_sessions_pct": null,
+   "trend_state": null,
+   "correction_state": null,
+   "warnings": [
+    "LOW_EVIDENCE_COVERAGE"
+   ],
+   "unavailable_families": [
+    "trend",
+    "momentum",
+    "technical",
+    "volume_value",
+    "early_move",
+    "board",
+    "entry_quality"
+   ],
+   "policy": {
+    "source_of_truth": "TSETMC",
+    "missing_data": "EXCLUDED_FROM_DENOMINATOR_NO_IMPUTATION",
+    "bestlimits": "QUARANTINED_UNTIL_EVIDENCE_GATE_PASSES",
+    "fundamental_data": "NOT_IN_CURRENT_CONTEXT_NOT_SCORED",
+    "strategy_fit": "NOT_BACKTESTED_NOT_SCORED",
+    "buy_sell_signal": "NOT_GENERATED"
+   },
+   "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED",
+   "history_status": "UNAVAILABLE",
+   "history_count": null,
+   "latest_market_date": null,
+   "latest_market_date_jalali": null,
+   "last_price": null,
+   "last_close": null,
+   "sma_5": null,
+   "sma_10": null,
+   "sma_20": null,
+   "sma_50": null,
+   "macd_12_26": null,
+   "volume_ratio_5_to_20": null,
+   "value_ratio_5_to_20": null,
+   "early_move": null,
+   "history_reason": "TSETMCError: TSETMC request failed: https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDailyList/65122215875355555/100?__optimusai_ts=1792319728363871754: <urlopen error _ssl.c:1064: The ha",
+   "source": "TSETMC"
   }
  ],
  "buy_sell_signal": "NOT_GENERATED",
@@ -147918,7 +147325,7 @@
   "Only the existing TSETMC history report is reused; no data is imputed.",
   "Board/BestLimits and fundamental/news evidence are not included in this report."
  ],
- "report_sha256": "4298c51bdcd8ffd2da930541e7581bf73ef90dfb3824177cf267895e78202ce8",
+ "report_sha256": "2a56dd3f660c196d1784a3526c2bd04138cbe121807e414baf30dd9500fd31f8",
  "rolling_window": {
   "policy": "FIFO_7_TRADING_DAYS",
   "window_size": 7,
