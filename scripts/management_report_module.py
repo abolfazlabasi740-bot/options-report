@@ -90,6 +90,18 @@ def _build_narrative(r):
                 nb=(" نماد نزدیک اشباع (۶۵–۷۰): " + "، ".join(near_ob) + ".") if near_ob else ""))
         if obs and all(x == "NOT_GENERATED" for x in obs):
             lines.append("• سیگنال خرید/فروش برای هیچ‌یک از نمادها تولید نشده است (NOT_GENERATED) — لایه تصمیم هنوز مهر تأیید نگذاشته.")
+        # جمع‌بندی چندعاملی برچسب‌ها
+        labs = [s.get("note_label") for s in top if s.get("note_label")]
+        if labs:
+            pos = sum(1 for x in labs if 'مثبت' in str(x))
+            neg = sum(1 for x in labs if 'منفی' in str(x))
+            lines.append("• جمع‌بندی چندعاملی: {p} نماد هم‌گرایی مثبت و {n} نماد هم‌گرایی منفی (تکنیکال + پرایس‌اکشن + تابلو).".format(p=pos, n=neg))
+        brk = [s.get("symbol") for s in top if (s.get("factors") or {}).get("breakout_above_prior_20_high") is True]
+        if brk:
+            lines.append("• شکست سقف ۲۰ جلسه: {b} — پرایس‌اکشن تأییدی دارد.".format(b="، ".join(brk)))
+        prelock = [s.get("symbol") for s in top if (s.get("factors") or {}).get("pre_lock_state") in ("EARLY", "DEVELOPING")]
+        if prelock:
+            lines.append("• توالی پیش‌قفل (حجم→قیمت→مومنتوم): {p} — دوره‌گیری زودهنگام شواهد دارد (سایه، غیرسیگنال).".format(p="، ".join(prelock)))
     else:
         lines.append("⚠️ داده جدول برتر برای تحلیل موجود نیست.")
     lines.append(sep)
@@ -100,21 +112,39 @@ def _build_narrative(r):
     fl = d.get("fundamental_layer")
     if fl:
         lines.append("• لایه بنیادی: {fl} — بنابراین تحلیل فعلاً صرفاً تکنیکال/روندی است و کیفیت سود و نسبت‌های مالی در آن لحاظ نشده.".format(fl=fl))
+    bl = d.get("board_layer")
+    if bl:
+        lines.append("• لایه تابلو: {bl}".format(bl=bl))
     lines.append("• ردگیر منبع: SHA-256 گزارش مبدأ ثبت شده ({sh:.12}…).".format(
         sh=d.get("source_report_sha256", "—")) if d.get("source_report_sha256") else "• ردگیر منبع: ندارد.")
     lines.append(sep)
 
-    # ۴) روایت نمادها (نه لیست خام)
+    # ۴) روایت نمادها (نه لیست خام) — چندعاملی: تکنیکال/پرایس‌اکشن/تابلو
     if top:
-        lines.append("📈 روایت ۱۰ نماد برتر:")
+        lines.append("📈 روایت ۱۰ نماد برتر — چندعاملی (تکنیکال + پرایس‌اکشن + تابلو):")
         for s in top[:10]:
-            lines.append("• {sym} (رده {cls}) — امتیاز {sc:.2f} | بازده ۲۰ جلسه {r:+.2f}٪ | RSI-14 {rsi:.1f}: {note}".format(
+            lines.append("• {sym} (رده {cls}) — امتیاز {sc:.2f} | جمع‌بندی: {lab}".format(
                 sym=s.get("symbol", "—"),
                 cls=s.get("classification", "—"),
                 sc=s.get("final_score", 0) if isinstance(s.get("final_score"), (int, float)) else 0,
-                r=s.get("return_20_sessions_pct", 0) if isinstance(s.get("return_20_sessions_pct"), (int, float)) else 0,
-                rsi=s.get("rsi_14", 0) if isinstance(s.get("rsi_14"), (int, float)) else 0,
-                note=s.get("management_note", "بدون یادداشت")))
+                lab=s.get("note_label") or s.get("management_note", "داده موجود نیست")))
+            detail = s.get("note_detail")
+            if detail:
+                lines.append("   شواهد: {d}".format(d=detail))
+            f = s.get("factors") or {}
+            bits = []
+            if isinstance(f.get("atr_14_pct"), (int, float)):
+                bits.append("ATR {a:.1f}٪".format(a=f["atr_14_pct"]))
+            if isinstance(f.get("volatility_20_pct"), (int, float)):
+                bits.append("نوسان۲۰ {v:.1f}٪".format(v=f["volatility_20_pct"]))
+            if isinstance(f.get("macd_pct"), (int, float)):
+                bits.append("MACD {m:+.1f}٪".format(m=f["macd_pct"]))
+            if isinstance(f.get("range_position_20"), (int, float)):
+                bits.append("موقعیت کانال {r:.0f}٪".format(r=f["range_position_20"] * 100))
+            if isinstance(f.get("upper_limit_headroom_pct"), (int, float)):
+                bits.append("فسجه سقف {h:.1f}٪".format(h=f["upper_limit_headroom_pct"]))
+            if bits:
+                lines.append("   سنجه‌ها: {b}".format(b=" | ".join(bits)))
         lines.append(sep)
 
     # ۵) ارزیابی ریسک
