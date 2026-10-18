@@ -52,6 +52,29 @@ class BaleOptionShareCardsTests(unittest.TestCase):
             self.assertIn("option_shares_page:0", callbacks)
             self.assertIn("option_shares_page:2", callbacks)
 
+    def test_header_has_persian_dates_and_data_mode_translation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "option.json"
+            report.write_text(json.dumps({
+                "source_of_truth": "TSETMC",
+                "generated_at": "2026-10-17T21:46:40+03:30",
+                "latest_history_date": "20261017",
+                "latest_history_date_jalali": "1405/07/25",
+                "market_row_count": 762,
+                "option_snapshot_generated_at": "2026-10-17T09:00:10+00:00",
+                "data_mode": "LAST_KNOWN_TSETMC_SNAPSHOT",
+                "rows": [{"symbol": "TOP", "final_score": 90, "market_rank": 1}],
+            }), encoding="utf-8")
+            with patch.object(cards, "REPORT_PATH", report):
+                text, _, count, _, _ = cards.render_page(0)
+            # Persian (Jalali) date labels instead of raw ISO timestamps
+            self.assertIn("زمان گزارش بازار: 1405/07/25 ساعت", text)
+            self.assertIn("فهرست آپشن: 1405/07/25 ساعت", text)
+            # data_mode translated to Persian
+            self.assertIn("اسنپ‌شات شناخته‌شدهٔ قبلی TSETMC", text)
+            # count of option-enabled shares surfaced in header
+            self.assertIn("تعداد سهم‌های دارای آپشن: 1 (از 762 سهم بازار)", text)
+
 
 if __name__ == "__main__":
     unittest.main()

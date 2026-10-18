@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 
 import bale_market_share_cards as market
+from persian_date_utils import gregorian_to_jalali
 from tsetmc_first_source import build_tsetmc_snapshot
 
 ROOT = Path(__file__).resolve().parent
@@ -82,13 +84,33 @@ def _load_report():
     return None
 
 
+def _shamsi_label(iso_value):
+    """ISO timestamp -> '1405/07/25 \u0633\u0627\u0639\u062a 21:46' (Tehran)."""
+    try:
+        dt = datetime.fromisoformat(str(iso_value).replace("Z", "+00:00"))
+        dt = dt.astimezone(market.TEHRAN)
+        jalali = gregorian_to_jalali(dt.strftime("%Y%m%d")) or dt.strftime("%Y-%m-%d")
+        return f"{jalali} \u0633\u0627\u0639\u062a {dt.strftime('%H:%M')}"
+    except (TypeError, ValueError, OverflowError):
+        return "\u2014"
+
+
+DATA_MODE_FA = {
+    "LAST_KNOWN_TSETMC_SNAPSHOT": "\u0627\u0633\u0646\u067e\u200c\u0634\u0627\u062a \u0634\u0646\u0627\u062e\u062a\u0647\u200c\u0634\u062f\u0647\u0654 \u0642\u0628\u0644\u06cc TSETMC (\u0628\u0627\u0632\u0627\u0631 \u0628\u0633\u062a\u0647)",
+    "LIVE_TSETMC_SNAPSHOT": "\u0627\u0633\u0646\u067e\u200c\u0634\u0627\u062a \u0632\u0646\u062f\u0647 TSETMC (\u062f\u0631 \u062c\u0644\u0633\u0647 \u0645\u0639\u0627\u0645\u0644\u0627\u062a)",
+}
+
+
 def render_page(page=0, *, refresh=False):
     payload = _build_report() if refresh else (_load_report() or _build_report())
+    rows = payload["rows"]
+    data_mode = str(payload.get("data_mode") or "")
     return market.render_ranked_rows(
-        payload, payload["rows"], page, title=TITLE, callback_prefix="option_shares_page",
+        payload, rows, page, title=TITLE, callback_prefix="option_shares_page",
         extra_lines=(
+            f"\u062a\u0639\u062f\u0627\u062f \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646: {len(rows)} (\u0627\u0632 {payload.get('market_row_count') or '\u2014'} \u0633\u0647\u0645 \u0628\u0627\u0632\u0627\u0631)",
             "\u062a\u0631\u062a\u06cc\u0628 \u0648 \u0627\u0645\u062a\u06cc\u0627\u0632: \u0628\u062f\u0648\u0646 \u062a\u063a\u06cc\u06cc\u0631 \u0627\u0632 \u06af\u0632\u0627\u0631\u0634 \u06a9\u0644 \u0628\u0627\u0632\u0627\u0631",
-            f"\u0632\u0645\u0627\u0646 \u06af\u0632\u0627\u0631\u0634 \u0628\u0627\u0632\u0627\u0631: {payload.get('generated_at') or 'N/A'}",
-            f"\u0641\u0647\u0631\u0633\u062a \u0622\u067e\u0634\u0646: {payload.get('option_snapshot_generated_at') or 'N/A'} | {payload.get('data_mode') or 'N/A'}",
+            f"\u0632\u0645\u0627\u0646 \u06af\u0632\u0627\u0631\u0634 \u0628\u0627\u0632\u0627\u0631: {_shamsi_label(payload.get('generated_at'))}",
+            f"\u0641\u0647\u0631\u0633\u062a \u0622\u067e\u0634\u0646: {_shamsi_label(payload.get('option_snapshot_generated_at'))} | {DATA_MODE_FA.get(data_mode, data_mode or '\u2014')}",
         ),
     )
