@@ -104,6 +104,14 @@ DATA_MODE_FA = {
 def render_page(page=0, *, refresh=False):
     payload = _build_report() if refresh else (_load_report() or _build_report())
     rows = payload["rows"]
+    # Same live overlay as the market button: today's prices from the live
+    # feed while the EOD history is still pending publication.
+    try:
+        overlay = market.fetch_live_overlay()
+    except Exception:
+        overlay = None
+    if overlay:
+        market.apply_live_overlay(rows, overlay)
     data_mode = str(payload.get("data_mode") or "")
     return market.render_ranked_rows(
         payload, rows, page, title=TITLE, callback_prefix="option_shares_page",

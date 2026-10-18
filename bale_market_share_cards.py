@@ -11,6 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from persian_date_utils import gregorian_to_jalali
+from live_market_overlay import apply_live_overlay, fetch_live_overlay, session_state
 
 ROOT = Path(__file__).resolve().parent
 REPORT_PATH = ROOT / "output" / "base_share" / "latest_whole_market_opportunity_report.json"
@@ -120,12 +121,15 @@ def _header_lines(payload):
         generated_label = generated.strftime("%H:%M")
     except (TypeError, ValueError, OverflowError):
         generated_label = "—"
-    in_session = now.weekday() in (5, 6, 0, 1, 2) and datetime_time(9, 0) <= now.time() <= datetime_time(12, 30)
-    session_label = (
-        "\U0001F7E2 در ساعت معاملات (۹:۰۰–۱۲:۳۰) — داده براساس آخرین آپدیت"
-        if in_session
-        else "\U0001F7E0 خارج از ساعت معاملات — داده پایان روز (EOD)"
-    )
+    state = session_state(now)
+    if state == "OPEN":
+        session_label = "🟢 در ساعت معاملات (۹:۰۰–۱۲:۳۰) — قیمت‌ها لحظه‌ای از فید زنده"
+    elif state == "CLOSED_TODAY":
+        session_label = "🟠 بستهٔ امروز — قیمت‌های امروز از فید پایانی ۱۲:۳۰ (تاریخچه EOD هنوز منتشر نشده)"
+    elif state == "PRE_OPEN":
+        session_label = "🕒 قبل از باز شدن بازار — داده پایان روز قبل (EOD)"
+    else:
+        session_label = "🔒 روز غیرمعاملاتی — داده پایان روز (EOD)"
     return [
         f"\U0001F4C5 تاریخ داده: {hist_jalali}",
         f"\U0001F552 زمان بازسازی گزارش: {generated_label}",
@@ -184,8 +188,23 @@ def render_ranked_rows(payload, rows, page=0, *, title=TITLE,
         warnings = ", ".join(row.get("warnings") or []) or "-"
         market_rank = f" | market_rank={row['market_rank']}" if "market_rank" in row else ""
         correction = row.get("correction_state") or "—"
+        # Live overlay: today's price from the live feed when it is newer
+        # than the EOD history; otherwise show the EOD price, labeled.
+        if row.get("live_status") == "LIVE_TODAY":
+            price = row.get("live_last_price") or row.get("live_close_price")
+            live_parts = [f"قیمت امروز: {_fmt(price)}"]
+            change = row.get("live_change_pct")
+            if change is not None:
+                arrow = "\U0001F7E2" if change >= 0 else "\U0001F534"
+                live_parts.append(f"{arrow} {change:+.2f}%")
+            if row.get("live_time"):
+                live_parts.append(f"ساعت {str(row['live_time'])[:5]}")
+            price_line = f"   {' | '.join(live_parts)} (زنده)"
+        else:
+            price_line = f"   قیمت EOD: {_fmt(row.get('last_price') or row.get('last_close'))}"
         lines.extend([
             f"{index}. {row.get('symbol') or 'N/A'} | score={_fmt(row.get('final_score'))} | class={row.get('classification') or 'N/A'}{market_rank}",
+            price_line,
             f"   trend={row.get('trend_state') or '—'} | اصلاح={correction} | RSI={_fmt(row.get('rsi_14'))} | coverage={_fmt(row.get('evidence_coverage_pct'), '%')}",
             f"   return5/20={_fmt(row.get('return_5_sessions_pct'), '%')}/{_fmt(row.get('return_20_sessions_pct'), '%')} | حجم ۵/۲۰={_fmt(row.get('volume_ratio_5_to_20'))}× | MACD%={_fmt(row.get('macd_pct'), '%')}",
             f"   {_factor_bits(row)}",
@@ -207,4 +226,14 @@ def render_ranked_rows(payload, rows, page=0, *, title=TITLE,
 
 def render_page(page=0):
     payload = ensure_report() if int(page) == 0 else (_load_report() or ensure_report())
-    return render_ranked_rows(payload, ranked_rows(payload), page)
+    rows = ranked_rows(payload)
+    # During the session (and until the evening EOD lands) overlay today's
+    # live prices from the market-watch feed onto the EOD ranking.
+    overlay = None
+    try:
+        overlay = fetch_live_overlay()
+    except Exception:
+        overlay = None  # live feed failure must never block the report
+    if overlay:
+        apply_live_overlay(rows, overlay)
+    return render_ranked_rows(payload, rows, page)

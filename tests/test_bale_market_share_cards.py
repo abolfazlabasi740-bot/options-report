@@ -57,8 +57,13 @@ class BaleMarketShareCardsTests(unittest.TestCase):
                 self.assertIn("📅 تاریخ داده: 1477/10/11", rendered)
                 # generation clock present
                 self.assertIn("🕒 زمان بازسازی گزارش:", rendered)
-                # session status line present (either branch)
-                self.assertTrue("ساعت معاملات" in rendered or "خارج از ساعت معاملات" in rendered)
+                # session status line present (any of the four states)
+                self.assertTrue(
+                    "ساعت معاملات" in rendered
+                    or "بستهٔ امروز" in rendered
+                    or "قبل از باز شدن" in rendered
+                    or "روز غیرمعاملاتی" in rendered
+                )
                 # enriched per-symbol evidence present
                 self.assertIn("شکست سقف ۲۰ج", rendered)
                 self.assertIn("موقعیت کانال 90%", rendered)
