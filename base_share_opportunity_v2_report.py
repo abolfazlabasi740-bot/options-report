@@ -81,6 +81,14 @@ def _option_quality(rows, underlying_id, as_of):
         "rule": "ACTIVE_EXPIRY_AND_TRADED_OR_TWO_SIDED_EVIDENCE",
     }
 
+def _eligible_underlyings(underlyings, option_quality):
+    """Fail closed: only underlyings with verified active, liquid options may rank."""
+    return {
+        uid: symbol for uid, symbol in underlyings.items()
+        if (option_quality.get(uid) or {}).get("status") == "PASS"
+    }
+
+
 def main():
     snap = build_tsetmc_snapshot(flow=None, max_instruments=None, symbol_prefix=None)
     if snap.get("source_of_truth") != "TSETMC":
@@ -102,10 +110,7 @@ def main():
         uid: _option_quality(snapshot_rows, uid, now.date())
         for uid in underlyings
     }
-    underlyings = {
-        uid: symbol for uid, symbol in underlyings.items()
-        if option_quality[uid]["status"] != "BLOCKED"
-    }
+    underlyings = _eligible_underlyings(underlyings, option_quality)
     is_trading_day = now.weekday() in {5, 6, 0, 1, 2}
     board_live_window = is_trading_day and time(9, 0) <= now.time() <= time(12, 30)
     # Current client/order-book fields are fetched only during the live TSETMC session.
@@ -171,7 +176,7 @@ def main():
     selection_reason = str(snap.get("selection_reason") or "SELECTION_REASON_UNAVAILABLE")
     source_hash = str(snap.get("snapshot_sha256") or "SNAPSHOT_HASH_UNAVAILABLE")
     report = [
-        "گزارش فرصت‌یابی سهم پایه — BASE SHARE OPPORTUNITY V2.1",
+        "گزارش فرصت‌یابی سهم پایه — BASE SHARE OPPORTUNITY V2.2",
         "=" * 62,
         "منبع حقیقت: TSETMC | نسخه موتور: " + ENGINE_VERSION,
         "زمان تولید گزارش: " + datetime.now(TEHRAN).isoformat(),

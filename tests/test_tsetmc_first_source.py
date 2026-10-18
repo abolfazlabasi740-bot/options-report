@@ -36,6 +36,41 @@ class FakeAdapter:
     def order_book(self, ins_code):
         return {"source":"TSETMC","endpoint":f"book/{ins_code}","snapshot_sha256":"bh","retrieved_at":"t3","data":[]}
 class TsetmcFirstSourceTests(unittest.TestCase):
+    def setUp(self):
+        from pathlib import Path
+        import tempfile
+        from unittest.mock import patch
+
+        self._tempdir = tempfile.TemporaryDirectory(prefix="optimus_tsetmc_test_")
+        root = Path(self._tempdir.name)
+        self._cache_patch = patch("tsetmc_first_source.CACHE_PATH", root / "latest_snapshot.json")
+        self._closed_patch = patch("tsetmc_first_source.CLOSED_CACHE_PATH", root / "closed_snapshot.json")
+        self._cache_patch.start()
+        self._closed_patch.start()
+        import datetime as _dt
+        self._trading_days_patch = patch(
+            "tsetmc_first_source.TRADING_WEEKDAYS",
+            tuple(range(7))
+        )
+        self._open_patch = patch(
+            "tsetmc_first_source.MARKET_OPEN",
+            _dt.time(0, 0)
+        )
+        self._close_patch = patch(
+            "tsetmc_first_source.MARKET_CLOSE",
+            _dt.time(23, 59, 59)
+        )
+        self._trading_days_patch.start()
+        self._open_patch.start()
+        self._close_patch.start()
+
+    def tearDown(self):
+        self._close_patch.stop()
+        self._open_patch.stop()
+        self._trading_days_patch.stop()
+        self._closed_patch.stop()
+        self._cache_patch.stop()
+        self._tempdir.cleanup()
     def test_tsetmc_is_only_source(self):
         s=build_tsetmc_snapshot(adapter=FakeAdapter(), symbol_prefix="ضTEST", max_instruments=1); self.assertEqual(s["source_of_truth"],"TSETMC")
         self.assertIsNone(s["external_comparison_source"]); self.assertEqual(s["row_count"],1)
@@ -65,13 +100,21 @@ class TsetmcFirstSourceTests(unittest.TestCase):
             def option_market_watch_instrument_records(self, flow=1):
                 return {"source": "TSETMC", "endpoint": "mw", "records": []}
 
+        cached_rows = [
+            {
+                "identity": {"instrument_id": f"CACHED{i:03d}"},
+                "canonical": {"نماد": "ضCACHED" if i == 0 else f"ضCACHED{i:03d}"},
+                "source_market_timestamp": "2026-09-24T12:29:00",
+            }
+            for i in range(15)
+        ]
         cached = {
             "status": "SUCCESS",
             "source_of_truth": "TSETMC",
-            "row_count": 1,
-            "rows": [{"canonical": {"نماد": "ضCACHED"}, "source_market_timestamp": "2026-09-24T12:29:00"}],
-            "evidence": {"market_watch": {"record_count": 1}},
-            "snapshot_sha256": "cachedhash",
+            "row_count": len(cached_rows),
+            "rows": cached_rows,
+            "evidence": {"market_watch": {"record_count": len(cached_rows)}},
+            "snapshot_sha256": "a" * 64,
             "generated_at": "2026-09-24T12:29:01+00:00",
         }
         with patch("tsetmc_first_source.CACHE_PATH", Path("tests/.tmp_last_known_snapshot.json")):
@@ -87,34 +130,13 @@ class TsetmcFirstSourceTests(unittest.TestCase):
                 if cache_path.exists():
                     cache_path.unlink()
 
-    def test_refresh_exception_uses_last_known_tsetmc_snapshot(self):
-        from pathlib import Path
-        from unittest.mock import patch
-
+    def test_refresh_exception_fails_closed(self):
         class BrokenRefresh(FakeAdapter):
             def option_market_watch_instrument_records(self, flow=1):
                 raise TimeoutError("TSETMC unavailable")
 
-        cached = {
-            "status": "SUCCESS",
-            "source_of_truth": "TSETMC",
-            "row_count": 1,
-            "rows": [{"canonical": {"نماد": "ضCACHED2"}, "source_market_timestamp": "2026-09-24T12:28:00"}],
-            "evidence": {"market_watch": {"record_count": 1}},
-            "snapshot_sha256": "cachedhash2",
-            "generated_at": "2026-09-24T12:28:01+00:00",
-        }
-        with patch("tsetmc_first_source.CACHE_PATH", Path("tests/.tmp_last_known_snapshot.json")):
-            cache_path = Path("tests/.tmp_last_known_snapshot.json")
-            try:
-                cache_path.write_text(__import__("json").dumps(cached), encoding="utf-8")
-                s = build_tsetmc_snapshot(adapter=BrokenRefresh())
-                self.assertEqual(s["data_mode"], "LAST_KNOWN_TSETMC_SNAPSHOT")
-                self.assertEqual(s["live_refresh_status"], "UNAVAILABLE")
-                self.assertEqual(s["fallback_reason"], "TimeoutError")
-            finally:
-                if cache_path.exists():
-                    cache_path.unlink()
+        with self.assertRaisesRegex(TimeoutError, "TSETMC unavailable"):
+            build_tsetmc_snapshot(adapter=BrokenRefresh())
 
     def test_invalid_max_instruments_is_rejected(self):
         with self.assertRaises(ValueError):

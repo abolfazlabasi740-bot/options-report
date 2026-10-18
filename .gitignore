@@ -1,9 +1,45 @@
-data/
-output/
-backup_before_github_engine/
-report_engine.py.before_*
+# --- Logs & runtime ---
+nohup.out
+logs/
+output/logs/
+*.log
+*.pid
+
+# --- Backups & temp ---
+*.bak*
+*.before_*
+tmp_*
+_*.sh
+backup_*/
+
+# --- Raw / volatile data ---
+data/raw/
+output/bale_listener_state.json
+output/crond_watchdog.log
+
+# --- Python ---
 __pycache__/
 *.pyc
-.env
-latest_opportunity_shadow.json
-case_memory_shadow.json
+
+# --- Report history & volatile artifacts (kept on server, not in code repo) ---
+output/base_share/daily_history/
+output/base_share/history_versions/
+output/base_share/comparisons/
+output/base_share/comparison_*
+output/base_share/latest_daily_rank_change_report.*
+output/archive_dedup_*.json
+output/bale_delivery_verification.json
+
+# --- Fix: split merged patterns (one pattern per line) ---
+output/base_share/comparison_*
+output/base_share/latest_daily_rank_change_report.*
+output/archive_dedup_*.json
+
+# --- All remaining volatile output (evidence, archives, history, probes, shadows) ---
+output/*
+!output/base_share/
+output/base_share/*
+!output/base_share/latest_*.json
+!output/base_share/latest_*.txt
+!output/base_share/latest_management_analysis_report.json
+!output/report_archive/

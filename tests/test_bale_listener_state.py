@@ -11,11 +11,19 @@ class BaleListenerStateTests(unittest.TestCase):
     def test_active_menu_contains_ranking_glass_buttons(self):
         keyboard = bale_listener.MENU_MARKUP["inline_keyboard"]
         callbacks = [btn["callback_data"] for row in keyboard for btn in row]
-        # The three core ranking buttons must remain present.
-        for expected in ("market_shares_page:0", "option_shares", "option_market"):
-            self.assertIn(expected, callbacks)
-        # The Excel ranking glass button is the next button on the surface.
-        self.assertIn("option_excel", callbacks)
+        # The unified main menu: three market/option ranking views, the
+        # symbol drill-down plus Excel export, then the three analytical
+        # reports — in exactly this order.
+        self.assertEqual(callbacks, [
+            "market_shares_page:0",
+            "option_shares",
+            "option_market",
+            "symbols",
+            "option_excel",
+            "trend_review",
+            "lmp_opportunities",
+            "mgmt_analysis",
+        ])
         self.assertEqual(
             bale_listener.REPLY_MENU_COMMANDS[bale_listener.MARKET_SHARES_LABEL],
             "market_shares",

@@ -1,0 +1,4975 @@
+{
+  "report_version": "BASE-SHARES-STAGE-1",
+  "generated_at": "2026-10-09T15:29:20.970249+03:30",
+  "source_of_truth": "TSETMC",
+  "option_universe_rows": 1834,
+  "underlying_count": 26,
+  "rows": [
+    {
+      "instrument_id": "11427939669935844",
+      "symbol": "اطلس",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.138406072543386,
+        "price_change_3_sessions_pct": 4.492025241128195,
+        "sma20_slope_5_sessions_pct": 2.962063352948552,
+        "rsi_change_1_session": 2.844675526830983,
+        "macd_change_1_session": 379.6226418673177,
+        "volume_ratio_change_1_session": 0.1424959996375723,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.308
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.345
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.855,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.0,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.835,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.816
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.904
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.138406072543386,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 71.68253641793795,
+      "macd_12_26": 6831.072643474588,
+      "return_5_sessions_pct": 2.692577172736055,
+      "return_20_sessions_pct": 11.335229234545574,
+      "volume_ratio_5_to_20": 1.1810212551418158,
+      "value_ratio_5_to_20": 1.238092836531348,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 178843.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "17914401175772326",
+      "symbol": "اهرم",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 71.43,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 3.7240470174667584,
+        "price_change_3_sessions_pct": 4.115782219159203,
+        "sma20_slope_5_sessions_pct": 4.751325827233122,
+        "rsi_change_1_session": 3.731248235227511,
+        "macd_change_1_session": 137.50752138700045,
+        "volume_ratio_change_1_session": 0.07556664065894725,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 5,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.26,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.73
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.775
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -1.463,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261005",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.401
+            },
+            {
+              "date": "20261005",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.356
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -3.156,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.649,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.724,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 3.7240470174667584,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 67.07507104181488,
+      "macd_12_26": 3819.381323849084,
+      "return_5_sessions_pct": 3.0237728283255327,
+      "return_20_sessions_pct": 17.077404755262094,
+      "volume_ratio_5_to_20": 1.1181882717810747,
+      "value_ratio_5_to_20": 1.1480565107474145,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.9928540936507062,
+      "best_bid_price": 75736.0,
+      "best_ask_price": 76000.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "22560050433388046",
+      "symbol": "تاپيكو",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.9234468166955176,
+        "price_change_3_sessions_pct": 1.9234468166955176,
+        "sma20_slope_5_sessions_pct": 5.622163368023125,
+        "rsi_change_1_session": 1.8660421501915607,
+        "macd_change_1_session": 9.924188459146535,
+        "volume_ratio_change_1_session": 0.12986568808994647,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.998,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 4.279
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 4.474
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.066
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.034
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.895,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.55
+            },
+            {
+              "date": "20261005",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.493
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.91,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.9234468166955176,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 71.21061647708194,
+      "macd_12_26": 3441.097619355074,
+      "return_5_sessions_pct": 1.4745308310991856,
+      "return_20_sessions_pct": 19.132194244604307,
+      "volume_ratio_5_to_20": 1.5849019703583407,
+      "value_ratio_5_to_20": 1.6938851044859828,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.9845695797395938,
+      "best_bid_price": 53540.0,
+      "best_ask_price": 54000.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "22811176775480091",
+      "symbol": "اخابر",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 71.43,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9190207156308823,
+        "price_change_3_sessions_pct": 8.648111332007957,
+        "sma20_slope_5_sessions_pct": 1.0777222195252012,
+        "rsi_change_1_session": 3.8535119233799904,
+        "macd_change_1_session": 4.361699880613855,
+        "volume_ratio_change_1_session": -0.027264886734364335,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 5,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261004",
+            "VALUE_EXPANSION": "20261004",
+            "PRICE_ACCELERATION": "20261003",
+            "MOMENTUM_IMPROVEMENT": "20261004"
+          },
+          "events": [
+            {
+              "date": "20261003",
+              "event": "PRICE_ACCELERATION",
+              "strength": -1.312,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.695
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.726
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.863,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.907,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.919,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9190207156308823,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 64.92759857227351,
+      "macd_12_26": 23.252979222754107,
+      "return_5_sessions_pct": 10.29263370332998,
+      "return_20_sessions_pct": 9.299999999999997,
+      "volume_ratio_5_to_20": 1.1189964131516237,
+      "value_ratio_5_to_20": 1.1025562147768173,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 1093.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "23293437377896568",
+      "symbol": "تاصيكو",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9955067398901747,
+        "price_change_3_sessions_pct": 8.894167326471369,
+        "sma20_slope_5_sessions_pct": 12.114065957987163,
+        "rsi_change_1_session": 1.3937666849424346,
+        "macd_change_1_session": 213.07272001766614,
+        "volume_ratio_change_1_session": -0.011464456735716055,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.756
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.809
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.999,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 23.613
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 24.58
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 9.205
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 9.509
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.982,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.996,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9955067398901747,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 79.03767659934091,
+      "macd_12_26": 4504.60245985146,
+      "return_5_sessions_pct": 15.50951847704367,
+      "return_20_sessions_pct": 55.5220505088579,
+      "volume_ratio_5_to_20": 1.9261800301389325,
+      "value_ratio_5_to_20": 2.1889474067496146,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 41260.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "41927452991671109",
+      "symbol": "توان",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 3.253917149602925,
+        "price_change_3_sessions_pct": 3.884194008148456,
+        "sma20_slope_5_sessions_pct": 3.984226859072093,
+        "rsi_change_1_session": 3.4973868393195957,
+        "macd_change_1_session": 121.9080344826798,
+        "volume_ratio_change_1_session": 0.19757962147727048,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.448,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.003
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.051
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -1.805,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -3.0,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.722,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.551
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.605
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 3.253917149602925,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 64.47407343913522,
+      "macd_12_26": 3021.2047396704875,
+      "return_5_sessions_pct": 2.2545629747194207,
+      "return_20_sessions_pct": 13.67560414631841,
+      "volume_ratio_5_to_20": 1.286945823667286,
+      "value_ratio_5_to_20": 1.3161331975300525,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.6076702246191926,
+      "best_bid_price": 72680.0,
+      "best_ask_price": 72988.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "67141987086032267",
+      "symbol": "موج",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 3.999559387548701,
+        "price_change_3_sessions_pct": 7.25166007456135,
+        "sma20_slope_5_sessions_pct": 6.828373024626555,
+        "rsi_change_1_session": 3.0181900263421113,
+        "macd_change_1_session": 423.3440604694624,
+        "volume_ratio_change_1_session": -0.061278415612847636,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.734,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.543
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.671
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.418
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.44
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -0.661,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.813,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 4.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 3.999559387548701,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 77.23202346077285,
+      "macd_12_26": 7078.364720182828,
+      "return_5_sessions_pct": 9.476624677172829,
+      "return_20_sessions_pct": 27.607942397955433,
+      "volume_ratio_5_to_20": 1.0409371763334985,
+      "value_ratio_5_to_20": 1.1189484982951952,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 103855.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "69067576215760005",
+      "symbol": "كاريس",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 90.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 100.0,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.2940117657388672,
+        "price_change_3_sessions_pct": 3.847105950130514,
+        "sma20_slope_5_sessions_pct": 3.709113988911783,
+        "rsi_change_1_session": 1.4644002092881294,
+        "macd_change_1_session": 163.22379046447168,
+        "volume_ratio_change_1_session": 0.19926129131122428,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 7,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.888,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.903
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.949
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.641
+            },
+            {
+              "date": "20261005",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.646
+            },
+            {
+              "date": "20261006",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.9
+            },
+            {
+              "date": "20261006",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.99
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.905,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.2940117657388672,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 78.16720021838907,
+      "macd_12_26": 4432.173943505652,
+      "return_5_sessions_pct": 3.986344123578922,
+      "return_20_sessions_pct": 14.828362758637859,
+      "volume_ratio_5_to_20": 1.1192128231622762,
+      "value_ratio_5_to_20": 1.187356396570086,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.9747479890031565,
+      "best_bid_price": 92350.0,
+      "best_ask_price": 92700.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "65883838195688438",
+      "symbol": "خودرو",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 84.39,
+      "evidence_count": 9,
+      "bullish_evidence_count": 8,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 42.86,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.104972375690605,
+        "price_change_3_sessions_pct": 1.949860724233976,
+        "sma20_slope_5_sessions_pct": -0.6817542873207794,
+        "rsi_change_1_session": 1.6829747280503895,
+        "macd_change_1_session": 2.0358992649177026,
+        "volume_ratio_change_1_session": 0.023278879702536726,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 4,
+        "negative_components": 1,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.402
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.436
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.381,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 3.456
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 3.578
+            },
+            {
+              "date": "20261003",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.616,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.272
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.311
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.089,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.987,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.104972375690605,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 60.32037502832776,
+      "macd_12_26": 9.359356814925718,
+      "return_5_sessions_pct": 6.3953488372092915,
+      "return_20_sessions_pct": -2.008032128514059,
+      "volume_ratio_5_to_20": 1.6613984588653088,
+      "value_ratio_5_to_20": 1.6640684427953092,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.4947665190187459,
+      "best_bid_price": 731.0,
+      "best_ask_price": 732.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "34074071043606558",
+      "symbol": "دارونو",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 82.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 0,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 71.43,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.7158724131384195,
+        "price_change_3_sessions_pct": 2.035520426626025,
+        "sma20_slope_5_sessions_pct": 3.761187790856102,
+        "rsi_change_1_session": 1.9918854414045057,
+        "macd_change_1_session": 21.992479471082333,
+        "volume_ratio_change_1_session": -0.06057363404886984,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 5,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.844,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.363
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.377
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.764,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.926,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.7158724131384195,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 69.07553375791007,
+      "macd_12_26": 2169.9885281079987,
+      "return_5_sessions_pct": -1.2169543872588617,
+      "return_20_sessions_pct": 14.761955765008295,
+      "volume_ratio_5_to_20": 1.0040375908583405,
+      "value_ratio_5_to_20": 1.0752023865811966,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.12923784713834993,
+      "best_bid_price": 42954.0,
+      "best_ask_price": 43000.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "2400322364771558",
+      "symbol": "شستا",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.4861878453038777,
+        "price_change_3_sessions_pct": 2.7700831024930705,
+        "sma20_slope_5_sessions_pct": 4.072927014550354,
+        "rsi_change_1_session": 3.1221624345922194,
+        "macd_change_1_session": 0.06696389319267837,
+        "volume_ratio_change_1_session": 0.13581229692844587,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261003",
+            "VALUE_EXPANSION": "20261003",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.755,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.386
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.384
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.493,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.841,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.375
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.409
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.4861878453038777,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 64.648901262975,
+      "macd_12_26": 161.5190526409192,
+      "return_5_sessions_pct": -0.536193029490617,
+      "return_20_sessions_pct": 15.217391304347828,
+      "volume_ratio_5_to_20": 0.9057643979784737,
+      "value_ratio_5_to_20": 0.9177875790082488,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.9933701494582594,
+      "best_bid_price": 3720.0,
+      "best_ask_price": 3750.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "31230051169165044",
+      "symbol": "طعام",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9532283556752414,
+        "price_change_3_sessions_pct": 5.725879170423798,
+        "sma20_slope_5_sessions_pct": 3.9848540080065,
+        "rsi_change_1_session": 3.1144565934131947,
+        "macd_change_1_session": 145.7952153934566,
+        "volume_ratio_change_1_session": -0.04432831563810252,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.352
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.389
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.775,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.308
+            },
+            {
+              "date": "20261006",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.38
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 3.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9532283556752414,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 77.71313150136399,
+      "macd_12_26": 1515.7805486645557,
+      "return_5_sessions_pct": 9.049479166666675,
+      "return_20_sessions_pct": 19.77322255516207,
+      "volume_ratio_5_to_20": 0.25854722091897553,
+      "value_ratio_5_to_20": 0.28071931679920376,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.5574219695907625,
+      "best_bid_price": 34281.0,
+      "best_ask_price": 35060.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "35425587644337450",
+      "symbol": "فملي",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9930162953109463,
+        "price_change_3_sessions_pct": 7.684283727399155,
+        "sma20_slope_5_sessions_pct": 5.423428740041314,
+        "rsi_change_1_session": 2.150755395693622,
+        "macd_change_1_session": 157.0684588451404,
+        "volume_ratio_change_1_session": -0.023297628989374264,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.356
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.396
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.97,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 5.663
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 5.886
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.834
+            },
+            {
+              "date": "20261004",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.894
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.979,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.993,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9930162953109463,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 80.954097239397,
+      "macd_12_26": 1929.3532422954631,
+      "return_5_sessions_pct": 13.0704636728733,
+      "return_20_sessions_pct": 22.266087643110932,
+      "volume_ratio_5_to_20": 0.9018427507550937,
+      "value_ratio_5_to_20": 0.9744713611982425,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 30970.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "43450146028916610",
+      "symbol": "دزاگرس",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 100.0,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.998405103668267,
+        "price_change_3_sessions_pct": 9.235453315290943,
+        "sma20_slope_5_sessions_pct": 5.7640805064113065,
+        "rsi_change_1_session": 1.8381652251381695,
+        "macd_change_1_session": 238.04422559560044,
+        "volume_ratio_change_1_session": 0.322825794779973,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 7,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261007",
+            "VALUE_EXPANSION": "20261005",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.993,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.997,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.28
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.989,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 6.985
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 7.644
+            },
+            {
+              "date": "20261007",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.998,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.998405103668267,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 82.59050713845068,
+      "macd_12_26": 1971.8838752561605,
+      "return_5_sessions_pct": 15.859346968066014,
+      "return_20_sessions_pct": 31.10028420625255,
+      "volume_ratio_5_to_20": 0.6067566435339415,
+      "value_ratio_5_to_20": 0.749752675108429,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 32290.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "51920757918600374",
+      "symbol": "هم تراز",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 71.43,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.7614607865277243,
+        "price_change_3_sessions_pct": 4.606354049214034,
+        "sma20_slope_5_sessions_pct": 3.8153811472503962,
+        "rsi_change_1_session": 1.7188718566943209,
+        "macd_change_1_session": 84.60935794391844,
+        "volume_ratio_change_1_session": -0.10435277244256513,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 1,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "PRICE → MOMENTUM",
+          "event_first_dates": {
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.267,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": 1.039,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.912,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.7614607865277243,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 80.27186550716343,
+      "macd_12_26": 1618.272004271581,
+      "return_5_sessions_pct": 6.600202771206498,
+      "return_20_sessions_pct": 14.760241577530376,
+      "volume_ratio_5_to_20": 0.5550450550213883,
+      "value_ratio_5_to_20": 0.5995538111575714,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.3157025313468527,
+      "best_bid_price": 31640.0,
+      "best_ask_price": 31750.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "58741071099161284",
+      "symbol": "فرابورس",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 71.43,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.807486631016043,
+        "price_change_3_sessions_pct": 6.954102920723226,
+        "sma20_slope_5_sessions_pct": 1.247613853286067,
+        "rsi_change_1_session": 4.3082068189794995,
+        "macd_change_1_session": 21.766084983363726,
+        "volume_ratio_change_1_session": -0.007518925702628243,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 5,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.32
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.35
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.351,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.36
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.364
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.044,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.889,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.807486631016043,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 61.496330021150214,
+      "macd_12_26": 123.71713243818431,
+      "return_5_sessions_pct": 3.918918918918912,
+      "return_20_sessions_pct": 8.157524613220811,
+      "volume_ratio_5_to_20": 0.8482296395300746,
+      "value_ratio_5_to_20": 0.8376994191282777,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.7813224708995604,
+      "best_bid_price": 7700.0,
+      "best_ask_price": 8010.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "67455383896188985",
+      "symbol": "جوانه كوچك",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9031159543674523,
+        "price_change_3_sessions_pct": 6.32477128782547,
+        "sma20_slope_5_sessions_pct": 3.4660544875180666,
+        "rsi_change_1_session": 2.9757498664451987,
+        "macd_change_1_session": 107.29322697122552,
+        "volume_ratio_change_1_session": 0.03305425421080155,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.204
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.236
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.736,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.972,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.156
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.271
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9031159543674523,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 81.85099233545367,
+      "macd_12_26": 1747.985130612462,
+      "return_5_sessions_pct": 5.296628626186961,
+      "return_20_sessions_pct": 16.403967769895033,
+      "volume_ratio_5_to_20": 0.7200339485344092,
+      "value_ratio_5_to_20": 0.7770965436843176,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 36295.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "8175784894140974",
+      "symbol": "فزر",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 74.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 85.71,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.9838709677419306,
+        "price_change_3_sessions_pct": 6.063122923588038,
+        "sma20_slope_5_sessions_pct": 8.387129312083918,
+        "rsi_change_1_session": 0.9035244884586433,
+        "macd_change_1_session": 1088.491235599795,
+        "volume_ratio_change_1_session": 0.32418963854464955,
+        "breakout_above_prior_20_high": true,
+        "positive_components": 6,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.094
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.157
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.996,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.775
+            },
+            {
+              "date": "20261006",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.939
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.99,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 21.298
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 22.548
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.9838709677419306,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "RECOVERY_BOUNCE",
+      "rsi_14": 93.42635934940208,
+      "macd_12_26": 34304.45426980115,
+      "return_5_sessions_pct": 9.238665526090672,
+      "return_20_sessions_pct": 35.08462623413258,
+      "volume_ratio_5_to_20": 0.41655534867568955,
+      "value_ratio_5_to_20": 0.5164061559710359,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 383100.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "778253364357513",
+      "symbol": "وبملت",
+      "bias": "BULLISH",
+      "confidence": "HIGH",
+      "score": 65.07,
+      "evidence_count": 9,
+      "bullish_evidence_count": 7,
+      "bearish_evidence_count": 1,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 57.14,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 1.946308724832213,
+        "price_change_3_sessions_pct": 4.326923076923084,
+        "sma20_slope_5_sessions_pct": -0.3581139332847094,
+        "rsi_change_1_session": 3.4279803359953576,
+        "macd_change_1_session": 2.0853159664470695,
+        "volume_ratio_change_1_session": 0.03369646951544503,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 4,
+        "negative_components": 0,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.528
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.565
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.357,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.282,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.972,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.37
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.403
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 1.946308724832213,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 56.196355961747315,
+      "macd_12_26": 13.248728772858158,
+      "return_5_sessions_pct": -0.06578947368420796,
+      "return_20_sessions_pct": 1.131824234354184,
+      "volume_ratio_5_to_20": 0.9399841709224321,
+      "value_ratio_5_to_20": 0.9252925407133602,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.7708267742976753,
+      "best_bid_price": 1534.0,
+      "best_ask_price": 1535.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "41625340598198551",
+      "symbol": "بساما",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": 29.0,
+      "evidence_count": 10,
+      "bullish_evidence_count": 4,
+      "bearish_evidence_count": 2,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 0.0,
+        "state": "MIXED_CHANGE",
+        "price_change_1_session_pct": 0.13360053440214514,
+        "price_change_3_sessions_pct": -0.9253139458030413,
+        "sma20_slope_5_sessions_pct": 5.596396396396397,
+        "rsi_change_1_session": 0.24549266125957558,
+        "macd_change_1_session": -44.988014819826276,
+        "volume_ratio_change_1_session": -0.022290526716890302,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 2,
+        "negative_components": 2,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261005",
+            "VALUE_EXPANSION": "20261005",
+            "PRICE_ACCELERATION": "20261005",
+            "MOMENTUM_IMPROVEMENT": "20261004"
+          },
+          "events": [
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.407
+            },
+            {
+              "date": "20261005",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.399
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -1.124,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.826
+            },
+            {
+              "date": "20261006",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.819
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 0.13360053440214514,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "CORRECTION_IN_UPTREND",
+      "rsi_14": 69.91805804496194,
+      "macd_12_26": 729.7404539008239,
+      "return_5_sessions_pct": -0.3324468085106336,
+      "return_20_sessions_pct": 19.920000000000005,
+      "volume_ratio_5_to_20": 0.4772497791336639,
+      "value_ratio_5_to_20": 0.49481243040942097,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": -0.8760242096737322,
+      "best_bid_price": 14830.0,
+      "best_ask_price": 14980.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "7745894403636165",
+      "symbol": "شپنا",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": 24.99,
+      "evidence_count": 8,
+      "bullish_evidence_count": 3,
+      "bearish_evidence_count": 4,
+      "trend_state": "UP_TREND_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": -28.57,
+        "state": "BUILDING_DOWNSIDE",
+        "price_change_1_session_pct": 0.0,
+        "price_change_3_sessions_pct": 0.0,
+        "sma20_slope_5_sessions_pct": 0.4143027769483387,
+        "rsi_change_1_session": 0.0,
+        "macd_change_1_session": -0.3209789174106845,
+        "volume_ratio_change_1_session": -0.24189666995441486,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 0,
+        "negative_components": 2,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.347
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.385
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.851,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 0.0,
+          "sequence_direction": "BULLISH",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 60.60452234066875,
+      "macd_12_26": 311.654295254084,
+      "return_5_sessions_pct": 0.0,
+      "return_20_sessions_pct": -1.5086206896551713,
+      "volume_ratio_5_to_20": 0.0,
+      "value_ratio_5_to_20": 0.0,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": null,
+      "best_bid_price": null,
+      "best_ask_price": null,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "71483646978964608",
+      "symbol": "ذوب",
+      "bias": "NEUTRAL",
+      "confidence": "LOW",
+      "score": 18.37,
+      "evidence_count": 9,
+      "bullish_evidence_count": 3,
+      "bearish_evidence_count": 1,
+      "trend_state": "MIXED_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 14.29,
+        "state": "BUILDING_UPSIDE",
+        "price_change_1_session_pct": 0.9104704097116834,
+        "price_change_3_sessions_pct": 1.21765601217656,
+        "sma20_slope_5_sessions_pct": 0.0,
+        "rsi_change_1_session": 1.410445942402184,
+        "macd_change_1_session": -2.030166094138849,
+        "volume_ratio_change_1_session": -0.12077796742094604,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 3,
+        "negative_components": 2,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "PRICE → MOMENTUM",
+          "event_first_dates": {
+            "PRICE_ACCELERATION": "20261003",
+            "MOMENTUM_IMPROVEMENT": "20261006"
+          },
+          "events": [
+            {
+              "date": "20261003",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.312,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.811,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.969,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 0.9104704097116834,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 52.56675738940356,
+      "macd_12_26": 15.511400962794596,
+      "return_5_sessions_pct": -3.9017341040462394,
+      "return_20_sessions_pct": -4.727793696275073,
+      "volume_ratio_5_to_20": 0.9933031408710978,
+      "value_ratio_5_to_20": 0.9506215071700999,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 0.3488428127463007,
+      "best_bid_price": 662.0,
+      "best_ask_price": 663.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "63917421733088077",
+      "symbol": "وتجارت",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": 17.2,
+      "evidence_count": 9,
+      "bullish_evidence_count": 4,
+      "bearish_evidence_count": 2,
+      "trend_state": "MIXED_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 14.29,
+        "state": "BUILDING_UPSIDE",
+        "price_change_1_session_pct": 2.3385300668151476,
+        "price_change_3_sessions_pct": 2.3385300668151476,
+        "sma20_slope_5_sessions_pct": -2.1076541123025705,
+        "rsi_change_1_session": 3.6568596924875507,
+        "macd_change_1_session": -0.3051892916370207,
+        "volume_ratio_change_1_session": -0.04210943696546732,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 3,
+        "negative_components": 2,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "PRICE → MOMENTUM",
+          "event_first_dates": {
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 0.636,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.632,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261004",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.919,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.864,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.3385300668151476,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 52.22253108831304,
+      "macd_12_26": 7.560041520819823,
+      "return_5_sessions_pct": -3.2631578947368456,
+      "return_20_sessions_pct": -6.032719836400813,
+      "volume_ratio_5_to_20": 0.8036745612739712,
+      "value_ratio_5_to_20": 0.7753882724175806,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 924.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "26824673819862694",
+      "symbol": "خبهمن",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": 0.03,
+      "evidence_count": 9,
+      "bullish_evidence_count": 3,
+      "bearish_evidence_count": 2,
+      "trend_state": "MIXED_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 42.86,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 0.8537058595265767,
+        "price_change_3_sessions_pct": 1.246591351772497,
+        "sma20_slope_5_sessions_pct": -0.8681047009756693,
+        "rsi_change_1_session": 1.4136100078315863,
+        "macd_change_1_session": 0.444347370237665,
+        "volume_ratio_change_1_session": -0.002633069366385854,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 4,
+        "negative_components": 1,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.285
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.321
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.814,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.511
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.494
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.454,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.915,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 0.8537058595265767,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 51.53468334920513,
+      "macd_12_26": 8.36730142571787,
+      "return_5_sessions_pct": -2.5496812898387677,
+      "return_20_sessions_pct": -1.9245283018867965,
+      "volume_ratio_5_to_20": 1.0250131369237705,
+      "value_ratio_5_to_20": 1.0006896259521756,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": -0.10340356127109149,
+      "best_bid_price": 2600.0,
+      "best_ask_price": 2606.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "44891482026867833",
+      "symbol": "خساپا",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": -3.23,
+      "evidence_count": 9,
+      "bullish_evidence_count": 2,
+      "bearish_evidence_count": 2,
+      "trend_state": "MIXED_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 0.0,
+        "state": "MIXED_CHANGE",
+        "price_change_1_session_pct": 0.14265335235377208,
+        "price_change_3_sessions_pct": 1.298701298701288,
+        "sma20_slope_5_sessions_pct": -2.0396912899669384,
+        "rsi_change_1_session": 0.2772912216498966,
+        "macd_change_1_session": -0.03421350744565643,
+        "volume_ratio_change_1_session": -0.036837811121762765,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 2,
+        "negative_components": 2,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "EARLY",
+          "confidence": "HIGH",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20260930",
+            "VALUE_EXPANSION": "20260930",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.21
+            },
+            {
+              "date": "20260930",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.262
+            },
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.336,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "VOLUME_EXPANSION",
+              "strength": 2.134
+            },
+            {
+              "date": "20261003",
+              "event": "VALUE_EXPANSION",
+              "strength": 2.11
+            },
+            {
+              "date": "20261004",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261005",
+              "event": "PRICE_ACCELERATION",
+              "strength": -1.443,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.635,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 0.14265335235377208,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 53.34583835817673,
+      "macd_12_26": 5.482687718068746,
+      "return_5_sessions_pct": 0.14265335235377208,
+      "return_20_sessions_pct": -7.874015748031493,
+      "volume_ratio_5_to_20": 0.9903550706773957,
+      "value_ratio_5_to_20": 0.9589317459260193,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": -0.22294653923666105,
+      "best_bid_price": 701.0,
+      "best_ask_price": 702.0,
+      "source": "TSETMC"
+    },
+    {
+      "instrument_id": "28320293733348826",
+      "symbol": "وبصادر",
+      "bias": "CONFLICTED",
+      "confidence": "LOW",
+      "score": -6.0,
+      "evidence_count": 9,
+      "bullish_evidence_count": 3,
+      "bearish_evidence_count": 3,
+      "trend_state": "MIXED_STRUCTURE",
+      "early_move": {
+        "status": "PASS",
+        "score": 42.86,
+        "state": "EARLY_UPSIDE_CONFIRMATION",
+        "price_change_1_session_pct": 2.7352297592997843,
+        "price_change_3_sessions_pct": 3.4140969162995694,
+        "sma20_slope_5_sessions_pct": -2.277192805682904,
+        "rsi_change_1_session": 4.2819289387742145,
+        "macd_change_1_session": 0.08771503827836113,
+        "volume_ratio_change_1_session": 0.044118930187658445,
+        "breakout_above_prior_20_high": false,
+        "positive_components": 4,
+        "negative_components": 1,
+        "available_components": 7,
+        "sequence_rule": "CHANGE_ONLY_SHADOW_EVIDENCE",
+        "production_gate": "OFF",
+        "pre_lock_sequence": {
+          "status": "PASS",
+          "state": "DEVELOPING",
+          "confidence": "LOW",
+          "sequence": "VOLUME → PRICE → MOMENTUM",
+          "event_first_dates": {
+            "VOLUME_EXPANSION": "20261007",
+            "VALUE_EXPANSION": "20261007",
+            "PRICE_ACCELERATION": "20260930",
+            "MOMENTUM_IMPROVEMENT": "20260930"
+          },
+          "events": [
+            {
+              "date": "20260930",
+              "event": "PRICE_ACCELERATION",
+              "strength": 1.69,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20260930",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261003",
+              "event": "PRICE_ACCELERATION",
+              "strength": -2.908,
+              "direction": "BEARISH"
+            },
+            {
+              "date": "20261006",
+              "event": "PRICE_ACCELERATION",
+              "strength": 2.928,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261006",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            },
+            {
+              "date": "20261007",
+              "event": "VOLUME_EXPANSION",
+              "strength": 1.492
+            },
+            {
+              "date": "20261007",
+              "event": "VALUE_EXPANSION",
+              "strength": 1.511
+            },
+            {
+              "date": "20261007",
+              "event": "MOMENTUM_IMPROVEMENT",
+              "strength": 1.0,
+              "direction": "BULLISH"
+            }
+          ],
+          "sessions_evaluated": 7,
+          "latest_session_return_pct": 2.7352297592997843,
+          "sequence_direction": "MIXED",
+          "distance_to_upper_limit_pct": null,
+          "data_granularity": "DAILY_SESSION_SEQUENCE_NOT_INTRADAY",
+          "production_gate": "OFF"
+        }
+      },
+      "correction_state": "NO_CORRECTION_EVIDENCE",
+      "rsi_14": 49.4093083953211,
+      "macd_12_26": -3.1115338426759536,
+      "return_5_sessions_pct": -2.492211838006231,
+      "return_20_sessions_pct": -6.006006006006004,
+      "volume_ratio_5_to_20": 0.6020539656677573,
+      "value_ratio_5_to_20": 0.5633648215199095,
+      "individual_power_ratio": null,
+      "orderbook_imbalance_5": 1.0,
+      "best_bid_price": 941.0,
+      "best_ask_price": 0.0,
+      "source": "TSETMC"
+    }
+  ],
+  "intelligence": {
+    "status": "PASS",
+    "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+    "source_of_truth": "TSETMC",
+    "instrument_count": 26,
+    "instruments": {
+      "11427939669935844": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.138406072543386% | شیب SMA20 در 5 جلسه=2.962063352948552%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=71.68"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=6831.0726"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 2.692577172736055 / 11.335229234545574"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.1810212551418158 / 1.238092836531348"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "17914401175772326": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=71.4 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=3.7240470174667584% | شیب SMA20 در 5 جلسه=4.751325827233122%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=67.08"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=3819.3813"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 3.0237728283255327 / 17.077404755262094"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.1181882717810747 / 1.1480565107474145"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.9928540936507062 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "22560050433388046": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.9234468166955176% | شیب SMA20 در 5 جلسه=5.622163368023125%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=71.21"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=3441.0976"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 1.4745308310991856 / 19.132194244604307"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.5849019703583407 / 1.6938851044859828"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.9845695797395938 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "22811176775480091": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=71.4 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9190207156308823% | شیب SMA20 در 5 جلسه=1.0777222195252012%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=64.93"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=23.2530"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 10.29263370332998 / 9.299999999999997"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.1189964131516237 / 1.1025562147768173"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "23293437377896568": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9955067398901747% | شیب SMA20 در 5 جلسه=12.114065957987163%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=79.04"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=4504.6025"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 15.50951847704367 / 55.5220505088579"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.9261800301389325 / 2.1889474067496146"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "2400322364771558": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.4861878453038777% | شیب SMA20 در 5 جلسه=4.072927014550354%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=64.65"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=161.5191"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: -0.536193029490617 / 15.217391304347828"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.9057643979784737 / 0.9177875790082488"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.9933701494582594 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "26824673819862694": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": 0.03,
+        "evidence_count": 9,
+        "bullish_evidence_count": 3,
+        "bearish_evidence_count": 2,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=42.9 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=0.8537058595265767% | شیب SMA20 در 5 جلسه=-0.8681047009756693%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 0,
+            "detail": "ساختار روند ترکیبی"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 2/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 0,
+            "detail": "RSI14=51.53"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=8.3673"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: -2.5496812898387677 / -1.9245283018867965"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 0,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.0250131369237705 / 1.0006896259521756"
+          },
+          {
+            "family": "BOARD",
+            "direction": -1,
+            "detail": "عدم‌تعادل سفارش=-0.10340356127109149 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "28320293733348826": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": -6.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 3,
+        "bearish_evidence_count": 3,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=42.9 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.7352297592997843% | شیب SMA20 در 5 جلسه=-2.277192805682904%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 0,
+            "detail": "ساختار روند ترکیبی"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 2/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 0,
+            "detail": "RSI14=49.41"
+          },
+          {
+            "family": "MACD",
+            "direction": -1,
+            "detail": "MACD12/26=-3.1115"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: -2.492211838006231 / -6.006006006006004"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.6020539656677573 / 0.5633648215199095"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "31230051169165044": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9532283556752414% | شیب SMA20 در 5 جلسه=3.9848540080065%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=77.71"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=1515.7805"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 9.049479166666675 / 19.77322255516207"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.25854722091897553 / 0.28071931679920376"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.5574219695907625 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "34074071043606558": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 82.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=71.4 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.7158724131384195% | شیب SMA20 در 5 جلسه=3.761187790856102%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=69.08"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=2169.9885"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: -1.2169543872588617 / 14.761955765008295"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 0,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.0040375908583405 / 1.0752023865811966"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.12923784713834993 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "35425587644337450": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9930162953109463% | شیب SMA20 در 5 جلسه=5.423428740041314%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=80.95"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=1929.3532"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 13.0704636728733 / 22.266087643110932"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.9018427507550937 / 0.9744713611982425"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "41625340598198551": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": 29.0,
+        "evidence_count": 10,
+        "bullish_evidence_count": 4,
+        "bearish_evidence_count": 2,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 0,
+            "detail": "امتیاز تغییرات زودهنگام=0.0 | وضعیت=MIXED_CHANGE | تغییر 1 جلسه=0.13360053440214514% | شیب SMA20 در 5 جلسه=5.596396396396397%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "CORRECTION",
+            "direction": 0,
+            "detail": "وضعیت پایه=CORRECTION_IN_UPTREND | اعتماد=MEDIUM | افت از سقف اخیر=-3.85%"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 0,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 0/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=69.92"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=729.7405"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: -0.3324468085106336 / 19.920000000000005"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.4772497791336639 / 0.49481243040942097"
+          },
+          {
+            "family": "BOARD",
+            "direction": -1,
+            "detail": "عدم‌تعادل سفارش=-0.8760242096737322 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "41927452991671109": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=3.253917149602925% | شیب SMA20 در 5 جلسه=3.984226859072093%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=64.47"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=3021.2047"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 2.2545629747194207 / 13.67560414631841"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.286945823667286 / 1.3161331975300525"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.6076702246191926 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "43450146028916610": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=100.0 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.998405103668267% | شیب SMA20 در 5 جلسه=5.7640805064113065%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=82.59"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=1971.8839"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 15.859346968066014 / 31.10028420625255"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.6067566435339415 / 0.749752675108429"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "44891482026867833": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": -3.23,
+        "evidence_count": 9,
+        "bullish_evidence_count": 2,
+        "bearish_evidence_count": 2,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 0,
+            "detail": "امتیاز تغییرات زودهنگام=0.0 | وضعیت=MIXED_CHANGE | تغییر 1 جلسه=0.14265335235377208% | شیب SMA20 در 5 جلسه=-2.0396912899669384%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 0,
+            "detail": "ساختار روند ترکیبی"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 2/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 0,
+            "detail": "RSI14=53.35"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=5.4827"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: 0.14265335235377208 / -7.874015748031493"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 0,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.9903550706773957 / 0.9589317459260193"
+          },
+          {
+            "family": "BOARD",
+            "direction": -1,
+            "detail": "عدم‌تعادل سفارش=-0.22294653923666105 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "51920757918600374": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=71.4 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.7614607865277243% | شیب SMA20 در 5 جلسه=3.8153811472503962%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=80.27"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=1618.2720"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 6.600202771206498 / 14.760241577530376"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.5550450550213883 / 0.5995538111575714"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.3157025313468527 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "58741071099161284": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=71.4 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.807486631016043% | شیب SMA20 در 5 جلسه=1.247613853286067%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=61.50"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=123.7171"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 3.918918918918912 / 8.157524613220811"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.8482296395300746 / 0.8376994191282777"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.7813224708995604 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "63917421733088077": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": 17.2,
+        "evidence_count": 9,
+        "bullish_evidence_count": 4,
+        "bearish_evidence_count": 2,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=14.3 | وضعیت=BUILDING_UPSIDE | تغییر 1 جلسه=2.3385300668151476% | شیب SMA20 در 5 جلسه=-2.1076541123025705%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 0,
+            "detail": "ساختار روند ترکیبی"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 2/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 0,
+            "detail": "RSI14=52.22"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=7.5600"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: -3.2631578947368456 / -6.032719836400813"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.8036745612739712 / 0.7753882724175806"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "65883838195688438": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 84.39,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=42.9 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.104972375690605% | شیب SMA20 در 5 جلسه=-0.6817542873207794%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=60.32"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=9.3594"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 6.3953488372092915 / -2.008032128514059"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.6613984588653088 / 1.6640684427953092"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.4947665190187459 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "67141987086032267": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=3.999559387548701% | شیب SMA20 در 5 جلسه=6.828373024626555%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=77.23"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=7078.3647"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 9.476624677172829 / 27.607942397955433"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.0409371763334985 / 1.1189484982951952"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "67455383896188985": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9031159543674523% | شیب SMA20 در 5 جلسه=3.4660544875180666%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=81.85"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=1747.9851"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 5.296628626186961 / 16.403967769895033"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.7200339485344092 / 0.7770965436843176"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "69067576215760005": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 90.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 8,
+        "bearish_evidence_count": 0,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=100.0 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.2940117657388672% | شیب SMA20 در 5 جلسه=3.709113988911783%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=78.17"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=4432.1739"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 3.986344123578922 / 14.828362758637859"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 1.1192128231622762 / 1.187356396570086"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.9747479890031565 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "71483646978964608": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "NEUTRAL",
+        "confidence": "LOW",
+        "score": 18.37,
+        "evidence_count": 9,
+        "bullish_evidence_count": 3,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=14.3 | وضعیت=BUILDING_UPSIDE | تغییر 1 جلسه=0.9104704097116834% | شیب SMA20 در 5 جلسه=0.0%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=DEVELOPING | توالی=PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=LOW | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 0,
+            "detail": "ساختار روند ترکیبی"
+          },
+          {
+            "family": "MA",
+            "direction": 0,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 0/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 0,
+            "detail": "RSI14=52.57"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=15.5114"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: -3.9017341040462394 / -4.727793696275073"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": 0,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.9933031408710978 / 0.9506215071700999"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.3488428127463007 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "7745894403636165": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "CONFLICTED",
+        "confidence": "LOW",
+        "score": 24.99,
+        "evidence_count": 8,
+        "bullish_evidence_count": 3,
+        "bearish_evidence_count": 4,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": -1,
+            "detail": "امتیاز تغییرات زودهنگام=-28.6 | وضعیت=BUILDING_DOWNSIDE | تغییر 1 جلسه=0.0% | شیب SMA20 در 5 جلسه=0.4143027769483387%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": -1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: -2/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=60.60"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=311.6543"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": -1,
+            "detail": "بازده 5/20 جلسه‌ای: 0.0 / -1.5086206896551713"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.0 / 0.0"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "778253364357513": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 65.07,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=57.1 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=1.946308724832213% | شیب SMA20 در 5 جلسه=-0.3581139332847094%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=MIXED | اعتبارسنجی=CONFLICTED_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=56.20"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=13.2487"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: -0.06578947368420796 / 1.131824234354184"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.9399841709224321 / 0.9252925407133602"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=0.7708267742976753 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      },
+      "8175784894140974": {
+        "status": "PASS",
+        "engine_version": "TSETMC-UNDERLYING-INTELLIGENCE-1.2-CORRECTION-DIRECTIONAL-PRELOCK",
+        "source_of_truth": "TSETMC",
+        "bias": "BULLISH",
+        "confidence": "HIGH",
+        "score": 74.0,
+        "evidence_count": 9,
+        "bullish_evidence_count": 7,
+        "bearish_evidence_count": 1,
+        "evidence": [
+          {
+            "family": "EARLY_MOVE",
+            "direction": 1,
+            "detail": "امتیاز تغییرات زودهنگام=85.7 | وضعیت=EARLY_UPSIDE_CONFIRMATION | تغییر 1 جلسه=2.9838709677419306% | شیب SMA20 در 5 جلسه=8.387129312083918%"
+          },
+          {
+            "family": "PRE_LOCK_SEQUENCE",
+            "direction": 0,
+            "detail": "وضعیت پیش‌قفلی=EARLY | توالی=VOLUME → PRICE → MOMENTUM | جهت توالی=BULLISH | اعتبارسنجی=BULLISH_SEQUENCE | اعتماد=HIGH | دانه‌بندی=DAILY_SESSION_SEQUENCE_NOT_INTRADAY"
+          },
+          {
+            "family": "TREND",
+            "direction": 1,
+            "detail": "قیمت بالای SMA20 و ساختار SMA20 بالای SMA50"
+          },
+          {
+            "family": "MA",
+            "direction": 1,
+            "detail": "جایگاه قیمت نسبت به میانگین‌های موجود: 4/4"
+          },
+          {
+            "family": "RSI",
+            "direction": 1,
+            "detail": "RSI14=93.43"
+          },
+          {
+            "family": "MACD",
+            "direction": 1,
+            "detail": "MACD12/26=34304.4543"
+          },
+          {
+            "family": "PRICE_MOMENTUM",
+            "direction": 1,
+            "detail": "بازده 5/20 جلسه‌ای: 9.238665526090672 / 35.08462623413258"
+          },
+          {
+            "family": "VOLUME_VALUE",
+            "direction": -1,
+            "detail": "نسبت حجم/ارزش 5 به 20: 0.41655534867568955 / 0.5164061559710359"
+          },
+          {
+            "family": "BOARD",
+            "direction": 1,
+            "detail": "عدم‌تعادل سفارش=1.0 | قدرت حقیقی=N/A"
+          }
+        ],
+        "rules": {
+          "missing_data": "UNAVAILABLE_NOT_ZERO",
+          "buy_sell_signal": "NOT_GENERATED",
+          "adaptive_learning": "NOT_IN_STAGE_1",
+          "additional_indicators": "DEFERRED_TO_LATER_STAGE",
+          "early_move": "SHADOW_ONLY_CHANGE_SEQUENCE_NOT_A_GATE",
+          "pre_lock_sequence": "SHADOW_ONLY_SESSION_SEQUENCE_WITH_DIRECTION_VALIDATION_NOT_A_GATE",
+          "correction_state": "DESCRIPTIVE_SEPARATE_FROM_PRIMARY_BIAS"
+        },
+        "interpretation": "DESCRIPTIVE_UNDERLYING_BIAS_ONLY_NOT_A_BUY_SELL_SIGNAL"
+      }
+    },
+    "production_signal": "OFF",
+    "stage": "STAGE_1"
+  },
+  "source_snapshot_sha256": "6d2cabdcb5f74e92a23c878010487c6e4dd7584ef265c6e14e337c8ffaf75b8b"
+}

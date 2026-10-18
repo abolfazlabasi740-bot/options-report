@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from scripts.management_report_module import send_mgmt_card
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import os
@@ -95,6 +96,7 @@ STRATEGY_MENU_MARKUP = {
 }
 
 from report_engine import build_tsetmc_report, save_tsetmc_report
+from base_share_trend_report import build_trend_review_report
 from github_runtime_evidence import publish_latest_evidence
 from tsetmc_first_source import build_tsetmc_snapshot
 from behavior_engine import build_behavior_report, format_behavior_report
@@ -106,15 +108,23 @@ from bale_base_share_option_cards import render_page as render_option_base_cards
 from bale_option_market_cards import render_page as render_option_market_cards
 from bale_option_market_cards import render_symbol_options
 from excel_ranking_export import build_ranking_excel
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
+from lmp_report_module import send_lmp_files, send_lmp_cards
 
 # The active Bale surface has only the two market-ranking glass buttons.
 # Legacy menu definitions remain above for compatibility with old persisted
 # updates, but they are no longer sent to users.
 MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
 OPTION_SHARES_LABEL = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
-OPTION_MARKET_LABEL = "\U0001F4C8 \u0628\u0627\u0632\u0627\u0631 \u0622\u067e\u0634\u0646"
-SYMBOLS_LABEL = "\U0001F50E \u0646\u0645\u0627\u062f\u0647\u0627"
-OPTION_EXCEL_LABEL = "\U0001F4D5 \u0627\u06a9\u0633\u0644 \u0631\u0646\u06a9\u06cc\u0646\u06af \u0634\u0634\u200c\u0628\u0644\u0648\u06a9"
+OPTION_MARKET_LABEL = "📈 بازار آپشن"
+SYMBOLS_LABEL = "🔎 نمادها"
+OPTION_EXCEL_LABEL = "📕 اکسل رنکینگ شش‌بلوک"
+TREND_REVIEW_LABEL = "📈 بررسی روند"
+LMP_OPPORTUNITIES_LABEL = "🎯 فرصت‌های اختیار معامله"
+MGMT_ANALYSIS_LABEL = "📊 تحلیل مدیریتی"
+# Unified main menu: market overview first, option drill-downs next, then
+# the analytical reports (trend, last-minute, management).
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}],
@@ -122,6 +132,9 @@ MENU_MARKUP = {
         [{"text": OPTION_MARKET_LABEL, "callback_data": "option_market"}],
         [{"text": SYMBOLS_LABEL, "callback_data": "symbols"}],
         [{"text": OPTION_EXCEL_LABEL, "callback_data": "option_excel"}],
+        [{"text": TREND_REVIEW_LABEL, "callback_data": "trend_review"}],
+        [{"text": LMP_OPPORTUNITIES_LABEL, "callback_data": "lmp_opportunities"}],
+        [{"text": MGMT_ANALYSIS_LABEL, "callback_data": "mgmt_analysis"}],
     ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
@@ -131,6 +144,9 @@ REPLY_MENU_COMMANDS = {
     OPTION_MARKET_LABEL: "option_market",
     SYMBOLS_LABEL: "symbols",
     OPTION_EXCEL_LABEL: "option_excel",
+    TREND_REVIEW_LABEL: "trend_review",
+    LMP_OPPORTUNITIES_LABEL: "lmp_opportunities",
+    MGMT_ANALYSIS_LABEL: "mgmt_analysis",
 }
 CALLBACK_COMMANDS = {
     "market_shares": "market_shares",
@@ -139,6 +155,9 @@ CALLBACK_COMMANDS = {
     "symbols": "symbols",
     "option_excel": "option_excel",
 }
+# NOTE: trend_review / lmp_opportunities / mgmt_analysis have dedicated
+# callback branches in the update loop, so they are not routed through
+# CALLBACK_COMMANDS -> generate_report.
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -509,7 +528,7 @@ def answer_callback_query(callback_query_id):
     r.raise_for_status()
     data = r.json()
     if not data.get("ok"):
-        raise RuntimeError("Bale answerCallbackQuery rejected")
+        print(f"CALLBACK_ACK_REJECTED payload={data}", flush=True)
 
 
 def _underlying_symbols():
@@ -744,6 +763,18 @@ def main():
                             opening = callback_data == "symbols"
                             page = 0 if opening else int(callback_data.split(":", 1)[1])
                             send_symbol_menu(chat_id, page)
+                        elif callback_data == "trend_review":
+                            report = build_trend_review_report()
+                            send_message(chat_id, report)
+                            send_report_menu(chat_id)
+                        elif callback_data == "mgmt_analysis":
+                            send_mgmt_card(API, str(chat_id))
+                        elif callback_data == "lmp_opportunities":
+                            try:
+                                _lmp_chat = str(((callback.get("message") or {}).get("chat") or {}).get("id") or CHAT_ID)
+                                send_lmp_cards(API, _lmp_chat)
+                            except Exception as _lmp_exc:
+                                requests.post(f"{API}/sendMessage", data={"chat_id": CHAT_ID, "text": "LMP_SEND_FAIL: " + str(_lmp_exc)}, timeout=60)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
                         elif callback_data.startswith("symbol:"):
@@ -783,6 +814,8 @@ def main():
                         save_offset(next_offset)
                         offset = next_offset
                     except Exception as e:
+                        print(f"CALLBACK_HANDLER_ERROR: {type(e).__name__}: {e}", flush=True)
+                        import traceback; traceback.print_exc()
                         print(
                             f"REPORT_ERROR type={type(e).__name__}"
                         )
@@ -833,6 +866,12 @@ def main():
                     elif text in ("market_shares", MARKET_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_market_share_cards(0)
                         send_message(chat_id, report, reply_markup=markup)
+                    elif text in ("lmp_opportunities", LMP_OPPORTUNITIES_LABEL):
+                        try:
+                            _lmp_chat = str(((update.get("message") or {}).get("chat") or {}).get("id") or CHAT_ID)
+                            send_lmp_cards(API, _lmp_chat)
+                        except Exception as _lmp_exc:
+                            requests.post(f"{API}/sendMessage", data={"chat_id": CHAT_ID, "text": "LMP_SEND_FAIL: " + str(_lmp_exc)}, timeout=60)
                     elif text in ("option_shares", OPTION_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_option_base_cards(0, refresh=True)
                         send_message(chat_id, report, reply_markup=markup)
