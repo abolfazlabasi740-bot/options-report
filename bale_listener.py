@@ -8,6 +8,7 @@ import time
 import requests
 import json
 from bale_transport import send_message as transport_send
+from bale_transport import send_document as transport_send_document
 
 MENU_MARKUP = {
     "inline_keyboard": [
@@ -102,21 +103,42 @@ from underlying_trend_engine import fetch_underlying_context
 from bull_call_spread_engine import build_strategy_report
 from bale_market_share_cards import render_page as render_market_share_cards
 from bale_base_share_option_cards import render_page as render_option_base_cards
+from bale_option_market_cards import render_page as render_option_market_cards
+from bale_option_market_cards import render_symbol_options
+from excel_ranking_export import build_ranking_excel
 
 # The active Bale surface has only the two market-ranking glass buttons.
 # Legacy menu definitions remain above for compatibility with old persisted
 # updates, but they are no longer sent to users.
 MARKET_SHARES_LABEL = "\U0001F4CA \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u0628\u0627\u0632\u0627\u0631"
 OPTION_SHARES_LABEL = "\U0001F4CC \u0633\u0647\u0645\u200c\u0647\u0627\u06cc \u062f\u0627\u0631\u0627\u06cc \u0622\u067e\u0634\u0646"
+OPTION_MARKET_LABEL = "\U0001F4C8 \u0628\u0627\u0632\u0627\u0631 \u0622\u067e\u0634\u0646"
+SYMBOLS_LABEL = "\U0001F50E \u0646\u0645\u0627\u062f\u0647\u0627"
+OPTION_EXCEL_LABEL = "\U0001F4D5 \u0627\u06a9\u0633\u0644 \u0631\u0646\u06a9\u06cc\u0646\u06af \u0634\u0634\u200c\u0628\u0644\u0648\u06a9"
 MENU_MARKUP = {
     "inline_keyboard": [
         [{"text": MARKET_SHARES_LABEL, "callback_data": "market_shares_page:0"}],
         [{"text": OPTION_SHARES_LABEL, "callback_data": "option_shares"}],
+        [{"text": OPTION_MARKET_LABEL, "callback_data": "option_market"}],
+        [{"text": SYMBOLS_LABEL, "callback_data": "symbols"}],
+        [{"text": OPTION_EXCEL_LABEL, "callback_data": "option_excel"}],
     ]
 }
 REPLY_MENU_MARKUP = MENU_MARKUP
-REPLY_MENU_COMMANDS = {MARKET_SHARES_LABEL: "market_shares", OPTION_SHARES_LABEL: "option_shares"}
-CALLBACK_COMMANDS = {"market_shares": "market_shares", "option_shares": "option_shares"}
+REPLY_MENU_COMMANDS = {
+    MARKET_SHARES_LABEL: "market_shares",
+    OPTION_SHARES_LABEL: "option_shares",
+    OPTION_MARKET_LABEL: "option_market",
+    SYMBOLS_LABEL: "symbols",
+    OPTION_EXCEL_LABEL: "option_excel",
+}
+CALLBACK_COMMANDS = {
+    "market_shares": "market_shares",
+    "option_shares": "option_shares",
+    "option_market": "option_market",
+    "symbols": "symbols",
+    "option_excel": "option_excel",
+}
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output"
@@ -166,6 +188,13 @@ def normalize_command(text):
 def send_message(chat_id, text, reply_markup=None):
     count = transport_send(TOKEN, chat_id, text, reply_markup=reply_markup)
     print(f"SENT {count}/{count}")
+
+
+def send_excel(chat_id, path, *, caption=None):
+    """Send a six-block ranking .xlsx workbook to the chat as a document."""
+    message_id = transport_send_document(TOKEN, chat_id, path, caption=caption)
+    print(f"SENT_DOC {path.name} message_id={message_id}")
+    return message_id
 
 
 def system_status():
@@ -535,7 +564,7 @@ def send_symbol_menu(chat_id, page=0):
     markup = {"inline_keyboard": inline_keyboard}
     send_message(
         chat_id,
-        f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، ۵ قرارداد برتر همان نماد بر اساس Ranking اقتصادی TSETMC نمایش داده می‌شود:",
+        f"🔎 انتخاب نماد پایه\n\nتعداد نمادهای دارای اختیار معامله در TSETMC: {len(symbols)}\nصفحه {page + 1} از {total_pages}\n\nبا انتخاب هر نماد، آپشن‌های همان نماد به ترتیب رنکینگ شش‌بلوک TSETMC نمایش داده می‌شود:",
         reply_markup=markup,
     )
 
@@ -615,7 +644,7 @@ def main():
     print("====================================")
     print("OptimusAI V4.1 Bale Listener")
     print("====================================")
-    print("MENU -> market shares and option-enabled shares glass buttons")
+    print("MENU -> market shares, option-enabled shares, and option-market glass buttons")
     print("MARKET SHARES -> whole-market ranked report")
     print("PAGINATION -> 10 rows per page")
     print("SOURCE -> TSETMC")
@@ -676,8 +705,60 @@ def main():
                             page = 0 if opening else int(callback_data.split(":", 1)[1])
                             report, markup, count, current_page, total_pages = render_option_base_cards(page, refresh=opening)
                             send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data == "option_market" or callback_data.startswith("option_market_page:"):
+                            opening = callback_data == "option_market"
+                            page = 0 if opening else int(callback_data.split(":", 1)[1])
+                            report, markup, count, current_page, total_pages = render_option_market_cards(page, refresh=opening)
+                            send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data == "option_excel" or callback_data.startswith("option_excel:"):
+                            # Glass button: build the columnar six-block ranking
+                            # workbook and send it as a Bale document. Optional
+                            # ":symbol" drills down to one underlying, preserving
+                            # the global six-block rank order (matches the
+                            # "نمادها" drill-down).
+                            parts = callback_data.split(":", 1)
+                            symbol = parts[1] if len(parts) > 1 else None
+                            try:
+                                xlsx_path = build_ranking_excel(symbol, refresh=True)
+                            except Exception as exc:
+                                print(f"EXCEL_BUILD_ERROR type={type(exc).__name__}")
+                                send_message(
+                                    chat_id,
+                                    "⚠️ ساخت فایل اکسل رنکینگ شش‌بلوک ناموفق بود؛ داده یا ارتباط قابل تأیید نیست.",
+                                )
+                                send_report_menu(chat_id)
+                                save_offset(next_offset)
+                                offset = next_offset
+                                continue
+                            caption = (
+                                f"📊 اکسل رنکینگ شش‌بلوک — نماد {symbol}"
+                                if symbol else
+                                "📊 اکسل رنکینگ شش‌بلوک بازار آپشن — به ترتیب امتیاز کل"
+                            )
+                            try:
+                                send_excel(chat_id, xlsx_path, caption=caption)
+                            except Exception as exc:
+                                print(f"EXCEL_SEND_ERROR type={type(exc).__name__}")
+                            send_report_menu(chat_id)
+                        elif callback_data == "symbols" or callback_data.startswith("symbols_page:"):
+                            opening = callback_data == "symbols"
+                            page = 0 if opening else int(callback_data.split(":", 1)[1])
+                            send_symbol_menu(chat_id, page)
                         elif callback_data == "main_menu":
                             send_report_menu(chat_id)
+                        elif callback_data.startswith("symbol:"):
+                            # Tap a symbol -> its option contracts ranked by the
+                            # same six-block TSETMC evidence ranker as the
+                            # option-market button (drill-down from "نمادها").
+                            symbol = callback_data.split(":", 1)[1]
+                            report, markup, count, current_page, total_pages = render_symbol_options(symbol, 0, refresh=False)
+                            send_message(chat_id, report, reply_markup=markup)
+                        elif callback_data.startswith("symbolopt:"):
+                            parts = callback_data.split(":")
+                            symbol = parts[1] if len(parts) > 1 else ""
+                            page = int(parts[2]) if len(parts) > 2 else 0
+                            report, markup, count, current_page, total_pages = render_symbol_options(symbol, page, refresh=False)
+                            send_message(chat_id, report, reply_markup=markup)
                         elif strategy:
                             report = generate_strategy_report(strategy)
                             send_message(chat_id, report)
@@ -755,6 +836,22 @@ def main():
                     elif text in ("option_shares", OPTION_SHARES_LABEL):
                         report, markup, count, current_page, total_pages = render_option_base_cards(0, refresh=True)
                         send_message(chat_id, report, reply_markup=markup)
+                    elif text in ("option_market", OPTION_MARKET_LABEL):
+                        report, markup, count, current_page, total_pages = render_option_market_cards(0, refresh=True)
+                        send_message(chat_id, report, reply_markup=markup)
+                    elif text in ("option_excel", OPTION_EXCEL_LABEL):
+                        try:
+                            xlsx_path = build_ranking_excel(refresh=True)
+                            send_excel(chat_id, xlsx_path, caption="📊 اکسل رنکینگ شش‌بلوک بازار آپشن — به ترتیب امتیاز کل")
+                        except Exception as exc:
+                            print(f"EXCEL_ERROR type={type(exc).__name__}")
+                            send_message(
+                                chat_id,
+                                "⚠️ ساخت فایل اکسل رنکینگ شش‌بلوک ناموفق بود؛ داده یا ارتباط قابل تأیید نیست.",
+                            )
+                        send_report_menu(chat_id)
+                    elif text in ("symbols", SYMBOLS_LABEL):
+                        send_symbol_menu(chat_id, 0)
                     elif text.startswith(SYMBOL_PAGE_PREFIX):
                         page_number = int(text[len(SYMBOL_PAGE_PREFIX):].strip()) - 1
                         send_symbol_menu(chat_id, page_number)
