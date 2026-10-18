@@ -34,3 +34,12 @@ output/bale_delivery_verification.json
 output/base_share/comparison_*
 output/base_share/latest_daily_rank_change_report.*
 output/archive_dedup_*.json
+
+# --- All remaining volatile output (evidence, archives, history, probes, shadows) ---
+output/*
+!output/base_share/
+output/base_share/*
+!output/base_share/latest_*.json
+!output/base_share/latest_*.txt
+!output/base_share/latest_management_analysis_report.json
+!output/report_archive/
