@@ -20,3 +20,12 @@ output/crond_watchdog.log
 # --- Python ---
 __pycache__/
 *.pyc
+
+# --- Report history & volatile artifacts (kept on server, not in code repo) ---
+output/base_share/daily_history/
+output/base_share/history_versions/
+output/base_share/comparisons/
+output/base_share/comparison_*
+output/base_share/latest_daily_rank_change_report.*
+output/archive_dedup_*.json
+output/bale_delivery_verification.json
