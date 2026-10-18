@@ -1,0 +1,9 @@
+{
+  "command_id": "bv_connectivity_probe_current",
+  "argv": [
+    "python",
+    "-c",
+    "import json\nimport urllib.request\nfrom urllib.error import HTTPError, URLError\ntargets = [\n    \"https://api.bourseview.com\",\n    \"https://api.bourseview.com/swagger\",\n    \"https://api.bourseview.com/swagger/index.html\",\n    \"https://api.bourseview.com/openapi.json\",\n    \"https://api.bourseview.com/swagger/v1/swagger.json\",\n    \"https://api.bourseview.com/v2\",\n    \"https://www.bourseview.com/views/api.html\"\n]\nresults = []\nfor url in targets:\n    item = {\"url\": url}\n    try:\n        req = urllib.request.Request(url, headers={\"User-Agent\": \"OptimusAI-connectivity-check/1.0\", \"Accept\": \"application/json,text/html,*/*\"})\n        with urllib.request.urlopen(req, timeout=8) as response:\n            raw = response.read(1800)\n            item[\"status\"] = response.status\n            item[\"final_url\"] = response.geturl()\n            item[\"content_type\"] = response.headers.get(\"Content-Type\", \"\")\n            item[\"body_preview\"] = raw.decode(\"utf-8\", \"replace\")[:700]\n    except HTTPError as exc:\n        item[\"status\"] = exc.code\n        item[\"error\"] = \"HTTPError\"\n        item[\"body_preview\"] = exc.read(500).decode(\"utf-8\", \"replace\")\n    except Exception as exc:\n        item[\"error\"] = type(exc).__name__ + \": \" + str(exc)\n    results.append(item)\nprint(json.dumps({\"probe\": \"bourseview_connectivity\", \"results\": results}, ensure_ascii=False, indent=2))"
+  ],
+  "cwd": "/data/data/com.termux/files/home/OptimusAI_V41_LIVE"
+}
