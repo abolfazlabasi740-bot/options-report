@@ -153,7 +153,6 @@ FILTER_PRESETS: dict[str, dict[str, Any]] = {
         ],
         "limitations": ["The existing trend engine's 20-day high is not equivalent; a 200-day history feature is required."],
     },
-},
 "BV-F09": {
         "name": "Low trailing P/E with broad monthly sales growth",
         "source_url": "https://t.me/s/bvhelp?after=194",
@@ -189,6 +188,7 @@ FILTER_PRESETS: dict[str, dict[str, Any]] = {
         ],
         "limitations": ["This is a financial-risk screen, not a bullish signal; interest coverage must be computed from comparable operating-profit and finance-cost periods."],
     },
+}
 
 
 def list_bourseview_presets() -> list[dict[str, Any]]:
