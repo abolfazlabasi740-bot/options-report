@@ -93,6 +93,34 @@ check('پاسخ ساختاری معتبر', T._mw_is_valid(VALID_RAW))
 check('رد HTML', not T._mw_is_valid('<html>blocked</html>'))
 check('رد متن خالی', not T._mw_is_valid(''))
 
+print('== HTTP GET / gzip ==')
+import gzip as _test_gzip
+
+class _FakeHTTPResponse:
+    def __init__(self, payload, final_url):
+        self.payload = payload
+        self.final_url = final_url
+    def __enter__(self):
+        return self
+    def __exit__(self, *exc):
+        return False
+    def read(self):
+        return self.payload
+    def geturl(self):
+        return self.final_url
+
+real_urlopen = T.urllib.request.urlopen
+plain_payload = b'test-payload'
+T.urllib.request.urlopen = lambda req, timeout=30: _FakeHTTPResponse(
+    _test_gzip.compress(plain_payload), 'https://final.example/data'
+)
+try:
+    body, final_url = T._http_get('https://start.example/redirect', timeout=2)
+    check('بازکردن gzip', body == 'test-payload')
+    check('URL نهایی', final_url == 'https://final.example/data')
+finally:
+    T.urllib.request.urlopen = real_urlopen
+
 print('== دریافت ==')
 real_http_get = T._http_get
 T._http_get = lambda url, timeout=30: (VALID_RAW, url)
