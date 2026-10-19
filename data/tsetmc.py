@@ -41,11 +41,16 @@ class _GzipAwareResponse:
 
 
 def _mw_is_valid(text):
-    """Real MarketWatchPlus format (verified live): >1MB payload, '@' = SECTION
-    separator (~4 occurrences only), rows separated otherwise, 18-digit instrument codes."""
-    return (len(text) > 100_000
-            and _mw_is_valid(text)
-            and bool(_re.search(r'\d{15,}', text)))
+    """Validate the structural signature of a MarketWatchPlus payload.
+
+    Do not require a fixed byte size: valid snapshots can vary by market state.
+    Reject HTML/error pages by requiring section separators and instrument IDs.
+    """
+    return (
+        isinstance(text, str)
+        and text.count('@') >= 2
+        and bool(_re.search(r'(?<!\d)\d{15,}(?!\d)', text))
+    )
 
 try:
     from zoneinfo import ZoneInfo
@@ -215,17 +220,17 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None  # ریدایرکت را خودمان دنبال میکنیم
 
-_NO REDIRECT_OPENER = None
+_NO_REDIRECT_OPENER = None
 
 def _http_get(url, timeout=30, max_hops=5):
     """GET با دنبالکردن دستی ریدایرکت (حداکثر max_hops) + gzip شفاف"""
-    global _NO REDIRECT_OPENER
-    if _NO REDIRECT_OPENER is None:
-        _NO REDIRECT_OPENER = urllib.request.build_opener(_NoRedirect)
+    global _NO_REDIRECT_OPENER
+    if _NO_REDIRECT_OPENER is None:
+        _NO_REDIRECT_OPENER = urllib.request.build_opener(_NoRedirect)
     hops = []
     for _ in range(max_hops + 1):
         req = urllib.request.Request(url, headers=HEADERS)
-        resp = _NO REDIRECT_OPENER.open(req, timeout=timeout)
+        resp = _NO_REDIRECT_OPENER.open(req, timeout=timeout)
         loc = resp.headers.get('Location')
         if resp.status in (301, 302, 303, 307, 308) and loc:
             from urllib.parse import urljoin
