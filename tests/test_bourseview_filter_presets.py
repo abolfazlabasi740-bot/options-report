@@ -27,6 +27,7 @@ class BourseViewPresetTests(unittest.TestCase):
         result = evaluate_bourseview_preset("BV-F07", {"rsi_14": 25})
         self.assertEqual(result["status"], "INSUFFICIENT_DATA")
         self.assertFalse(result["matched"])
+        self.assertFalse(result["data_freshness_checked"])
 
     def test_rsi_screen_matches_only_when_both_conditions_pass(self):
         record = {"rsi_14": 29.9, "avg_value_30d_irr": 30_000_000_001}
@@ -50,6 +51,39 @@ class BourseViewPresetTests(unittest.TestCase):
         self.assertEqual(evaluate_bourseview_preset("BV-F03", record)["status"], "MATCH")
         record["revenue_growth_1m_minus_growth_1y_pct"] = 0
         self.assertEqual(evaluate_bourseview_preset("BV-F03", record)["status"], "NO_MATCH")
+
+    def test_quarterly_revenue_growth_screen(self):
+        record = {
+            "revenue_growth_rate_qoq_pct": 10.1,
+            "revenue_growth_rate_yoy_pct": 100.1,
+            "avg_value_30d_irr": 30_000_000_001,
+        }
+        self.assertEqual(evaluate_bourseview_preset("BV-F04", record)["status"], "MATCH")
+        record["revenue_growth_rate_yoy_pct"] = 100
+        self.assertEqual(evaluate_bourseview_preset("BV-F04", record)["status"], "NO_MATCH")
+
+    def test_operating_margin_screen(self):
+        record = {
+            "operating_profit_margin_mrq_growth_rate_qoq_pct": 0.1,
+            "operating_profit_margin_mrq_growth_rate_yoy_pct": 0.2,
+            "avg_value_30d_irr": 30_000_000_001,
+            "operating_profit_margin_ttm_pct": 30.1,
+        }
+        self.assertEqual(evaluate_bourseview_preset("BV-F05", record)["status"], "MATCH")
+        record["operating_profit_margin_ttm_pct"] = 30
+        self.assertEqual(evaluate_bourseview_preset("BV-F05", record)["status"], "NO_MATCH")
+
+    def test_monthly_ps_screen(self):
+        record = {
+            "revenue_year_to_year_growth_rate_1m_pct": 40.1,
+            "revenue_growth_1m_minus_growth_3m_pct": 0.1,
+            "revenue_growth_1m_minus_growth_1y_pct": 0.1,
+            "p_to_s_monthly": 2.49,
+            "avg_value_30d_irr": 10_000_000_001,
+        }
+        self.assertEqual(evaluate_bourseview_preset("BV-F06", record)["status"], "MATCH")
+        record["p_to_s_monthly"] = 2.5
+        self.assertEqual(evaluate_bourseview_preset("BV-F06", record)["status"], "NO_MATCH")
 
     def test_low_pe_growth_screen_uses_documented_description_thresholds(self):
         record = {
