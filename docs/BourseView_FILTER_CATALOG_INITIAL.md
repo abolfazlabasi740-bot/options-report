@@ -144,3 +144,25 @@ Therefore, none of the filters above can responsibly be declared production-read
 4. **P1 — Fundamental filters:** implement monthly/quarterly revenue, margins and P/S only after point-in-time Codal data or an authorized API feed is available.
 5. **P1 — P/NAV:** require verified instrument type and timestamped NAV; stale NAV must fail closed.
 6. **P2 — Backtest:** validate early-warning lead time and false-positive rate using point-in-time snapshots before ranking integration.
+
+
+## Cross-repository audit — existing reusable components
+
+The initial file-level note above was intentionally scoped to `data/tsetmc.py`. A follow-up search of the wider repository found reusable components, so these filters should not be rebuilt from scratch:
+
+- `tsetmc_adapter.py`: explicit TSETMC source adapter methods for instrument quotes, order book, client type and daily history; raw payloads retain endpoint, retrieval timestamp and SHA-256.
+- `underlying_trend_engine.py`: calculates daily-history features including SMA 5/10/20/50, RSI-14 (Wilder), MACD 12/26, ATR-14, 5/20-session return, volume and traded-value ratios, 20-day breakout evidence and data freshness. This is descriptive/shadow evidence, not a production signal.
+- `filter_engine_shadow.py`: reusable rule evaluator with ALL/ANY logic, explicit operators and fail-closed handling of missing values.
+- `historical_snapshot.py` / `historical_pattern_shadow.py`: append-only snapshots and descriptive change/price-volume sequence analysis.
+- `codal_export_engine.py`: a Codal monthly-activity evidence parser for disclosed export sales and currency details. This does not, by itself, establish that all monthly-revenue growth fields needed by the BourseView formulas are available.
+- `docs/DATA_SOURCE_ARCHITECTURE.md` and `docs/TSETMC_DATA_SOURCE_REFERENCE.md`: canonical architecture and endpoint reference.
+
+### Consequence for filter implementation
+
+1. **RSI filter:** likely reusable from `underlying_trend_engine.py` after confirming the output schema, freshness and market-universe coverage. The 30-day average traded-value condition still needs a matching value-history feature; existing 5/20 value ratio is not equivalent.
+2. **Unusual value:** the existing 5-session/20-session value ratio is not equivalent to today's value > 5 × the 30-session average. Reuse the history input and add a separately named exact 30-session calculation only after inspecting history coverage.
+3. **200-day drawdown:** the existing trend engine computes a prior 20-day high, not the BourseView 200-day-high percentage. Do not substitute one for the other.
+4. **Monthly/quarterly fundamentals:** use the existing Codal parser where its disclosed export data fits, but do not treat export parsing as a complete monthly revenue / quarterly financial-statement dataset.
+5. **Rule evaluation:** reuse `filter_engine_shadow.py`; do not create a second generic filter engine. Add only a thin, tested mapping layer after the canonical input field definitions are agreed.
+
+This narrows the next task from “build filters” to “inspect existing output schemas and prove field-by-field compatibility.” No production ranking or score has been changed.
