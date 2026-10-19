@@ -8,10 +8,10 @@ from bourseview_filter_presets import (
 
 
 class BourseViewPresetTests(unittest.TestCase):
-    def test_catalog_has_eight_public_presets(self):
+    def test_catalog_has_ten_public_presets(self):
         items = list_bourseview_presets()
-        self.assertEqual(len(items), 8)
-        self.assertEqual(len(FILTER_PRESETS), 8)
+        self.assertEqual(len(items), 10)
+        self.assertEqual(len(FILTER_PRESETS), 10)
         self.assertTrue(all(x["production_gate"] == "OFF" for x in items))
 
     def test_unusual_value_requires_both_conditions(self):
@@ -50,6 +50,24 @@ class BourseViewPresetTests(unittest.TestCase):
         self.assertEqual(evaluate_bourseview_preset("BV-F03", record)["status"], "MATCH")
         record["revenue_growth_1m_minus_growth_1y_pct"] = 0
         self.assertEqual(evaluate_bourseview_preset("BV-F03", record)["status"], "NO_MATCH")
+
+    def test_low_pe_growth_screen_uses_documented_description_thresholds(self):
+        record = {
+            "p_to_e_ttm": 7.9,
+            "revenue_growth_1m_pct": 11,
+            "revenue_growth_3m_pct": 12,
+            "revenue_growth_5m_pct": 13,
+            "revenue_yoy_growth_1m_pct": 14,
+        }
+        result = evaluate_bourseview_preset("BV-F09", record)
+        self.assertEqual(result["status"], "MATCH")
+        self.assertEqual(result["provenance"], "PUBLICLY_DESCRIBED_SCREEN_RULE_DETAILS_PARTIAL")
+
+    def test_low_pe_interest_coverage_is_risk_screen(self):
+        record = {"p_to_e_ttm": 7.5, "interest_coverage_ratio": 2.9}
+        self.assertEqual(evaluate_bourseview_preset("BV-F10", record)["status"], "MATCH")
+        record["interest_coverage_ratio"] = 3.0
+        self.assertEqual(evaluate_bourseview_preset("BV-F10", record)["status"], "NO_MATCH")
 
     def test_unknown_preset_is_invalid(self):
         result = evaluate_bourseview_preset("BV-UNKNOWN", {})
