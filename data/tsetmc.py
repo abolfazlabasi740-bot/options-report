@@ -225,12 +225,12 @@ _NO_REDIRECT_OPENER = None
 def _http_get(url, timeout=30, max_hops=5):
     """GET با دنبالکردن دستی ریدایرکت (حداکثر max_hops) + gzip شفاف"""
     global _NO_REDIRECT_OPENER
-    if _NO REDIRECT_OPENER is None:
-        _NO REDIRECT_OPENER = urllib.request.build_opener(_NoRedirect)
+    if _NO_REDIRECT_OPENER is None:
+        _NO_REDIRECT_OPENER = urllib.request.build_opener(_NoRedirect)
     hops = []
     for _ in range(max_hops + 1):
         req = urllib.request.Request(url, headers=HEADERS)
-        resp = _NO REDIRECT_OPENER.open(req, timeout=timeout)
+        resp = _NO_REDIRECT_OPENER.open(req, timeout=timeout)
         loc = resp.headers.get('Location')
         if resp.status in (301, 302, 303, 307, 308) and loc:
             from urllib.parse import urljoin
