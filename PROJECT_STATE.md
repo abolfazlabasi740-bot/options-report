@@ -199,3 +199,24 @@ bash ~/deploy_optimus_modules.sh
 - تست‌های جدید: بازکردن gzip و ثبت URL نهایی پاسخ.
 - محدودیت شواهد: CI دریافت زنده TSETMC را آزمایش نکرده؛ دسترسی زنده، شمار رکوردها، تازگی داده و استقرار در Termux هنوز تأیید نشده‌اند.
 - گام بعدی: بررسی شواهد شبکه‌ای مستقل و امکان دریافت زنده؛ از ادعای دریافت موفق تا ثبت خروجی واقعی خودداری شود.
+
+
+## بخش ۱۶ — فیلترهای عمومی بورس‌ویو و رجیستری قابل‌آزمون (2026-10-19)
+
+- PR شماره 6 با عنوان `Document initial BourseView filter catalog and reproducibility plan` ادغام شد: https://github.com/abolfazlabasi740-bot/options-report/pull/6
+- کامیت ادغام PR #6: `8bc055136684ec4b114b767b0e232cc590b64c1d`
+- PR شماره 7 با عنوان `Add evidence-only BourseView filter presets and tests` ادغام شد: https://github.com/abolfazlabasi740-bot/options-report/pull/7
+- کامیت ادغام PR #7: `defaaf14a43c69b1627eb989b7c6b8337a7be4c1`
+- فایل‌های ثبت‌شده:
+  - `docs/BOURSEVIEW_CAPABILITY_PIPELINE.md` — پایپ‌لاین و تطبیق اجزای موجود با فیلترها.
+  - `docs/BourseView_FILTER_CATALOG_INITIAL.md` — فرمول‌ها، منبع عمومی، واحدها و شکاف داده.
+  - `bourseview_filter_presets.py` — ۱۰ preset قابل‌ارزیابی با استفاده از `filter_engine_shadow.py`.
+  - `tests/test_bourseview_filter_presets.py` — آزمون قواعد، مرز آستانه و داده مفقود.
+  - `.github/workflows/test-bourseview-presets.yml` — کامپایل و آزمون مستقل presetها.
+- شاهد CI: اجرای GitHub Actions شماره `39199058867` موفق شد؛ کامپایل و آزمون‌های preset موفق بودند.
+- فیلترهای رجیستری شامل ارزش معاملات غیرعادی، P/NAV، رشد فروش ماهانه/فصلی، رشد حاشیه سود عملیاتی، رشد فروش با P/S پایین، RSI زیر ۳۰، فاصله از سقف ۲۰۰روزه، P/E پایین با رشد فروش و ریسک پوشش هزینه بهره است.
+- محدودیت حیاتی: رجیستری فقط قواعد مستند را روی فیلدهای نرمال‌شده ارزیابی می‌کند؛ داده دریافت نمی‌کند، فیلد مفقود را حدس نمی‌زند و به رتبه‌بندی تولید وصل نشده است.
+- اجزای موجودی که باید استفاده مجدد شوند: `tsetmc_adapter.py`, `underlying_trend_engine.py`, `filter_engine_shadow.py`, `historical_snapshot.py`, `historical_pattern_shadow.py`, `codal_export_engine.py`.
+- شکاف‌های باز: نسبت ارزش ۵/۲۰ موجود جایگزین فیلتر ارزش امروز/میانگین ۳۰ جلسه نیست؛ سقف ۲۰روزه معادل سقف ۲۰۰روزه نیست؛ parser فروش صادراتی کدال، کل داده‌های رشد درآمد/حاشیه سود را تأمین نمی‌کند.
+- وضعیت اجرای محلی: هیچ فرمان Termux و هیچ فایل LIVE روی گوشی اجرا یا تغییر داده نشده است. تغییرات فوق در GitHub ثبت و با CI بررسی شده‌اند.
+- گام بعدی: بررسی schema خروجی `underlying_trend_engine.py` و adapterهای بازار/کدال، تعریف mapper با واحد و timestamp و سیاست تازگی، سپس اتصال فقط در Shadow و آزمون point-in-time؛ هیچ رتبه‌بندی تولیدی تا عبور از آزمون مجاز نیست.
