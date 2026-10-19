@@ -153,7 +153,42 @@ FILTER_PRESETS: dict[str, dict[str, Any]] = {
         ],
         "limitations": ["The existing trend engine's 20-day high is not equivalent; a 200-day history feature is required."],
     },
-}
+},
+"BV-F09": {
+        "name": "Low trailing P/E with broad monthly sales growth",
+        "source_url": "https://t.me/s/bvhelp?after=194",
+        "provenance": "PUBLICLY_DESCRIBED_SCREEN_RULE_DETAILS_PARTIAL",
+        "description": "Public description says trailing P/E is below 8 and average sales growth exceeds 10% across monthly, 3-month, 5-month and same-month-year-ago views; the post does not publish the exact complete expression.",
+        "required_fields": [
+            "p_to_e_ttm",
+            "revenue_growth_1m_pct",
+            "revenue_growth_3m_pct",
+            "revenue_growth_5m_pct",
+            "revenue_yoy_growth_1m_pct",
+        ],
+        "units": {"p_to_e_ttm": "ratio", "*_pct": "percentage points"},
+        "rules": [
+            {"field": "p_to_e_ttm", "operator": "LT", "value": 8},
+            {"field": "revenue_growth_1m_pct", "operator": "GT", "value": 10},
+            {"field": "revenue_growth_3m_pct", "operator": "GT", "value": 10},
+            {"field": "revenue_growth_5m_pct", "operator": "GT", "value": 10},
+            {"field": "revenue_yoy_growth_1m_pct", "operator": "GT", "value": 10},
+        ],
+        "limitations": ["The public post describes the screen but does not publish its full expression; this is an explicit approximation of the prose, not a claimed exact reproduction."],
+    },
+    "BV-F10": {
+        "name": "High leverage risk with low trailing P/E",
+        "source_url": "https://t.me/s/bvhelp?before=223",
+        "provenance": "PUBLICLY_DOCUMENTED_EXAMPLE",
+        "description": "Trailing P/E below 8 and interest coverage ratio below 3.",
+        "required_fields": ["p_to_e_ttm", "interest_coverage_ratio"],
+        "units": {"p_to_e_ttm": "ratio", "interest_coverage_ratio": "ratio"},
+        "rules": [
+            {"field": "p_to_e_ttm", "operator": "LT", "value": 8},
+            {"field": "interest_coverage_ratio", "operator": "LT", "value": 3},
+        ],
+        "limitations": ["This is a financial-risk screen, not a bullish signal; interest coverage must be computed from comparable operating-profit and finance-cost periods."],
+    },
 
 
 def list_bourseview_presets() -> list[dict[str, Any]]:
