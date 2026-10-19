@@ -63,3 +63,84 @@ Expose weekly/monthly OHLC and closing-price-derived fields only after their def
 - No authenticated BourseView session or proprietary API response was accessed.
 - No live data values or filter performance are claimed.
 - The rules in this document are not yet connected to the live OptimusAI ranking/report pipeline.
+
+
+## Expanded public filter formulas — verified from BourseView's public channel
+
+The following are exact expressions or close faithful transcriptions published by BourseView. They are reference rules, not validated trading signals. Field names are shown in BourseView's published English syntax.
+
+### BV-F04 — Strong monthly revenue performance
+```
+Revenue Growth Rate 1M > Revenue Arithmetic Average Growth Rate 3M
+and Revenue Growth Rate 1M > Revenue Growth Rate 1Y
+and Average Value 30D > 30000000000
+and Revenue Arithmetic Average Growth Rate 3M > 0%
+```
+The published example uses an average 30-day value threshold of 30 billion rials (3 billion tomans). Other posts show 10 billion rials (1 billion tomans), so thresholds must be versioned rather than treated as a universal preset.
+
+### BV-F05 — Strong quarterly revenue growth
+```
+Revenue Growthrate QoQ > 10%
+and Revenue Growth Rate YoY > 100%
+and Average Value 30D > 30000000000
+```
+
+### BV-F06 — Improving operating profit margin
+```
+Operating Profit Margin MRQ Growth Rate QoQ > 0%
+and Operating Profit Margin MRQ Growth Rate YoY > 0%
+and Average Value 30D > 30000000000
+and Operating Profit Margin TTM > 30%
+```
+A separate published example uses Net Profit Margin TTM > 20% with the first three conditions. Keep these as distinct variants.
+
+### BV-F07 — Monthly sales growth with low monthly P/S
+```
+Revenue Year to Year Growth Rate 1m > 40%
+and Revenue Growth Rate 1M > Revenue Growth Rate 3M
+and Revenue Growth Rate 1M > Revenue Growth Rate 1Y
+and P to S Monthly < 2.5
+and Average Value 30D > 10000000000
+```
+Another published version compares monthly revenue growth with the arithmetic average growth rate over three months and uses a liquidity threshold. Preserve the exact variant and date/source.
+
+### BV-F08 — Oversold RSI with a liquidity floor
+```
+Average Value 30D > 30000000000
+and Relative Strength Index < 30
+```
+This is an oversold screen, not automatically a buy signal. In a falling market, RSI can remain below 30.
+
+### BV-F09 — Large drawdown from the 200-day high
+```
+High Percent 200D < 0.5
+and Average Value 30D > 10000000000
+```
+This identifies instruments trading below half of their 200-day high, with a liquidity filter; it can select distressed or structurally impaired instruments and needs a separate risk screen.
+
+### BV-F10 — Unusual trading value
+The public example describes today's trading value greater than five times the average trading value over the last 30 sessions, while that average exceeds 1 billion tomans. Convert units carefully: 1 billion tomans = 10 billion rials. This example should not be confused with other public screens that use 10 or 30 billion rials.
+
+### BV-F11 — Investment companies below NAV
+Select verified investment companies that traded today and have P/NAV < 1; sort by P/NAV ascending. Exact field formula and NAV freshness still require confirmation.
+
+### Source references
+- BourseView official public channel, unusual trading value and P/NAV examples: https://t.me/s/bvhelp?before=152
+- Strong monthly/quarterly revenue, operating margin and technical filters: https://t.me/s/bvhelp
+- Monthly P/S and 200-day drawdown examples: https://t.me/s/bvhelp?after=212
+- RSI < 30 example: https://t.me/s/bvhelp/274
+
+## Actual source-coverage check against current repository file
+
+Reviewed `data/tsetmc.py` on `main`. This module currently extracts instrument identifiers and labels (`ins_code`, `isin`, `symbol`, `title`) from MarketWatchPlus and writes classified instrument lists. It does **not** currently calculate or store price history, daily traded value, 30-day averages, RSI, 200-day highs, revenue growth, operating margins, P/S, NAV, or buyer/seller cash-flow metrics. This is a module-level finding, not a claim that no other project file could contain related data.
+
+Therefore, none of the filters above can responsibly be declared production-ready from this module alone. The immediate blocker is the field/data layer: identify existing historical and fundamental data modules first, then source missing fields. No live filter execution or live market data is claimed.
+
+## Revised execution order
+
+1. **P0 — Source inventory:** search all repository modules for existing price/history/fundamental inputs; do not duplicate existing work.
+2. **P0 — Field map:** for each filter, record exact field definition, unit (rial/toman/percent), source, timestamp, missing-data policy and history depth.
+3. **P1 — Market-data filters:** implement unusual value, RSI and 200-day drawdown only after valid historical price/value data exists.
+4. **P1 — Fundamental filters:** implement monthly/quarterly revenue, margins and P/S only after point-in-time Codal data or an authorized API feed is available.
+5. **P1 — P/NAV:** require verified instrument type and timestamped NAV; stale NAV must fail closed.
+6. **P2 — Backtest:** validate early-warning lead time and false-positive rate using point-in-time snapshots before ranking integration.
