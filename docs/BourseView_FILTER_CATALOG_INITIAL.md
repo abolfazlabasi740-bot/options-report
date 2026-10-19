@@ -166,3 +166,16 @@ The initial file-level note above was intentionally scoped to `data/tsetmc.py`. 
 5. **Rule evaluation:** reuse `filter_engine_shadow.py`; do not create a second generic filter engine. Add only a thin, tested mapping layer after the canonical input field definitions are agreed.
 
 This narrows the next task from “build filters” to “inspect existing output schemas and prove field-by-field compatibility.” No production ranking or score has been changed.
+
+
+## Additional public valuation and leverage screens — 2026-10-19
+
+### BV-F09 — Low trailing P/E with broad monthly sales growth
+A public BourseView post describes companies with trailing P/E below 8 and average sales growth above 10% across monthly, 3-month, 5-month and same-month-year-ago views. The post does not expose the full filter expression, so this is a **prose-described screen**, not an exact formula reproduction.
+Source: https://t.me/s/bvhelp?after=194
+
+### BV-F10 — Low P/E and low interest coverage
+The published example uses trailing P/E below 8 and interest coverage below 3. Interest coverage is operating profit divided by finance costs; the result identifies leverage/interest-cost risk, not a bullish opportunity.
+Source: https://t.me/s/bvhelp?before=223
+
+The machine-readable registry in `bourseview_filter_presets.py` now contains these two additional presets, for ten total. BV-F09 is explicitly tagged `PUBLICLY_DESCRIBED_SCREEN_RULE_DETAILS_PARTIAL`; it must not be represented as a faithful copy of a formula that BourseView did not publish.
