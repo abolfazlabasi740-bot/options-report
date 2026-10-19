@@ -4,7 +4,6 @@ import json
 import os
 import sys
 import tempfile
-import urllib.request as U
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import data.tsetmc as T
@@ -85,39 +84,38 @@ check('run_id متفاوت با داده متفاوت', T.snapshot(build_raw(ROW
 check('اجرای دوباره بی‌خطر', T.snapshot(RAW, 'x', repo_root=tmp)['ok'] is True)
 check('پیش‌نمایش', isinstance(s['preview']['stocks'], list) and len(s['preview']['stocks']) == 3)
 
-print('== دریافت ==')
-class FakeResp:
-    def __init__(self, data):
-        self._d = data
-    def read(self):
-        return self._d
-    def __enter__(self):
-        return self
-    def __exit__(self, *a):
-        return False
+print('== اعتبارسنجی پاسخ ==')
+VALID_RAW = 'h@' + ';'.join(
+    ['35425587644337450' + str(i) + ',IRO1FOLA0001,فولاد,فولاد مباركه,1,2,3,4,5'
+     for i in range(12)]
+) + '@'
+check('پاسخ ساختاری معتبر', T._mw_is_valid(VALID_RAW))
+check('رد HTML', not T._mw_is_valid('<html>blocked</html>'))
+check('رد متن خالی', not T._mw_is_valid(''))
 
-real_urlopen = U.urlopen
-U.urlopen = lambda url, timeout=None: FakeResp('h@' + ';'.join(['35425587644337450' + str(i) + ',IRO1FOLA0001,فولاد,فولاد مباركه,1,2,3,4,5' for i in range(12)]) + '@')
+print('== دریافت ==')
+real_http_get = T._http_get
+T._http_get = lambda url, timeout=30: (VALID_RAW, url)
 text, url = T.fetch(urls=['http://x/'])
 check('دریافت موفق', 'فولاد' in text and url == 'http://x/')
 
-def _fail(*a, **k):
-    raise OSError('network down')
+def _fail(url, timeout=30):
+    raise OSError('network down: ' + url)
 
-U.urlopen = _fail
+T._http_get = _fail
 try:
     T.fetch(urls=['http://a/', 'http://b/'])
     check('شکست همه → ConnectionError', False)
 except ConnectionError as e:
     check('شکست همه → ConnectionError', 'http://a/' in str(e) and 'http://b/' in str(e))
 
-U.urlopen = lambda url, timeout=None: FakeResp('<html>blocked</html>')
+T._http_get = lambda url, timeout=30: ('<html>blocked</html>', url)
 try:
     T.fetch(urls=['http://c/'])
     check('پاسخ نامعتبر → ConnectionError', False)
 except ConnectionError as e:
     check('پاسخ نامعتبر → ConnectionError', 'http://c/' in str(e))
-U.urlopen = real_urlopen
+T._http_get = real_http_get
 
 print('== CLI ==')
 rawfile = os.path.join(tmp, 'mw_raw.txt')
