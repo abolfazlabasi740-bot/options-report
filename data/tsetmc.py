@@ -216,37 +216,16 @@ def snapshot(text, source_label, repo_root=None):
     return {'ok': True, 'run_id': run_id, 'counts': counts, 'paths': paths,
             'consistent': consistent, 'preview': preview}
 
-class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None  # ریدایرکت را خودمان دنبال میکنیم
-
-_NO_REDIRECT_OPENER = None
-
 def _http_get(url, timeout=30, max_hops=5):
-    """GET با دنبالکردن دستی ریدایرکت (حداکثر max_hops) + gzip شفاف"""
-    global _NO_REDIRECT_OPENER
-    if _NO_REDIRECT_OPENER is None:
-        _NO_REDIRECT_OPENER = urllib.request.build_opener(_NoRedirect)
-    hops = []
-    for _ in range(max_hops + 1):
-        req = urllib.request.Request(url, headers=HEADERS)
-        resp = _NO_REDIRECT_OPENER.open(req, timeout=timeout)
-        loc = resp.headers.get('Location')
-        if resp.status in (301, 302, 303, 307, 308) and loc:
-            from urllib.parse import urljoin
-            hops.append(f'{resp.status} {url} -> {loc}')
-            url = urljoin(url, loc)
-            resp.close()
-            continue
+    """GET با دنبال‌کردن ریدایرکت استاندارد urllib و بازکردن gzip."""
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        final_url = resp.geturl()
         raw = resp.read()
-        if isinstance(raw, bytes) and raw[:2] == b'\x1f\x8b':
-            raw = _gzip.decompress(raw)
-        resp.close()
-        text = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else str(raw)
-        if hops:
-            print('ردیابی ریدایرکت: ' + ' ; '.join(hops))
-        return text, url
-    raise ConnectionError('حلقه ریدایرکت بیپایان (بیش از ' + str(max_hops) + ' پرش): ' + ' ; '.join(hops))
+    if isinstance(raw, bytes) and raw[:2] == b'\\x1f\\x8b':
+        raw = _gzip.decompress(raw)
+    text = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else str(raw)
+    return text, final_url
 
 def fetch(timeout=30, urls=None):
     errors = []
