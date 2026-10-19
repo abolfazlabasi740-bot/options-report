@@ -179,3 +179,33 @@ The published example uses trailing P/E below 8 and interest coverage below 3. I
 Source: https://t.me/s/bvhelp?before=223
 
 The machine-readable registry in `bourseview_filter_presets.py` now contains these two additional presets, for ten total. BV-F09 is explicitly tagged `PUBLICLY_DESCRIBED_SCREEN_RULE_DETAILS_PARTIAL`; it must not be represented as a faithful copy of a formula that BourseView did not publish.
+
+
+## Field-by-field compatibility matrix — repository source review, 2026-10-19
+
+**Evidence boundary:** this is a source-code review, not a fresh market-data capture. “Derivable” means the underlying raw input exists in a repository adapter or history response; it does not mean the derived field is already emitted, tested or live-verified.
+
+| Preset | Required normalized fields | Current source evidence | Status / blocker |
+|---|---|---|---|
+| BV-F01 unusual value | today/30-session average ratio; average value 30 sessions | `tsetmc_adapter.py` exposes daily history; `underlying_trend_engine.py` already computes 5/20 value ratio | **DERIVABLE_NOT_IMPLEMENTED:** 5/20 is not the exact today/30-session ratio; require 31 valid sessions, consistent units and latest-date gate |
+| BV-F02 P/NAV | investment-company classification; traded-today; P/NAV | no verified current NAV field in reviewed market/trend modules | **MISSING_NAV_AND_CLASSIFICATION:** need a reliable, timestamped NAV/portfolio source |
+| BV-F03 monthly revenue performance | 1M minus 3M-average growth; 1M minus 1Y growth; 30D average value; 3M average growth | `codal_export_engine.py` extracts explicit export evidence from monthly Codal reports; not a confirmed complete total-revenue growth dataset | **PARTIAL/MISSING:** derive liquidity from history; total monthly revenue and exact growth definitions still need a source and point-in-time parser |
+| BV-F04 quarterly revenue growth | revenue QoQ; revenue YoY; 30D average value | reviewed Codal module is monthly export evidence and does not establish complete quarterly revenue series | **MISSING_QUARTERLY_REVENUE:** requires validated quarterly financial-statement series and publication timestamps |
+| BV-F05 operating-margin growth | operating margin QoQ growth; YoY growth; TTM margin; 30D average value | no validated margin-series output found in the reviewed components | **MISSING_FINANCIAL_RATIOS:** requires comparable quarterly statements and a documented ratio formula |
+| BV-F06 monthly P/S | monthly revenue YoY; monthly growth differences; monthly P/S; 30D average value | price/history and Codal export evidence exist separately; no joined monthly P/S feature confirmed | **MISSING_JOINED_FUNDAMENTAL_FEATURES:** need share count/market value convention and total monthly revenue |
+| BV-F07 RSI | RSI-14; 30D average value | `underlying_trend_engine.py` emits `rsi_14` and `freshness_status`; it does not emit 30D average value | **PARTIALLY_AVAILABLE:** reuse RSI only when history status/age is acceptable; add and test 30-session liquidity metric |
+| BV-F08 200-day drawdown | high-percent-200D; 30D average value | trend engine emits prior-20-day breakout/range features, not high-percent-200D | **DERIVABLE_NOT_IMPLEMENTED:** requires at least 200 valid sessions; never substitute 20-day high |
+| BV-F09 low P/E and monthly growth | P/E TTM; growth views for 1M/3M/5M and YoY | no joined, validated P/E and monthly total-revenue series confirmed in reviewed components | **MISSING_FUNDAMENTAL_SERIES:** public description does not provide full exact formula |
+| BV-F10 leverage risk | P/E TTM; interest coverage ratio | no validated ratio output found in reviewed components | **MISSING_FINANCIAL_RATIOS:** requires TTM operating profit and finance costs with compatible periods |
+
+### Existing components to reuse
+
+- `tsetmc_adapter.py`: quote, client-type, order-book and daily-history access with endpoint/timestamp/hash evidence.
+- `underlying_trend_engine.py`: RSI-14, SMA, MACD, ATR, 5/20-session returns, volume/value ratios and freshness descriptors.
+- `filter_engine_shadow.py`: generic rule evaluator; missing required values produce `INSUFFICIENT_DATA`.
+- `historical_snapshot.py` / `historical_pattern_shadow.py`: timestamped history and descriptive sequence analysis.
+- `codal_export_engine.py`: monthly Codal export/currency evidence; not a complete substitute for all fundamental ratios.
+
+### Next engineering task
+
+Create a thin field mapper only after verifying the exact output schema of these existing modules. The mapper must attach source, observation date, retrieval time, units, history count and freshness status to each normalized field. It must reject stale or mismatched periods and preserve `INSUFFICIENT_DATA` rather than fabricate a value. Then run the presets in Shadow mode against saved snapshots; no production ranking change until point-in-time tests and a false-positive review pass.
