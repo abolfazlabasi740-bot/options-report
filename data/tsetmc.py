@@ -222,7 +222,7 @@ def _http_get(url, timeout=30, max_hops=5):
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         final_url = resp.geturl()
         raw = resp.read()
-    if isinstance(raw, bytes) and raw[:2] == b'\\x1f\\x8b':
+    if isinstance(raw, bytes) and raw[:2] == b'\x1f\x8b':
         raw = _gzip.decompress(raw)
     text = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else str(raw)
     return text, final_url
