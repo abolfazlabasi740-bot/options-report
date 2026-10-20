@@ -43,3 +43,16 @@ output/base_share/*
 !output/base_share/latest_*.txt
 !output/base_share/latest_management_analysis_report.json
 !output/report_archive/
+
+# --- Local backups & raw workspace artifacts ---
+*.backup_trend_*
+output/bale_listener_state.json
+output/bale_delivery_verification.json
+output/bale_listener.log
+output/crond_watchdog.log
+output/base_share/async_run.log
+output/base_share/async_run.pid
+output/base_share/latest_plain_symbol_trend_report.json.bak_*
+patch_cards.py
+patch_clean.py
+docs/MASTER_PROJECT_BOOK_AI_HANDOFF.md

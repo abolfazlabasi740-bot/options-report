@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from tsetmc_adapter import TSETMCAdapter
+from underlying_map import resolve_underlying
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "output" / "history" / "universe_reconciliation_details.json"

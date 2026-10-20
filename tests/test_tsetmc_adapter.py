@@ -2,6 +2,7 @@ import json
 import unittest
 
 from tsetmc_adapter import TSETMCAdapter, TSETMCError
+from underlying_map import resolve_underlying
 
 
 class FakeResponse:

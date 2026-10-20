@@ -3,6 +3,7 @@
 # منبع: MarketWatchPlus.aspx?h=0&r=0 — داده خام، بدون دستکاری، با زمان دریافت
 # خروجی: مخزن واحد — لیست سهام، لیست اختیار معامله، سایر ابزارها + نسخه خام
 # قواعد: هیچ عدد فرضی؛ هر خروجی دارای run_id و generated_at؛ تفکیک لحظه‌ای
+import gzip
 import argparse
 import hashlib
 import json
@@ -10,6 +11,46 @@ import os
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
+
+# === PATCH: transparent gzip decode + real MarketWatchPlus validation (1405/07/24) ===
+import gzip as _gzip
+import re as _re
+
+class _GzipAwareResponse:
+    """Wraps a urllib response and auto-decompresses gzip payloads (magic \x1f\x8b).
+    Confirmed: old.tsetmc.com ALWAYS returns gzip even with Accept-Encoding: identity."""
+    def __init__(self, resp):
+        self._resp = resp
+        self.status = getattr(resp, 'status', None) or resp.getcode()
+        self.headers = resp.headers
+        self.url = getattr(resp, 'url', '')
+        raw = resp.read()
+        if raw[:2] == b'\x1f\x8b':
+            raw = _gzip.decompress(raw)
+        self._raw = raw
+        try: resp.close()
+        except Exception: pass
+    def read(self):
+        return self._raw
+    def close(self):
+        pass
+    def __enter__(self):
+        return self
+    def __exit__(self, *exc):
+        return False
+
+
+def _mw_is_valid(text):
+    """Validate the structural signature of a MarketWatchPlus payload.
+
+    Do not require a fixed byte size: valid snapshots can vary by market state.
+    Reject HTML/error pages by requiring section separators and instrument IDs.
+    """
+    return (
+        isinstance(text, str)
+        and text.count('@') >= 2
+        and bool(_re.search(r'(?<!\d)\d{15,}(?!\d)', text))
+    )
 
 try:
     from zoneinfo import ZoneInfo
@@ -34,9 +75,11 @@ except ImportError:
     from underlying_map import resolve_underlying
 
 MARKETWATCH_URLS = [
-    'http://old.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
-    'http://www.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
-    'http://cdn.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
+    # Primary: old.tsetmc.com (verified live: ~413KB raw MarketWatchPlus on 1405/07/24;
+    # cdn.tsetmc.com now returns an 824-byte React SPA shell instead of raw data)
+    'https://old.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
+    'https://cdn.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
+    'https://www.tsetmc.com/tsev2/data/MarketWatchPlus.aspx?h=0&r=0',
 ]
 
 HEADERS = {
@@ -173,20 +216,29 @@ def snapshot(text, source_label, repo_root=None):
     return {'ok': True, 'run_id': run_id, 'counts': counts, 'paths': paths,
             'consistent': consistent, 'preview': preview}
 
+def _http_get(url, timeout=30, max_hops=5):
+    """GET با دنبال‌کردن ریدایرکت استاندارد urllib و بازکردن gzip."""
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        final_url = resp.geturl()
+        raw = resp.read()
+    if isinstance(raw, bytes) and raw[:2] == b'\x1f\x8b':
+        raw = _gzip.decompress(raw)
+    text = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else str(raw)
+    return text, final_url
+
 def fetch(timeout=30, urls=None):
     errors = []
     for url in (urls or MARKETWATCH_URLS):
         try:
-            req = urllib.request.Request(url, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                raw = resp.read()
-                text = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else str(raw)
-            if '@' in text and text.count(',') > 50:
-                return text, url
-            errors.append(url + ': پاسخ نامعتبر')
+            text, final_url = _http_get(url, timeout=timeout)
+            if _mw_is_valid(text):
+                return text, final_url
+            errors.append(final_url + ': پاسخ نامعتبر')
         except Exception as e:
             errors.append(url + ': ' + str(e))
-    raise ConnectionError('دریافت از همه میزبان‌ها شکست خورد — ' + ' | '.join(errors))
+    raise ConnectionError('دریافت از همه میزبانها شکست خورد — ' + ' | '.join(errors))
+
 
 def main(argv=None, repo_root=None):
     ap = argparse.ArgumentParser(description='دریافت و تفکیک داده TSETMC')

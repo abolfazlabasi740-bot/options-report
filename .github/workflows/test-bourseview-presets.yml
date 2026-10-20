@@ -1,0 +1,24 @@
+name: BourseView filter preset tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "bourseview_filter_presets.py"
+      - "filter_engine_shadow.py"
+      - "tests/test_bourseview_filter_presets.py"
+      - ".github/workflows/test-bourseview-presets.yml"
+  workflow_dispatch:
+
+jobs:
+  test-bourseview-presets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile filter modules
+        run: python -m py_compile bourseview_filter_presets.py filter_engine_shadow.py
+      - name: Run BourseView preset tests
+        run: python -m unittest discover -s tests -p "test_bourseview_filter_presets.py" -v

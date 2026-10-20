@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 from urllib.parse import quote
 import urllib.request
+from underlying_map import resolve_underlying
 
 DEFAULT_BASE_URL = "https://cdn.tsetmc.com/api"
 USER_AGENT = "OptimusAI-V4.1-TSETMC-Adapter/1.0"
