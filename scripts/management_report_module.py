@@ -1,10 +1,66 @@
 # -*- coding: utf-8 -*-
-"""ماژول گزارش تحلیل مدیریتی — نسخه ۲: خروجی تحلیل نوشتاری (نه لیست خام)"""
+"""ماژول گزارش تحلیل مدیریتی — نسخه ۳: نگارش تمیز فارسی، بدون آمیختگی انگلیسی
+
+اصول این نسخه:
+- همه اصطلاح‌های تکنیکال به فارسیِ روان برگردانده می‌شوند (جدول ترجمه پایین).
+- «داده موجود نیست» فقط یک بار در بخش وضعیت داده‌ها می‌آید، نه در هر نماد.
+- هر نماد یک بلوک کوتاه خوانا با خطوط جدا دارد، نه یک خط شلوغ با «؛».
+- اعداد با ارقام فارسی و علائم فارسی (٪ و ×) نمایش داده می‌شوند.
+- هیچ عددی ساخته نمی‌شود؛ فقط بازآرایی همان فیلدهای واقعی JSON.
+"""
 import json, os, glob
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MGMT_JSON = os.path.join(BASE_DIR, "output", "base_share",
                          "latest_management_analysis_report.json")
+
+# ── ترجمهٔ اصطلاح‌های انگلیسیِ موتور به فارسیِ روان ──
+TREND_FA = {
+    "UP_TREND_STRUCTURE": "روند صعودی",
+    "DOWN_TREND_STRUCTURE": "روند نزولی",
+    "MIXED_STRUCTURE": "روند نامشخص",
+}
+CORRECTION_FA = {
+    "RECOVERY_BOUNCE": "بازگشت از کف",
+    "CORRECTION_IN_UPTREND": "اصلاح در دل روند صعودی",
+    "CORRECTION": "فاز اصلاح",
+    "COUNTERTREND_BOUNCE_IN_DOWNTREND": "پرش مخالف در روند نزولی",
+    "NO_CORRECTION_EVIDENCE": "بدون اصلاح",
+}
+PRELOCK_FA = {
+    "EARLY": "مراحل اولیه",
+    "DEVELOPING": "در حال شکل‌گیری",
+    "WATCH": "نیازمند پایش",
+    "NO_SEQUENCE_EVIDENCE": "بدون توالی",
+}
+LABEL_FA = {
+    "هم‌گرایی مثبت چندعاملی": "هم‌گرایی مثبت عوامل",
+    "هم‌گرایی منفی چندعاملی": "هم‌گرایی منفی عوامل",
+    "کیفیت متعادل — تمایل مثبت": "متعادل، با تمایل مثبت",
+    "کیفیت متعادل — تمایل منفی": "متعادل، با تمایل منفی",
+    "متوازن": "متعادل",
+    "داده موجود نیست": "شواهد ناکافی",
+}
+
+_DIGITS = str.maketrans("0123456789.", "۰۱۲۳۴۵۶۷۸۹٫")
+
+def _fa(x):
+    """عدد → رشته فارسی خوانا؛ None → «—»"""
+    if x is None:
+        return "—"
+    if isinstance(x, float):
+        x = round(x, 2)
+    return str(x).translate(_DIGITS)
+
+def _fa_label(x):
+    return LABEL_FA.get(str(x or ""), str(x or "—"))
+
+def _t(table, value):
+    """ترجمه با بازگشتِ خود مقدار اگر در جدول نبود"""
+    if value in (None, ""):
+        return "—"
+    return table.get(str(value), str(value))
+
 
 def latest_mgmt_report():
     """آخرین گزارش تحلیل مدیریتی + متادیتا (بدون fallback خاموش)"""
@@ -27,145 +83,178 @@ def latest_mgmt_report():
         out["ts"], out["jalali"], out["top"], out["status"] = "—", "—", [], "NOT_GENERATED"
     return out
 
+
 def mgmt_button_row():
     return [{"text": "📊 تحلیل مدیریتی",
              "callback_data": "send_latest_mgmt"}]
+
 
 def mgmt_status_caption():
     r = latest_mgmt_report()
     return "📅 گزارش تحلیل مدیریتی — جلسه {j}\n🕒 داده: {ts} | وضعیت: {st}".format(
         j=r["jalali"], ts=r["ts"], st=r["status"])
 
-def _fa_num(x):
-    return str(x)
 
 def _build_narrative(r):
-    """تولید متن تحلیلی نوشتاری — فقط از فیلدهای واقعی JSON"""
+    """متن گزارش — روایت فارسی روان، فقط از فیلدهای واقعی JSON"""
     d = r["data"]
     top = r["top"]
-    sep = "▬" * 22
+    sep = "━" * 22
 
-    # ۱) سربرگ
-    lines = ["📊 گزارش تحلیل مدیریتی — تحلیل نوشتاری",
-             "📅 جلسه: {j}".format(j=r["jalali"]),
-             "🕒 {ts}".format(ts=r["ts"]),
-             "🧾 نسخه گزارش: {v} | تولید: {g}".format(
-                 v=d.get("report_version", "—"),
-                 g=d.get("generated_at", "—")[:16].replace("T", " ")),
-             sep]
+    lines = []
 
-    # ۲) خلاصه مدیریتی
-    n = d.get("universe_size")
+    # ═══ ۱) سربرگ ═══
+    lines += [
+        "📊 گزارش تحلیل بازار",
+        "گزارشی توصیفی از وضعیت تکنیکال بازار بر پایهٔ دادهٔ پایان معامله",
+        sep,
+        "📅 جلسهٔ مورد تحلیل: {j}".format(j=r["jalali"]),
+        "🕒 بازسازی گزارش: {g} (به وقت میلادی سیستم)".format(g=_fa(str(d.get("generated_at") or "—")[:16].replace("T", " ").replace("-", "/"))),
+        sep,
+    ]
+
+    # ═══ ۲) تصویر کلی بازار (خلاصهٔ مدیریتی) ═══
     if top:
         scores = [s.get("final_score") for s in top if isinstance(s.get("final_score"), (int, float))]
-        rets  = [s.get("return_20_sessions_pct") for s in top if isinstance(s.get("return_20_sessions_pct"), (int, float))]
-        rsis  = [s.get("rsi_14") for s in top if isinstance(s.get("rsi_14"), (int, float))]
+        rets = [s.get("return_20_sessions_pct") for s in top if isinstance(s.get("return_20_sessions_pct"), (int, float))]
+        rsis = [s.get("rsi_14") for s in top if isinstance(s.get("rsi_14"), (int, float))]
         a_cnt = sum(1 for s in top if s.get("classification") == "A")
         b_cnt = sum(1 for s in top if s.get("classification") == "B")
-        obs   = [s.get("buy_sell_signal") for s in top if s.get("buy_sell_signal")]
-        lines.append("🔍 خلاصه مدیریتی:")
+
+        lines.append("🗂 تصویر کلی")
+        n = d.get("universe_size")
         if n:
-            lines.append("• دامنه پایش: {n} نماد؛ گزارش بر ۱۰ نماد برتر متمرکز است.".format(n=n))
+            lines.append("دامنهٔ پایش {n} نماد است و این گزارش بر ۱۰ نماد برتر تمرکز دارد.".format(n=_fa(n)))
         if scores:
-            avg_sc = sum(scores) / len(scores)
-            lines.append("• امتیاز کل ۱۰ نماد برتر بین {mn:.2f} تا {mx:.2f} با میانگین {av:.2f} است؛ غلظت کیفیت در بالای جدول بالاست.".format(
-                mn=min(scores), mx=max(scores), av=avg_sc))
+            lines.append("امتیاز کل نمادهای برتر از {mn} تا {mx} است (میانگین {av}).".format(
+                mn=_fa(min(scores)), mx=_fa(max(scores)), av=_fa(sum(scores)/len(scores))))
         if a_cnt or b_cnt:
-            lines.append("• ترکیب طبقهبندی: {a} نماد رده A و {b} نماد رده B — عمده نامزدها در طبقه کیفی بالا قرار دارند.".format(a=a_cnt, b=b_cnt))
+            lines.append("از نظر کیفیت ساختار، {a} نماد در طبقهٔ A و {b} نماد در طبقهٔ B قرار دارند.".format(a=_fa(a_cnt), b=_fa(b_cnt)))
         if rets:
             pos = sum(1 for x in rets if x > 0)
-            neg = len(rets) - pos
-            avg_r = sum(rets) / len(rets)
             best = max(top, key=lambda s: s.get("return_20_sessions_pct") or -1e9)
-            lines.append("• بازده ۲۰ جلسه اخیر: {p} نماد مثبت و {ng} نماد منفی؛ میانگین بازده {av:.2f}٪ — قویترین عملکرد متعلق به {sym} با {r:.2f}٪.".format(
-                p=pos, ng=neg, av=avg_r, sym=best.get("symbol", "—"),
-                r=best.get("return_20_sessions_pct", 0)))
+            lines.append("بازده ۲۰ جلسهٔ اخیر در {pos} نماد از ۱۰ نماد مثبت بوده و میانگین بازده {avg}٪ است؛ بهترین عملکرد از {sym} با {ret}٪.".format(
+                pos=_fa(pos), avg=_fa(sum(rets)/len(rets)), sym=best.get("symbol", "—"), ret=_fa(best.get("return_20_sessions_pct"))))
         if rsis:
             overbought = [s.get("symbol") for s in top if isinstance(s.get("rsi_14"), (int, float)) and s.get("rsi_14") >= 70]
-            near_ob    = [s.get("symbol") for s in top if isinstance(s.get("rsi_14"), (int, float)) and 65 <= s.get("rsi_14") < 70]
-            lines.append("• RSI-14: میانگین {av:.1f}؛ {ob} نماد در ناحیه اشباع خرید (≥۷۰): {sy} — ریسک اصلاح کوتاه‌مدت.{nb}".format(
-                av=sum(rsis)/len(rsis),
-                ob=len(overbought),
-                sy="، ".join(overbought) if overbought else "—",
-                nb=(" نماد نزدیک اشباع (۶۵–۷۰): " + "، ".join(near_ob) + ".") if near_ob else ""))
-        if obs and all(x == "NOT_GENERATED" for x in obs):
-            lines.append("• سیگنال خرید/فروش برای هیچ‌یک از نمادها تولید نشده است (NOT_GENERATED) — لایه تصمیم هنوز مهر تأیید نگذاشته.")
-        # جمع‌بندی چندعاملی برچسب‌ها
+            near_ob = [s.get("symbol") for s in top if isinstance(s.get("rsi_14"), (int, float)) and 65 <= s.get("rsi_14") < 70]
+            heat = "میانگین شاخص قدرت (RSI) نمادهای برتر {avg} است؛ یعنی بازارِ برتر گرم است اما هنوز در ناحیهٔ خطر نیست.".format(avg=_fa(sum(rsis)/len(rsis)))
+            if overbought:
+                heat += " نماد {ob} در ناحیهٔ اشباع خرید (۷۰ به بالا) است و احتمال اصلاح کوتاه در آن بالاتر است.".format(ob="، ".join(overbought))
+            if near_ob:
+                heat += " نماد {nb} نزدیک مرز اشباع (۶۵ تا ۷۰) هستند و نیازمند پایش دقیق‌ترند.".format(nb="، ".join(near_ob))
+            lines.append(heat)
+        # جمع‌بندی چندعاملی
         labs = [s.get("note_label") for s in top if s.get("note_label")]
         if labs:
-            pos = sum(1 for x in labs if 'مثبت' in str(x))
-            neg = sum(1 for x in labs if 'منفی' in str(x))
-            lines.append("• جمع‌بندی چندعاملی: {p} نماد هم‌گرایی مثبت و {n} نماد هم‌گرایی منفی (تکنیکال + پرایس‌اکشن + تابلو).".format(p=pos, n=neg))
+            pos = sum(1 for x in labs if "مثبت" in str(x))
+            neg = sum(1 for x in labs if "منفی" in str(x))
+            lines.append("جمع‌بندی هم‌زمانی عوامل تکنیکال، حرکت قیمت و جریان حجم: {pos} نماد هم‌گرایی مثبت و {neg} نماد هم‌گرایی منفی دارند.".format(pos=_fa(pos), neg=_fa(neg)))
         brk = [s.get("symbol") for s in top if (s.get("factors") or {}).get("breakout_above_prior_20_high") is True]
         if brk:
-            lines.append("• شکست سقف ۲۰ جلسه: {b} — پرایس‌اکشن تأییدی دارد.".format(b="، ".join(brk)))
+            lines.append("سقف ۲۰ جلسهٔ اخیر را {b} شکسته‌اند؛ نشانهٔ قدرت قیمت در این نمادها.".format(b="، ".join(brk)))
         prelock = [s.get("symbol") for s in top if (s.get("factors") or {}).get("pre_lock_state") in ("EARLY", "DEVELOPING")]
         if prelock:
-            lines.append("• توالی پیش‌قفل (حجم→قیمت→مومنتوم): {p} — دوره‌گیری زودهنگام شواهد دارد (سایه، غیرسیگنال).".format(p="، ".join(prelock)))
-    else:
-        lines.append("⚠️ داده جدول برتر برای تحلیل موجود نیست.")
-    lines.append(sep)
-
-    # ۳) وضعیت داده‌ها
-    lines.append("🗂 وضعیت داده‌ها:")
-    lines.append("• نوع داده: {dt}".format(dt=d.get("data_type", "—")))
-    fl = d.get("fundamental_layer")
-    if fl:
-        lines.append("• لایه بنیادی: {fl} — بنابراین تحلیل فعلاً صرفاً تکنیکال/روندی است و کیفیت سود و نسبت‌های مالی در آن لحاظ نشده.".format(fl=fl))
-    bl = d.get("board_layer")
-    if bl:
-        lines.append("• لایه تابلو: {bl}".format(bl=bl))
-    lines.append("• ردگیر منبع: SHA-256 گزارش مبدأ ثبت شده ({sh:.12}…).".format(
-        sh=d.get("source_report_sha256", "—")) if d.get("source_report_sha256") else "• ردگیر منبع: ندارد.")
-    lines.append(sep)
-
-    # ۴) روایت نمادها (نه لیست خام) — چندعاملی: تکنیکال/پرایس‌اکشن/تابلو
-    if top:
-        lines.append("📈 روایت ۱۰ نماد برتر — چندعاملی (تکنیکال + پرایس‌اکشن + تابلو):")
-        for s in top[:10]:
-            lines.append("• {sym} (رده {cls}) — امتیاز {sc:.2f} | جمع‌بندی: {lab}".format(
-                sym=s.get("symbol", "—"),
-                cls=s.get("classification", "—"),
-                sc=s.get("final_score", 0) if isinstance(s.get("final_score"), (int, float)) else 0,
-                lab=s.get("note_label") or s.get("management_note", "داده موجود نیست")))
-            detail = s.get("note_detail")
-            if detail:
-                lines.append("   شواهد: {d}".format(d=detail))
-            f = s.get("factors") or {}
-            bits = []
-            if isinstance(f.get("atr_14_pct"), (int, float)):
-                bits.append("ATR {a:.1f}٪".format(a=f["atr_14_pct"]))
-            if isinstance(f.get("volatility_20_pct"), (int, float)):
-                bits.append("نوسان۲۰ {v:.1f}٪".format(v=f["volatility_20_pct"]))
-            if isinstance(f.get("macd_pct"), (int, float)):
-                bits.append("MACD {m:+.1f}٪".format(m=f["macd_pct"]))
-            if isinstance(f.get("range_position_20"), (int, float)):
-                bits.append("موقعیت کانال {r:.0f}٪".format(r=f["range_position_20"] * 100))
-            if isinstance(f.get("upper_limit_headroom_pct"), (int, float)):
-                bits.append("فسجه سقف {h:.1f}٪".format(h=f["upper_limit_headroom_pct"]))
-            if bits:
-                lines.append("   سنجه‌ها: {b}".format(b=" | ".join(bits)))
+            lines.append("الگوی گرم‌شدن تدریجی (ابتدا حجم، بعد قیمت، سپس مومنتوم) در {p} دیده می‌شود؛ این یک شاهدِ زودهنگام است، نه سیگنال ورود.".format(p="، ".join(prelock)))
         lines.append(sep)
 
-    # ۵) ارزیابی ریسک
-    lines.append("⚠️ ارزیابی ریسک:")
+    # ═══ ۳) وضعیت داده‌ها — تنها جایی که محدودیت‌ها اعلام می‌شوند ═══
+    lines.append("⚠️ محدودیت‌های داده (یک بار برای کل گزارش)")
+    lines.append("• نوع داده: پایان روز معاملات؛ ارقام لحظه‌ای و تابلوی معاملات در این گزارش نیست.")
+    fl = d.get("fundamental_layer")
+    if fl:
+        lines.append("• اطلاعات بنیادی (صورت‌های مالی و کدال) هنوز به تحلیل اضافه نشده؛ همهٔ ارقام صرفاً تکنیکال است.")
+    bl = d.get("board_layer")
+    if bl:
+        lines.append("• دادهٔ تابلو (صفوف خرید و فروش، حقیقی و حقوقی) در این نسخه غیرفعال است.")
+    lines.append("• سیگنال خرید و فروش تولید نمی‌شود؛ این گزارش توصیف وضعیت است، نه توصیهٔ معاملاتی.")
+    if d.get("source_report_sha256"):
+        lines.append("• ردگیری منبع: {sh}…".format(sh=str(d["source_report_sha256"])[:12]))
+    lines.append(sep)
+
+    # ═══ ۴) روایت نمادهای برتر — هر نماد یک بلوک خوانا ═══
+    if top:
+        lines.append("📈 روایت ده نماد برتر")
+        for s in top[:10]:
+            f = s.get("factors") or {}
+            sym = s.get("symbol", "—")
+            score = _fa(s.get("final_score"))
+            cls = s.get("classification") or "—"
+            lines.append("")
+            lines.append("▸ {sym} — امتیاز {score} | طبقهٔ {cls}".format(sym=sym, score=score, cls=cls))
+
+            # خط ۱: روند و حرارت
+            trend = _t(TREND_FA, f.get("trend_state"))
+            rsi = f.get("rsi_14")
+            if isinstance(rsi, (int, float)):
+                if rsi >= 70:
+                    heat_txt = "در اشباع خرید ({r} — احتمال اصلاح کوتاه)".format(r=_fa(rsi))
+                elif rsi >= 65:
+                    heat_txt = "نزدیک اشباع ({r})".format(r=_fa(rsi))
+                else:
+                    heat_txt = "حرارت متعادل ({r})".format(r=_fa(rsi))
+            else:
+                heat_txt = "—"
+            lines.append("روند: {t} | {h}".format(t=trend, h=heat_txt))
+
+            # خط ۲: قیمت و پرایس‌اکشن
+            bits = []
+            if f.get("breakout_above_prior_20_high") is True:
+                bits.append("شکستهٔ سقف ۲۰ جلسه")
+            rp = f.get("range_position_20")
+            if isinstance(rp, (int, float)):
+                pos_fa = "نزدیک سقف" if rp >= 0.8 else ("نزدیک کف" if rp <= 0.2 else "میانهٔ")
+                bits.append("در {p} بازهٔ ۲۰ روزه".format(p=pos_fa))
+            corr = _t(CORRECTION_FA, f.get("correction_state"))
+            if corr not in ("—", "بدون اصلاح"):
+                bits.append("در فاز {c}".format(c=corr))
+            if bits:
+                lines.append("قیمت: " + "، ".join(bits))
+
+            # خط ۳: حجم و نوسان
+            vol_bits = []
+            vr = f.get("volume_ratio_5_to_20")
+            vl = f.get("value_ratio_5_to_20")
+            if isinstance(vr, (int, float)) and isinstance(vl, (int, float)):
+                if vr >= 1.5 and vl >= 1.5:
+                    vol_bits.append("انبساط هم‌زمان حجم ({v}×) و ارزش ({w}×) نسبت به میانگین ۲۰ جلسه".format(v=_fa(vr), w=_fa(vl)))
+                elif vr < 0.8 and vl < 0.8:
+                    vol_bits.append("کاهش حجم ({v}×) و ارزش ({w}×) نسبت به میانگین".format(v=_fa(vr), w=_fa(vl)))
+                else:
+                    vol_bits.append("حجم {v}× و ارزش {w}× میانگین ۲۰ جلسه".format(v=_fa(vr), w=_fa(vl)))
+            atr = f.get("atr_14_pct")
+            if isinstance(atr, (int, float)):
+                vol_bits.append("نوسان روزانه {a}٪".format(a=_fa(atr)))
+            if vol_bits:
+                lines.append("حجم و نوسان: " + "، ".join(vol_bits))
+
+            # خط ۴: جمع‌بندی
+            label = _fa_label(s.get("note_label"))
+            pl = f.get("pre_lock_state")
+            tail = ""
+            if pl in ("EARLY", "DEVELOPING"):
+                tail = " و الگوی گرم‌شدن {p} است".format(p=_t(PRELOCK_FA, pl).lower())
+            lines.append("جمع‌بندی: {l}{t}.".format(l=label, t=tail))
+        lines.append(sep)
+
+    # ═══ ۵) ارزیابی ریسک ═══
+    lines.append("⚠️ ارزیابی ریسک")
     if top:
         rsis = [s.get("rsi_14") for s in top if isinstance(s.get("rsi_14"), (int, float))]
         if any(x >= 70 for x in rsis):
-            lines.append("• ریسک اصلاح کوتاه‌مدت: نمادهای اشباع خرید در صدر جدول، مستعد تنبیه قیمتی هستند؛ ورود پلکانی با حدضرر توصیه میشود.")
-        if fl:
-            lines.append("• ریسک داده: فقدان لایه بنیادی یعنی تصمیم صرفاً بر بستر روند است؛ کیفیت سود و ارزش ذاتی سنجه نشده.")
-        lines.append("• ریسک سیگنال: عدم تولید سیگنال قطعی (NOT_GENERATED) — تصمیمگیری مستقیم با Decision Engine باقی میماند.")
+            lines.append("• ریسک اصلاح: نمادهای اشباع خرید در صورت خروج پول می‌توانند سریع پایین بیایند؛ ورود پلکانی با حد ضرر منطقی است.")
+        lines.append("• ریسک داده: تحلیل فقط بر بستر تکنیکال است؛ کیفیت سود و ارزش ذاتی سنجه نشده است.")
+        lines.append("• ریسک اطمینان: بدون لایهٔ بنیادی و تابلوی زنده، قوت استدلال متوسط ارزیابی می‌شود.")
     lines.append(sep)
 
-    # ۶) نتیجه‌گیری
-    lines.append("🎯 نتیجه‌گیری:")
-    lines.append("• وضعیت مجوز معامله: {st}".format(st=r["status"]))
-    lines.append("• جمع‌بندی: فضای روندی ۱۰ نماد برتر مثبت است اما سیگنال قطعی مطابق منشور تولید نشده؛ ورود به معامله در این مرحله مجاز شمرده نمیشود.".format())
+    # ═══ ۶) نتیجه‌گیری ═══
+    lines.append("🎯 نتیجه‌گیری")
+    lines.append("وضعیت کلی نمادهای برتر بازار مثبت است: روند صعودی، ورود حجم و شکست سقف‌های تاریخی کوتاه‌مدت هم‌زمان دیده می‌شود. با این حال اشباع خرید در چند نماد و غیبت لایهٔ بنیادی، ریسک را بالا نگه می‌دارد.")
+    lines.append("مجوز معامله: صادر نمی‌شود. تصمیم نهایی با لایهٔ تصمیم‌گیری است.")
     lines.append(sep)
-    lines.append("🔻 سطح اطمینان تحلیل: متوسط — داده تکنیکال EOD کامل، لایه بنیادی غایب.")
-    lines.append("🤖 تولیدشده توسط OptimusAI — لایه گزارش مدیریتی")
+    lines.append("🤖 تولیدشده توسط OptimusAI — لایهٔ گزارش مدیریتی")
     return "\n".join(lines)
+
 
 def send_mgmt_card(api_base, chat_id):
     """خروجی اصلی دکمه: گزارش تحلیلی نوشتاری (نه لیست خام)."""
@@ -186,6 +275,7 @@ def send_mgmt_card(api_base, chat_id):
                       data={"chat_id": chat_id, "text": part}, timeout=60)
     requests.post(api_base + "/sendMessage",
                   data={"chat_id": chat_id, "text": text}, timeout=60)
+
 
 def send_mgmt_files(api_base, chat_id):
     """ارسال PDF گزارش مدیریتی (در صورت وجود)."""
