@@ -1,0 +1,1748 @@
+{
+  "schema_version": "1.0",
+  "purpose": "DIAGNOSTIC_ONLY_NOT_USED_FOR_SCORING",
+  "classification_status": "NOT_CLASSIFIED_UNTIL_SOURCE_FIELDS_ARE_VERIFIED",
+  "generated_at": "2026-10-09T12:35:49.114527+00:00",
+  "source": "TSETMC",
+  "source_endpoint": "https://cdn.tsetmc.com/api/ClosingPrice/GetMarketWatch?market=0&industrialGroup=&paperTypes%5B0%5D=1&paperTypes%5B1%5D=2&paperTypes%5B2%5D=3&paperTypes%5B3%5D=4&paperTypes%5B4%5D=5&paperTypes%5B5%5D=6&paperTypes%5B6%5D=7&paperTypes%5B7%5D=8&paperTypes%5B8%5D=9&withBestLimits=false&hEven=0&RefID=0&__optimusai_ts=1791549329560071662",
+  "source_retrieved_at": "2026-10-09T12:35:32Z",
+  "source_snapshot_sha256": "8336838e08f28b9915ed747dc85bc0c4d65843dda6f11ac0ea43d2aa8e9a5386",
+  "raw_record_count": 3865,
+  "normalized_record_count": 3865,
+  "sample_design": "60 deterministic evenly spaced records across the full normalized source list",
+  "sample_count": 60,
+  "identity_success_count": 60,
+  "identity_symbol_available_count": 60,
+  "identity_status_counts": {
+    "SUCCESS": 60
+  },
+  "identity_error_counts": {},
+  "sector_distribution_in_sample": [
+    {
+      "sector_code": "68 ",
+      "sector_name": "صندوق سرمايه گذاري قابل معامله",
+      "count": 12
+    },
+    {
+      "sector_code": "69 ",
+      "sector_name": "اوراق تامين مالي",
+      "count": 6
+    },
+    {
+      "sector_code": "44 ",
+      "sector_name": "محصولات شيميايي",
+      "count": 5
+    },
+    {
+      "sector_code": "27 ",
+      "sector_name": "فلزات اساسي",
+      "count": 5
+    },
+    {
+      "sector_code": "66 ",
+      "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+      "count": 4
+    },
+    {
+      "sector_code": "43 ",
+      "sector_name": "مواد و محصولات دارويي",
+      "count": 4
+    },
+    {
+      "sector_code": "57 ",
+      "sector_name": "بانكها و موسسات اعتباري",
+      "count": 3
+    },
+    {
+      "sector_code": "34 ",
+      "sector_name": "خودرو و ساخت قطعات",
+      "count": 3
+    },
+    {
+      "sector_code": "39 ",
+      "sector_name": "شرکتهاي چند رشته اي صنعتي",
+      "count": 3
+    },
+    {
+      "sector_code": "56 ",
+      "sector_name": "سرمايه گذاريها",
+      "count": 3
+    },
+    {
+      "sector_code": "70 ",
+      "sector_name": "انبوه سازي، املاك و مستغلات",
+      "count": 2
+    },
+    {
+      "sector_code": "13 ",
+      "sector_name": "استخراج کانه هاي فلزي",
+      "count": 2
+    },
+    {
+      "sector_code": "31 ",
+      "sector_name": "ماشين آلات و دستگاه‌هاي برقي",
+      "count": 1
+    },
+    {
+      "sector_code": "17 ",
+      "sector_name": "منسوجات",
+      "count": 1
+    },
+    {
+      "sector_code": "42 ",
+      "sector_name": "محصولات غذايي و آشاميدني به جز قند و شكر",
+      "count": 1
+    },
+    {
+      "sector_code": "59 ",
+      "sector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+      "count": 1
+    },
+    {
+      "sector_code": "25 ",
+      "sector_name": "لاستيك و پلاستيك",
+      "count": 1
+    },
+    {
+      "sector_code": "29 ",
+      "sector_name": "ماشين آلات و تجهيزات",
+      "count": 1
+    },
+    {
+      "sector_code": "64 ",
+      "sector_name": "مخابرات",
+      "count": 1
+    },
+    {
+      "sector_code": "67 ",
+      "sector_name": "فعاليتهاي كمكي به نهادهاي مالي واسط",
+      "count": 1
+    }
+  ],
+  "flow_distribution_in_sample": {
+    "0": 60
+  },
+  "samples": [
+    {
+      "source_index": 0,
+      "instrument_id": "62444611500832644",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/62444611500832644?__optimusai_ts=1791549332991286701",
+        "snapshot_sha256": "6cd1f647fdd0c7a1e9f0062037c4bbf55b8e16b34d4fad6f0555e59d3d041cbe",
+        "retrieved_at": "2026-10-09T12:35:33Z"
+      },
+      "identity": {
+        "symbol": "ضهرم7050",
+        "name": "اختيارخ اهرم-20000-1405/07/29",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6821,
+        "subsector_name": "صندوق هاي سرمايه گذاري اهرمي",
+        "cIsin": "IRO9AHRM0D72",
+        "cgrValCot": "3A",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9AHRM0D71"
+      }
+    },
+    {
+      "source_index": 65,
+      "instrument_id": "3075925484903295",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/3075925484903295?__optimusai_ts=1791549333209066701",
+        "snapshot_sha256": "ccc25be5d358c6259fe988284f7953f4bf46c01c4b40a18993ec6e07f622541b",
+        "retrieved_at": "2026-10-09T12:35:33Z"
+      },
+      "identity": {
+        "symbol": "ضصاد7044",
+        "name": "اختيارخ وبصادر-800-1405/07/22",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "57 ",
+        "sector_name": "بانكها و موسسات اعتباري",
+        "subsector_code": 5719,
+        "subsector_name": "ساير  واسطه هاي پولي",
+        "cIsin": "IRO9BSDR6580",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9BSDR6581"
+      }
+    },
+    {
+      "source_index": 131,
+      "instrument_id": "35697082110863308",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/35697082110863308?__optimusai_ts=1791549333385872287",
+        "snapshot_sha256": "c2747dcda3dcfdbbdf80c3724efb59cc29425cc62212d38cb1f46ad60bc9f0c0",
+        "retrieved_at": "2026-10-09T12:35:33Z"
+      },
+      "identity": {
+        "symbol": "ضخود9058",
+        "name": "اختيارخ خودرو-1000-1405/09/04",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "34 ",
+        "sector_name": "خودرو و ساخت قطعات",
+        "subsector_code": 3410,
+        "subsector_name": "توليد وسايل نقليه موتوري",
+        "cIsin": "IRO9IKCO6N20",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9IKCO6N21"
+      }
+    },
+    {
+      "source_index": 196,
+      "instrument_id": "64275620113395659",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/64275620113395659?__optimusai_ts=1791549333570846427",
+        "snapshot_sha256": "2a9c5c45b93284c40e631b74390671fc39dad5deaffb6a55d427839f1395a162",
+        "retrieved_at": "2026-10-09T12:35:33Z"
+      },
+      "identity": {
+        "symbol": "ضپيك8004",
+        "name": "اختيارخ تاپيكو-50000-05/08/13",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "44 ",
+        "sector_name": "محصولات شيميايي",
+        "subsector_code": 4411,
+        "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+        "cIsin": "IRO9PTAP0A44",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9PTAP0A41"
+      }
+    },
+    {
+      "source_index": 262,
+      "instrument_id": "63811060363789242",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/63811060363789242?__optimusai_ts=1791549333764474670",
+        "snapshot_sha256": "20f52d926a5baaf96fac77c073cf10ee155f2f3cd1290737d73a8a0751b7e1c7",
+        "retrieved_at": "2026-10-09T12:35:33Z"
+      },
+      "identity": {
+        "symbol": "ضستا8054",
+        "name": "اختيارخ شستا-2200-1405/08/13",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "39 ",
+        "sector_name": "شرکتهاي چند رشته اي صنعتي",
+        "subsector_code": 3999,
+        "subsector_name": "شركتهاي صنعتي چند رشته اي",
+        "cIsin": "IRO9TAMN0N09",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9TAMN0N01"
+      }
+    },
+    {
+      "source_index": 327,
+      "instrument_id": "13627127169153213",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/13627127169153213?__optimusai_ts=1791549333960948888",
+        "snapshot_sha256": "56acb9d85ed55c60554c91cdb9bedc7289d135c3dd34706d61bfaa9ecddbc242",
+        "retrieved_at": "2026-10-09T12:35:34Z"
+      },
+      "identity": {
+        "symbol": "ضبساما931",
+        "name": "اختيارخ بساما-16000-14050929",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "66 ",
+        "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+        "subsector_code": 6611,
+        "subsector_name": "فعاليتهاي مالي و اجرائي",
+        "cIsin": "IROABSMZ6582",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROABSMZ6581"
+      }
+    },
+    {
+      "source_index": 393,
+      "instrument_id": "17698758403211052",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/17698758403211052?__optimusai_ts=1791549334157542209",
+        "snapshot_sha256": "d8afe5f7fe425baac09ef0d2a3917426206fa0b764bf29054345682be44fb18d",
+        "retrieved_at": "2026-10-09T12:35:34Z"
+      },
+      "identity": {
+        "symbol": "ضاطلس080306",
+        "name": "اختيارخ اطلس-160000-14050803",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6811,
+        "subsector_name": "صندوق سرمايه گذاري در سهام",
+        "cIsin": "IROASATF8172",
+        "cgrValCot": "20",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROASATF8171"
+      }
+    },
+    {
+      "source_index": 458,
+      "instrument_id": "23591521941461981",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/23591521941461981?__optimusai_ts=1791549334342277990",
+        "snapshot_sha256": "2a9d398e6f49e2f2d42828dd664763455572e593b6faa5009e45b80e07a7f793",
+        "retrieved_at": "2026-10-09T12:35:34Z"
+      },
+      "identity": {
+        "symbol": "طبساما932",
+        "name": "اختيارف بساما-17000-14050929",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "66 ",
+        "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+        "subsector_code": 6611,
+        "subsector_name": "فعاليتهاي مالي و اجرائي",
+        "cIsin": "IROBBSMZ7597",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROBBSMZ7591"
+      }
+    },
+    {
+      "source_index": 524,
+      "instrument_id": "35305847082996178",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/35305847082996178?__optimusai_ts=1791549334526700256",
+        "snapshot_sha256": "f50133b36d23bbe6ec2e29b981874986c8fa32f5605745ead924d0ece9176af9",
+        "retrieved_at": "2026-10-09T12:35:34Z"
+      },
+      "identity": {
+        "symbol": "طاطلس080305",
+        "name": "اختيارف اطلس-150000-14050803",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6811,
+        "subsector_name": "صندوق سرمايه گذاري در سهام",
+        "cIsin": "IROBSATF9161",
+        "cgrValCot": "20",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROBSATF9161"
+      }
+    },
+    {
+      "source_index": 589,
+      "instrument_id": "69226044702448424",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/69226044702448424?__optimusai_ts=1791549334702389435",
+        "snapshot_sha256": "b0804c22d6254f43f49be537ce37152712d6f76e0a6b6b266d1975d41b3c2abb",
+        "retrieved_at": "2026-10-09T12:35:34Z"
+      },
+      "identity": {
+        "symbol": "طهرم9026",
+        "name": "اختيارف اهرم-56000-1405/09/25",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6821,
+        "subsector_name": "صندوق هاي سرمايه گذاري اهرمي",
+        "cIsin": "IROFAHRM1G79",
+        "cgrValCot": "3A",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFAHRM1G71"
+      }
+    },
+    {
+      "source_index": 655,
+      "instrument_id": "6478327921110732",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/6478327921110732?__optimusai_ts=1791549334892390763",
+        "snapshot_sha256": "e8c9450d30372087d26522d553ce9bb93b46d234cc3e0528dec1e6c9055425f2",
+        "retrieved_at": "2026-10-09T12:35:35Z"
+      },
+      "identity": {
+        "symbol": "طدرو7005",
+        "name": "اختيارف دارونو-34000-05/07/15",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6819,
+        "subsector_name": "صندوق سرمايه گذاري بخشي",
+        "cIsin": "IROFDARN5271",
+        "cgrValCot": "3A",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFDARN5271"
+      }
+    },
+    {
+      "source_index": 720,
+      "instrument_id": "47420367912035981",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/47420367912035981?__optimusai_ts=1791549335082694006",
+        "snapshot_sha256": "a298f7f07723a337a161c52b55f8694d2af7faa5617b3ecebced3e5cdf6ea0f9",
+        "retrieved_at": "2026-10-09T12:35:35Z"
+      },
+      "identity": {
+        "symbol": "طملي9041",
+        "name": "اختيارف فملي-20000-1405/09/04",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "27 ",
+        "sector_name": "فلزات اساسي",
+        "subsector_code": 2720,
+        "subsector_name": "توليد فلزات گرانبهاي غيرآهن",
+        "cIsin": "IROFMSMI1E80",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFMSMI1E81"
+      }
+    },
+    {
+      "source_index": 786,
+      "instrument_id": "68170146919557967",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/68170146919557967?__optimusai_ts=1791549335288484162",
+        "snapshot_sha256": "09222a66d0985334e4b44393c57099a5ae1f45c303a6b27fdce4db487b3d132c",
+        "retrieved_at": "2026-10-09T12:35:35Z"
+      },
+      "identity": {
+        "symbol": "طستا7059",
+        "name": "اختيارف شستا-2600-1405/07/15",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "39 ",
+        "sector_name": "شرکتهاي چند رشته اي صنعتي",
+        "subsector_code": 3999,
+        "subsector_name": "شركتهاي صنعتي چند رشته اي",
+        "cIsin": "IROFTAMN1M18",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFTAMN1M11"
+      }
+    },
+    {
+      "source_index": 851,
+      "instrument_id": "56712769076499345",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/56712769076499345?__optimusai_ts=1791549335471619787",
+        "snapshot_sha256": "1e35587eb6d49ae78b56bbc3145ec1f0e004879d60779951ac101fcb878faa16",
+        "retrieved_at": "2026-10-09T12:35:35Z"
+      },
+      "identity": {
+        "symbol": "هدف",
+        "name": "ص.س.دثابت مشترك صباي هدف-د",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6812,
+        "subsector_name": "صندوق سرمايه گذاري در اوراق با درآمدثابت",
+        "cIsin": "IRT3HDAF0008",
+        "cgrValCot": "1A",
+        "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRT3HDAF0001"
+      }
+    },
+    {
+      "source_index": 917,
+      "instrument_id": "36760235557721825",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/36760235557721825?__optimusai_ts=1791549335666129396",
+        "snapshot_sha256": "c276441153f470479ede3b6db2437d7d22d4b2c342a3a5304938f236c3ef4ab7",
+        "retrieved_at": "2026-10-09T12:35:35Z"
+      },
+      "identity": {
+        "symbol": "پديده جم071",
+        "name": "مرابحه پديده جم-تمدن070617",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6911,
+        "subsector_name": "صكوك مرابحه",
+        "cIsin": "IRB3PJ010768",
+        "cgrValCot": "17",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRB3PJ010761"
+      }
+    },
+    {
+      "source_index": 982,
+      "instrument_id": "52232388263291380",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/52232388263291380?__optimusai_ts=1791549335846808224",
+        "snapshot_sha256": "2ec0018ecbc758c8889379ce8bb8dbc9d4b3f2462f288033cec3b5f8d75b60e4",
+        "retrieved_at": "2026-10-09T12:35:36Z"
+      },
+      "identity": {
+        "symbol": "واميد",
+        "name": "گروه مديريت سرمايه گذاري اميد",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "39 ",
+        "sector_name": "شرکتهاي چند رشته اي صنعتي",
+        "subsector_code": 3999,
+        "subsector_name": "شركتهاي صنعتي چند رشته اي",
+        "cIsin": "IRO1OIMC0006",
+        "cgrValCot": "N2",
+        "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+        "sourceID": 0,
+        "instrumentID": "IRO1OIMC0001"
+      }
+    },
+    {
+      "source_index": 1048,
+      "instrument_id": "51471132295320706",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/51471132295320706?__optimusai_ts=1791549336036667365",
+        "snapshot_sha256": "6f07c9ecdea35601d34ad5bd3a5c6820001717db3c74b29c0ebde188a7c1ade2",
+        "retrieved_at": "2026-10-09T12:35:36Z"
+      },
+      "identity": {
+        "symbol": "صپويا612",
+        "name": "صكوك مرابحه بپويا612-3ماهه23%",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "31 ",
+        "sector_name": "ماشين آلات و دستگاه‌هاي برقي",
+        "subsector_code": 3130,
+        "subsector_name": "توليد سيم و كابل عايق",
+        "cIsin": "IRB6AF8906C5",
+        "cgrValCot": "N4",
+        "cgrValCotTitle": "بازار اوراق بدهی",
+        "sourceID": 0,
+        "instrumentID": "IRB6AF8906C1"
+      }
+    },
+    {
+      "source_index": 1113,
+      "instrument_id": "51293756044181812",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/51293756044181812?__optimusai_ts=1791549336255592912",
+        "snapshot_sha256": "497e10056c0c1c9d264dbd001f198674ec7c5eaba7f2b1f2fd16aea43ebf141f",
+        "retrieved_at": "2026-10-09T12:35:36Z"
+      },
+      "identity": {
+        "symbol": "دعبيد3",
+        "name": "لابراتوارداروسازي‌  دكترعبيدي‌",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "43 ",
+        "sector_name": "مواد و محصولات دارويي",
+        "subsector_code": 4323,
+        "subsector_name": "توليد داروهاي شيميايي و گياهي",
+        "cIsin": "IRO1ABDI0004",
+        "cgrValCot": "F3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1ABDI0003"
+      }
+    },
+    {
+      "source_index": 1179,
+      "instrument_id": "15906563225787022",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/15906563225787022?__optimusai_ts=1791549336600761271",
+        "snapshot_sha256": "5df0fcb9dd8bd9fce142c64b2c367c51a76563f473ee47e2301bbe2cfb0500cb",
+        "retrieved_at": "2026-10-09T12:35:36Z"
+      },
+      "identity": {
+        "symbol": "فجهان062",
+        "name": "مرابحه جهان فولاد-آرمان060501",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6911,
+        "subsector_name": "صكوك مرابحه",
+        "cIsin": "IRB3JH020650",
+        "cgrValCot": "17",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRB3JH020651"
+      }
+    },
+    {
+      "source_index": 1244,
+      "instrument_id": "55128878093228671",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/55128878093228671?__optimusai_ts=1791549336965653771",
+        "snapshot_sha256": "b554148e3b59c19e4bb544c0bedbacc5af41a901fb427e3f50dc7c6d3a37bba7",
+        "retrieved_at": "2026-10-09T12:35:37Z"
+      },
+      "identity": {
+        "symbol": "فولاژ3",
+        "name": "فولاد آلياژي ايران",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "27 ",
+        "sector_name": "فلزات اساسي",
+        "subsector_code": 2710,
+        "subsector_name": "توليد آهن و فولاد پايه",
+        "cIsin": "IRO1FAIR0004",
+        "cgrValCot": "F3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1FAIR0003"
+      }
+    },
+    {
+      "source_index": 1310,
+      "instrument_id": "1438514795814416",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/1438514795814416?__optimusai_ts=1791549337306656310",
+        "snapshot_sha256": "a51c06f3292f0e458e6c339e7bd16345050dce7d0143e7c3c61fef2d6a6fe6bd",
+        "retrieved_at": "2026-10-09T12:35:37Z"
+      },
+      "identity": {
+        "symbol": "ياقوت",
+        "name": "صندوق س ياقوت آگاه-ثابت",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6812,
+        "subsector_name": "صندوق سرمايه گذاري در اوراق با درآمدثابت",
+        "cIsin": "IRT1YGHT0003",
+        "cgrValCot": "H1",
+        "cgrValCotTitle": "بازار صندوق های قابل معامله",
+        "sourceID": 0,
+        "instrumentID": "IRT1YGHT0001"
+      }
+    },
+    {
+      "source_index": 1375,
+      "instrument_id": "42080027672771418",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/42080027672771418?__optimusai_ts=1791549337545067795",
+        "snapshot_sha256": "6025657e00b1697f56af353d758ee84c382891474a09d4e81b3426fb4f26d1b9",
+        "retrieved_at": "2026-10-09T12:35:37Z"
+      },
+      "identity": {
+        "symbol": "نخريس3",
+        "name": "نخريسي و نساجي خسروي خراسان",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "17 ",
+        "sector_name": "منسوجات",
+        "subsector_code": 1711,
+        "subsector_name": "آماده سازي و ريسندگي نخ، پارچه بافي",
+        "cIsin": "IRO3NAKZ0008",
+        "cgrValCot": "U3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO3NAKZ0003"
+      }
+    },
+    {
+      "source_index": 1441,
+      "instrument_id": "10869855467299545",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/10869855467299545?__optimusai_ts=1791549337793556935",
+        "snapshot_sha256": "89a589edcefabacfdbd66cc42bbbc345cc06d17690a133ae2384a763e891bb94",
+        "retrieved_at": "2026-10-09T12:35:38Z"
+      },
+      "identity": {
+        "symbol": "كوچين",
+        "name": "توليدي كوچين",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "42 ",
+        "sector_name": "محصولات غذايي و آشاميدني به جز قند و شكر",
+        "subsector_code": 4249,
+        "subsector_name": "توليد ساير محصولات غذايي",
+        "cIsin": "IRO3KCHZ0004",
+        "cgrValCot": "Z1",
+        "cgrValCotTitle": "بازار دوم فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO3KCHZ0001"
+      }
+    },
+    {
+      "source_index": 1506,
+      "instrument_id": "14699620693271309",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/14699620693271309?__optimusai_ts=1791549338121670881",
+        "snapshot_sha256": "288fe0c1f46a3baa606cfdd6023e05bb69fe91e44a592c766fedf79fbdab4a35",
+        "retrieved_at": "2026-10-09T12:35:38Z"
+      },
+      "identity": {
+        "symbol": "مقدم071",
+        "name": "مرابحه مقدم-لوتوس071128",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6911,
+        "subsector_name": "صكوك مرابحه",
+        "cIsin": "IRB3GM0207B8",
+        "cgrValCot": "17",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRB3GM0207B1"
+      }
+    },
+    {
+      "source_index": 1572,
+      "instrument_id": "212813030943790",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/212813030943790?__optimusai_ts=1791549338543661857",
+        "snapshot_sha256": "1b73c6d0e7cc5c7d0e990a855f03d308718e1bf3ac79ad77c2d7e3fb9a4f4144",
+        "retrieved_at": "2026-10-09T12:35:39Z"
+      },
+      "identity": {
+        "symbol": "صشرق512",
+        "name": "صكوك مرابحه ثشرق512-3ماهه18%",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "70 ",
+        "sector_name": "انبوه سازي، املاك و مستغلات",
+        "subsector_code": 7010,
+        "subsector_name": "املاك و مستغلات با ملك خود يا ليزينگ شده",
+        "cIsin": "IRB6AE4305C7",
+        "cgrValCot": "N4",
+        "cgrValCotTitle": "بازار اوراق بدهی",
+        "sourceID": 0,
+        "instrumentID": "IRB6AE4305C1"
+      }
+    },
+    {
+      "source_index": 1637,
+      "instrument_id": "67858991327059184",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/67858991327059184?__optimusai_ts=1791549339057938029",
+        "snapshot_sha256": "58ef4b5e9dcaffdcca5fff84dbf8dafa83dbbc85933fec0f3b93574a4e3c8ff4",
+        "retrieved_at": "2026-10-09T12:35:39Z"
+      },
+      "identity": {
+        "symbol": "كاريس2",
+        "name": "صندوق س.سپند كاريزما-س",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6811,
+        "subsector_name": "صندوق سرمايه گذاري در سهام",
+        "cIsin": "IRT3SSKF0006",
+        "cgrValCot": "T2",
+        "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRT3SSKF0002"
+      }
+    },
+    {
+      "source_index": 1703,
+      "instrument_id": "57925235207138270",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/57925235207138270?__optimusai_ts=1791549339570000216",
+        "snapshot_sha256": "cef16a220b71a46fa8aad8816bc3a61ac6437b4eec4b8b01871833cdbfbcf1c9",
+        "retrieved_at": "2026-10-09T12:35:40Z"
+      },
+      "identity": {
+        "symbol": "مشهد7120",
+        "name": "مشاركت ش مشهد7120-3ماهه23%",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6921,
+        "subsector_name": "اوراق مشاركت شهرداري ها",
+        "cIsin": "IRB5AG9707C6",
+        "cgrValCot": "N4",
+        "cgrValCotTitle": "بازار اوراق بدهی",
+        "sourceID": 0,
+        "instrumentID": "IRB5AG9707C1"
+      }
+    },
+    {
+      "source_index": 1768,
+      "instrument_id": "53419976284977130",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/53419976284977130?__optimusai_ts=1791549340022098302",
+        "snapshot_sha256": "c49ce7c50effb29a76666cfd9f87a41fdc44ed8616aa6efa85355e3894c581b5",
+        "retrieved_at": "2026-10-09T12:35:41Z"
+      },
+      "identity": {
+        "symbol": "تصميم",
+        "name": "صندوق س با درآمد ثابت تصميم",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6812,
+        "subsector_name": "صندوق سرمايه گذاري در اوراق با درآمدثابت",
+        "cIsin": "IRT1SDVI0009",
+        "cgrValCot": "H1",
+        "cgrValCotTitle": "بازار صندوق های قابل معامله",
+        "sourceID": 0,
+        "instrumentID": "IRT1SDVI0001"
+      }
+    },
+    {
+      "source_index": 1834,
+      "instrument_id": "33183654527551177",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/33183654527551177?__optimusai_ts=1791549341076403810",
+        "snapshot_sha256": "02c8f9460e9c367b24c53eb3f3ae570bbefb3ee1a05eb80b67d5154a045c9119",
+        "retrieved_at": "2026-10-09T12:35:41Z"
+      },
+      "identity": {
+        "symbol": "بم خودرو082",
+        "name": "مرابحه خ.ت بم خودرو نوين080325",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6911,
+        "subsector_name": "صكوك مرابحه",
+        "cIsin": "IRB3BAM10835",
+        "cgrValCot": "17",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRB3BAM10831"
+      }
+    },
+    {
+      "source_index": 1899,
+      "instrument_id": "18208902290430498",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/18208902290430498?__optimusai_ts=1791549341429434162",
+        "snapshot_sha256": "424fde901ecbb6c6862fd8d9035d7c3f419d2b21b68ee329d71c07223e115f75",
+        "retrieved_at": "2026-10-09T12:35:41Z"
+      },
+      "identity": {
+        "symbol": "صفولا012",
+        "name": "صكوك اجاره فولاد012-بدون ضامن",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "27 ",
+        "sector_name": "فلزات اساسي",
+        "subsector_code": 2710,
+        "subsector_name": "توليد آهن و فولاد پايه",
+        "cIsin": "IRB6AE5005C2",
+        "cgrValCot": "N4",
+        "cgrValCotTitle": "بازار اوراق بدهی",
+        "sourceID": 0,
+        "instrumentID": "IRB6AE5005C1"
+      }
+    },
+    {
+      "source_index": 1965,
+      "instrument_id": "58064045425283570",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/58064045425283570?__optimusai_ts=1791549341948515412",
+        "snapshot_sha256": "4ac9acd47a65e46726a613a4cedfff26bc485ac72fdfc1121db8132acea9b782",
+        "retrieved_at": "2026-10-09T12:35:42Z"
+      },
+      "identity": {
+        "symbol": "نماد3",
+        "name": "گروه مالي نماد غدير",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "56 ",
+        "sector_name": "سرمايه گذاريها",
+        "subsector_code": 5699,
+        "subsector_name": "ساير واسطه هاي  مالي",
+        "cIsin": "IRO1NMAD0004",
+        "cgrValCot": "G3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1NMAD0003"
+      }
+    },
+    {
+      "source_index": 2030,
+      "instrument_id": "67575708426874676",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/67575708426874676?__optimusai_ts=1791549342420706349",
+        "snapshot_sha256": "949421e2328b04c26d4ddd7cc5f396dde2443576ff1d31f774139fe4b95ada9e",
+        "retrieved_at": "2026-10-09T12:35:43Z"
+      },
+      "identity": {
+        "symbol": "افق معادن07",
+        "name": "مرابحه افق توسعه معادن070817",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "69 ",
+        "sector_name": "اوراق تامين مالي",
+        "subsector_code": 6911,
+        "subsector_name": "صكوك مرابحه",
+        "cIsin": "IRB3OF010789",
+        "cgrValCot": "17",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRB3OF010781"
+      }
+    },
+    {
+      "source_index": 2096,
+      "instrument_id": "4457771575695649",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/4457771575695649?__optimusai_ts=1791549343052833224",
+        "snapshot_sha256": "6ba125659307ca37af6f49de7bf9271344575916fda699a6d911e4a932c4702e",
+        "retrieved_at": "2026-10-09T12:35:43Z"
+      },
+      "identity": {
+        "symbol": "تسه14042",
+        "name": "امتياز تسهيلات مسكن سال1404",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "59 ",
+        "sector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+        "subsector_code": 5910,
+        "subsector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+        "cIsin": "IRO6MSKZ4040",
+        "cgrValCot": "M2",
+        "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO6MSKZ4042"
+      }
+    },
+    {
+      "source_index": 2161,
+      "instrument_id": "13794940272931753",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/13794940272931753?__optimusai_ts=1791549343757631935",
+        "snapshot_sha256": "5a27a6030e8fd07c3410ef12608e43ff1926292d6e4e0958468c5fbad0d005e6",
+        "retrieved_at": "2026-10-09T12:35:43Z"
+      },
+      "identity": {
+        "symbol": "ضسپا8086",
+        "name": "اختيارخ خساپا-600-1405/08/27",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "34 ",
+        "sector_name": "خودرو و ساخت قطعات",
+        "subsector_code": 3410,
+        "subsector_name": "توليد وسايل نقليه موتوري",
+        "cIsin": "IRO9SIPA0E47",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9SIPA0E41"
+      }
+    },
+    {
+      "source_index": 2227,
+      "instrument_id": "23214828924506640",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/23214828924506640?__optimusai_ts=1791549343958443771",
+        "snapshot_sha256": "8822e8827089b603a7a2fb077a5014dfd613349949fa8b017100ff6dd49e0aa6",
+        "retrieved_at": "2026-10-09T12:35:44Z"
+      },
+      "identity": {
+        "symbol": "پكرمان",
+        "name": "گروه‌ صنعتي‌ بارز",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "25 ",
+        "sector_name": "لاستيك و پلاستيك",
+        "subsector_code": 2511,
+        "subsector_name": "توليد تاير و بازسازي تايرهاي لاستيكي",
+        "cIsin": "IRO1BARZ0007",
+        "cgrValCot": "N2",
+        "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+        "sourceID": 0,
+        "instrumentID": "IRO1BARZ0001"
+      }
+    },
+    {
+      "source_index": 2292,
+      "instrument_id": "33147475612613507",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/33147475612613507?__optimusai_ts=1791549344151182912",
+        "snapshot_sha256": "fa5fb026eb5440ca1002aa08a1ad7c669feadaaa4f32b544e6bdf91d50b7ba98",
+        "retrieved_at": "2026-10-09T12:35:44Z"
+      },
+      "identity": {
+        "symbol": "داتام3",
+        "name": "گروه مالي داتام",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "56 ",
+        "sector_name": "سرمايه گذاريها",
+        "subsector_code": 5699,
+        "subsector_name": "ساير واسطه هاي  مالي",
+        "cIsin": "IRO1DTAM0008",
+        "cgrValCot": "G3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1DTAM0003"
+      }
+    },
+    {
+      "source_index": 2358,
+      "instrument_id": "43648999871661146",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/43648999871661146?__optimusai_ts=1791549344348457521",
+        "snapshot_sha256": "311da41d44978eb2aa380ec205d6ce7ae729c75a5921f32d22b68a4a8147c819",
+        "retrieved_at": "2026-10-09T12:35:44Z"
+      },
+      "identity": {
+        "symbol": "وتوصا3",
+        "name": "گروه س توسعه صنعتي ايران",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "56 ",
+        "sector_name": "سرمايه گذاريها",
+        "subsector_code": 5699,
+        "subsector_name": "ساير واسطه هاي  مالي",
+        "cIsin": "IRO1TOSA0009",
+        "cgrValCot": "F3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1TOSA0003"
+      }
+    },
+    {
+      "source_index": 2423,
+      "instrument_id": "904033762459005",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/904033762459005?__optimusai_ts=1791549344554192365",
+        "snapshot_sha256": "c029044692306121f7fe7e3da0faff256abcea6eb7c6707b4f8203526dc91299",
+        "retrieved_at": "2026-10-09T12:35:44Z"
+      },
+      "identity": {
+        "symbol": "ضجوا1007",
+        "name": "اختيارخ جوانه.ك-38000-05/10/30",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6811,
+        "subsector_name": "صندوق سرمايه گذاري در سهام",
+        "cIsin": "IRO9JVAN2641",
+        "cgrValCot": "3A",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9JVAN2641"
+      }
+    },
+    {
+      "source_index": 2489,
+      "instrument_id": "10414047745064283",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/10414047745064283?__optimusai_ts=1791549344745706076",
+        "snapshot_sha256": "ac4aaad2b5c6ad6c2d3d03dbbeb93315eac528cf248571f25a417d7d290a65ee",
+        "retrieved_at": "2026-10-09T12:35:44Z"
+      },
+      "identity": {
+        "symbol": "ضذوب9044",
+        "name": "اختيارخ ذوب-1100-1405/09/18",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "27 ",
+        "sector_name": "فلزات اساسي",
+        "subsector_code": 2710,
+        "subsector_name": "توليد آهن و فولاد پايه",
+        "cIsin": "IRO9ZOBI8007",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9ZOBI8001"
+      }
+    },
+    {
+      "source_index": 2554,
+      "instrument_id": "19298748452450329",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/19298748452450329?__optimusai_ts=1791549344942521545",
+        "snapshot_sha256": "a75faf0ae1feaeaeeec7d9ca53c97e0caed32beb46a7142da49b5f68a0c55fc0",
+        "retrieved_at": "2026-10-09T12:35:45Z"
+      },
+      "identity": {
+        "symbol": "تايرا",
+        "name": "تراكتورسازي‌ايران‌",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "29 ",
+        "sector_name": "ماشين آلات و تجهيزات",
+        "subsector_code": 2921,
+        "subsector_name": "توليد ماشين آلات كشاورزي و باغباني",
+        "cIsin": "IRO1TRIR0009",
+        "cgrValCot": "N1",
+        "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+        "sourceID": 0,
+        "instrumentID": "IRO1TRIR0001"
+      }
+    },
+    {
+      "source_index": 2620,
+      "instrument_id": "52959180571556934",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/52959180571556934?__optimusai_ts=1791549345142267560",
+        "snapshot_sha256": "7ca1d4b9f28b5b290f96b30fdc6f4d3e511cc8af11a390afd804d0ef79d6acc9",
+        "retrieved_at": "2026-10-09T12:35:45Z"
+      },
+      "identity": {
+        "symbol": "ضبساما925",
+        "name": "اختيارخ بساما-10000-14050929",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "66 ",
+        "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+        "subsector_code": 6611,
+        "subsector_name": "فعاليتهاي مالي و اجرائي",
+        "cIsin": "IROABSMZ6525",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROABSMZ6521"
+      }
+    },
+    {
+      "source_index": 2685,
+      "instrument_id": "61102694810476197",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/61102694810476197?__optimusai_ts=1791549345342993185",
+        "snapshot_sha256": "96516a9e2587dc481e0aa3662ba6c840c97e821b77576ad54c148866690a7e84",
+        "retrieved_at": "2026-10-09T12:35:45Z"
+      },
+      "identity": {
+        "symbol": "شپارس",
+        "name": "بين‌ المللي‌ محصولات‌  پارس‌",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "44 ",
+        "sector_name": "محصولات شيميايي",
+        "subsector_code": 4424,
+        "subsector_name": "توليد شوينده ها، عطر و محصولات آرايشي",
+        "cIsin": "IRO1BMPS0004",
+        "cgrValCot": "N2",
+        "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+        "sourceID": 0,
+        "instrumentID": "IRO1BMPS0001"
+      }
+    },
+    {
+      "source_index": 2751,
+      "instrument_id": "26180685634884044",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/26180685634884044?__optimusai_ts=1791549345551605295",
+        "snapshot_sha256": "fa3354294ae47e99d8b72facf8ebee26a8c13bfdd06aa98a9144ffad5a6e0b39",
+        "retrieved_at": "2026-10-09T12:35:45Z"
+      },
+      "identity": {
+        "symbol": "طمخا9014",
+        "name": "اختيارف اخابر-550-1405/09/18",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "64 ",
+        "sector_name": "مخابرات",
+        "subsector_code": 6420,
+        "subsector_name": "مخابرات",
+        "cIsin": "IROFMKBT9587",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFMKBT9581"
+      }
+    },
+    {
+      "source_index": 2816,
+      "instrument_id": "34418082489740508",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/34418082489740508?__optimusai_ts=1791549345753439982",
+        "snapshot_sha256": "acb94c4977bf38a72eddd65a465b35c926b37c081b394d6fc9f4b2c7052348a7",
+        "retrieved_at": "2026-10-09T12:35:45Z"
+      },
+      "identity": {
+        "symbol": "ضذوب7041",
+        "name": "اختيارخ ذوب-500-1405/07/22",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "27 ",
+        "sector_name": "فلزات اساسي",
+        "subsector_code": 2710,
+        "subsector_name": "توليد آهن و فولاد پايه",
+        "cIsin": "IRO9ZOBI8841",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9ZOBI8841"
+      }
+    },
+    {
+      "source_index": 2882,
+      "instrument_id": "43291783149314349",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/43291783149314349?__optimusai_ts=1791549345950953107",
+        "snapshot_sha256": "e6f7d8cbfbd8cb4d5ad950bd91dd98dc6a44c4e5e52d75ff8fd22797a9721aad",
+        "retrieved_at": "2026-10-09T12:35:46Z"
+      },
+      "identity": {
+        "symbol": "وسرمد",
+        "name": "بيمه  سرمد",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "66 ",
+        "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+        "subsector_code": 6611,
+        "subsector_name": "فعاليتهاي مالي و اجرائي",
+        "cIsin": "IRO7SRMP0000",
+        "cgrValCot": "P1",
+        "cgrValCotTitle": "بازار پایه زرد فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO7SRMP0001"
+      }
+    },
+    {
+      "source_index": 2947,
+      "instrument_id": "28431095903407567",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/28431095903407567?__optimusai_ts=1791549346143513263",
+        "snapshot_sha256": "bf629a61ac83b11cd502aab2834e8c214d509163c755bb11f96fc04458f2d2fd",
+        "retrieved_at": "2026-10-09T12:35:46Z"
+      },
+      "identity": {
+        "symbol": "كاسپين",
+        "name": "داروسازي كاسپين تامين",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "43 ",
+        "sector_name": "مواد و محصولات دارويي",
+        "subsector_code": 4323,
+        "subsector_name": "توليد داروهاي شيميايي و گياهي",
+        "cIsin": "IRO3KSPZ0006",
+        "cgrValCot": "Z1",
+        "cgrValCotTitle": "بازار دوم فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO3KSPZ0001"
+      }
+    },
+    {
+      "source_index": 3013,
+      "instrument_id": "40333381842253111",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/40333381842253111?__optimusai_ts=1791549346332689865",
+        "snapshot_sha256": "76a9599874d06b4cf2cbba12f6dd0db4cdecd1caebe2a349b1dc08f7c33862a8",
+        "retrieved_at": "2026-10-09T12:35:46Z"
+      },
+      "identity": {
+        "symbol": "ضپيك8002",
+        "name": "اختيارخ تاپيكو-42000-05/08/13",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "44 ",
+        "sector_name": "محصولات شيميايي",
+        "subsector_code": 4411,
+        "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+        "cIsin": "IRO9PTAP0A28",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9PTAP0A21"
+      }
+    },
+    {
+      "source_index": 3078,
+      "instrument_id": "48405354611439815",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/48405354611439815?__optimusai_ts=1791549346526984006",
+        "snapshot_sha256": "207a0ef21cf4b93b386e9b4933a9275cc41a7aefdeb77795ac017899583e8b4e",
+        "retrieved_at": "2026-10-09T12:35:46Z"
+      },
+      "identity": {
+        "symbol": "دكپسول3",
+        "name": "توليد ژلاتين كپسول ايران",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "43 ",
+        "sector_name": "مواد و محصولات دارويي",
+        "subsector_code": 4399,
+        "subsector_name": "توليد ساير محصولات دارويي",
+        "cIsin": "IRO3IGCZ0009",
+        "cgrValCot": "U3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO3IGCZ0003"
+      }
+    },
+    {
+      "source_index": 3144,
+      "instrument_id": "60101871910248487",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/60101871910248487?__optimusai_ts=1791549346725771310",
+        "snapshot_sha256": "26016785307925c2961efc6c992662fad672461a020e2ee8ba1778ad5a9a9cbd",
+        "retrieved_at": "2026-10-09T12:35:46Z"
+      },
+      "identity": {
+        "symbol": "ماهور4",
+        "name": "صندوق سرمايه گذاري ماهور-ثابت",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6812,
+        "subsector_name": "صندوق سرمايه گذاري در اوراق با درآمدثابت",
+        "cIsin": "IRT1MAHU0000",
+        "cgrValCot": "H4",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRT1MAHU0004"
+      }
+    },
+    {
+      "source_index": 3209,
+      "instrument_id": "68909035712962732",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/68909035712962732?__optimusai_ts=1791549346936673107",
+        "snapshot_sha256": "6fde948658550226580e087922862921abd2fdd15d1199901c89183fa5756279",
+        "retrieved_at": "2026-10-09T12:35:47Z"
+      },
+      "identity": {
+        "symbol": "ثباغ",
+        "name": "شهر سازي و خانه سازي باغميشه",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "70 ",
+        "sector_name": "انبوه سازي، املاك و مستغلات",
+        "subsector_code": 7010,
+        "subsector_name": "املاك و مستغلات با ملك خود يا ليزينگ شده",
+        "cIsin": "IRO3BGHZ0001",
+        "cgrValCot": "1Z",
+        "cgrValCotTitle": "بازار اول فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO3BGHZ0001"
+      }
+    },
+    {
+      "source_index": 3275,
+      "instrument_id": "6578239694389978",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/6578239694389978?__optimusai_ts=1791549347125587951",
+        "snapshot_sha256": "7eb1fe6ecde9a6a1173b4367a82ac09d8464e6b69b83ad8d58cd1764002a3c92",
+        "retrieved_at": "2026-10-09T12:35:47Z"
+      },
+      "identity": {
+        "symbol": "ضسپا7033",
+        "name": "اختيارخ خساپا-800-1405/07/29",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "34 ",
+        "sector_name": "خودرو و ساخت قطعات",
+        "subsector_code": 3410,
+        "subsector_name": "توليد وسايل نقليه موتوري",
+        "cIsin": "IRO9SIPA0D89",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9SIPA0D81"
+      }
+    },
+    {
+      "source_index": 3340,
+      "instrument_id": "14825677919842501",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/14825677919842501?__optimusai_ts=1791549347305394826",
+        "snapshot_sha256": "8debc6d252063603fc4ea7f83bef8d44170bfd668be7983ccc81e2194c76983d",
+        "retrieved_at": "2026-10-09T12:35:47Z"
+      },
+      "identity": {
+        "symbol": "تكيميا",
+        "name": "تامين سرمايه كيميا",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "67 ",
+        "sector_name": "فعاليتهاي كمكي به نهادهاي مالي واسط",
+        "subsector_code": 6719,
+        "subsector_name": "بجز تامين وجوه بيمه و بازنشستگي",
+        "cIsin": "IRO3KYIZ0007",
+        "cgrValCot": "Z1",
+        "cgrValCotTitle": "بازار دوم فرابورس",
+        "sourceID": 0,
+        "instrumentID": "IRO3KYIZ0001"
+      }
+    },
+    {
+      "source_index": 3406,
+      "instrument_id": "23505364492553137",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/23505364492553137?__optimusai_ts=1791549347522882248",
+        "snapshot_sha256": "2d4f55f9643a85d2c7212cc280b1fa7a6f46a14e56f1ac1a34aa72441650d6a2",
+        "retrieved_at": "2026-10-09T12:35:47Z"
+      },
+      "identity": {
+        "symbol": "شيران3",
+        "name": "س. صنايع‌شيميايي‌ايران",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "44 ",
+        "sector_name": "محصولات شيميايي",
+        "subsector_code": 4411,
+        "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+        "cIsin": "IRO1SSIN0003",
+        "cgrValCot": "F3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1SSIN0003"
+      }
+    },
+    {
+      "source_index": 3471,
+      "instrument_id": "10439638497597852",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/10439638497597852?__optimusai_ts=1791549347710232404",
+        "snapshot_sha256": "08fcc9c62189b16fa7361deabe7b9bad962ffc33e87df2682e97e75a339e1e7a",
+        "retrieved_at": "2026-10-09T12:35:47Z"
+      },
+      "identity": {
+        "symbol": "ضملت8079",
+        "name": "اختيارخ وبملت-1900-1405/08/20",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "57 ",
+        "sector_name": "بانكها و موسسات اعتباري",
+        "subsector_code": 5719,
+        "subsector_name": "ساير  واسطه هاي پولي",
+        "cIsin": "IRO9BMLT0O83",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO9BMLT0O81"
+      }
+    },
+    {
+      "source_index": 3537,
+      "instrument_id": "20732633932982003",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/20732633932982003?__optimusai_ts=1791549347906030998",
+        "snapshot_sha256": "72b26522bfb59e62f0144280c6cd3ecb4e064178e5a3cd143da4d7d694c4b85b",
+        "retrieved_at": "2026-10-09T12:35:48Z"
+      },
+      "identity": {
+        "symbol": "ضموج715",
+        "name": "اختيارخ موج-44000-14050726",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "68 ",
+        "sector_name": "صندوق سرمايه گذاري قابل معامله",
+        "subsector_code": 6821,
+        "subsector_name": "صندوق هاي سرمايه گذاري اهرمي",
+        "cIsin": "IROAMOJF6863",
+        "cgrValCot": "20",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROAMOJF6861"
+      }
+    },
+    {
+      "source_index": 3602,
+      "instrument_id": "58345041448159160",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/58345041448159160?__optimusai_ts=1791549348125632912",
+        "snapshot_sha256": "1c668996e5a2329122763ef6453fecc689ac41c5f8ac4dbbbb1ddbaed9e1f1ac",
+        "retrieved_at": "2026-10-09T12:35:48Z"
+      },
+      "identity": {
+        "symbol": "طملت9046",
+        "name": "اختيارف وبملت-2000-1405/09/18",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "57 ",
+        "sector_name": "بانكها و موسسات اعتباري",
+        "subsector_code": 5719,
+        "subsector_name": "ساير  واسطه هاي پولي",
+        "cIsin": "IROFBMLT1Q08",
+        "cgrValCot": "31",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IROFBMLT1Q01"
+      }
+    },
+    {
+      "source_index": 3668,
+      "instrument_id": "68006618018105830",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/68006618018105830?__optimusai_ts=1791549348325470646",
+        "snapshot_sha256": "341b0e36e06bb78a8a940044e03b269baa2e4a61800993a78ae1851cb66415f1",
+        "retrieved_at": "2026-10-09T12:35:48Z"
+      },
+      "identity": {
+        "symbol": "طفزر819",
+        "name": "اختيارف فزر-350000-14050824",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "13 ",
+        "sector_name": "استخراج کانه هاي فلزي",
+        "subsector_code": 1320,
+        "subsector_name": "استخراج كانه فلزي غيرآهن",
+        "cIsin": "IROBPZAZ5335",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROBPZAZ5331"
+      }
+    },
+    {
+      "source_index": 3733,
+      "instrument_id": "31819104823146965",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/31819104823146965?__optimusai_ts=1791549348523299631",
+        "snapshot_sha256": "d16c0f1ab6fa4e7a571c077d2c9a155753b429c9e09f645d343bd7a9200f6654",
+        "retrieved_at": "2026-10-09T12:35:48Z"
+      },
+      "identity": {
+        "symbol": "شپاكسا3",
+        "name": "پاكسان‌",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "44 ",
+        "sector_name": "محصولات شيميايي",
+        "subsector_code": 4424,
+        "subsector_name": "توليد شوينده ها، عطر و محصولات آرايشي",
+        "cIsin": "IRO1PAKS0007",
+        "cgrValCot": "G3",
+        "cgrValCotTitle": "-'",
+        "sourceID": 0,
+        "instrumentID": "IRO1PAKS0003"
+      }
+    },
+    {
+      "source_index": 3799,
+      "instrument_id": "42226263404873099",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/42226263404873099?__optimusai_ts=1791549348718934396",
+        "snapshot_sha256": "4939dcb447da30ec439e5f329d6400009f04d3befc0d01269b6a6272861f81e1",
+        "retrieved_at": "2026-10-09T12:35:48Z"
+      },
+      "identity": {
+        "symbol": "ضدزاگرس704",
+        "name": "اختيارخ دزاگرس-23000-14050719",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "43 ",
+        "sector_name": "مواد و محصولات دارويي",
+        "subsector_code": 4323,
+        "subsector_name": "توليد داروهاي شيميايي و گياهي",
+        "cIsin": "IROAZGDZ0319",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROAZGDZ0311"
+      }
+    },
+    {
+      "source_index": 3864,
+      "instrument_id": "54662177716411146",
+      "market_watch_symbol": null,
+      "market_watch_name": null,
+      "identity_status": "SUCCESS",
+      "identity_source": {
+        "endpoint": "https://cdn.tsetmc.com/api/Instrument/GetInstrumentIdentity/54662177716411146?__optimusai_ts=1791549348917286154",
+        "snapshot_sha256": "f022a43c4fa7140016780752df57aecb49ef1920f6ad759662631c54f606763b",
+        "retrieved_at": "2026-10-09T12:35:49Z"
+      },
+      "identity": {
+        "symbol": "ضفزر710",
+        "name": "اختيارخ فزر-160000-14050726",
+        "flow": 0,
+        "flow_title": "",
+        "sector_code": "13 ",
+        "sector_name": "استخراج کانه هاي فلزي",
+        "subsector_code": 1320,
+        "subsector_name": "استخراج كانه فلزي غيرآهن",
+        "cIsin": "IROAPZAZ2838",
+        "cgrValCot": "13",
+        "cgrValCotTitle": "بازار ابزارهای مشتقه",
+        "sourceID": 0,
+        "instrumentID": "IROAPZAZ2831"
+      }
+    }
+  ],
+  "report_sha256": "03fa55b61dce1b1aeeebfa018aadf3eb9550d8e2bf29edaa2362a2ad2b057d28"
+}

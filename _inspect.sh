@@ -1,0 +1,1 @@
+echo '--- URLS+HEADERS ---'; grep -n 'MARKETWATCH_URLS\|old.tsetmc\|cdn.tsetmc\|HEADERS\|User-Agent\|http' data/tsetmc.py | head -30; echo '--- FETCH ---'; grep -n 'def \|urlopen\|requests\|validate\|@\|isdigit' data/tsetmc.py | head -40

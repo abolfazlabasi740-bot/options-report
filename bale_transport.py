@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import mimetypes
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -30,10 +32,98 @@ def split_message(text, limit=3500):
     return chunks
 
 
+
+def _gregorian_to_jalali(gy, gm, gd):
+    g_days = [31,28,31,30,31,30,31,31,30,31,30,31]
+    j_days = [31,31,31,31,31,31,30,30,30,30,30,29]
+    gy2, gm2, gd2 = gy - 1600, gm - 1, gd - 1
+    day_no = 365 * gy2 + (gy2+3)//4 - (gy2+99)//100 + (gy2+399)//400
+    for i in range(gm2):
+        day_no += g_days[i]
+    if gm2 > 1 and ((gy % 4 == 0 and gy % 100 != 0) or gy % 400 == 0):
+        day_no += 1
+    day_no += gd2
+    j_no = day_no - 79
+    j_np = j_no // 12053
+    j_no %= 12053
+    jy = 979 + 33*j_np + 4*(j_no//1461)
+    j_no %= 1461
+    if j_no >= 366:
+        jy += (j_no-1)//365
+        j_no = (j_no-1)%365
+    i = 0
+    while i < 11 and j_no >= j_days[i]:
+        j_no -= j_days[i]
+        i += 1
+    return jy, i+1, j_no+1
+
+
+def _with_report_timestamp_button(reply_markup=None):
+    markup = dict(reply_markup) if isinstance(reply_markup, dict) else {}
+
+    # Reply keyboards cannot be combined with inline keyboards.
+    if "keyboard" in markup and "inline_keyboard" not in markup:
+        return reply_markup
+
+    now = datetime.now(ZoneInfo("Asia/Tehran"))
+    jy, jm, jd = _gregorian_to_jalali(now.year, now.month, now.day)
+    digits = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+    date_text = f"{jy:04d}/{jm:02d}/{jd:02d}".translate(digits)
+    time_text = now.strftime("%H:%M").translate(digits)
+    row = [{
+        "text": f"📅 {date_text} | 🕒 {time_text}",
+        "callback_data": "report_timestamp_info",
+    }]
+    markup["inline_keyboard"] = [row, *(markup.get("inline_keyboard") or [])]
+    return markup
+
+
+
+def _gregorian_to_jalali(gy, gm, gd):
+    g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29]
+    gy2 = gy + 1 if gm > 2 else gy
+    days = (
+        365 * gy
+        + (gy2 + 3) // 4
+        - (gy2 + 99) // 100
+        + (gy2 + 399) // 400
+        - 80
+        + gd
+    )
+    for i, dim in enumerate(g_days_in_month):
+        if gm <= i + 1:
+            break
+        days += dim
+    gy_prime = gy - 621
+    j_day_no = days - 1
+    j_np = j_day_no // 12053
+    j_day_no %= 12053
+    jy = 979 + 33 * j_np + 4 * (j_day_no // 1461)
+    j_day_no %= 1461
+    if j_day_no >= 366:
+        jy += (j_day_no - 1) // 365
+        j_day_no = (j_day_no - 1) % 365
+    for i, dim in enumerate(j_days_in_month):
+        if j_day_no < dim:
+            break
+        j_day_no -= dim
+    return jy, i + 1, j_day_no + 1
+
+def _get_tehran_shamsi_header():
+    from datetime import datetime, timezone, timedelta
+    tehran_tz = timezone(timedelta(hours=3, minutes=30))
+    now = datetime.now(tehran_tz)
+    jy, jm, jd = _gregorian_to_jalali(now.year, now.month, now.day)
+    return f"🗓 تاریخ: {jy:04d}/{jm:02d}/{jd:02d}\n🕒 ساعت: {now.strftime('%H:%M:%S')}\n\n"
+
 def send_message(token, chat_id, text, return_receipts=False, reply_markup=None):
+    if text and not str(text).startswith("🗓 تاریخ:"):
+        text = _get_tehran_shamsi_header() + str(text)
     if not token or not str(chat_id).strip():
         raise ValueError("BALE_BOT_TOKEN و BALE_CHAT_ID باید تنظیم شوند")
     chunks = split_message(text)
+    reply_markup = _with_report_timestamp_button(reply_markup)
     receipts = []
     for chunk in chunks:
         payload = {"chat_id": chat_id, "text": chunk}

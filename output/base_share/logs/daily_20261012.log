@@ -1,0 +1,12 @@
+
+===== START 2026-10-12 13:31:42 +0330 =====
+STEP=GIT_UPDATE
+From https://github.com/abolfazlabasi740-bot/options-report
+ * branch            main       -> FETCH_HEAD
+   c1f93e8..384d6f8  main       -> origin/main
+error: Your local changes to the following files would be overwritten by merge:
+	base_share_whole_market_first_pass.py
+Please commit your changes or stash them before you merge.
+Aborting
+Updating c1f93e8..384d6f8
+STATUS=FAIL_GIT_UPDATE

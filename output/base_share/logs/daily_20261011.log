@@ -1,0 +1,104 @@
+
+===== START 2026-10-11 12:30:29 +0330 =====
+STEP=GIT_UPDATE
+From https://github.com/abolfazlabasi740-bot/options-report
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+STEP=MARKET_WATCH_IDENTITY
+SOURCE_RECORDS = 2961
+UNIQUE_IDS = 2961
+REUSED_SUCCESSFUL_IDENTITIES = 2798
+PENDING_IDENTITIES = 163
+WORKERS = 6
+MODE = DIAGNOSTIC_ONLY_NO_CLASSIFICATION_NO_SCORING
+PROGRESS = 25/163
+PROGRESS = 50/163
+CHECKPOINT_STATUS = PARTIAL
+CHECKPOINT_STATUS_COUNTS = {"SUCCESS": 2848, "PENDING": 113}
+PROGRESS = 75/163
+PROGRESS = 100/163
+CHECKPOINT_STATUS = PARTIAL
+CHECKPOINT_STATUS_COUNTS = {"SUCCESS": 2895, "PENDING": 63, "FAILED": 3}
+PROGRESS = 125/163
+PROGRESS = 150/163
+CHECKPOINT_STATUS = PARTIAL
+CHECKPOINT_STATUS_COUNTS = {"SUCCESS": 2944, "PENDING": 13, "FAILED": 4}
+CATALOG_STATUS = COMPLETE_WITH_EXPLICIT_FAILURES
+IDENTITY_SUCCESS = 2957
+IDENTITY_FAILED = 4
+OUTPUT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/market_watch_identity_catalog.json
+STEP=WHOLE_MARKET_HISTORY_AND_RANKING
+STATUS = WHOLE_MARKET_FIRST_PASS_RUNNING
+CATALOG_RECORDS = 2961
+CANDIDATE_COUNT = 1449
+EXCLUDED_COUNTS = {"NON_EQUITY_SECTOR_68": 755, "NON_EQUITY_MARKET_TITLE": 317, "NON_EQUITY_SECTOR_69": 389, "NON_EQUITY_SECTOR_67": 47, "IDENTITY_UNAVAILABLE": 4}
+HISTORY_MODE = TSETMC_DAILY_HISTORY_ONLY
+BOARD_REFRESH = CLOSED_MARKET_NO_REFRESH
+PROGRESS = 100/1449
+PROGRESS = 200/1449
+PROGRESS = 300/1449
+PROGRESS = 400/1449
+PROGRESS = 500/1449
+PROGRESS = 600/1449
+PROGRESS = 700/1449
+PROGRESS = 800/1449
+PROGRESS = 900/1449
+PROGRESS = 1000/1449
+PROGRESS = 1100/1449
+PROGRESS = 1200/1449
+PROGRESS = 1300/1449
+PROGRESS = 1400/1449
+PROGRESS = 1449/1449
+STATUS = WHOLE_MARKET_FIRST_PASS_COMPLETE
+HISTORY_STATUS_COUNTS = {"PARTIAL": 184, "PASS": 1246, "UNAVAILABLE": 19}
+LATEST_HISTORY_DATE_GREGORIAN = 20261010
+LATEST_HISTORY_DATE_JALALI = 1405/07/18
+TEXT_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_whole_market_opportunity_report.txt
+JSON_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_whole_market_opportunity_report.json
+TOP_15 = [{"rank": 1, "symbol": "كيمازي", "score": 92.61, "class": "C", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 60.0, "date": "20261010", "warnings": ["PARTIAL_EVIDENCE_COVERAGE"]}, {"rank": 2, "symbol": "ولكار", "score": 91.97, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 3, "symbol": "وحافظ", "score": 89.65, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 4, "symbol": "سهگمت", "score": 89.36, "class": "B", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 5, "symbol": "دقاضي", "score": 89.03, "class": "B", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 6, "symbol": "توريل", "score": 88.58, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 7, "symbol": "تبرك", "score": 88.45, "class": "B", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 8, "symbol": "جخود0508", "score": 88.2, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 9, "symbol": "حپترو", "score": 88.15, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 10, "symbol": "سپاها", "score": 87.95, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 11, "symbol": "ددانا", "score": 87.63, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 12, "symbol": "كفرا", "score": 87.45, "class": "B", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": ["RSI_OVERBOUGHT_ENTRY_PENALTY"]}, {"rank": 13, "symbol": "ضستا8053", "score": 87.38, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 14, "symbol": "فزرين", "score": 86.91, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}, {"rank": 15, "symbol": "كايتا", "score": 86.91, "class": "A", "instrument_classification": "COMMON_SHARE_CANDIDATE_HEURISTIC_NOT_VERIFIED", "coverage": 90.0, "date": "20261010", "warnings": []}]
+BUY_SELL_SIGNAL = OFF
+STEP=FULL_PLAIN_SYMBOL_RANKING
+STATUS = PLAIN_SYMBOL_TREND_REPORT_COMPLETE
+SOURCE_REPORT_ROWS = 1449
+ELIGIBLE_PLAIN_SYMBOLS = 757
+LATEST_HISTORY_DATE_GREGORIAN = 20261010
+LATEST_HISTORY_DATE_JALALI = 1405/07/18
+TEXT_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_plain_symbol_trend_report.txt
+JSON_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_plain_symbol_trend_report.json
+RANKED_SYMBOL_COUNT = 757
+TOP_15 =
+1|كيمازي|score=92.61|class=C|coverage=60.0%|date=20261010|R5=6.623134328358216|R20=None|RSI14=None|warnings=PARTIAL_EVIDENCE_COVERAGE
+2|ولكار|score=91.97|class=A|coverage=90.0%|date=20261010|R5=7.8095238095237995|R20=3.0965391621129434|RSI14=65.10457684218137|warnings=NONE
+3|وحافظ|score=89.65|class=A|coverage=90.0%|date=20261010|R5=6.880540312368089|R20=3.0944625407166138|RSI14=66.86484219743484|warnings=NONE
+4|سهگمت|score=89.36|class=B|coverage=90.0%|date=20261010|R5=5.239327296248386|R20=9.932432432432424|RSI14=69.77944684050344|warnings=NONE
+5|دقاضي|score=89.03|class=B|coverage=90.0%|date=20261010|R5=2.89797538705836|R20=13.734093900833688|RSI14=69.53983801706076|warnings=NONE
+6|توريل|score=88.58|class=A|coverage=90.0%|date=20261010|R5=6.876790830945567|R20=9.705882352941186|RSI14=66.98844328380338|warnings=NONE
+7|تبرك|score=88.45|class=B|coverage=90.0%|date=20261010|R5=7.930720145852321|R20=4.271246147071772|RSI14=69.74294664589192|warnings=NONE
+8|حپترو|score=88.15|class=A|coverage=90.0%|date=20261010|R5=4.469914040114609|R20=-3.8502109704641296|RSI14=61.16029210382701|warnings=NONE
+9|سپاها|score=87.95|class=A|coverage=90.0%|date=20261010|R5=3.39059674502713|R20=5.5376095985232965|RSI14=66.29321885767668|warnings=NONE
+10|ددانا|score=87.63|class=A|coverage=90.0%|date=20261010|R5=1.7028522775649257|R20=13.27643432906591|RSI14=65.16262101701345|warnings=NONE
+11|كفرا|score=87.45|class=B|coverage=90.0%|date=20261010|R5=5.284552845528445|R20=3.8076152304609145|RSI14=72.47349149143436|warnings=RSI_OVERBOUGHT_ENTRY_PENALTY
+12|فزرين|score=86.91|class=A|coverage=90.0%|date=20261010|R5=0.10020040080160886|R20=-1.5763546798029604|RSI14=62.03191904945603|warnings=NONE
+13|كايتا|score=86.91|class=A|coverage=90.0%|date=20261010|R5=4.29184549356223|R20=2.841596130592494|RSI14=61.53979787728171|warnings=NONE
+14|غگل|score=86.86|class=B|coverage=90.0%|date=20261010|R5=14.595375722543347|R20=16.446402349486043|RSI14=72.7395711062079|warnings=RSI_OVERBOUGHT_ENTRY_PENALTY
+15|شمس|score=86.14|class=A|coverage=90.0%|date=20261010|R5=-0.7142857142857117|R20=11.398040961709711|RSI14=59.87225879875366|warnings=NONE
+BUY_SELL_SIGNAL = OFF
+STEP=DAILY_RANK_CHANGE_COMPARISON
+STATUS = DAILY_COMPARISON_COMPLETE
+CURRENT_DATA_DATE = 20261010
+PREVIOUS_DATA_DATE = 20261007
+CURRENT_SYMBOL_COUNT = 757
+PREVIOUS_SYMBOL_COUNT = 753
+RANK_IMPROVEMENTS = 398
+RANK_DECLINES = 332
+JSON_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_daily_rank_change_report.json
+TEXT_REPORT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_daily_rank_change_report.txt
+SNAPSHOT = /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/daily_history/20261010.json
+BUY_SELL_SIGNAL = OFF
+SCORE_WEIGHTS_CHANGED = NO
+STATUS=DAILY_BASE_SHARE_AND_COMPARISON_COMPLETE
+RANKING_JSON=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_plain_symbol_trend_report.json
+RANKING_TXT=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_plain_symbol_trend_report.txt
+COMPARISON_JSON=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_daily_rank_change_report.json
+COMPARISON_TXT=/data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/latest_daily_rank_change_report.txt
+===== END 2026-10-11 12:33:56 +0330 =====

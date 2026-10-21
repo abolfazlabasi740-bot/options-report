@@ -1,0 +1,15 @@
+TSETMC MARKET-WATCH UNIVERSE PROBE — DIAGNOSTIC ONLY
+============================================================
+زمان تولید: 2026-10-09T16:03:02.543084+03:30
+Endpoint: https://cdn.tsetmc.com/api/ClosingPrice/GetMarketWatch?market=0&industrialGroup=&paperTypes%5B0%5D=1&paperTypes%5B1%5D=2&paperTypes%5B2%5D=3&paperTypes%5B3%5D=4&paperTypes%5B4%5D=5&paperTypes%5B5%5D=6&paperTypes%5B6%5D=7&paperTypes%5B7%5D=8&paperTypes%5B8%5D=9&withBestLimits=false&hEven=0&RefID=0&__optimusai_ts=1791549177620006623
+زمان دریافت منبع: 2026-10-09T12:33:01Z
+هش snapshot: b561a940b3ce493c0c56c0f23e2477881db196ea691b08e1481938277b016e69
+تعداد خام منبع: 3865
+تعداد رکورد یکتای نرمال‌شده: 3865
+توزیع flow: {"UNAVAILABLE": 3865}
+توزیع paper_type: {"UNAVAILABLE": 3865}
+توزیع وضعیت بازار: {"UNAVAILABLE": 3865}
+فیلدهای مشاهده‌شده: lva, lvc, eps, pe, pmd, pmo, qtj, pdv, ztt, qtc, bv, pc, pcpc, pmn, pmx, py, pf, pcl, vc, csv, insID, pMax, pMin, ztd, blDs, id, insCode, dEven, hEven, pClosing, iClose, yClose, pDrCotVal, zTotTran, qTotTran5J, qTotCap
+نمونه‌های هویت‌سنجی: [{"id": "62444611500832644", "status": "SUCCESS", "keys": ["baseVol", "cComVal", "cIsin", "cSocCSAC", "cValMne", "cgrValCot", "cgrValCotTitle", "flow", "flowTitle", "insCode", "instrumentID", "lSoc30", "lVal18", "lVal18AFC", "lVal30", "lastDate", "sector", "sourceID", "subSector", "yMarNSC", "yVal", "zTitad"], "error": null}, {"id": "7693632359685850", "status": "SUCCESS", "keys": ["baseVol", "cComVal", "cIsin", "cSocCSAC", "cValMne", "cgrValCot", "cgrValCotTitle", "flow", "flowTitle", "insCode", "instrumentID", "lSoc30", "lVal18", "lVal18AFC", "lVal30", "lastDate", "sector", "sourceID", "subSector", "yMarNSC", "yVal", "zTitad"], "error": null}, {"id": "2981675816992995", "status": "SUCCESS", "keys": ["baseVol", "cComVal", "cIsin", "cSocCSAC", "cValMne", "cgrValCot", "cgrValCotTitle", "flow", "flowTitle", "insCode", "instrumentID", "lSoc30", "lVal18", "lVal18AFC", "lVal30", "lastDate", "sector", "sourceID", "subSector", "yMarNSC", "yVal", "zTitad"], "error": null}, {"id": "28144333261517699", "status": "SUCCESS", "keys": ["baseVol", "cComVal", "cIsin", "cSocCSAC", "cValMne", "cgrValCot", "cgrValCotTitle", "flow", "flowTitle", "insCode", "instrumentID", "lSoc30", "lVal18", "lVal18AFC", "lVal30", "lastDate", "sector", "sourceID", "subSector", "yMarNSC", "yVal", "zTitad"], "error": null}, {"id": "637801642303120", "status": "SUCCESS", "keys": ["baseVol", "cComVal", "cIsin", "cSocCSAC", "cValMne", "cgrValCot", "cgrValCotTitle", "flow", "flowTitle", "insCode", "instrumentID", "lSoc30", "lVal18", "lVal18AFC", "lVal30", "lastDate", "sector", "sourceID", "subSector", "yMarNSC", "yVal", "zTitad"], "error": null}]
+وضعیت طبقه‌بندی: هنوز تأیید نشده؛ در امتیازدهی استفاده نمی‌شود.
+فایل شواهد JSON: /data/data/com.termux/files/home/OptimusAI_V41_LIVE/output/base_share/market_watch_universe_probe.json

@@ -715,7 +715,9 @@ def main():
                         command = CALLBACK_COMMANDS.get(callback_data)
                         strategy = STRATEGY_CALLBACKS.get(callback_data)
 
-                        if callback_data.startswith("market_shares_page:"):
+                        if callback_data == "report_timestamp_info":
+                            pass  # Timestamp button; callback already acknowledged.
+                        elif callback_data.startswith("market_shares_page:"):
                             page = int(callback_data.split(":", 1)[1])
                             report, markup, count, current_page, total_pages = render_market_share_cards(page)
                             send_message(chat_id, report, reply_markup=markup)

@@ -1,0 +1,2822 @@
+{
+  "schema_version": "1.0",
+  "purpose": "DIAGNOSTIC_ONLY_NO_CLASSIFICATION_NO_SCORING",
+  "input_file": "output/base_share/market_watch_identity_catalog.json",
+  "source_snapshot_sha256": "cf33f6c9c4ca77fc33a569c41fb6bdad83a2af27bda1c92afd31ff63b3972bc8",
+  "source_raw_record_count": 3865,
+  "catalog_record_count": 3865,
+  "identity_status_counts": {
+    "SUCCESS": 3853,
+    "FAILED": 12
+  },
+  "identity_symbol_available_count": 3853,
+  "missing_identity_count": 12,
+  "missing_sector_count": 12,
+  "sector_distribution": [
+    {
+      "sector_code": "68 ",
+      "sector_name": "صندوق سرمايه گذاري قابل معامله",
+      "count": 1015
+    },
+    {
+      "sector_code": "69 ",
+      "sector_name": "اوراق تامين مالي",
+      "count": 383
+    },
+    {
+      "sector_code": "34 ",
+      "sector_name": "خودرو و ساخت قطعات",
+      "count": 316
+    },
+    {
+      "sector_code": "27 ",
+      "sector_name": "فلزات اساسي",
+      "count": 291
+    },
+    {
+      "sector_code": "57 ",
+      "sector_name": "بانكها و موسسات اعتباري",
+      "count": 210
+    },
+    {
+      "sector_code": "13 ",
+      "sector_name": "استخراج کانه هاي فلزي",
+      "count": 198
+    },
+    {
+      "sector_code": "44 ",
+      "sector_name": "محصولات شيميايي",
+      "count": 184
+    },
+    {
+      "sector_code": "43 ",
+      "sector_name": "مواد و محصولات دارويي",
+      "count": 114
+    },
+    {
+      "sector_code": "39 ",
+      "sector_name": "شرکتهاي چند رشته اي صنعتي",
+      "count": 109
+    },
+    {
+      "sector_code": "66 ",
+      "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+      "count": 102
+    },
+    {
+      "sector_code": "56 ",
+      "sector_name": "سرمايه گذاريها",
+      "count": 95
+    },
+    {
+      "sector_code": "42 ",
+      "sector_name": "محصولات غذايي و آشاميدني به جز قند و شكر",
+      "count": 93
+    },
+    {
+      "sector_code": "53 ",
+      "sector_name": "سيمان، آهك و گچ",
+      "count": 78
+    },
+    {
+      "sector_code": "64 ",
+      "sector_name": "مخابرات",
+      "count": 78
+    },
+    {
+      "sector_code": "67 ",
+      "sector_name": "فعاليتهاي كمكي به نهادهاي مالي واسط",
+      "count": 67
+    },
+    {
+      "sector_code": "60 ",
+      "sector_name": "حمل ونقل، انبارداري و ارتباطات",
+      "count": 52
+    },
+    {
+      "sector_code": "70 ",
+      "sector_name": "انبوه سازي، املاك و مستغلات",
+      "count": 48
+    },
+    {
+      "sector_code": "01 ",
+      "sector_name": "زراعت و خدمات وابسته",
+      "count": 42
+    },
+    {
+      "sector_code": "54 ",
+      "sector_name": "ساير محصولات كاني غيرفلزي",
+      "count": 36
+    },
+    {
+      "sector_code": "40 ",
+      "sector_name": "عرضه برق، گاز، بخاروآب گرم",
+      "count": 36
+    },
+    {
+      "sector_code": "72 ",
+      "sector_name": "رايانه و فعاليت‌هاي وابسته به آن",
+      "count": 34
+    },
+    {
+      "sector_code": "38 ",
+      "sector_name": "قند و شكر",
+      "count": 29
+    },
+    {
+      "sector_code": "31 ",
+      "sector_name": "ماشين آلات و دستگاه‌هاي برقي",
+      "count": 29
+    },
+    {
+      "sector_code": "25 ",
+      "sector_name": "لاستيك و پلاستيك",
+      "count": 25
+    },
+    {
+      "sector_code": "29 ",
+      "sector_name": "ماشين آلات و تجهيزات",
+      "count": 22
+    },
+    {
+      "sector_code": "28 ",
+      "sector_name": "ساخت محصولات فلزي",
+      "count": 19
+    },
+    {
+      "sector_code": "49 ",
+      "sector_name": "كاشي و سراميك",
+      "count": 18
+    },
+    {
+      "sector_code": "58 ",
+      "sector_name": "ساير واسطه گريهاي مالي",
+      "count": 16
+    },
+    {
+      "sector_code": "23 ",
+      "sector_name": "فراورده هاي نفتي، كك و سوخت هسته اي",
+      "count": 13
+    },
+    {
+      "sector_code": "None",
+      "sector_name": "None",
+      "count": 12
+    },
+    {
+      "sector_code": "55 ",
+      "sector_name": "هتل و رستوران",
+      "count": 11
+    },
+    {
+      "sector_code": "17 ",
+      "sector_name": "منسوجات",
+      "count": 10
+    },
+    {
+      "sector_code": "21 ",
+      "sector_name": "محصولات كاغذي",
+      "count": 9
+    },
+    {
+      "sector_code": "74 ",
+      "sector_name": "خدمات فني و مهندسي",
+      "count": 9
+    },
+    {
+      "sector_code": "10 ",
+      "sector_name": "استخراج زغال سنگ",
+      "count": 8
+    },
+    {
+      "sector_code": "73 ",
+      "sector_name": "اطلاعات و ارتباطات",
+      "count": 7
+    },
+    {
+      "sector_code": "45 ",
+      "sector_name": "پيمانكاري صنعتي",
+      "count": 5
+    },
+    {
+      "sector_code": "26 ",
+      "sector_name": "توليد محصولات كامپيوتري الكترونيكي ونوري",
+      "count": 5
+    },
+    {
+      "sector_code": "59 ",
+      "sector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+      "count": 5
+    },
+    {
+      "sector_code": "32 ",
+      "sector_name": "ساخت دستگاه‌ها و وسايل ارتباطي",
+      "count": 5
+    },
+    {
+      "sector_code": "14 ",
+      "sector_name": "استخراج ساير معادن",
+      "count": 4
+    },
+    {
+      "sector_code": "47 ",
+      "sector_name": "خرده فروشي،باستثناي وسايل نقليه موتوري",
+      "count": 4
+    },
+    {
+      "sector_code": "20 ",
+      "sector_name": "محصولات چوبي",
+      "count": 4
+    },
+    {
+      "sector_code": "11 ",
+      "sector_name": "استخراج نفت گاز و خدمات جنبي جز اکتشاف",
+      "count": 3
+    },
+    {
+      "sector_code": "61 ",
+      "sector_name": "حمل و نقل آبي",
+      "count": 2
+    },
+    {
+      "sector_code": "19 ",
+      "sector_name": "دباغي، پرداخت چرم و ساخت انواع پاپوش",
+      "count": 2
+    },
+    {
+      "sector_code": "46 ",
+      "sector_name": "تجارت عمده فروشي به جز وسايل نقليه موتور",
+      "count": 1
+    },
+    {
+      "sector_code": "71 ",
+      "sector_name": "فعاليت مهندسي، تجزيه، تحليل و آزمايش فني",
+      "count": 1
+    },
+    {
+      "sector_code": "93 ",
+      "sector_name": "فعاليتهاي فرهنگي و ورزشي",
+      "count": 1
+    },
+    {
+      "sector_code": "35 ",
+      "sector_name": "ساير تجهيزات حمل و نقل",
+      "count": 1
+    },
+    {
+      "sector_code": "22 ",
+      "sector_name": "انتشار، چاپ و تکثير",
+      "count": 1
+    },
+    {
+      "sector_code": "50 ",
+      "sector_name": "تجارت عمده وخرده فروشي وسائط نقليه موتور",
+      "count": 1
+    },
+    {
+      "sector_code": "84 ",
+      "sector_name": "سلامت انسان و مددكاري اجتماعي",
+      "count": 1
+    },
+    {
+      "sector_code": "90 ",
+      "sector_name": "فعاليت هاي هنري، سرگرمي و خلاقانه",
+      "count": 1
+    }
+  ],
+  "subsector_distribution_top_100": [
+    {
+      "subsector_code": "6811",
+      "subsector_name": "صندوق سرمايه گذاري در سهام",
+      "count": 358
+    },
+    {
+      "subsector_code": "6821",
+      "subsector_name": "صندوق هاي سرمايه گذاري اهرمي",
+      "count": 259
+    },
+    {
+      "subsector_code": "3410",
+      "subsector_name": "توليد وسايل نقليه موتوري",
+      "count": 258
+    },
+    {
+      "subsector_code": "6911",
+      "subsector_name": "صكوك مرابحه",
+      "count": 254
+    },
+    {
+      "subsector_code": "5719",
+      "subsector_name": "ساير  واسطه هاي پولي",
+      "count": 210
+    },
+    {
+      "subsector_code": "2710",
+      "subsector_name": "توليد آهن و فولاد پايه",
+      "count": 183
+    },
+    {
+      "subsector_code": "6819",
+      "subsector_name": "صندوق سرمايه گذاري بخشي",
+      "count": 155
+    },
+    {
+      "subsector_code": "6812",
+      "subsector_name": "صندوق سرمايه گذاري در اوراق با درآمدثابت",
+      "count": 144
+    },
+    {
+      "subsector_code": "4411",
+      "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+      "count": 126
+    },
+    {
+      "subsector_code": "3999",
+      "subsector_name": "شركتهاي صنعتي چند رشته اي",
+      "count": 109
+    },
+    {
+      "subsector_code": "2720",
+      "subsector_name": "توليد فلزات گرانبهاي غيرآهن",
+      "count": 106
+    },
+    {
+      "subsector_code": "4323",
+      "subsector_name": "توليد داروهاي شيميايي و گياهي",
+      "count": 96
+    },
+    {
+      "subsector_code": "5699",
+      "subsector_name": "ساير واسطه هاي  مالي",
+      "count": 95
+    },
+    {
+      "subsector_code": "1399",
+      "subsector_name": "استخراج ساير كانه هاي فلزي",
+      "count": 90
+    },
+    {
+      "subsector_code": "1320",
+      "subsector_name": "استخراج كانه فلزي غيرآهن",
+      "count": 86
+    },
+    {
+      "subsector_code": "5394",
+      "subsector_name": "توليد سيمان، آهك و گچ",
+      "count": 78
+    },
+    {
+      "subsector_code": "6420",
+      "subsector_name": "مخابرات",
+      "count": 78
+    },
+    {
+      "subsector_code": "6611",
+      "subsector_name": "فعاليتهاي مالي و اجرائي",
+      "count": 64
+    },
+    {
+      "subsector_code": "3430",
+      "subsector_name": "قطعات يدكي و جانبي وسايل نقليه موتوري",
+      "count": 54
+    },
+    {
+      "subsector_code": "6711",
+      "subsector_name": "اداره ي بازارهاي مالي",
+      "count": 49
+    },
+    {
+      "subsector_code": "6910",
+      "subsector_name": "صكوك اجاره",
+      "count": 48
+    },
+    {
+      "subsector_code": "6822",
+      "subsector_name": "صندوق كالايي مبتني بر طلا",
+      "count": 44
+    },
+    {
+      "subsector_code": "7010",
+      "subsector_name": "املاك و مستغلات با ملك خود يا ليزينگ شده",
+      "count": 34
+    },
+    {
+      "subsector_code": "4010",
+      "subsector_name": "توليد انتقال و توزيع نيروي برق",
+      "count": 32
+    },
+    {
+      "subsector_code": "6603",
+      "subsector_name": "بيمه غيرزندگي",
+      "count": 31
+    },
+    {
+      "subsector_code": "6921",
+      "subsector_name": "اوراق مشاركت شهرداري ها",
+      "count": 30
+    },
+    {
+      "subsector_code": "3842",
+      "subsector_name": "توليد شكر",
+      "count": 29
+    },
+    {
+      "subsector_code": "6021",
+      "subsector_name": "ساير حمل و نقلهاي زميني برنامه ريزي شده",
+      "count": 27
+    },
+    {
+      "subsector_code": "7220",
+      "subsector_name": "مشاوره و تهيه نرم افزار",
+      "count": 27
+    },
+    {
+      "subsector_code": "6945",
+      "subsector_name": "اوراق مرابحه دولتي با ضمانت دولت",
+      "count": 26
+    },
+    {
+      "subsector_code": "1310",
+      "subsector_name": "استخراج آهن",
+      "count": 22
+    },
+    {
+      "subsector_code": "4424",
+      "subsector_name": "توليد شوينده ها، عطر و محصولات آرايشي",
+      "count": 21
+    },
+    {
+      "subsector_code": "4220",
+      "subsector_name": "توليد لبنيات",
+      "count": 21
+    },
+    {
+      "subsector_code": "6823",
+      "subsector_name": "صندوق كالايي مبتني بر نقره",
+      "count": 20
+    },
+    {
+      "subsector_code": "121",
+      "subsector_name": "كشاورزي، دامپروري و خدمات وابسته",
+      "count": 19
+    },
+    {
+      "subsector_code": "6940",
+      "subsector_name": "اسناد خزانه اسلامي",
+      "count": 19
+    },
+    {
+      "subsector_code": "4399",
+      "subsector_name": "توليد ساير محصولات دارويي",
+      "count": 18
+    },
+    {
+      "subsector_code": "4993",
+      "subsector_name": "توليد گل و سراميك ساختماني",
+      "count": 18
+    },
+    {
+      "subsector_code": "5410",
+      "subsector_name": "توليد شيشه",
+      "count": 17
+    },
+    {
+      "subsector_code": "6719",
+      "subsector_name": "بجز تامين وجوه بيمه و بازنشستگي",
+      "count": 16
+    },
+    {
+      "subsector_code": "4249",
+      "subsector_name": "توليد ساير محصولات غذايي",
+      "count": 16
+    },
+    {
+      "subsector_code": "5891",
+      "subsector_name": "ليزينگ  مالي",
+      "count": 16
+    },
+    {
+      "subsector_code": "2511",
+      "subsector_name": "توليد تاير و بازسازي تايرهاي لاستيكي",
+      "count": 14
+    },
+    {
+      "subsector_code": "2899",
+      "subsector_name": "توليد ساير محصولات فلزي ساخته شده",
+      "count": 14
+    },
+    {
+      "subsector_code": "4412",
+      "subsector_name": "توليد كود و تركيبات نيتروژن",
+      "count": 14
+    },
+    {
+      "subsector_code": "6010",
+      "subsector_name": "حمل و نقل از طريق خطوط راه آهن",
+      "count": 14
+    },
+    {
+      "subsector_code": "3130",
+      "subsector_name": "توليد سيم و كابل عايق",
+      "count": 13
+    },
+    {
+      "subsector_code": "4299",
+      "subsector_name": "زير گروه ساير محصولات غذايي",
+      "count": 12
+    },
+    {
+      "subsector_code": "None",
+      "subsector_name": "None",
+      "count": 12
+    },
+    {
+      "subsector_code": "140",
+      "subsector_name": "كشاورزي و خدمات دامپروري جز دامپزشكي",
+      "count": 12
+    },
+    {
+      "subsector_code": "4214",
+      "subsector_name": "توليد روغن هاي حيواني و نباتي",
+      "count": 10
+    },
+    {
+      "subsector_code": "3110",
+      "subsector_name": "توليد موتورها، مولدها و مبدلهاي الكتريكي",
+      "count": 10
+    },
+    {
+      "subsector_code": "6810",
+      "subsector_name": "صندوق سرمايه گذاري مختلط",
+      "count": 10
+    },
+    {
+      "subsector_code": "4213",
+      "subsector_name": "پرورش و نگهداري ميوه جات و سبزيجات",
+      "count": 9
+    },
+    {
+      "subsector_code": "4429",
+      "subsector_name": "توليد ساير محصولات شيميايي",
+      "count": 9
+    },
+    {
+      "subsector_code": "2520",
+      "subsector_name": "توليد محصولات پلاستيكي",
+      "count": 9
+    },
+    {
+      "subsector_code": "5510",
+      "subsector_name": "هتل ها ، اردو و ديگر تداركات اقامت كوتاه",
+      "count": 9
+    },
+    {
+      "subsector_code": "4241",
+      "subsector_name": "توليد نان و محصولات وابسته",
+      "count": 9
+    },
+    {
+      "subsector_code": "6818",
+      "subsector_name": "صندوق سرمايه گذاري املاك و مستغلات",
+      "count": 9
+    },
+    {
+      "subsector_code": "1010",
+      "subsector_name": "استخراج و انبار زغال سنگ سخت",
+      "count": 8
+    },
+    {
+      "subsector_code": "1711",
+      "subsector_name": "آماده سازي و ريسندگي نخ، پارچه بافي",
+      "count": 8
+    },
+    {
+      "subsector_code": "7021",
+      "subsector_name": "پيمانكاري املاك و مستغلات",
+      "count": 8
+    },
+    {
+      "subsector_code": "4243",
+      "subsector_name": "توليد كاكائو، شكلات و شيريني جات",
+      "count": 8
+    },
+    {
+      "subsector_code": "5492",
+      "subsector_name": "توليد محصولات سراميكي نسوز",
+      "count": 8
+    },
+    {
+      "subsector_code": "2930",
+      "subsector_name": "توليد وسايل خانگي",
+      "count": 7
+    },
+    {
+      "subsector_code": "2320",
+      "subsector_name": "توليد محصولات پالايش شده پتروشيمي",
+      "count": 7
+    },
+    {
+      "subsector_code": "7310",
+      "subsector_name": "خدمات ارزش افزوده",
+      "count": 7
+    },
+    {
+      "subsector_code": "6601",
+      "subsector_name": "بيمه زندگي",
+      "count": 7
+    },
+    {
+      "subsector_code": "141",
+      "subsector_name": "پرورش طيور",
+      "count": 7
+    },
+    {
+      "subsector_code": "7200",
+      "subsector_name": "ساير فعاليت هاي رايانه اي",
+      "count": 7
+    },
+    {
+      "subsector_code": "7099",
+      "subsector_name": "ساير فعاليت هاي املاك و مستغلات",
+      "count": 6
+    },
+    {
+      "subsector_code": "6003",
+      "subsector_name": "خدمات حمل و نقل دريايي",
+      "count": 6
+    },
+    {
+      "subsector_code": "6922",
+      "subsector_name": "اوراق گواهي اعتبار مولد",
+      "count": 6
+    },
+    {
+      "subsector_code": "7421",
+      "subsector_name": "فعاليتهاي ساختماني و مشاوره فني مرتبط",
+      "count": 6
+    },
+    {
+      "subsector_code": "5495",
+      "subsector_name": "توليد محصولات بتني، سيماني و گچ",
+      "count": 6
+    },
+    {
+      "subsector_code": "4422",
+      "subsector_name": "توليد رنگ، بتونه، جوهر",
+      "count": 5
+    },
+    {
+      "subsector_code": "6023",
+      "subsector_name": "حمل و نقل بار زميني",
+      "count": 5
+    },
+    {
+      "subsector_code": "5910",
+      "subsector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+      "count": 5
+    },
+    {
+      "subsector_code": "4232",
+      "subsector_name": "توليد نشاسته و محصولات وابسته",
+      "count": 5
+    },
+    {
+      "subsector_code": "6817",
+      "subsector_name": "صندوق س. صندوق در صندوق",
+      "count": 5
+    },
+    {
+      "subsector_code": "2308",
+      "subsector_name": "ساخت فرآورده هاي نفتي تصفيه شده",
+      "count": 4
+    },
+    {
+      "subsector_code": "4520",
+      "subsector_name": "ساختمان و مهندسي عمران",
+      "count": 4
+    },
+    {
+      "subsector_code": "4413",
+      "subsector_name": "توليد پلاستيك اوليه و لاستيك تركيبي",
+      "count": 4
+    },
+    {
+      "subsector_code": "6815",
+      "subsector_name": "صندوق سرمايه گذاري جسورانه",
+      "count": 4
+    },
+    {
+      "subsector_code": "2102",
+      "subsector_name": "توليد كاغذ و مقواي موجدار و محفظه آنها",
+      "count": 4
+    },
+    {
+      "subsector_code": "2921",
+      "subsector_name": "توليد ماشين آلات كشاورزي و باغباني",
+      "count": 4
+    },
+    {
+      "subsector_code": "4011",
+      "subsector_name": "توليد،انتقال و توزيع برق،گاز،بخاروآب گرم",
+      "count": 4
+    },
+    {
+      "subsector_code": "1410",
+      "subsector_name": "استخراج سنگ، ماسه و خاك رس",
+      "count": 4
+    },
+    {
+      "subsector_code": "6816",
+      "subsector_name": "صندوق سرمايه گذاري خصوصي",
+      "count": 4
+    },
+    {
+      "subsector_code": "2021",
+      "subsector_name": "توليد تخته چند لا و ساير تخته ها",
+      "count": 4
+    },
+    {
+      "subsector_code": "3499",
+      "subsector_name": "ساير قطعات يدكي و وسايل نقليه موتوري",
+      "count": 4
+    },
+    {
+      "subsector_code": "3230",
+      "subsector_name": "گيرنده راديو، تلويزيون و تجهيزات وابسته",
+      "count": 4
+    },
+    {
+      "subsector_code": "2630",
+      "subsector_name": "توليد تجهيزات الكترونيكي پيشرفته",
+      "count": 3
+    },
+    {
+      "subsector_code": "1120",
+      "subsector_name": "خدمات جنبي استخراج نفت گاز جز اکتشاف",
+      "count": 3
+    },
+    {
+      "subsector_code": "2109",
+      "subsector_name": "توليد ساير محصولات كاغذ و مقوا",
+      "count": 3
+    },
+    {
+      "subsector_code": "5491",
+      "subsector_name": "توليد سراميك غيرساختماني",
+      "count": 3
+    },
+    {
+      "subsector_code": "122",
+      "subsector_name": "پرورش حيوانات",
+      "count": 3
+    },
+    {
+      "subsector_code": "4711",
+      "subsector_name": "خرده فروشي انواع موادغذايي،نوشيدني وغيره",
+      "count": 3
+    },
+    {
+      "subsector_code": "2919",
+      "subsector_name": "توليد ساير ماشين آلات عمومي",
+      "count": 3
+    },
+    {
+      "subsector_code": "5520",
+      "subsector_name": "فعاليت خدماتي مربوط به غذا و آشاميدني ها",
+      "count": 2
+    }
+  ],
+  "cgrValCot_distribution": {
+    "3A": 261,
+    "1Z": 67,
+    "N4": 233,
+    "L1": 4,
+    "T1": 85,
+    "QS": 50,
+    "QD": 35,
+    "Z1": 164,
+    "F3": 144,
+    "20": 316,
+    "N2": 173,
+    "31": 856,
+    "G3": 124,
+    "17": 298,
+    "T2": 19,
+    "U3": 118,
+    "H2": 13,
+    "2A": 24,
+    "H1": 33,
+    "V1": 7,
+    "13": 187,
+    "51": 73,
+    "N1": 187,
+    "P1": 126,
+    "D1": 1,
+    "Q1": 10,
+    "1A": 62,
+    "None": 12,
+    "1O": 11,
+    "F1": 10,
+    "O1": 3,
+    "27": 11,
+    "K2": 7,
+    "52": 16,
+    "TJ": 8,
+    "71": 2,
+    "I1": 16,
+    "M1": 4,
+    "5A": 5,
+    "I2": 3,
+    "H4": 6,
+    "QB": 1,
+    "QT": 14,
+    "4A": 6,
+    "C1": 14,
+    "NS": 2,
+    "2Z": 3,
+    "1N": 1,
+    "47": 3,
+    "TS": 5,
+    "TL": 1,
+    "FA": 3,
+    "TA": 4,
+    "19": 2,
+    "P2": 3,
+    "HN": 4,
+    "16": 2,
+    "G1": 1,
+    "M2": 1,
+    "T6": 2,
+    "5O": 1,
+    "5N": 1,
+    "41": 1,
+    "W1": 3,
+    "61": 1,
+    "HB": 1,
+    "91": 1
+  },
+  "cgrValCotTitle_distribution": {
+    "-'": 1947,
+    "بازار اول فرابورس": 68,
+    "بازار اوراق بدهی": 233,
+    "بازار پایه قرمز فرابورس": 4,
+    "بازار ابزارهاي نوين مالي فرابورس": 220,
+    "صندوق های کالایی": 50,
+    "بازار دوم فرابورس": 171,
+    "بازار ابزارهای مشتقه": 503,
+    "بازار دوم (تابلوی اصلی) بورس": 106,
+    "بازار صندوق های قابل معامله": 116,
+    "بازار نوآفرین - رشد": 7,
+    "بازار اول (تابلوی فرعی) بورس": 96,
+    "بازار پایه زرد فرابورس": 129,
+    "بازار دوم (تابلوی فرعی) بورس": 68,
+    "بورس کالا": 10,
+    "بازار اول (تابلوی اصلی) بورس": 92,
+    "None": 12,
+    "بازار عادی آتی": 10,
+    "بازار خرده فروشی بورس": 3,
+    "بازار پایه نارنجی فرابورس": 14,
+    "بازار سرمایه گذاری حرفه ای": 2,
+    "بازار ابزارهاي نوين مالي": 1,
+    "بازار نوآفرین - دانش بنیان": 3
+  },
+  "sourceID_distribution": {
+    "0": 3853,
+    "None": 12
+  },
+  "flow_distribution": {
+    "0": 3853,
+    "None": 12
+  },
+  "examples_by_sector_first_three": [
+    {
+      "sector_code": "68 ",
+      "sector_name": "صندوق سرمايه گذاري قابل معامله",
+      "count": 1015,
+      "examples": [
+        {
+          "instrument_id": "10018514830520205",
+          "symbol": "ضهرم8031",
+          "name": "اختيارخ اهرم-62000-1405/08/27",
+          "subsector_code": 6821,
+          "subsector_name": "صندوق هاي سرمايه گذاري اهرمي",
+          "cIsin": "IRO9AHRM0F70",
+          "cgrValCot": "3A",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10063040211859748",
+          "symbol": "آس",
+          "name": "صندوق س. گنجينه ارمغان الماس-س",
+          "subsector_code": 6811,
+          "subsector_name": "صندوق سرمايه گذاري در سهام",
+          "cIsin": "IRT3ASAF0008",
+          "cgrValCot": "T1",
+          "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10064923955008825",
+          "symbol": "ضراز9009",
+          "name": "اختيارخ هم تراز-42000-05/09/04",
+          "subsector_code": 6811,
+          "subsector_name": "صندوق سرمايه گذاري در سهام",
+          "cIsin": "IRO9TRZZ2345",
+          "cgrValCot": "3A",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "69 ",
+      "sector_name": "اوراق تامين مالي",
+      "count": 383,
+      "examples": [
+        {
+          "instrument_id": "10240063580556346",
+          "symbol": "پيشرو051",
+          "name": "مرابحه اورند پيشرو-لوتوس051118",
+          "subsector_code": 6911,
+          "subsector_name": "صكوك مرابحه",
+          "cIsin": "IRB3AV0105B8",
+          "cgrValCot": "17",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10606253028249544",
+          "symbol": "شتهران09",
+          "name": "مرابحه تهران شيمي14090625",
+          "subsector_code": 6911,
+          "subsector_name": "صكوك مرابحه",
+          "cIsin": "IRB3THS00962",
+          "cgrValCot": "17",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10623013976366443",
+          "symbol": "پتروپاك05",
+          "name": "مرابحه پتروپاك مشرق14051005",
+          "subsector_code": 6911,
+          "subsector_name": "صكوك مرابحه",
+          "cIsin": "IRB3PR0105A6",
+          "cgrValCot": "17",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "34 ",
+      "sector_name": "خودرو و ساخت قطعات",
+      "count": 316,
+      "examples": [
+        {
+          "instrument_id": "10037611053902482",
+          "symbol": "صاميا606",
+          "name": "صكوك مرابحه خزاميا606-3ماهه23%",
+          "subsector_code": 3410,
+          "subsector_name": "توليد وسايل نقليه موتوري",
+          "cIsin": "IRB6AF360666",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10179978108591088",
+          "symbol": "صاهن67",
+          "name": "صكوك مرابحه خاهن67-3ماهه23%",
+          "subsector_code": 3430,
+          "subsector_name": "قطعات يدكي و جانبي وسايل نقليه موتوري",
+          "cIsin": "IRB6AE860682",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10411249540376641",
+          "symbol": "ناما",
+          "name": "توليدي مخازن گازطبيعي آسياناما",
+          "subsector_code": 3430,
+          "subsector_name": "قطعات يدكي و جانبي وسايل نقليه موتوري",
+          "cIsin": "IRO3NAMZ0006",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "27 ",
+      "sector_name": "فلزات اساسي",
+      "count": 291,
+      "examples": [
+        {
+          "instrument_id": "10316175498056378",
+          "symbol": "فولاي3",
+          "name": "صنايع فولاد آلياژي يزد",
+          "subsector_code": 2710,
+          "subsector_name": "توليد آهن و فولاد پايه",
+          "cIsin": "IRO3FAYZ0002",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10414047745064283",
+          "symbol": "ضذوب9044",
+          "name": "اختيارخ ذوب-1100-1405/09/18",
+          "subsector_code": 2710,
+          "subsector_name": "توليد آهن و فولاد پايه",
+          "cIsin": "IRO9ZOBI8007",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10808810597348148",
+          "symbol": "طذوب9041",
+          "name": "اختيارف ذوب-800-1405/09/18",
+          "subsector_code": 2710,
+          "subsector_name": "توليد آهن و فولاد پايه",
+          "cIsin": "IROFZOBI9979",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "57 ",
+      "sector_name": "بانكها و موسسات اعتباري",
+      "count": 210,
+      "examples": [
+        {
+          "instrument_id": "10439638497597852",
+          "symbol": "ضملت8079",
+          "name": "اختيارخ وبملت-1900-1405/08/20",
+          "subsector_code": 5719,
+          "subsector_name": "ساير  واسطه هاي پولي",
+          "cIsin": "IRO9BMLT0O83",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "1055410833288743",
+          "symbol": "طجار8024",
+          "name": "اختيارف وتجارت-491-1405/08/20",
+          "subsector_code": 5719,
+          "subsector_name": "ساير  واسطه هاي پولي",
+          "cIsin": "IROFBTEJ1B55",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10672095572422124",
+          "symbol": "طجار1082",
+          "name": "اختيارف وتجارت-700-1405/10/23",
+          "subsector_code": 5719,
+          "subsector_name": "ساير  واسطه هاي پولي",
+          "cIsin": "IROFBTEJ1D20",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "13 ",
+      "sector_name": "استخراج کانه هاي فلزي",
+      "count": 198,
+      "examples": [
+        {
+          "instrument_id": "10509303333969044",
+          "symbol": "ضفزر734",
+          "name": "اختيارخ فزر-400000-14050726",
+          "subsector_code": 1320,
+          "subsector_name": "استخراج كانه فلزي غيرآهن",
+          "cIsin": "IROAPZAZ6045",
+          "cgrValCot": "13",
+          "cgrValCotTitle": "بازار ابزارهای مشتقه",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10582752170888629",
+          "symbol": "ضتاص8007",
+          "name": "اختيارخ تاصيكو-38000-05/08/06",
+          "subsector_code": 1399,
+          "subsector_name": "استخراج ساير كانه هاي فلزي",
+          "cIsin": "IRO9SADR2697",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11006645377009861",
+          "symbol": "طفزر818",
+          "name": "اختيارف فزر-340000-14050824",
+          "subsector_code": 1320,
+          "subsector_name": "استخراج كانه فلزي غيرآهن",
+          "cIsin": "IROBPZAZ5327",
+          "cgrValCot": "13",
+          "cgrValCotTitle": "بازار ابزارهای مشتقه",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "44 ",
+      "sector_name": "محصولات شيميايي",
+      "count": 184,
+      "examples": [
+        {
+          "instrument_id": "1045014002501174",
+          "symbol": "پاكشو3",
+          "name": "گروه صنعتي پاكشو",
+          "subsector_code": 4424,
+          "subsector_name": "توليد شوينده ها، عطر و محصولات آرايشي",
+          "cIsin": "IRO1PASH0002",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "1050751214677134",
+          "symbol": "شگامرن",
+          "name": "مجتمع پترو صنعت گامرون",
+          "subsector_code": 4411,
+          "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+          "cIsin": "IRO5PSGS0009",
+          "cgrValCot": "V1",
+          "cgrValCotTitle": "بازار نوآفرین - رشد",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10738897598547398",
+          "symbol": "شفارس3",
+          "name": "صنايع‌ شيميايي‌ فارس‌",
+          "subsector_code": 4411,
+          "subsector_name": "توليد مواد شيميايي پايه به جز كود",
+          "cIsin": "IRO1SHFS0004",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "43 ",
+      "sector_name": "مواد و محصولات دارويي",
+      "count": 114,
+      "examples": [
+        {
+          "instrument_id": "10631843793341493",
+          "symbol": "هجرت3",
+          "name": "پخش هجرت",
+          "subsector_code": 4399,
+          "subsector_name": "توليد ساير محصولات دارويي",
+          "cIsin": "IRO3HEDZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11432067920374603",
+          "symbol": "دسينا",
+          "name": "داروسازي‌ سينا",
+          "subsector_code": 4323,
+          "subsector_name": "توليد داروهاي شيميايي و گياهي",
+          "cIsin": "IRO1DSIN0000",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11989406092150811",
+          "symbol": "صعبيد69",
+          "name": "صكوك مرابحه دعبيد69-3ماهه23%",
+          "subsector_code": 4323,
+          "subsector_name": "توليد داروهاي شيميايي و گياهي",
+          "cIsin": "IRB6AE910693",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "39 ",
+      "sector_name": "شرکتهاي چند رشته اي صنعتي",
+      "count": 109,
+      "examples": [
+        {
+          "instrument_id": "10257716709611052",
+          "symbol": "ضستا7052",
+          "name": "اختيارخ شستا-1600-1405/07/15",
+          "subsector_code": 3999,
+          "subsector_name": "شركتهاي صنعتي چند رشته اي",
+          "cIsin": "IRO9TAMN0L43",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "114312662654155",
+          "symbol": "وسپهر",
+          "name": "گروه سرمايه گذاري سپهر صادرات",
+          "subsector_code": 3999,
+          "subsector_name": "شركتهاي صنعتي چند رشته اي",
+          "cIsin": "IRO3SAIZ0007",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12618515817061168",
+          "symbol": "ضستا8052",
+          "name": "اختيارخ شستا-1900-1405/08/13",
+          "subsector_code": 3999,
+          "subsector_name": "شركتهاي صنعتي چند رشته اي",
+          "cIsin": "IRO9TAMN0M83",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "66 ",
+      "sector_name": "بيمه وصندوق بازنشستگي به جزتامين اجتماعي",
+      "count": 102,
+      "examples": [
+        {
+          "instrument_id": "12494182995174351",
+          "symbol": "طبساما923",
+          "name": "اختيارف بساما-9000-14050929",
+          "subsector_code": 6611,
+          "subsector_name": "فعاليتهاي مالي و اجرائي",
+          "cIsin": "IROBBSMZ7506",
+          "cgrValCot": "13",
+          "cgrValCotTitle": "بازار ابزارهای مشتقه",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12663052422441053",
+          "symbol": "ضبساما722",
+          "name": "اختيارخ بساما-7000-14050726",
+          "subsector_code": 6611,
+          "subsector_name": "فعاليتهاي مالي و اجرائي",
+          "cIsin": "IROABSMZ6384",
+          "cgrValCot": "13",
+          "cgrValCotTitle": "بازار ابزارهای مشتقه",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12777578088653944",
+          "symbol": "وحكمت",
+          "name": "بيمه حكمت صبا",
+          "subsector_code": 6611,
+          "subsector_name": "فعاليتهاي مالي و اجرائي",
+          "cIsin": "IRO7HSIP0008",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "56 ",
+      "sector_name": "سرمايه گذاريها",
+      "count": 95,
+      "examples": [
+        {
+          "instrument_id": "10055255678920880",
+          "symbol": "وملت",
+          "name": "سرمايه گذاري ملت",
+          "subsector_code": 5699,
+          "subsector_name": "ساير واسطه هاي  مالي",
+          "cIsin": "IRO7MIVP0006",
+          "cgrValCot": "L1",
+          "cgrValCotTitle": "بازار پایه قرمز فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10123683610804062",
+          "symbol": "وسكاب3",
+          "name": "س.ص.بازنشستگي كاركنان بانكها",
+          "subsector_code": 5699,
+          "subsector_name": "ساير واسطه هاي  مالي",
+          "cIsin": "IRO1SKBV0008",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10180355064310195",
+          "symbol": "ومهان3",
+          "name": "گروه توسعه مالي مهرآيندگان",
+          "subsector_code": 5699,
+          "subsector_name": "ساير واسطه هاي  مالي",
+          "cIsin": "IRO1MEAZ0009",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "42 ",
+      "sector_name": "محصولات غذايي و آشاميدني به جز قند و شكر",
+      "count": 93,
+      "examples": [
+        {
+          "instrument_id": "10539309828675064",
+          "symbol": "غالبر3",
+          "name": "لبنيات‌ كالبر",
+          "subsector_code": 4220,
+          "subsector_name": "توليد لبنيات",
+          "cIsin": "IRO1KLBR0001",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10869855467299545",
+          "symbol": "كوچين",
+          "name": "توليدي كوچين",
+          "subsector_code": 4249,
+          "subsector_name": "توليد ساير محصولات غذايي",
+          "cIsin": "IRO3KCHZ0004",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11208496839533934",
+          "symbol": "غشهداب3",
+          "name": "كشت و صنعت شهداب ناب خراسان",
+          "subsector_code": 4249,
+          "subsector_name": "توليد ساير محصولات غذايي",
+          "cIsin": "IRO3SHHZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "53 ",
+      "sector_name": "سيمان، آهك و گچ",
+      "count": 78,
+      "examples": [
+        {
+          "instrument_id": "10171945867136336",
+          "symbol": "سيتا",
+          "name": "سرمايه گذاري سيمان تامين",
+          "subsector_code": 5394,
+          "subsector_name": "توليد سيمان، آهك و گچ",
+          "cIsin": "IRO1SITA0007",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10568944722570445",
+          "symbol": "سصفها",
+          "name": "سيمان‌اصفهان‌",
+          "subsector_code": 5394,
+          "subsector_name": "توليد سيمان، آهك و گچ",
+          "cIsin": "IRO1SEFH0000",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11964419322927535",
+          "symbol": "سرود",
+          "name": "سيمان‌شاهرود",
+          "subsector_code": 5394,
+          "subsector_name": "توليد سيمان، آهك و گچ",
+          "cIsin": "IRO1SROD0008",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "64 ",
+      "sector_name": "مخابرات",
+      "count": 78,
+      "examples": [
+        {
+          "instrument_id": "10174386380040655",
+          "symbol": "ضمخا9022",
+          "name": "اختيارخ اخابر-1100-1405/09/18",
+          "subsector_code": 6420,
+          "subsector_name": "مخابرات",
+          "cIsin": "IRO9MKBT8664",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "10473964939392510",
+          "symbol": "طمخا9013",
+          "name": "اختيارف اخابر-500-1405/09/18",
+          "subsector_code": 6420,
+          "subsector_name": "مخابرات",
+          "cIsin": "IROFMKBT9579",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11478047418774367",
+          "symbol": "ضمخا7090",
+          "name": "اختيارخ اخابر-293-1405/07/22",
+          "subsector_code": 6420,
+          "subsector_name": "مخابرات",
+          "cIsin": "IRO9MKBT8417",
+          "cgrValCot": "31",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "67 ",
+      "sector_name": "فعاليتهاي كمكي به نهادهاي مالي واسط",
+      "count": 67,
+      "examples": [
+        {
+          "instrument_id": "10505863048176451",
+          "symbol": "امين3",
+          "name": "تامين سرمايه امين",
+          "subsector_code": 6719,
+          "subsector_name": "بجز تامين وجوه بيمه و بازنشستگي",
+          "cIsin": "IRO1TSAN0000",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "11129387075131725",
+          "symbol": "تملت",
+          "name": "تامين سرمايه بانك ملت",
+          "subsector_code": 6719,
+          "subsector_name": "بجز تامين وجوه بيمه و بازنشستگي",
+          "cIsin": "IRO1TMLT0007",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "14375189052769593",
+          "symbol": "طفرابورس929",
+          "name": "اختيارف فرابورس-5500-14050929",
+          "subsector_code": 6711,
+          "subsector_name": "اداره ي بازارهاي مالي",
+          "cIsin": "IROBFRBZ3869",
+          "cgrValCot": "13",
+          "cgrValCotTitle": "بازار ابزارهای مشتقه",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "60 ",
+      "sector_name": "حمل ونقل، انبارداري و ارتباطات",
+      "count": 52,
+      "examples": [
+        {
+          "instrument_id": "12193090353785388",
+          "symbol": "مصفها620",
+          "name": "مشاركت ش اصفهان620-3ماهه20.5%",
+          "subsector_code": 6021,
+          "subsector_name": "ساير حمل و نقلهاي زميني برنامه ريزي شده",
+          "cIsin": "IRB5AF780625",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12197999822235911",
+          "symbol": "مكرج72",
+          "name": "مشاركت ش كرج72-3ماهه23%",
+          "subsector_code": 6021,
+          "subsector_name": "ساير حمل و نقلهاي زميني برنامه ريزي شده",
+          "cIsin": "IRB5AG6207C0",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12872538958154911",
+          "symbol": "مشير0602",
+          "name": "مشاركت ش شيراز0602-3ماهه20.5%",
+          "subsector_code": 6021,
+          "subsector_name": "ساير حمل و نقلهاي زميني برنامه ريزي شده",
+          "cIsin": "IRB5AF5806C2",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "70 ",
+      "sector_name": "انبوه سازي، املاك و مستغلات",
+      "count": 48,
+      "examples": [
+        {
+          "instrument_id": "12965822877128721",
+          "symbol": "ثقزوي",
+          "name": "شركت عمران و سازندگي قزوين",
+          "subsector_code": 7010,
+          "subsector_name": "املاك و مستغلات با ملك خود يا ليزينگ شده",
+          "cIsin": "IRO7QAZP0006",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "1358190916156744",
+          "symbol": "وآذر",
+          "name": "سرمايه‌گذاري‌توسعه‌آذربايجان‌",
+          "subsector_code": 7099,
+          "subsector_name": "ساير فعاليت هاي املاك و مستغلات",
+          "cIsin": "IRO1TAZB0005",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "14744445176220774",
+          "symbol": "ثبهساز",
+          "name": "بهساز كاشانه تهران",
+          "subsector_code": 7010,
+          "subsector_name": "املاك و مستغلات با ملك خود يا ليزينگ شده",
+          "cIsin": "IRO1BEKA0009",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "01 ",
+      "sector_name": "زراعت و خدمات وابسته",
+      "count": 42,
+      "examples": [
+        {
+          "instrument_id": "10024128313803797",
+          "symbol": "زگلدشت",
+          "name": "كشت و دام گلدشت نمونه اصفهان",
+          "subsector_code": 121,
+          "subsector_name": "كشاورزي، دامپروري و خدمات وابسته",
+          "cIsin": "IRO3GDSZ0006",
+          "cgrValCot": "1Z",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12080092165422516",
+          "symbol": "زملارد3",
+          "name": "كشاورزي و دامپروري ملارد شير",
+          "subsector_code": 140,
+          "subsector_name": "كشاورزي و خدمات دامپروري جز دامپزشكي",
+          "cIsin": "IRO3MAHZ0004",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12710905407253526",
+          "symbol": "زهلال3",
+          "name": "كشت و صنعت هلال",
+          "subsector_code": 121,
+          "subsector_name": "كشاورزي، دامپروري و خدمات وابسته",
+          "cIsin": "IRO3HELZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "54 ",
+      "sector_name": "ساير محصولات كاني غيرفلزي",
+      "count": 36,
+      "examples": [
+        {
+          "instrument_id": "10654052153538617",
+          "symbol": "كابگن",
+          "name": "توليدي و صنعتي آبگينه‌",
+          "subsector_code": 5410,
+          "subsector_name": "توليد شيشه",
+          "cIsin": "IRO7ABGP0006",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "15627210291777097",
+          "symbol": "صرازي712",
+          "name": "صكوك مرابحه كرازي712-بدون ضامن",
+          "subsector_code": 5410,
+          "subsector_name": "توليد شيشه",
+          "cIsin": "IRB6AG6407C4",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "16405556680571453",
+          "symbol": "كخاك",
+          "name": "صنايع‌خاك‌چيني‌ايران‌",
+          "subsector_code": 5499,
+          "subsector_name": "توليد ساير محصولات معدني غيرفلزي",
+          "cIsin": "IRO1KCHI0007",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "40 ",
+      "sector_name": "عرضه برق، گاز، بخاروآب گرم",
+      "count": 36,
+      "examples": [
+        {
+          "instrument_id": "13354246340288764",
+          "symbol": "شمس3",
+          "name": "توليد انرژي برق شمس پاسارگاد",
+          "subsector_code": 4010,
+          "subsector_name": "توليد انتقال و توزيع نيروي برق",
+          "cIsin": "IRO3SMSZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "19074684560939209",
+          "symbol": "ومپنا",
+          "name": "مديريت نيروگاهي ايرانيان مپنا",
+          "subsector_code": 4010,
+          "subsector_name": "توليد انتقال و توزيع نيروي برق",
+          "cIsin": "IRO3MPGZ0008",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "19239905145688600",
+          "symbol": "منجيل",
+          "name": "توليد نيروي برق سبز منجيل",
+          "subsector_code": 4010,
+          "subsector_name": "توليد انتقال و توزيع نيروي برق",
+          "cIsin": "IRO3MNJZ0007",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "72 ",
+      "sector_name": "رايانه و فعاليت‌هاي وابسته به آن",
+      "count": 34,
+      "examples": [
+        {
+          "instrument_id": "15509460247731081",
+          "symbol": "آپ3",
+          "name": "آسان پرداخت پرشين",
+          "subsector_code": 7220,
+          "subsector_name": "مشاوره و تهيه نرم افزار",
+          "cIsin": "IRO1APPE0008",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "20950109158927622",
+          "symbol": "سيستم3",
+          "name": "همكاران سيستم",
+          "subsector_code": 7220,
+          "subsector_name": "مشاوره و تهيه نرم افزار",
+          "cIsin": "IRO1SYSM0004",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "26316376625263940",
+          "symbol": "پي پاد",
+          "name": "پرداخت الكترونيك پاسارگاد",
+          "subsector_code": 7220,
+          "subsector_name": "مشاوره و تهيه نرم افزار",
+          "cIsin": "IRO1PYPD0001",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "38 ",
+      "sector_name": "قند و شكر",
+      "count": 29,
+      "examples": [
+        {
+          "instrument_id": "10831074117626896",
+          "symbol": "قاروم",
+          "name": "قند اروميه",
+          "subsector_code": 3842,
+          "subsector_name": "توليد شكر",
+          "cIsin": "IRO7GHUP0006",
+          "cgrValCot": "L1",
+          "cgrValCotTitle": "بازار پایه قرمز فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "13140135188919199",
+          "symbol": "قتربت",
+          "name": "قند تربت حيدريه",
+          "subsector_code": 3842,
+          "subsector_name": "توليد شكر",
+          "cIsin": "IRO3TSUP0002",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "13286237024590493",
+          "symbol": "قهكمت2",
+          "name": "قندهكمتان‌",
+          "subsector_code": 3842,
+          "subsector_name": "توليد شكر",
+          "cIsin": "IRO1GHEG0003",
+          "cgrValCot": "O1",
+          "cgrValCotTitle": "بازار خرده فروشی بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "31 ",
+      "sector_name": "ماشين آلات و دستگاه‌هاي برقي",
+      "count": 29,
+      "examples": [
+        {
+          "instrument_id": "13996848873783749",
+          "symbol": "نيروترانسفو2",
+          "name": "کارخانجات توليدي نيروترانسفو",
+          "subsector_code": 3110,
+          "subsector_name": "توليد موتورها، مولدها و مبدلهاي الكتريكي",
+          "cIsin": "IRO3TNZF0004",
+          "cgrValCot": "K2",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "14999231580756915",
+          "symbol": "بانيان3",
+          "name": "نيان باتري خاوران",
+          "subsector_code": 3140,
+          "subsector_name": "توليد انباره، پيل و باتري ساده",
+          "cIsin": "IRO3NIAN0006",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "16640192091172167",
+          "symbol": "بالبر3",
+          "name": "كابل‌ البرز",
+          "subsector_code": 3130,
+          "subsector_name": "توليد سيم و كابل عايق",
+          "cIsin": "IRO1KALZ0002",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "25 ",
+      "sector_name": "لاستيك و پلاستيك",
+      "count": 25,
+      "examples": [
+        {
+          "instrument_id": "10384618024725647",
+          "symbol": "صكوير701",
+          "name": "صكوك مرابحه پكوير701-بدون ضامن",
+          "subsector_code": 2511,
+          "subsector_name": "توليد تاير و بازسازي تايرهاي لاستيكي",
+          "cIsin": "IRB6AF100716",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "17052062473688851",
+          "symbol": "صتاير703",
+          "name": "صكوك مرابحه پتاير703-بدون ضامن",
+          "subsector_code": 2511,
+          "subsector_name": "توليد تاير و بازسازي تايرهاي لاستيكي",
+          "cIsin": "IRB6AF160736",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "20268769408830020",
+          "symbol": "صتاير073",
+          "name": "صكوك مرابحه پتاير073-بدون ضامن",
+          "subsector_code": 2511,
+          "subsector_name": "توليد تاير و بازسازي تايرهاي لاستيكي",
+          "cIsin": "IRB6AF170735",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "29 ",
+      "sector_name": "ماشين آلات و تجهيزات",
+      "count": 22,
+      "examples": [
+        {
+          "instrument_id": "10236455588057352",
+          "symbol": "انتخاب",
+          "name": "گروه انتخاب الكترونيك آرمان",
+          "subsector_code": 2930,
+          "subsector_name": "توليد وسايل خانگي",
+          "cIsin": "IRO3EELZ0004",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "19298748452450329",
+          "symbol": "تايرا",
+          "name": "تراكتورسازي‌ايران‌",
+          "subsector_code": 2921,
+          "subsector_name": "توليد ماشين آلات كشاورزي و باغباني",
+          "cIsin": "IRO1TRIR0009",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "22427604495160869",
+          "symbol": "تمحركه",
+          "name": "ماشين سازي نيرو محركه",
+          "subsector_code": 2915,
+          "subsector_name": "توليد تجهيزات بالابر و جابجايي",
+          "cIsin": "IRO7NMTP0003",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "28 ",
+      "sector_name": "ساخت محصولات فلزي",
+      "count": 19,
+      "examples": [
+        {
+          "instrument_id": "11426217028122315",
+          "symbol": "فجام3",
+          "name": "جام‌دارو",
+          "subsector_code": 2899,
+          "subsector_name": "توليد ساير محصولات فلزي ساخته شده",
+          "cIsin": "IRO1JAMD0000",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12329519546621752",
+          "symbol": "چدن",
+          "name": "توليدي چدن سازان",
+          "subsector_code": 2899,
+          "subsector_name": "توليد ساير محصولات فلزي ساخته شده",
+          "cIsin": "IRO1CHDN0009",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "20865316761157979",
+          "symbol": "فاراك",
+          "name": "ماشين‌ سازي‌ اراك‌",
+          "subsector_code": 2813,
+          "subsector_name": "توليد مواد بخار به جز ديگهاي بخار مركزي",
+          "cIsin": "IRO1MARK0001",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "49 ",
+      "sector_name": "كاشي و سراميك",
+      "count": 18,
+      "examples": [
+        {
+          "instrument_id": "10932019906651071",
+          "symbol": "كساوه3",
+          "name": "صنايع‌ كاشي‌ و سراميك‌ سينا",
+          "subsector_code": 4993,
+          "subsector_name": "توليد گل و سراميك ساختماني",
+          "cIsin": "IRO1SINA0003",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "19301952996567239",
+          "symbol": "صحافظ512",
+          "name": "صكوك اجاره كحافظ512-3ماهه18%",
+          "subsector_code": 4993,
+          "subsector_name": "توليد گل و سراميك ساختماني",
+          "cIsin": "IRB6AE4205C9",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "23078998521357223",
+          "symbol": "صترام603",
+          "name": "صكوك مرابحه كترام603-بدون ضامن",
+          "subsector_code": 4993,
+          "subsector_name": "توليد گل و سراميك ساختماني",
+          "cIsin": "IRB6AF250636",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "58 ",
+      "sector_name": "ساير واسطه گريهاي مالي",
+      "count": 16,
+      "examples": [
+        {
+          "instrument_id": "23086515493897579",
+          "symbol": "ولغدر",
+          "name": "ليزينگ‌خودروغدير",
+          "subsector_code": 5891,
+          "subsector_name": "ليزينگ  مالي",
+          "cIsin": "IRO1LKGH0008",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "27832551228672645",
+          "symbol": "ولاعتماد",
+          "name": "واسپاري عصراعتماد",
+          "subsector_code": 5891,
+          "subsector_name": "ليزينگ  مالي",
+          "cIsin": "IRO7VAEP0004",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "31078457170311964",
+          "symbol": "ولشرق",
+          "name": "ليزينگ ايران و شرق",
+          "subsector_code": 5891,
+          "subsector_name": "ليزينگ  مالي",
+          "cIsin": "IRO3ISLZ0004",
+          "cgrValCot": "1Z",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "23 ",
+      "sector_name": "فراورده هاي نفتي، كك و سوخت هسته اي",
+      "count": 13,
+      "examples": [
+        {
+          "instrument_id": "10101256770523450",
+          "symbol": "عقير1",
+          "name": "سلف پارس بهين پالايش قشم",
+          "subsector_code": 2308,
+          "subsector_name": "ساخت فرآورده هاي نفتي تصفيه شده",
+          "cIsin": "IRBKGIR10612",
+          "cgrValCot": "QD",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "14073782708315535",
+          "symbol": "شنفت",
+          "name": "نفت‌ پارس‌",
+          "subsector_code": 2320,
+          "subsector_name": "توليد محصولات پالايش شده پتروشيمي",
+          "cIsin": "IRO1NPRS0005",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "16950641342741532",
+          "symbol": "شبهرن3",
+          "name": "نفت‌ بهران‌",
+          "subsector_code": 2320,
+          "subsector_name": "توليد محصولات پالايش شده پتروشيمي",
+          "cIsin": "IRO1NBEH0009",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "None",
+      "sector_name": "None",
+      "count": 12,
+      "examples": []
+    },
+    {
+      "sector_code": "55 ",
+      "sector_name": "هتل و رستوران",
+      "count": 11,
+      "examples": [
+        {
+          "instrument_id": "10114441830266109",
+          "symbol": "گدنا",
+          "name": "تهيه توزيع غذاي دنا آفرين فدك",
+          "subsector_code": 5520,
+          "subsector_name": "فعاليت خدماتي مربوط به غذا و آشاميدني ها",
+          "cIsin": "IRO3DCAZ0000",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "27015508648223981",
+          "symbol": "سمگا3",
+          "name": "گروه سرمايه گذاري ميراث فرهنگي",
+          "subsector_code": 5510,
+          "subsector_name": "هتل ها ، اردو و ديگر تداركات اقامت كوتاه",
+          "cIsin": "IRO3IMFZ0008",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "27282390011544320",
+          "symbol": "گكوثر2",
+          "name": "هتل پارسيان كوثر اصفهان",
+          "subsector_code": 5510,
+          "subsector_name": "هتل ها ، اردو و ديگر تداركات اقامت كوتاه",
+          "cIsin": "IRO3PKHZ0009",
+          "cgrValCot": "2Z",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "17 ",
+      "sector_name": "منسوجات",
+      "count": 10,
+      "examples": [
+        {
+          "instrument_id": "12205015317193209",
+          "symbol": "نطرين3",
+          "name": "عطرين نخ قم",
+          "subsector_code": 1711,
+          "subsector_name": "آماده سازي و ريسندگي نخ، پارچه بافي",
+          "cIsin": "IRO3ANQZ0002",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "22950683624908253",
+          "symbol": "نتوس",
+          "name": "پشم‌ بافي‌ توس",
+          "subsector_code": 1711,
+          "subsector_name": "آماده سازي و ريسندگي نخ، پارچه بافي",
+          "cIsin": "IRO7PTOP0009",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "30231789123900526",
+          "symbol": "نمرينو",
+          "name": "ايران‌ مرينوس‌",
+          "subsector_code": 1711,
+          "subsector_name": "آماده سازي و ريسندگي نخ، پارچه بافي",
+          "cIsin": "IRO1MRIN0000",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی فرعی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "21 ",
+      "sector_name": "محصولات كاغذي",
+      "count": 9,
+      "examples": [
+        {
+          "instrument_id": "16422980660132735",
+          "symbol": "لطيف",
+          "name": "محصولات كاغذي لطيف",
+          "subsector_code": 2109,
+          "subsector_name": "توليد ساير محصولات كاغذ و مقوا",
+          "cIsin": "IRO3LPCZ0003",
+          "cgrValCot": "1Z",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "18320128145045368",
+          "symbol": "چاپ",
+          "name": "ص.چاپ وبسته بندي آسان قزوين",
+          "subsector_code": 2102,
+          "subsector_name": "توليد كاغذ و مقواي موجدار و محفظه آنها",
+          "cIsin": "IRO1CHAP0000",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "24254843881948059",
+          "symbol": "چكاوه",
+          "name": "صنايع‌كاغذسازي‌كاوه‌",
+          "subsector_code": 2101,
+          "subsector_name": "توليد خمير كاغذ، كاغذ و مقوا",
+          "cIsin": "IRO1KSKA0002",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی فرعی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "74 ",
+      "sector_name": "خدمات فني و مهندسي",
+      "count": 9,
+      "examples": [
+        {
+          "instrument_id": "22308305646551497",
+          "symbol": "تپولا",
+          "name": "مهندسي مرآت پولاد",
+          "subsector_code": 7490,
+          "subsector_name": "ساير فعاليتهاي حرفه اي علمي و فني",
+          "cIsin": "IRO7TPOP0009",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "23049019886587905",
+          "symbol": "خفولا",
+          "name": "خدمات فني فولاد يزد",
+          "subsector_code": 7490,
+          "subsector_name": "ساير فعاليتهاي حرفه اي علمي و فني",
+          "cIsin": "IRO7KHEP0000",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "29787087824703115",
+          "symbol": "رنيك3",
+          "name": "جنرال مكانيك",
+          "subsector_code": 7421,
+          "subsector_name": "فعاليتهاي ساختماني و مشاوره فني مرتبط",
+          "cIsin": "IRO3GEMZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "10 ",
+      "sector_name": "استخراج زغال سنگ",
+      "count": 8,
+      "examples": [
+        {
+          "instrument_id": "11326461864120062",
+          "symbol": "كربن",
+          "name": "كاني كربن طبس",
+          "subsector_code": 1010,
+          "subsector_name": "استخراج و انبار زغال سنگ سخت",
+          "cIsin": "IRO3KKTZ0000",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "20489612476812500",
+          "symbol": "كربن3",
+          "name": "كاني كربن طبس",
+          "subsector_code": 1010,
+          "subsector_name": "استخراج و انبار زغال سنگ سخت",
+          "cIsin": "IRO3KKTZ0000",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "22941065011246116",
+          "symbol": "كپرور",
+          "name": "فرآوري زغال سنگ پروده طبس",
+          "subsector_code": 1010,
+          "subsector_name": "استخراج و انبار زغال سنگ سخت",
+          "cIsin": "IRO3TBSZ0003",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "73 ",
+      "sector_name": "اطلاعات و ارتباطات",
+      "count": 7,
+      "examples": [
+        {
+          "instrument_id": "14079693677610396",
+          "symbol": "اسياتك",
+          "name": "انتقال داده هاي آسياتك",
+          "subsector_code": 7310,
+          "subsector_name": "خدمات ارزش افزوده",
+          "cIsin": "IRO1ASTC0003",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی اصلی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "30256187931361746",
+          "symbol": "هاي وب3",
+          "name": "داده گسترعصرنوين-هاي وب",
+          "subsector_code": 7310,
+          "subsector_name": "خدمات ارزش افزوده",
+          "cIsin": "IRO1HWEB0008",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "43362635835198978",
+          "symbol": "هاي وب",
+          "name": "داده گسترعصرنوين-هاي وب",
+          "subsector_code": 7310,
+          "subsector_name": "خدمات ارزش افزوده",
+          "cIsin": "IRO1HWEB0008",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "45 ",
+      "sector_name": "پيمانكاري صنعتي",
+      "count": 5,
+      "examples": [
+        {
+          "instrument_id": "11560002870991149",
+          "symbol": "وپسا",
+          "name": "گ.س.پتروشيمي ساختمان خليج فارس",
+          "subsector_code": 4599,
+          "subsector_name": "ساير فعاليت هاي پيمانكاري",
+          "cIsin": "IRO7PGIP0002",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "12209858318273950",
+          "symbol": "بالاس3",
+          "name": "مهندسي ساختمان تاسيسات راه آهن",
+          "subsector_code": 4520,
+          "subsector_name": "ساختمان و مهندسي عمران",
+          "cIsin": "IRO3BLSZ0001",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "22312649102928386",
+          "symbol": "مشير512",
+          "name": "مشاركت ش شيراز512-3ماهه18%",
+          "subsector_code": 4520,
+          "subsector_name": "ساختمان و مهندسي عمران",
+          "cIsin": "IRB5AF5305C5",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "26 ",
+      "sector_name": "توليد محصولات كامپيوتري الكترونيكي ونوري",
+      "count": 5,
+      "examples": [
+        {
+          "instrument_id": "1221747399179096",
+          "symbol": "آكو3",
+          "name": "آكو باتري ايرانيان",
+          "subsector_code": 2630,
+          "subsector_name": "توليد تجهيزات الكترونيكي پيشرفته",
+          "cIsin": "IRO1ACCO0006",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "15917865009187760",
+          "symbol": "ماديرا",
+          "name": "صنايع ماديران",
+          "subsector_code": 2620,
+          "subsector_name": "توليد رايانه و تجهيزات جانبي",
+          "cIsin": "IRO3IOMZ0007",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "28854935814625231",
+          "symbol": "ماديرا3",
+          "name": "صنايع ماديران",
+          "subsector_code": 2620,
+          "subsector_name": "توليد رايانه و تجهيزات جانبي",
+          "cIsin": "IRO3IOMZ0007",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "59 ",
+      "sector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+      "count": 5,
+      "examples": [
+        {
+          "instrument_id": "17805801742135377",
+          "symbol": "تسه1404",
+          "name": "امتياز تسهيلات مسكن سال1404",
+          "subsector_code": 5910,
+          "subsector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+          "cIsin": "IRO6MSKZ4040",
+          "cgrValCot": "M1",
+          "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "22988982483538160",
+          "symbol": "تملي1403",
+          "name": "امتيازتسهيلات ملي سال 1403",
+          "subsector_code": 5910,
+          "subsector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+          "cIsin": "IRO6MELZ4037",
+          "cgrValCot": "M1",
+          "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "4457771575695649",
+          "symbol": "تسه14042",
+          "name": "امتياز تسهيلات مسكن سال1404",
+          "subsector_code": 5910,
+          "subsector_name": "اوراق حق تقدم استفاده از تسهيلات مسكن",
+          "cIsin": "IRO6MSKZ4040",
+          "cgrValCot": "M2",
+          "cgrValCotTitle": "بازار ابزارهاي نوين مالي فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "32 ",
+      "sector_name": "ساخت دستگاه‌ها و وسايل ارتباطي",
+      "count": 5,
+      "examples": [
+        {
+          "instrument_id": "45641540066710190",
+          "symbol": "لكما",
+          "name": "كارخانجات‌مخابراتي‌ايران‌",
+          "subsector_code": 3220,
+          "subsector_name": "فرستنده راديو، تلويزيون و تلفن و تلگراف",
+          "cIsin": "IRO7KMOP0001",
+          "cgrValCot": "C1",
+          "cgrValCotTitle": "بازار پایه نارنجی فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "49538625612308540",
+          "symbol": "لپارس3",
+          "name": "پارس‌ الكتريك‌",
+          "subsector_code": 3230,
+          "subsector_name": "گيرنده راديو، تلويزيون و تجهيزات وابسته",
+          "cIsin": "IRO1PELC0000",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "5187018329202415",
+          "symbol": "لپارس",
+          "name": "پارس‌ الكتريك‌",
+          "subsector_code": 3230,
+          "subsector_name": "گيرنده راديو، تلويزيون و تجهيزات وابسته",
+          "cIsin": "IRO1PELC0000",
+          "cgrValCot": "N2",
+          "cgrValCotTitle": "بازار دوم (تابلوی اصلی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "14 ",
+      "sector_name": "استخراج ساير معادن",
+      "count": 4,
+      "examples": [
+        {
+          "instrument_id": "23374429962331387",
+          "symbol": "كتوسعه",
+          "name": "توسعه صنايع و معادن كوثر",
+          "subsector_code": 1410,
+          "subsector_name": "استخراج سنگ، ماسه و خاك رس",
+          "cIsin": "IRO3KOMZ0003",
+          "cgrValCot": "1Z",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "24653108506137885",
+          "symbol": "كانسار",
+          "name": "معدنكاران نسوز",
+          "subsector_code": 1410,
+          "subsector_name": "استخراج سنگ، ماسه و خاك رس",
+          "cIsin": "IRO3MKNZ0004",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "39635413409683200",
+          "symbol": "كانسار3",
+          "name": "معدنكاران نسوز",
+          "subsector_code": 1410,
+          "subsector_name": "استخراج سنگ، ماسه و خاك رس",
+          "cIsin": "IRO3MKNZ0004",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "47 ",
+      "sector_name": "خرده فروشي،باستثناي وسايل نقليه موتوري",
+      "count": 4,
+      "examples": [
+        {
+          "instrument_id": "33410001534682920",
+          "symbol": "رفاه",
+          "name": "فروشگاه هاي زنجيره اي رفاه",
+          "subsector_code": 4711,
+          "subsector_name": "خرده فروشي انواع موادغذايي،نوشيدني وغيره",
+          "cIsin": "IRO7REFP0005",
+          "cgrValCot": "L1",
+          "cgrValCotTitle": "بازار پایه قرمز فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "34463147035531320",
+          "symbol": "افق3",
+          "name": "فروشگاههاي زنجيره اي افق كوروش",
+          "subsector_code": 4711,
+          "subsector_name": "خرده فروشي انواع موادغذايي،نوشيدني وغيره",
+          "cIsin": "IRO1OFOG0003",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "34540569618314880",
+          "symbol": "قاسم",
+          "name": "قاسم ايران",
+          "subsector_code": 4721,
+          "subsector_name": "خرده فروشي موادغذايي در فروشگاههاي تخصصي",
+          "cIsin": "IRO3GASZ0009",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "20 ",
+      "sector_name": "محصولات چوبي",
+      "count": 4,
+      "examples": [
+        {
+          "instrument_id": "41122066907413786",
+          "symbol": "چخزر",
+          "name": "صنايع چوب خزر كاسپين",
+          "subsector_code": 2021,
+          "subsector_name": "توليد تخته چند لا و ساير تخته ها",
+          "cIsin": "IRO3CAWZ0007",
+          "cgrValCot": "1Z",
+          "cgrValCotTitle": "بازار اول فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "43023243844297350",
+          "symbol": "چنوپا",
+          "name": "نيوپان‌ 22 بهمن‌",
+          "subsector_code": 2021,
+          "subsector_name": "توليد تخته چند لا و ساير تخته ها",
+          "cIsin": "IRO7NEOP0008",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "4759441092298585",
+          "symbol": "چفيبر3",
+          "name": "توليد فيبر ايران‌",
+          "subsector_code": 2021,
+          "subsector_name": "توليد تخته چند لا و ساير تخته ها",
+          "cIsin": "IRO1FIBR0003",
+          "cgrValCot": "G3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "11 ",
+      "sector_name": "استخراج نفت گاز و خدمات جنبي جز اکتشاف",
+      "count": 3,
+      "examples": [
+        {
+          "instrument_id": "15282093177363578",
+          "symbol": "شساخت",
+          "name": "مهندسي و ساختمان صنايع نفت",
+          "subsector_code": 1120,
+          "subsector_name": "خدمات جنبي استخراج نفت گاز جز اکتشاف",
+          "cIsin": "IRO7OECP0001",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "28809886765682162",
+          "symbol": "حفاري",
+          "name": "حفاري شمال",
+          "subsector_code": 1120,
+          "subsector_name": "خدمات جنبي استخراج نفت گاز جز اکتشاف",
+          "cIsin": "IRO1HSHM0008",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "54121885973233303",
+          "symbol": "حفاري3",
+          "name": "حفاري شمال",
+          "subsector_code": 1120,
+          "subsector_name": "خدمات جنبي استخراج نفت گاز جز اکتشاف",
+          "cIsin": "IRO1HSHM0008",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "61 ",
+      "sector_name": "حمل و نقل آبي",
+      "count": 2,
+      "examples": [
+        {
+          "instrument_id": "28253678449273505",
+          "symbol": "حخزر",
+          "name": "كشتيراني درياي خزر",
+          "subsector_code": 6110,
+          "subsector_name": "حمل و نقل دريايي وحمل ونقل درآبهاي ساحلي",
+          "cIsin": "IRO3KHZZ0007",
+          "cgrValCot": "Z1",
+          "cgrValCotTitle": "بازار دوم فرابورس",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "33417650963311336",
+          "symbol": "حخزر3",
+          "name": "كشتيراني درياي خزر",
+          "subsector_code": 6110,
+          "subsector_name": "حمل و نقل دريايي وحمل ونقل درآبهاي ساحلي",
+          "cIsin": "IRO3KHZZ0007",
+          "cgrValCot": "U3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "19 ",
+      "sector_name": "دباغي، پرداخت چرم و ساخت انواع پاپوش",
+      "count": 2,
+      "examples": [
+        {
+          "instrument_id": "38229118525940937",
+          "symbol": "وملي3",
+          "name": "گروه‌ صنعتي‌ ملي‌ (هلدينگ‌",
+          "subsector_code": 1999,
+          "subsector_name": "ساير محصولات چرمي",
+          "cIsin": "IRO1GMEL0009",
+          "cgrValCot": "F3",
+          "cgrValCotTitle": "-'",
+          "sourceID": 0
+        },
+        {
+          "instrument_id": "41796741644273824",
+          "symbol": "وملي",
+          "name": "گروه‌ صنعتي‌ ملي‌ (هلدينگ‌",
+          "subsector_code": 1999,
+          "subsector_name": "ساير محصولات چرمي",
+          "cIsin": "IRO1GMEL0009",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "46 ",
+      "sector_name": "تجارت عمده فروشي به جز وسايل نقليه موتور",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "16553062355259729",
+          "symbol": "بميلا",
+          "name": "توسعه سرمايه گذاري ميلاد پارس",
+          "subsector_code": 4610,
+          "subsector_name": "عمده فروشي براساس هزينه و يا قرارداد",
+          "cIsin": "IRO7MILP0008",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "71 ",
+      "sector_name": "فعاليت مهندسي، تجزيه، تحليل و آزمايش فني",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "19310456400689867",
+          "symbol": "خبازرس",
+          "name": "بازرسي مهندسي و صنعتي ايران",
+          "subsector_code": 7120,
+          "subsector_name": "تجزيه و تحليل و آزمايش فني",
+          "cIsin": "IRO7IEIP0003",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "93 ",
+      "sector_name": "فعاليتهاي فرهنگي و ورزشي",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "22259718159702272",
+          "symbol": "استقلال",
+          "name": "استقلال",
+          "subsector_code": 9312,
+          "subsector_name": "فعاليت هاي باشگاه هاي ورزشي",
+          "cIsin": "IRO7ESLP0006",
+          "cgrValCot": "C1",
+          "cgrValCotTitle": "بازار پایه نارنجی فرابورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "35 ",
+      "sector_name": "ساير تجهيزات حمل و نقل",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "23219071099576895",
+          "symbol": "صدوچرخ61",
+          "name": "صكوك مرابحه دوچرخ61-3ماهه23%",
+          "subsector_code": 3591,
+          "subsector_name": "توليد موتوسيكلت",
+          "cIsin": "IRB6AD1006B8",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "22 ",
+      "sector_name": "انتشار، چاپ و تکثير",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "23936607891892333",
+          "symbol": "چافست",
+          "name": "افست‌",
+          "subsector_code": 2221,
+          "subsector_name": "چاپ",
+          "cIsin": "IRO1OFST0004",
+          "cgrValCot": "N1",
+          "cgrValCotTitle": "بازار اول (تابلوی فرعی) بورس",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "50 ",
+      "sector_name": "تجارت عمده وخرده فروشي وسائط نقليه موتور",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "60172075721034081",
+          "symbol": "صيدك601",
+          "name": "صكوك مرابحه صيدك601-3ماهه18%",
+          "subsector_code": 5030,
+          "subsector_name": "فروش قطعات يدكي لوازم الحاقي وسايل نقليه",
+          "cIsin": "IRB6AE570612",
+          "cgrValCot": "N4",
+          "cgrValCotTitle": "بازار اوراق بدهی",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "84 ",
+      "sector_name": "سلامت انسان و مددكاري اجتماعي",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "60369091709615715",
+          "symbol": "مهرمام",
+          "name": "مهرمام ميهن",
+          "subsector_code": 8411,
+          "subsector_name": "فعاليت هاي بيمارستاني",
+          "cIsin": "IRO5MOMS0008",
+          "cgrValCot": "W1",
+          "cgrValCotTitle": "بازار نوآفرین - دانش بنیان",
+          "sourceID": 0
+        }
+      ]
+    },
+    {
+      "sector_code": "90 ",
+      "sector_name": "فعاليت هاي هنري، سرگرمي و خلاقانه",
+      "count": 1,
+      "examples": [
+        {
+          "instrument_id": "60783654574662426",
+          "symbol": "وهنر",
+          "name": "گروه توسعه هنر ايران",
+          "subsector_code": 9000,
+          "subsector_name": "فعاليت هاي هنري",
+          "cIsin": "IRO7IADP0002",
+          "cgrValCot": "P1",
+          "cgrValCotTitle": "بازار پایه زرد فرابورس",
+          "sourceID": 0
+        }
+      ]
+    }
+  ],
+  "classification_status": "NOT_CLASSIFIED; review source-field semantics before setting any class"
+}
