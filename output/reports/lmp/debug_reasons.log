@@ -1,0 +1,30 @@
+  ✅ قراردادها: 633
+  ✅ سهم‌های بازار: 1038
+
+=== 1. فیلدهای قرارداد ضسپا7034 ===
+buyInstrumentName = 'ضسپا7034'
+buyCompanyNamePersian = 'اختیارخ خساپا-900-1405/07/29'
+buystateid = 'A'
+buyQeymateEmal = {'value': 900, 'state': 0}
+buyLastPrice = {'value': None, 'state': 0}
+buyClosingPrice = {'value': 0, 'state': 0}
+buyBaqimandeTaSarresId = {'value': 6, 'state': 0}
+buyTradeVolume = {'value': None, 'state': 0}
+underlying = {'symbol': 'شسپا', 'ins_code': 'IRO1SEPP0001', 'last_price': 28980.0, 'closing_price': 29000.0, 'yesterday': 29870.0, 'ceiling': 29590.0, 'floor': 28980.0}
+calculate_option = None
+
+=== 2. کلیدهای lookup مرتبط با تاپیکو ===
+'تاپكيش3' ceiling= 2797.0
+'رتاپ' ceiling= 10090.0
+'تاپ' ceiling= 10090.0
+'تاپيكو3' ceiling= 51100.0
+'تاپيكو' ceiling= 51970.0
+'تاپكيش' ceiling= 2802.0
+
+=== 3. تفکیک علت رد قراردادها ===
+premium_zero_or_missing: 633
+  نمونه: ('ضپیک8000', 'اختیارخ تاپیکو-34000-05/08/13', 'A', {'value': None, 'state': 0}, {'value': 0, 'state': 0})
+stateهای مشاهده‌شده: {}
+کل قراردادهای با پیشوند ض: 633
+
+گزارش: output/reports/lmp/debug_reasons.log

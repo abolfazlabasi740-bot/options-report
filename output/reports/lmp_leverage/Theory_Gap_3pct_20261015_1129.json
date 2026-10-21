@@ -1,0 +1,12 @@
+{
+  "report_name": "Theory_Gap_3pct",
+  "version": 2,
+  "generated_at": "2026-10-15T11:29:04.095943",
+  "data_mode": "LIVE",
+  "basis_note": "مبنای EOD: قیمت پایانی رسمی | مبنای LIVE: pull زنده TSETMC",
+  "hypothesis": "رشد ۳٪ سهم پایه همان روز معاملاتی",
+  "model": "Point Effect (ITM)",
+  "contracts": [],
+  "ranking": [],
+  "quarantine_count": 0
+}

@@ -1,0 +1,193 @@
+{
+  "header": {
+    "retrieved_at": "2026-10-20T05:00:56+03:30",
+    "date_shamsi": "1405/07/28",
+    "time_tehran": "05:00:56",
+    "total_records": 3411,
+    "bad_rows": 0,
+    "sha256": "d5e641e7efab141c274848b2debfc0e267eab653dd92a4cb5475fed0f90d40dd"
+  },
+  "top_gainers_n": 20,
+  "top_gainers": [
+    {
+      "symbol": "ثاصفا",
+      "name": "شركت‌ ساختمان‌ اصفهان‌",
+      "last_price": 28.0,
+      "final_close": 21740.0,
+      "pct_last": 250.0,
+      "pct_close": 271650.0,
+      "volume": 3846638200.0
+    },
+    {
+      "symbol": "اطلس",
+      "name": "صندوق س.توسعه اطلس مفيد-س",
+      "last_price": 7618.0,
+      "final_close": 180503.0,
+      "pct_last": 8091.4,
+      "pct_close": 193989.25,
+      "volume": 3051590679504.0
+    },
+    {
+      "symbol": "اوان",
+      "name": "مبين وان كيش",
+      "last_price": 129.0,
+      "final_close": 14450.0,
+      "pct_last": 1512.5,
+      "pct_close": 180525.0,
+      "volume": 22630502840.0
+    },
+    {
+      "symbol": "تمحركه",
+      "name": "ماشين سازي نيرو محركه",
+      "last_price": 55.0,
+      "final_close": 9000.0,
+      "pct_last": 1000.0,
+      "pct_close": 179900.0,
+      "volume": 5514909560.0
+    },
+    {
+      "symbol": "لپيام",
+      "name": "گسترش صنايع پيام",
+      "last_price": 270.0,
+      "final_close": 153000.0,
+      "pct_last": 119.51,
+      "pct_close": 124290.24,
+      "volume": 108662372900.0
+    },
+    {
+      "symbol": "بتك",
+      "name": "كارخانجات كابل سازي‌ تك‌",
+      "last_price": 28.0,
+      "final_close": 274400.0,
+      "pct_last": -89.23,
+      "pct_close": 105438.46,
+      "volume": 6114662400.0
+    },
+    {
+      "symbol": "ثزاگرس",
+      "name": "سرمايه گذاري توسعه عمران زاگرس",
+      "last_price": 235.0,
+      "final_close": 97200.0,
+      "pct_last": 91.06,
+      "pct_close": 78924.39,
+      "volume": 38941823900.0
+    },
+    {
+      "symbol": "كرمان",
+      "name": "س. توسعه و عمران استان كرمان",
+      "last_price": 2717.0,
+      "final_close": 1426.0,
+      "pct_last": 135750.0,
+      "pct_close": 71200.0,
+      "volume": 488138939841.0
+    },
+    {
+      "symbol": "كرمان3",
+      "name": "س. توسعه و عمران استان كرمان",
+      "last_price": 4.0,
+      "final_close": 1414.0,
+      "pct_last": 100.0,
+      "pct_close": 70600.0,
+      "volume": 425614000.0
+    },
+    {
+      "symbol": "وثوق",
+      "name": "سرمايه گذاري وثوق امين",
+      "last_price": 57.0,
+      "final_close": 48000.0,
+      "pct_last": -29.63,
+      "pct_close": 59159.26,
+      "volume": 22589367480.0
+    },
+    {
+      "symbol": "آباد",
+      "name": "توريستي ورفاهي آبادگران ايران",
+      "last_price": 71.0,
+      "final_close": 1495.0,
+      "pct_last": 2266.67,
+      "pct_close": 49733.33,
+      "volume": 7159919780.0
+    },
+    {
+      "symbol": "گپارس",
+      "name": "امور رفاهي كارگزاران پارس",
+      "last_price": 1.0,
+      "final_close": 290000.0,
+      "pct_last": -99.86,
+      "pct_close": 40010.65,
+      "volume": 179800000.0
+    },
+    {
+      "symbol": "ثنور",
+      "name": "سرمايه گذاري كوه نور",
+      "last_price": 91.0,
+      "final_close": 7670.0,
+      "pct_last": 250.0,
+      "pct_close": 29400.0,
+      "volume": 12269131420.0
+    },
+    {
+      "symbol": "شستان",
+      "name": "پتروشيمي شهيد رئيسي گلستان",
+      "last_price": 124.0,
+      "final_close": 1969.0,
+      "pct_last": 1671.43,
+      "pct_close": 28028.57,
+      "volume": 13931695034.0
+    },
+    {
+      "symbol": "فطلوع",
+      "name": "طلوع فولاد پارس",
+      "last_price": 775.0,
+      "final_close": 7180.0,
+      "pct_last": 2179.41,
+      "pct_close": 21017.65,
+      "volume": 251738819170.0
+    },
+    {
+      "symbol": "كترام3",
+      "name": "توليدي‌ كاشي‌ تكسرام‌",
+      "last_price": 0.0,
+      "final_close": 3600.0,
+      "pct_last": -100.0,
+      "pct_close": 19900.0,
+      "volume": 0.0
+    },
+    {
+      "symbol": "كترام",
+      "name": "توليدي‌ كاشي‌ تكسرام‌",
+      "last_price": 193.0,
+      "final_close": 3580.0,
+      "pct_last": 972.22,
+      "pct_close": 19788.89,
+      "volume": 27753572520.0
+    },
+    {
+      "symbol": "دروز3",
+      "name": "داروسازي‌ روزدارو",
+      "last_price": 3.0,
+      "final_close": 32340.0,
+      "pct_last": -98.17,
+      "pct_close": 19619.51,
+      "volume": 80850000.0
+    },
+    {
+      "symbol": "دروز",
+      "name": "داروسازي‌ روزدارو",
+      "last_price": 1516.0,
+      "final_close": 31850.0,
+      "pct_last": 824.39,
+      "pct_close": 19320.73,
+      "volume": 268307248990.0
+    },
+    {
+      "symbol": "خبنيان",
+      "name": "بنيان ديزل",
+      "last_price": 554.0,
+      "final_close": 1915.0,
+      "pct_last": 5440.0,
+      "pct_close": 19050.0,
+      "volume": 126134497760.0
+    }
+  ]
+}

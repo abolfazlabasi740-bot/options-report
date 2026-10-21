@@ -1,0 +1,125 @@
+=== خطوط ۱–۴۰ (ثابتها و URLها و is_market_open) ===
+     1 | #!/usr/bin/env python3
+     2 | # -*- coding: utf-8 -*-
+     3 | """اسکنر سود لحظه آخری v2 — متدولوژی: قیمت تمام‌شده + رشد انتظاری پرمیوم
+     4 | ۱) مبنا: پیش از ۱۲:۳۰ قیمت لحظه‌ای | پس از بازار قیمت پایانی همان روز
+     5 | ۲) قیمت تمام‌شده = قیمت اعمال + پرمیوم
+     6 | ۳) رشد ریالی سهم = مبنای سهم × درصد رشد (سناریو صف خرید)
+     7 | ۴) درصد رشد انتظاری آپشن = (رشد ریالی ÷ پرمیوم) × ۱۰۰
+     8 | ۵) بدون گرد کردن محاسباتی — دقت کامل در JSON و Excel
+     9 | """
+    10 | import requests, json, re, os, time, sys
+    11 | from datetime import datetime, timezone, timedelta
+    12 | 
+    13 | HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
+    14 |            "Accept": "application/json, text/plain, */*"}
+    15 | IRST = timezone(timedelta(hours=3, minutes=30))
+    16 | IRAN_TRADING_DAYS = {5, 6, 0, 1, 2}
+    17 | OPTION_URL = "https://webgw.tse.ir/InstrumentProvider/api/v1/MarketWatch/MarketWatchTradeOption/fa"
+    18 | MW_URL = "https://cdn.tsetmc.com/api/ClosingPrice/GetMarketWatch?market=0&paperTypes[0]=1&withBestLimits=false&hEven=0&RefID=0"
+    19 | SEARCH_URL = "https://cdn.tsetmc.com/api/Instrument/GetInstrumentSearch?searchTerm={}"
+    20 | PRICE_URL = "https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceInfo/{}"
+    21 | 
+    22 | def val(obj):
+    23 |     if obj is None: return None
+    24 |     if isinstance(obj, dict): return obj.get("value")
+    25 |     return obj
+    26 | 
+    27 | def now_ir(): return datetime.now(IRST)
+    28 | 
+    29 | def is_market_open():
+    30 |     n = now_ir(); h = n.hour + n.minute / 60
+    31 |     return (n.weekday() in IRAN_TRADING_DAYS) and (9 <= h <= 12.5)
+    32 | 
+    33 | def get_base_price(und, market_open):
+    34 |     """متدولوژی بند ۱: انتخاب مبنای قیمت سهم بر اساس ساعت"""
+    35 |     if market_open:
+    36 |         base = und.get("last_price") or und.get("closing_price") or und.get("yesterday")
+    37 |         return base, "قیمت لحظه‌ای", "realtime"
+    38 |     base = und.get("closing_price") or und.get("last_price") or und.get("yesterday")
+    39 |     return base, "قیمت پایانی", "closing"
+    40 | 
+
+=== خطوط ۷۸–۱۳۹ (find_underlying + calculate_option) ===
+    78 | def search_underlying_fallback(term):
+    79 |     try:
+    80 |         r = requests.get(SEARCH_URL.format(term), headers=HEADERS, timeout=10); r.raise_for_status()
+    81 |         for inst in r.json().get("instrumentSearch", []):
+    82 |             sym = inst.get("lVal18AFC", "")
+    83 |             if sym and not sym.startswith(("ض", "ط", "IR")):
+    84 |                 ins_code = inst.get("insCode")
+    85 |                 if ins_code: return ins_code, sym
+    86 |     except: pass
+    87 |     return None, None
+    88 | 
+    89 | def get_price_info(ins_code):
+    90 |     try:
+    91 |         r = requests.get(PRICE_URL.format(ins_code), headers=HEADERS, timeout=10); r.raise_for_status()
+    92 |         cp = r.json().get("closingPriceInfo", {})
+    93 |         return {"last_price": cp.get("pDrCotVal", 0), "closing_price": cp.get("pClosing", 0),
+    94 |                 "yesterday": cp.get("priceYesterday", 0) or cp.get("yesterday", 0),
+    95 |                 "ceiling": cp.get("psGelStaMax", 0), "floor": cp.get("psGelStaMin", 0)}
+    96 |     except: return None
+    97 | 
+    98 | def find_underlying(option_symbol, lookup, fallback_cache, company_name=""):
+    99 |     # روش ۱ (قطعی): «اختيارخ وبملت-1454-...» یا «اختیارخ ...»
+   100 |     m = re.search(r'اخ[تیي]ارخ\s+(.+?)\s*-', company_name or "")
+   101 |     if m:
+   102 |         cand = m.group(1).strip()
+   103 |         if cand in lookup and lookup[cand]["ceiling"] > 0:
+   104 |             return lookup[cand]
+   105 |     # روش ۲: حذف ض/ط و ارقام + کاندیداهای پیشوند
+   106 |     sym = re.sub(r'^[ضط]', '', option_symbol)
+   107 |     sym = re.sub(r'\d+$', '', sym).strip()
+   108 |     if not sym:
+   109 |         return None
+   110 |     for c in [sym, f"ا{sym}", f"وب{sym}", f"خ{sym}", f"ف{sym}", f"پ{sym}", f"س{sym}", f"ش{sym}", f"گ{sym}"]:
+   111 |         if c in lookup and lookup[c]["ceiling"] > 0:
+   112 |             return lookup[c]
+   113 |     if option_symbol not in fallback_cache:
+   114 |         fallback_cache[option_symbol] = None
+   115 |     return fallback_cache.get(option_symbol)
+   116 | 
+   117 | def calculate_option(op, und, market_open, fixed_growth=None):
+   118 |     """متدولوژی v2: قیمت تمام‌شده + رشد انتظاری پرمیوم"""
+   119 |     if op.get("buystateid", "") != "A": return None
+   120 |     strike = val(op.get("buyQeymateEmal"))
+   121 |     premium = val(op.get("buyLastPrice")) or val(op.get("buyClosingPrice"))
+   122 |     days_left = val(op.get("buyBaqimandeTaSarresId"))
+   123 |     volume = val(op.get("buyTradeVolume"))
+   124 |     if not strike or not premium: return None
+   125 |     base, basis_fa, basis_en = get_base_price(und, market_open)
+   126 |     if not base or base <= 0: return None
+   127 |     ceiling = und.get("ceiling", 0)
+   128 |     break_even = strike + premium                      # بند ۲
+   129 |     if fixed_growth is not None:                        # سناریوی درصد دلخواه (مثل 2.99)
+   130 |         growth_pct = fixed_growth
+   131 |         rial_growth = base * fixed_growth / 100         # بند ۳-الف
+   132 |     else:
+   133 |         if not ceiling or ceiling <= 0: return None     # بدون داده سقف، بدون عدد فرضی
+   134 |         growth_pct = (ceiling - base) / base * 100
+   135 |         rial_growth = ceiling - base
+   136 |     premium_growth = (rial_growth / premium) * 100      # بند ۳-ب
+   137 |     if ceiling and ceiling <= strike:
+   138 |         status = "⚠️ OTM در سقف"
+   139 |     elif premium_growth > 10: status = "🎯 عالی"
+
+=== تست خط لوله: ضسپا7034 ===
+  ✅ قراردادها: 633
+  ✅ سهم‌های بازار: 1038
+قرارداد هدف: ضسپا7034
+underlying: {"symbol": "شسپا", "ins_code": "IRO1SEPP0001", "last_price": 28980.0, "closing_price": 29000.0, "yesterday": 29870.0, "ceiling": 29590.0, "floor": 28980.0}
+  base=(29000.0, 'قیمت پایانی', 'closing') | ceiling=29590.0
+نتیجه calculate_option: ❌ None
+
+=== نمونه ۱۰ تطبیقنیافته و وضعیت lookup برایشان ===
+  ضپیک8000 | شرکت: اختیارخ تاپیکو-34000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8001 | شرکت: اختیارخ تاپیکو-38000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8002 | شرکت: اختیارخ تاپیکو-42000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8003 | شرکت: اختیارخ تاپیکو-46000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8004 | شرکت: اختیارخ تاپیکو-50000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8005 | شرکت: اختیارخ تاپیکو-56000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8006 | شرکت: اختیارخ تاپیکو-62000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8007 | شرکت: اختیارخ تاپیکو-68000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8008 | شرکت: اختیارخ تاپیکو-74000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False
+  ضپیک8009 | شرکت: اختیارخ تاپیکو-80000-05/0 | نماد بدون ض/ارقام: «پیک» | در lookup: False

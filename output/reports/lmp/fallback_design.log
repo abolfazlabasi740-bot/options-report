@@ -1,0 +1,81 @@
+شروع دیاگ: 2026-10-15T17:48:58.829635
+
+=== 1) premium fields per your audit ===
+   buyClosingPrice: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   buyClosingPriceChangePercent: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   buyLastPrice: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   buyLastPriceChange: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   buyLastPriceChangePercent: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   buyQeymateEmal: موجود در 633 رکورد؛ مقدار عددی غیرصفر=633
+   sellClosingPrice: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   sellClosingPriceChangePercent: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   sellLastPrice: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   sellLastPriceChange: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   sellLastPriceChangePercent: موجود در 633 رکورد؛ مقدار عددی غیرصفر=0
+   sellQeymateEmal: موجود در 633 رکورد؛ مقدار عددی غیرصفر=633
+  ✅ قراردادها: 633
+
+=== 2) 633 contracts, 74 keys ===
+   ['activemarkettypeid', 'activemarkettypename', 'buyAndazeyeQarardad', 'buyBaqimandeTaSarresId', 'buyBuyCount', 'buyBuyPrice', 'buyBuyQuantity', 'buyClosingPrice', 'buyClosingPriceChangePercent', 'buyCompanyNamePersian', 'buyFirstPrice', 'buyInstrumentId', 'buyInstrumentName', 'buyLastPrice', 'buyLastPriceChange', 'buyLastPriceChangePercent', 'buyMogheyatBazChange', 'buyMoqeyathayeBaz', 'buyProfitState', 'buyQeymateEmal', 'buyQeymateMabna', 'buySellCount', 'buySellPriceSellPrice', 'buySellQuantity', 'buyTarixSarresid', 'buyTradeCount', 'buyTradeValue', 'buyTradeVolume', 'buymaxValue', 'buyminValue', 'buystateid', 'buystatename', 'industryid', 'industryname', 'industrysubid', 'industrysubname', 'instrumentstatusid', 'instrumentstatusname', 'marketid', 'marketname', 'markettypeid', 'markettypename', 'securitiesid', 'securitiesname', 'sellAndazeyeQarardad', 'sellBaqimandeTaSarresId', 'sellBuyCount', 'sellBuyPrice', 'sellBuyQuantity', 'sellClosingPrice', 'sellClosingPriceChangePercent', 'sellCompanyNamePersian', 'sellFirstPrice', 'sellInstrumentId', 'sellInstrumentName', 'sellLastPrice', 'sellLastPriceChange', 'sellLastPriceChangePercent', 'sellMogheyatBazChange', 'sellMoqeyathayeBaz', 'sellProfitState', 'sellQeymateEmal', 'sellQeymateMabna', 'sellSellCount', 'sellSellPrice', 'sellSellQuantity', 'sellTarixSarresid', 'sellTradeCount', 'sellTradeValue', 'sellTradeVolume', 'sellmaxValue', 'sellminValue', 'sellstateid', 'sellstatename']
+   id fields: {"buyInstrumentId": "IRO9PTAP0A01", "sellInstrumentId": "IROFPTAP1A01"}
+
+=== 3) insCode for ضسپا7034: IRO9SIPA0F11 ===
+  closing info: ❌ None
+
+=== 4) lmp snapshots ===
+  output/reports/lmp/lmp_20261014_1734.json
+    {'timestamp': '2026-10-14T17:34:58.811735+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[695]'}
+  output/reports/lmp/lmp_20261014_1735.json
+    {'timestamp': '2026-10-14T17:35:46.794364+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'fixed_growth_2.99', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[695]'}
+  output/reports/lmp/lmp_20261014_1736.json
+    {'timestamp': '2026-10-14T17:36:23.836972+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[695]'}
+  output/reports/lmp/lmp_20261014_1741.json
+    {'timestamp': '2026-10-14T17:41:47.907516+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'fixed_growth_2.99', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_1742.json
+    {'timestamp': '2026-10-14T17:42:09.920153+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_1806.json
+    {'timestamp': '2026-10-14T18:06:49.549834+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261014_1836.json
+    {'timestamp': '2026-10-14T18:36:57.173709+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261014_1907.json
+    {'timestamp': '2026-10-14T19:07:02.243922+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_1937.json
+    {'timestamp': '2026-10-14T19:37:06.720254+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_2007.json
+    {'timestamp': '2026-10-14T20:07:12.248677+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_2037.json
+    {'timestamp': '2026-10-14T20:37:18.857013+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261014_2107.json
+    {'timestamp': '2026-10-14T21:07:25.127023+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '152', 'opportunities': '152', 'unmatched': 'list[465]'}
+  output/reports/lmp/lmp_20261014_2137.json
+    {'timestamp': '2026-10-14T21:37:30.282621+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261014_2207.json
+    {'timestamp': '2026-10-14T22:07:35.949182+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261014_2237.json
+    {'timestamp': '2026-10-14T22:37:41.855986+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '204', 'opportunities': '204', 'unmatched': 'list[381]'}
+  output/reports/lmp/lmp_20261015_0608.json
+    {'timestamp': '2026-10-15T06:08:00.032353+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_0708.json
+    {'timestamp': '2026-10-15T07:08:06.343244+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[350]'}
+  output/reports/lmp/lmp_20261015_0808.json
+    {'timestamp': '2026-10-15T08:08:13.866191+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_0908.json
+    {'timestamp': '2026-10-15T09:08:21.611035+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_1008.json
+    {'timestamp': '2026-10-15T10:08:26.301884+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[350]'}
+  output/reports/lmp/lmp_20261015_1108.json
+    {'timestamp': '2026-10-15T11:08:33.165003+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[350]'}
+  output/reports/lmp/lmp_20261015_1208.json
+    {'timestamp': '2026-10-15T12:08:37.809933+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[350]'}
+  output/reports/lmp/lmp_20261015_1308.json
+    {'timestamp': '2026-10-15T13:08:44.029066+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_1408.json
+    {'timestamp': '2026-10-15T14:08:49.205974+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_1609.json
+    {'timestamp': '2026-10-15T16:09:03.354118+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_1629.json
+    {'timestamp': '2026-10-15T16:29:33.042470+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+  output/reports/lmp/lmp_20261015_1709.json
+    {'timestamp': '2026-10-15T17:09:10.652374+03:30', 'methodology': 'v2_break_even_premium_growth', 'scenario': 'growth_to_ceiling', 'price_basis': 'closing', 'market_open': 'False', 'total_calls': '0', 'opportunities': '0', 'unmatched': 'list[434]'}
+
+پایان دیاگ

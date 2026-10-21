@@ -1,0 +1,440 @@
+{
+  "generated_at": "2026-10-15T15:00:00.912427",
+  "data_mode": "EOD",
+  "count": 54,
+  "policy": "قرنطینه به‌جای حذف",
+  "rows": [
+    {
+      "option_symbol": "ضسپا7034",
+      "underlying": "شسپا",
+      "base_price": 29000.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضسپا7035",
+      "underlying": "شسپا",
+      "base_price": 29000.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضسپا7033",
+      "underlying": "شسپا",
+      "base_price": 29000.0,
+      "premium": 2.0,
+      "reason": "پرمیوم کف/بی‌معامله (2 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضسپا7032",
+      "underlying": "شسپا",
+      "base_price": 29000.0,
+      "premium": 8.0,
+      "reason": "پرمیوم کف/بی‌معامله (8 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7045",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7046",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7047",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7048",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب7044",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب7045",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب8038",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب7046",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب7047",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب7050",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب8037",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 4.0,
+      "reason": "پرمیوم کف/بی‌معامله (4 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب8036",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 6.0,
+      "reason": "پرمیوم کف/بی‌معامله (6 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضذوب8035",
+      "underlying": "ذوب",
+      "base_price": 653.0,
+      "premium": 7.0,
+      "reason": "پرمیوم کف/بی‌معامله (7 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضهمن7039",
+      "underlying": "وبهمن",
+      "base_price": 2372.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضهمن7038",
+      "underlying": "وبهمن",
+      "base_price": 2372.0,
+      "premium": 1.0,
+      "reason": "پرمیوم کف/بی‌معامله (1 ریال) — نقدشوندگی صفر",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8080",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 25.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8079",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 31.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9048",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 40.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8078",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 47.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9047",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 52.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8077",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 62.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7044",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 78.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9046",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 79.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8076",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 89.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9045",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 100.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9044",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 120.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9043",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 139.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8075",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 147.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9042",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 170.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7043",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 185.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9041",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 200.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8074",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 222.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9040",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 251.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7042",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 283.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8073",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 314.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9039",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 350.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7041",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 389.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8072",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 403.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9038",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 440.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7040",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 499.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8071",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 506.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9037",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 549.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8070",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 590.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7039",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 607.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت9036",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 613.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7038",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 685.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8069",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 685.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت8068",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 781.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7037",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 807.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    },
+    {
+      "option_symbol": "ضملت7036",
+      "underlying": "ملت",
+      "base_price": 7960.0,
+      "premium": 846.0,
+      "reason": "مبنای کهنه (پیش از افزایش سرمایه) — نیازمند pull زنده TSETMC",
+      "repair_path": "python3 scripts/fetch_tsetmc_live.py"
+    }
+  ]
+}
