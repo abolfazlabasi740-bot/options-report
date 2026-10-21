@@ -244,7 +244,7 @@
             document.getElementById('sync-status').textContent = 'درحال خواندن گزارشات...';
 
             // ۱. بارگذاری برترین‌ها و هدر
-            const bundle = await loadJsonSafe('market_analytics_bundle.json') || await loadJsonSafe('../../output/reports/market_analytics_bundle.json');
+            const bundle = await loadJsonSafe('market_analytics_bundle.json') || await loadJsonSafe('reports/market_analytics_bundle.json');
             if (bundle) {
                 const h = bundle.header || {};
                 document.getElementById('shamsi-date').textContent = 'تاریخ: ' + (h.date_shamsi || 'امروز');
@@ -268,25 +268,25 @@
             }
 
             // ۲. بارگذاری گزارش فرصت‌ها
-            const oppData = await loadJsonSafe('../../output/base_share/latest_whole_market_opportunity_report.json');
+            const oppData = await loadJsonSafe('base_share/latest_whole_market_opportunity_report.json');
             if (oppData) {
                 renderOpportunities(oppData);
             }
 
             // ۳. بارگذاری روند نمادها
-            const trendData = await loadJsonSafe('../../output/base_share/latest_plain_symbol_trend_report.json');
+            const trendData = await loadJsonSafe('base_share/latest_plain_symbol_trend_report.json');
             if (trendData) {
                 renderTrends(trendData);
             }
 
             // ۴. بازار مشتقه و اهرمی
-            const optData = await loadJsonSafe('../../output/base_share/latest_option_enabled_market_report.json');
+            const optData = await loadJsonSafe('base_share/latest_option_enabled_market_report.json');
             if (optData) {
                 renderOptions(optData);
             }
 
             // ۵. تحلیل مدیریتی
-            const mgmtData = await loadJsonSafe('../../output/base_share/latest_management_analysis_report.json');
+            const mgmtData = await loadJsonSafe('base_share/latest_management_analysis_report.json');
             if (mgmtData) {
                 renderManagement(mgmtData);
             }

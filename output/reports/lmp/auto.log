@@ -4820,3 +4820,9 @@ IndentationError: unexpected indent
 IndentationError: unexpected indent
 [17:07:23] ⚠️ خطا در اسکن
 [17:07:23] 😴 خواب 30 دقیقه
+[17:37:24] 🌙 بعد از بازار (آمادگی فردا) ▶️ اسکن...
+  File "/data/data/com.termux/files/home/OptimusAI_V41_LIVE/scripts/lmp_scanner.py", line 78
+    for pre in ("ا", "وب", "و", "خ", "ف", "پ", "س", "ش", "گ", "ن", "ک", "د", "ب", "م", "ح", "ع", "ص", "ق", "ل", "ی", "ت", "ر"):
+IndentationError: unexpected indent
+[17:37:24] ⚠️ خطا در اسکن
+[17:37:24] 😴 خواب 30 دقیقه

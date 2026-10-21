@@ -10,6 +10,29 @@ import json
 import os
 import sys
 import urllib.request
+
+def _select_symbols_part(raw_text: str) -> str:
+    """
+    MarketWatchPlus raw format is split by '@' into multiple parts.
+    Part[0] is usually market meta (3 fields). Symbols table is the part with:
+      - many rows (e.g. ~3411)
+      - many columns (>=20, observed 26)
+    This function selects the most likely symbols part robustly.
+    """
+    parts = raw_text.split('@')
+    best = ""
+    best_score = -1
+    for part in parts:
+        rows = [r for r in part.split(';') if r.strip()]
+        if not rows:
+            continue
+        fc = len(rows[0].split(','))
+        # score favors many rows and many fields
+        score = len(rows) * 10 + fc
+        if fc >= 20 and score > best_score:
+            best_score = score
+            best = part
+    return best if best else (parts[0] if parts else "")
 from datetime import datetime, timedelta, timezone
 
 # === PATCH: transparent gzip decode + real MarketWatchPlus validation (1405/07/24) ===
